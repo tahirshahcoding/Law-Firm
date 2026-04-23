@@ -1,3 +1,4 @@
+import { API_BASE } from '@/lib/api';
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -33,8 +34,8 @@ export default function AccountsPage() {
     const fetchAccounts = async () => {
       try {
         const [ledgerRes, casesRes] = await Promise.all([
-          apiFetch('http://localhost:8000/api/accounts/ledger/'),
-          apiFetch('http://localhost:8000/api/cases/')
+          apiFetch('$\{API_BASE\}/accounts/ledger/'),
+          apiFetch('$\{API_BASE\}/cases/')
         ]);
         
         const ledgerData = await ledgerRes.json();

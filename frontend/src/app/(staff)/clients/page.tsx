@@ -1,3 +1,4 @@
+import { API_BASE } from '@/lib/api';
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -25,7 +26,7 @@ export default function ClientsPage() {
       return;
     }
     setLoading(true);
-    apiFetch('http://localhost:8000/api/clients/')
+    apiFetch('$\{API_BASE\}/clients/')
       .then(res => res.json())
       .then(data => {
         setClients(data);
@@ -45,7 +46,7 @@ export default function ClientsPage() {
     if (!window.confirm(`Are you sure you want to permanently delete the profile for ${name}?`)) return;
     
     try {
-      const res = await apiFetch(`http://localhost:8000/api/clients/${id}/`, {
+      const res = await apiFetch(`$\{API_BASE\}/clients/${id}/`, {
         method: 'DELETE',
       });
       if (!res.ok) throw new Error('Failed to delete client');

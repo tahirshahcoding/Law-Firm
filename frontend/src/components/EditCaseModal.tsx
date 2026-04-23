@@ -1,3 +1,4 @@
+import { API_BASE } from '@/lib/api';
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -36,7 +37,7 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
   useEffect(() => {
     if (isOpen) {
       // Fetch clients for the dropdown
-      apiFetch('http://localhost:8000/api/clients/')
+      apiFetch('$\{API_BASE\}/clients/')
         .then(res => res.json())
         .then(data => {
           setClients(data);
@@ -100,7 +101,7 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
     setError(null);
 
     try {
-      const res = await apiFetch(`http://localhost:8000/api/cases/${caseData.id}/`, {
+      const res = await apiFetch(`$\{API_BASE\}/cases/${caseData.id}/`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

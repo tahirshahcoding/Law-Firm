@@ -1,3 +1,4 @@
+import { API_BASE } from '@/lib/api';
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -12,7 +13,7 @@ export default function DailyDiaryPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchTasks = () => {
-    apiFetch('http://localhost:8000/api/tasks/')
+    apiFetch('$\{API_BASE\}/tasks/')
       .then(res => res.json())
       .then(data => {
         setTasks(data);
@@ -30,7 +31,7 @@ export default function DailyDiaryPage() {
 
   const handleToggleTask = async (task: any) => {
     try {
-      const res = await apiFetch(`http://localhost:8000/api/tasks/${task.id}/`, {
+      const res = await apiFetch(`$\{API_BASE\}/tasks/${task.id}/`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ is_completed: !task.is_completed }),
@@ -49,7 +50,7 @@ export default function DailyDiaryPage() {
   const handleDeleteTask = async (id: string) => {
     if (!window.confirm('Delete this task?')) return;
     try {
-      const res = await apiFetch(`http://localhost:8000/api/tasks/${id}/`, {
+      const res = await apiFetch(`$\{API_BASE\}/tasks/${id}/`, {
         method: 'DELETE',
       });
       if (!res.ok) throw new Error('Failed to delete task');
@@ -74,7 +75,7 @@ export default function DailyDiaryPage() {
     }
 
     try {
-      const res = await apiFetch('http://localhost:8000/api/tasks/', {
+      const res = await apiFetch('$\{API_BASE\}/tasks/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

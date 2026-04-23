@@ -1,3 +1,4 @@
+import { API_BASE } from '@/lib/api';
 'use client';
 
 import { useState } from 'react';
@@ -17,7 +18,7 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const res = await fetch('http://localhost:8000/api/token/', {
+      const res = await fetch('$\{API_BASE\}/token/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })

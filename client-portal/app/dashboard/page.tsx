@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Scale, Briefcase, Calendar, LogOut, Clock, AlertCircle } from 'lucide-react';
 
-const API = 'http://localhost:8000/api';
+const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 export default function DashboardPage() {
   const router = useRouter();

@@ -1,3 +1,4 @@
+import { API_BASE } from '@/lib/api';
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -28,7 +29,7 @@ export default function HearingsPage() {
       return;
     }
     setLoading(true);
-    apiFetch('http://localhost:8000/api/hearings/')
+    apiFetch('$\{API_BASE\}/hearings/')
       .then(res => res.json())
       .then(data => {
         // Sort chronologically (closest dates first)
@@ -50,7 +51,7 @@ export default function HearingsPage() {
     if (!window.confirm(`Delete the hearing scheduled on ${date} for Case ${caseNumber}?`)) return;
     
     try {
-      const res = await apiFetch(`http://localhost:8000/api/hearings/${id}/`, {
+      const res = await apiFetch(`$\{API_BASE\}/hearings/${id}/`, {
         method: 'DELETE',
       });
       if (!res.ok) throw new Error('Failed to delete hearing');

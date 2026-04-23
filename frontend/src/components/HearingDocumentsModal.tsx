@@ -1,3 +1,4 @@
+import { API_BASE } from '@/lib/api';
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -40,7 +41,7 @@ export default function HearingDocumentsModal({ isOpen, onClose, hearingData, on
     formData.append('name', uploadName);
 
     try {
-      const res = await fetch('http://localhost:8000/api/hearing-documents/', {
+      const res = await fetch('$\{API_BASE\}/hearing-documents/', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('access_token')}`
@@ -69,7 +70,7 @@ export default function HearingDocumentsModal({ isOpen, onClose, hearingData, on
   const handleDeleteDocument = async (docId: string) => {
     if (!window.confirm("Are you sure you want to delete this document?")) return;
     try {
-      const res = await apiFetch(`http://localhost:8000/api/hearing-documents/${docId}/`, {
+      const res = await apiFetch(`$\{API_BASE\}/hearing-documents/${docId}/`, {
         method: 'DELETE'
       });
       if (res.ok) {
@@ -92,7 +93,7 @@ export default function HearingDocumentsModal({ isOpen, onClose, hearingData, on
     if (!editDocName.trim()) return;
     
     try {
-      const res = await apiFetch(`http://localhost:8000/api/hearing-documents/${docId}/`, {
+      const res = await apiFetch(`$\{API_BASE\}/hearing-documents/${docId}/`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: editDocName })

@@ -4,3 +4,12 @@ psycopg2-binary
 python-dotenv
 django-cors-headers
 djangorestframework-simplejwt
+
+# Production
+gunicorn
+whitenoise[brotli]
+dj-database-url
+
+# Media file storage (Cloudinary)
+cloudinary
+django-cloudinary-storage

@@ -1,3 +1,4 @@
+import { API_BASE } from '@/lib/api';
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -39,7 +40,7 @@ export default function EditHearingModal({ isOpen, onClose, onSuccess, hearingDa
   useEffect(() => {
     if (isOpen) {
       // Fetch cases for the dropdown
-      apiFetch('http://localhost:8000/api/cases/')
+      apiFetch('$\{API_BASE\}/cases/')
         .then(res => res.json())
         .then(data => {
           setCases(data);
@@ -113,7 +114,7 @@ export default function EditHearingModal({ isOpen, onClose, onSuccess, hearingDa
     setError(null);
 
     try {
-      const res = await apiFetch(`http://localhost:8000/api/hearings/${hearingData.id}/`, {
+      const res = await apiFetch(`$\{API_BASE\}/hearings/${hearingData.id}/`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

@@ -1,3 +1,4 @@
+import { API_BASE } from '@/lib/api';
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -17,7 +18,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    apiFetch('http://localhost:8000/api/dashboard/stats/')
+    apiFetch('$\{API_BASE\}/dashboard/stats/')
       .then(res => res.json())
       .then(data => {
         setStats(data);

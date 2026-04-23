@@ -1,3 +1,4 @@
+import { API_BASE } from '@/lib/api';
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -11,7 +12,7 @@ export default function DailyDiaryWidget() {
   const [loading, setLoading] = useState(true);
 
   const fetchTasks = () => {
-    apiFetch('http://localhost:8000/api/tasks/')
+    apiFetch('$\{API_BASE\}/tasks/')
       .then(res => res.json())
       .then(data => {
         // Just take the first 4 pending tasks for the widget
@@ -34,7 +35,7 @@ export default function DailyDiaryWidget() {
     setTasks((prevTasks: any) => prevTasks.filter((t: any) => t.id !== task.id));
     
     try {
-      await apiFetch(`http://localhost:8000/api/tasks/${task.id}/`, {
+      await apiFetch(`$\{API_BASE\}/tasks/${task.id}/`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ is_completed: true }),

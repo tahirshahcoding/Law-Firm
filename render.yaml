@@ -1,0 +1,29 @@
+# render.yaml — Render service configuration
+# Docs: https://render.com/docs/render-yaml
+
+services:
+  - type: web
+    name: eaglenest-legal-api
+    runtime: python
+    rootDir: backend
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn core.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120"
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true          # Render auto-generates a secure random value
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: "eaglenest-legal-api.onrender.com"
+      - key: DATABASE_URL
+        value: ""                    # Paste your Neon connection string here
+      - key: CLOUDINARY_CLOUD_NAME
+        value: ""                    # From cloudinary.com dashboard
+      - key: CLOUDINARY_API_KEY
+        value: ""
+      - key: CLOUDINARY_API_SECRET
+        value: ""
+      - key: CORS_ALLOWED_ORIGINS
+        value: ""                    # Paste your Vercel URLs after deploying
+    healthCheckPath: /
+    autoDeploy: true

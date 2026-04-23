@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Scale, Lock, User, Eye, EyeOff, ShieldAlert } from 'lucide-react';
 
-const API = 'http://localhost:8000/api';
+const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 export default function LoginPage() {
   const router = useRouter();

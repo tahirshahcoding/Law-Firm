@@ -1,3 +1,4 @@
+import { API_BASE } from '@/lib/api';
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -25,7 +26,7 @@ export default function CasesPage() {
       return;
     }
     setLoading(true);
-    apiFetch('http://localhost:8000/api/cases/')
+    apiFetch('$\{API_BASE\}/cases/')
       .then(res => res.json())
       .then(data => {
         setCases(data);
@@ -45,7 +46,7 @@ export default function CasesPage() {
     if (!window.confirm(`Are you sure you want to permanently delete Case ${caseNumber}?`)) return;
     
     try {
-      const res = await apiFetch(`http://localhost:8000/api/cases/${id}/`, {
+      const res = await apiFetch(`$\{API_BASE\}/cases/${id}/`, {
         method: 'DELETE',
       });
       if (!res.ok) throw new Error('Failed to delete case');
