@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+:root {
+  --font-geist-sans: system-ui, -apple-system, sans-serif;
+  --font-geist-mono: 'Courier New', monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: var(--font-geist-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

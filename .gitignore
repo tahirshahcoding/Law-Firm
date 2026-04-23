@@ -1,0 +1,47 @@
+# ─── Python / Django ───────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+*.sqlite3
+*.log
+
+# ─── Django secrets (DO NOT COMMIT) ──────────────────────
+backend/core/settings_local.py
+.env
+.env.*
+!.env.example
+
+# ─── Media uploads ───────────────────────────────────────
+backend/media/
+
+# ─── Node / Next.js ──────────────────────────────────────
+node_modules/
+.next/
+out/
+.turbo/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ─── OS / Editor ─────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ─── Docker volumes ──────────────────────────────────────
+postgres-data/
+
+# ─── Misc ────────────────────────────────────────────────
+*.local
+.cache/
