@@ -20,3 +20,5 @@ RUN pip install --upgrade pip \
 
 # Copy the rest of the project files
 COPY . /app/
+
+CMD ["sh", "-c", "gunicorn core.wsgi:application --bind 0.0.0.0:${PORT:-10000}"]
