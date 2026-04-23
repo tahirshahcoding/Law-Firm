@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { API_BASE } from '@/lib/api';
 import React, { createContext, useContext, useState, useEffect } from 'react';
@@ -7,6 +7,7 @@ import { useRouter, usePathname } from 'next/navigation';
 type UserProfile = {
   id: number;
   username: string;
+  email: string;
   role: string;
   permissions: any;
 };

@@ -1,18 +1,18 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import { Calendar as CalendarIcon, Plus, CheckCircle2, Circle, Clock, Trash2 } from 'lucide-react';
 import { API_BASE, apiFetch } from '@/lib/api';
 
 export default function DailyDiaryPage() {
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [newTaskDueDate, setNewTaskDueDate] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchTasks = () => {
-    apiFetch('${API_BASE}/tasks/')
+    apiFetch(`${API_BASE}/tasks/`)
       .then(res => res.json())
       .then(data => {
         setTasks(data);
@@ -74,7 +74,7 @@ export default function DailyDiaryPage() {
     }
 
     try {
-      const res = await apiFetch('${API_BASE}/tasks/', {
+      const res = await apiFetch(`${API_BASE}/tasks/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -88,7 +88,7 @@ export default function DailyDiaryPage() {
       fetchTasks();
     } catch (err) {
       console.error(err);
-      alert('Error adding task: ' + err.message);
+      alert('Error adding task: ' + (err instanceof Error ? err.message : String(err)));
     } finally {
       setIsSubmitting(false);
     }

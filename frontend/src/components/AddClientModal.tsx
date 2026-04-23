@@ -1,6 +1,8 @@
 'use client';
 
 import { API_BASE, apiFetch } from '@/lib/api';
+import { useState } from 'react';
+import { X, User, CreditCard, Phone, MapPin, Copy, CheckCheck, Key, Shield } from 'lucide-react';
 
 interface AddClientModalProps {
   isOpen: boolean;

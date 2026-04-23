@@ -1,11 +1,11 @@
-﻿'use client';
+'use client';
 
-import { API_BASE } from '@/lib/api';
+import { API_BASE, apiFetch } from '@/lib/api';
 import { useState, useEffect } from 'react';
 import { Plus, CheckCircle2, Circle, Trash2, Calendar, ListTodo, CalendarDays } from 'lucide-react';
 
 export default function DailyDiaryPage() {
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [newTaskDueDate, setNewTaskDueDate] = useState('');
@@ -13,7 +13,7 @@ export default function DailyDiaryPage() {
   const fetchTasks = async () => {
     setLoading(true);
     try {
-      const res = await fetch('${API_BASE}/tasks/');
+      const res = await apiFetch(`${API_BASE}/tasks/`);
       const data = await res.json();
       setTasks(data);
     } catch (err) {
@@ -32,7 +32,7 @@ export default function DailyDiaryPage() {
     if (!newTaskTitle.trim()) return;
 
     try {
-      const res = await fetch('${API_BASE}/tasks/', {
+      const res = await apiFetch(`${API_BASE}/tasks/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
