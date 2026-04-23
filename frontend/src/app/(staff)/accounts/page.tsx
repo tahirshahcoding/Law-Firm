@@ -33,8 +33,8 @@ export default function AccountsPage() {
     const fetchAccounts = async () => {
       try {
         const [ledgerRes, casesRes] = await Promise.all([
-          apiFetch('${API_BASE}/accounts/ledger/'),
-          apiFetch('${API_BASE}/cases/')
+          apiFetch(`${API_BASE}/accounts/ledger/`),
+          apiFetch(`${API_BASE}/cases/`)
         ]);
         
         const ledgerData = await ledgerRes.json();

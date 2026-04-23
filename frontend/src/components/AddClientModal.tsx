@@ -43,7 +43,7 @@ export default function AddClientModal({ isOpen, onClose, onSuccess }: AddClient
     setLoading(true);
     setError(null);
     try {
-      const res = await apiFetch('${API_BASE}/clients/', {
+      const res = await apiFetch(`${API_BASE}/clients/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

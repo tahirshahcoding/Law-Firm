@@ -40,7 +40,7 @@ export default function ProfileSettingsPage() {
     setIsLoading(true);
 
     try {
-      const res = await apiFetch('${API_BASE}/users/me/', {
+      const res = await apiFetch(`${API_BASE}/users/me/`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

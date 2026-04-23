@@ -36,7 +36,7 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
   useEffect(() => {
     if (isOpen) {
       // Fetch clients for the dropdown
-      apiFetch('${API_BASE}/clients/')
+      apiFetch(`${API_BASE}/clients/`)
         .then(res => res.json())
         .then(data => {
           setClients(data);

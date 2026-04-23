@@ -31,7 +31,7 @@ export default function AddHearingModal({ isOpen, onClose, onSuccess }: AddHeari
   useEffect(() => {
     if (isOpen) {
       // Fetch cases for the dropdown
-      apiFetch('${API_BASE}/cases/')
+      apiFetch(`${API_BASE}/cases/`)
         .then(res => res.json())
         .then(data => setCases(data))
         .catch(err => console.error("Failed to load cases:", err));
@@ -85,7 +85,7 @@ export default function AddHearingModal({ isOpen, onClose, onSuccess }: AddHeari
     setError(null);
 
     try {
-      const res = await apiFetch('${API_BASE}/hearings/', {
+      const res = await apiFetch(`${API_BASE}/hearings/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

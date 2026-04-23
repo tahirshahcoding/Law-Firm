@@ -39,7 +39,7 @@ export default function EditHearingModal({ isOpen, onClose, onSuccess, hearingDa
   useEffect(() => {
     if (isOpen) {
       // Fetch cases for the dropdown
-      apiFetch('${API_BASE}/cases/')
+      apiFetch(`${API_BASE}/cases/`)
         .then(res => res.json())
         .then(data => {
           setCases(data);

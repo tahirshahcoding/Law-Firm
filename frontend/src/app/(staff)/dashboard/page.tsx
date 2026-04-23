@@ -17,7 +17,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    apiFetch('${API_BASE}/dashboard/stats/')
+    apiFetch(`${API_BASE}/dashboard/stats/`)
       .then(res => res.json())
       .then(data => {
         setStats(data);

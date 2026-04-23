@@ -11,7 +11,7 @@ export default function DailyDiaryWidget() {
   const [loading, setLoading] = useState(true);
 
   const fetchTasks = () => {
-    apiFetch('${API_BASE}/tasks/')
+    apiFetch(`${API_BASE}/tasks/`)
       .then(res => res.json())
       .then(data => {
         // Just take the first 4 pending tasks for the widget

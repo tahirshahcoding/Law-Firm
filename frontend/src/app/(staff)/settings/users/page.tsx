@@ -28,7 +28,7 @@ export default function UserManagementPage() {
 
   const fetchUsers = async () => {
     try {
-      const res = await apiFetch('${API_BASE}/users/admin/');
+      const res = await apiFetch(`${API_BASE}/users/admin/`);
       if (res.ok) {
         setUsers(await res.json());
       }
@@ -48,7 +48,7 @@ export default function UserManagementPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await apiFetch('${API_BASE}/users/admin/', {
+      const res = await apiFetch(`${API_BASE}/users/admin/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

@@ -25,7 +25,7 @@ export default function ClientsPage() {
       return;
     }
     setLoading(true);
-    apiFetch('${API_BASE}/clients/')
+    apiFetch(`${API_BASE}/clients/`)
       .then(res => res.json())
       .then(data => {
         setClients(data);

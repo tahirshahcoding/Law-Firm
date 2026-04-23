@@ -40,7 +40,7 @@ export default function HearingDocumentsModal({ isOpen, onClose, hearingData, on
     formData.append('name', uploadName);
 
     try {
-      const res = await fetch('${API_BASE}/hearing-documents/', {
+      const res = await fetch(`${API_BASE}/hearing-documents/`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('access_token')}`

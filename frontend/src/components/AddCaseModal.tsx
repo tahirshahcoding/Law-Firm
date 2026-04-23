@@ -33,7 +33,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
   useEffect(() => {
     if (isOpen) {
       // Fetch clients for the dropdown
-      apiFetch('${API_BASE}/clients/')
+      apiFetch(`${API_BASE}/clients/`)
         .then(res => res.json())
         .then(data => setClients(data))
         .catch(err => console.error("Failed to load clients:", err));
@@ -76,7 +76,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
     setError(null);
 
     try {
-      const res = await apiFetch('${API_BASE}/cases/', {
+      const res = await apiFetch(`${API_BASE}/cases/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

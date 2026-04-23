@@ -25,7 +25,7 @@ export default function CasesPage() {
       return;
     }
     setLoading(true);
-    apiFetch('${API_BASE}/cases/')
+    apiFetch(`${API_BASE}/cases/`)
       .then(res => res.json())
       .then(data => {
         setCases(data);

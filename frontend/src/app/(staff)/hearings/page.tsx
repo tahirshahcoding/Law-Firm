@@ -28,7 +28,7 @@ export default function HearingsPage() {
       return;
     }
     setLoading(true);
-    apiFetch('${API_BASE}/hearings/')
+    apiFetch(`${API_BASE}/hearings/`)
       .then(res => res.json())
       .then(data => {
         // Sort chronologically (closest dates first)
