@@ -3,7 +3,7 @@
 
 services:
   - type: web
-    name: eaglenest-legal-api
+    name: law-firm
     runtime: python
     rootDir: backend
     buildCommand: "./build.sh"
@@ -14,7 +14,7 @@ services:
       - key: DEBUG
         value: "False"
       - key: ALLOWED_HOSTS
-        value: "eaglenest-legal-api.onrender.com"
+        value: "law-firm.onrender.com"
       - key: DATABASE_URL
         value: ""                    # Paste your Neon connection string here
       - key: CLOUDINARY_CLOUD_NAME
