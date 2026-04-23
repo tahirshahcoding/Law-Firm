@@ -1,6 +1,6 @@
-import { API_BASE } from '@/lib/api';
-'use client';
+﻿'use client';
 
+import { API_BASE } from '@/lib/api';
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { Scale, Lock, User, ArrowRight } from 'lucide-react';
@@ -18,7 +18,7 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const res = await fetch('$\{API_BASE\}/token/', {
+      const res = await fetch('${API_BASE}/token/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })

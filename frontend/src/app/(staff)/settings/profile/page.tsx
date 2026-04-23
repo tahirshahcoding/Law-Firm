@@ -1,10 +1,9 @@
-import { API_BASE } from '@/lib/api';
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { User, Mail, Lock, CheckCircle2, ShieldAlert } from 'lucide-react';
-import { apiFetch } from '@/lib/api';
+import { API_BASE, apiFetch } from '@/lib/api';
 
 export default function ProfileSettingsPage() {
   const { user } = useAuth();
@@ -41,7 +40,7 @@ export default function ProfileSettingsPage() {
     setIsLoading(true);
 
     try {
-      const res = await apiFetch('$\{API_BASE\}/users/me/', {
+      const res = await apiFetch('${API_BASE}/users/me/', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

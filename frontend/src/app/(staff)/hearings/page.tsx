@@ -1,9 +1,8 @@
-import { API_BASE } from '@/lib/api';
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import { Plus, Search, Calendar, Edit2, Trash2, MapPin, AlignLeft, FolderOpen, MoreVertical, Check, FileText } from 'lucide-react';
-import { apiFetch } from '@/lib/api';
+import { API_BASE, apiFetch } from '@/lib/api';
 import AddHearingModal from '@/components/AddHearingModal';
 import EditHearingModal from '@/components/EditHearingModal';
 import HearingDocumentsModal from '@/components/HearingDocumentsModal';
@@ -29,7 +28,7 @@ export default function HearingsPage() {
       return;
     }
     setLoading(true);
-    apiFetch('$\{API_BASE\}/hearings/')
+    apiFetch('${API_BASE}/hearings/')
       .then(res => res.json())
       .then(data => {
         // Sort chronologically (closest dates first)
@@ -51,7 +50,7 @@ export default function HearingsPage() {
     if (!window.confirm(`Delete the hearing scheduled on ${date} for Case ${caseNumber}?`)) return;
     
     try {
-      const res = await apiFetch(`$\{API_BASE\}/hearings/${id}/`, {
+      const res = await apiFetch(`${API_BASE}/hearings/${id}/`, {
         method: 'DELETE',
       });
       if (!res.ok) throw new Error('Failed to delete hearing');

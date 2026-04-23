@@ -1,9 +1,8 @@
-import { API_BASE } from '@/lib/api';
-'use client';
+﻿'use client';
 
 import { useState, useEffect, useRef } from 'react';
 import { X, FolderOpen, Scale, Gavel, UserX, CircleDollarSign, Search, Check } from 'lucide-react';
-import { apiFetch } from '@/lib/api';
+import { API_BASE, apiFetch } from '@/lib/api';
 
 interface AddCaseModalProps {
   isOpen: boolean;
@@ -34,7 +33,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
   useEffect(() => {
     if (isOpen) {
       // Fetch clients for the dropdown
-      apiFetch('$\{API_BASE\}/clients/')
+      apiFetch('${API_BASE}/clients/')
         .then(res => res.json())
         .then(data => setClients(data))
         .catch(err => console.error("Failed to load clients:", err));
@@ -77,7 +76,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
     setError(null);
 
     try {
-      const res = await apiFetch('$\{API_BASE\}/cases/', {
+      const res = await apiFetch('${API_BASE}/cases/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

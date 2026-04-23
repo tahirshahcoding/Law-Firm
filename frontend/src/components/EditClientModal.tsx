@@ -1,9 +1,8 @@
-import { API_BASE } from '@/lib/api';
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import { X, User, CreditCard, Phone, MapPin, RefreshCw, Copy, CheckCheck, Key, Shield } from 'lucide-react';
-import { apiFetch } from '@/lib/api';
+import { API_BASE, apiFetch } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 
 interface EditClientModalProps {
@@ -52,7 +51,7 @@ export default function EditClientModal({ isOpen, onClose, onSuccess, clientData
     if (!window.confirm(`Reset portal password for ${clientData.name}? The old password will become invalid immediately.`)) return;
     setResetLoading(true);
     try {
-      const res = await apiFetch(`$\{API_BASE\}/portal/reset-password/${clientData.id}/`, { method: 'POST' });
+      const res = await apiFetch(`${API_BASE}/portal/reset-password/${clientData.id}/`, { method: 'POST' });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to reset password');
       setNewCredentials(data);
@@ -68,7 +67,7 @@ export default function EditClientModal({ isOpen, onClose, onSuccess, clientData
     setLoading(true);
     setError(null);
     try {
-      const res = await apiFetch(`$\{API_BASE\}/clients/${clientData.id}/`, {
+      const res = await apiFetch(`${API_BASE}/clients/${clientData.id}/`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

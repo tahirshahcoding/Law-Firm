@@ -1,9 +1,8 @@
-import { API_BASE } from '@/lib/api';
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import { Plus, Search, Eye, Trash2, Edit2, CreditCard, Phone, Users, MapPin } from 'lucide-react';
-import { apiFetch } from '@/lib/api';
+import { API_BASE, apiFetch } from '@/lib/api';
 import AddClientModal from '@/components/AddClientModal';
 import EditClientModal from '@/components/EditClientModal';
 import { useAuth } from '@/context/AuthContext';
@@ -26,7 +25,7 @@ export default function ClientsPage() {
       return;
     }
     setLoading(true);
-    apiFetch('$\{API_BASE\}/clients/')
+    apiFetch('${API_BASE}/clients/')
       .then(res => res.json())
       .then(data => {
         setClients(data);
@@ -46,7 +45,7 @@ export default function ClientsPage() {
     if (!window.confirm(`Are you sure you want to permanently delete the profile for ${name}?`)) return;
     
     try {
-      const res = await apiFetch(`$\{API_BASE\}/clients/${id}/`, {
+      const res = await apiFetch(`${API_BASE}/clients/${id}/`, {
         method: 'DELETE',
       });
       if (!res.ok) throw new Error('Failed to delete client');

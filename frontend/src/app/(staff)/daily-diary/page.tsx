@@ -1,6 +1,6 @@
-import { API_BASE } from '@/lib/api';
-'use client';
+﻿'use client';
 
+import { API_BASE } from '@/lib/api';
 import { useState, useEffect } from 'react';
 import { Plus, CheckCircle2, Circle, Trash2, Calendar, ListTodo, CalendarDays } from 'lucide-react';
 
@@ -13,7 +13,7 @@ export default function DailyDiaryPage() {
   const fetchTasks = async () => {
     setLoading(true);
     try {
-      const res = await fetch('$\{API_BASE\}/tasks/');
+      const res = await fetch('${API_BASE}/tasks/');
       const data = await res.json();
       setTasks(data);
     } catch (err) {
@@ -32,7 +32,7 @@ export default function DailyDiaryPage() {
     if (!newTaskTitle.trim()) return;
 
     try {
-      const res = await fetch('$\{API_BASE\}/tasks/', {
+      const res = await fetch('${API_BASE}/tasks/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -56,7 +56,7 @@ export default function DailyDiaryPage() {
     setTasks(prevTasks => prevTasks.map((t: any) => t.id === task.id ? { ...t, is_completed: !t.is_completed } : t));
     
     try {
-      const res = await fetch(`$\{API_BASE\}/tasks/${task.id}/`, {
+      const res = await fetch(`${API_BASE}/tasks/${task.id}/`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ is_completed: !task.is_completed }),
@@ -78,7 +78,7 @@ export default function DailyDiaryPage() {
     setTasks(prevTasks => prevTasks.filter((t: any) => t.id !== id));
     
     try {
-      const res = await fetch(`$\{API_BASE\}/tasks/${id}/`, {
+      const res = await fetch(`${API_BASE}/tasks/${id}/`, {
         method: 'DELETE',
       });
       if (!res.ok) {

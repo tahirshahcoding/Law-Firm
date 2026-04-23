@@ -1,9 +1,8 @@
-import { API_BASE } from '@/lib/api';
-'use client';
+﻿'use client';
 
 import { useState, useEffect, useRef } from 'react';
 import { X, Calendar, AlignLeft, Search, Check, FolderOpen, FileText, Trash2 } from 'lucide-react';
-import { apiFetch } from '@/lib/api';
+import { API_BASE, apiFetch } from '@/lib/api';
 
 interface EditHearingModalProps {
   isOpen: boolean;
@@ -40,7 +39,7 @@ export default function EditHearingModal({ isOpen, onClose, onSuccess, hearingDa
   useEffect(() => {
     if (isOpen) {
       // Fetch cases for the dropdown
-      apiFetch('$\{API_BASE\}/cases/')
+      apiFetch('${API_BASE}/cases/')
         .then(res => res.json())
         .then(data => {
           setCases(data);
@@ -114,7 +113,7 @@ export default function EditHearingModal({ isOpen, onClose, onSuccess, hearingDa
     setError(null);
 
     try {
-      const res = await apiFetch(`$\{API_BASE\}/hearings/${hearingData.id}/`, {
+      const res = await apiFetch(`${API_BASE}/hearings/${hearingData.id}/`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

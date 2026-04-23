@@ -1,9 +1,8 @@
-import { API_BASE } from '@/lib/api';
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import { Calendar as CalendarIcon, Plus, CheckCircle2, Circle, Clock, Trash2 } from 'lucide-react';
-import { apiFetch } from '@/lib/api';
+import { API_BASE, apiFetch } from '@/lib/api';
 
 export default function DailyDiaryPage() {
   const [tasks, setTasks] = useState([]);
@@ -13,7 +12,7 @@ export default function DailyDiaryPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchTasks = () => {
-    apiFetch('$\{API_BASE\}/tasks/')
+    apiFetch('${API_BASE}/tasks/')
       .then(res => res.json())
       .then(data => {
         setTasks(data);
@@ -31,7 +30,7 @@ export default function DailyDiaryPage() {
 
   const handleToggleTask = async (task: any) => {
     try {
-      const res = await apiFetch(`$\{API_BASE\}/tasks/${task.id}/`, {
+      const res = await apiFetch(`${API_BASE}/tasks/${task.id}/`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ is_completed: !task.is_completed }),
@@ -50,7 +49,7 @@ export default function DailyDiaryPage() {
   const handleDeleteTask = async (id: string) => {
     if (!window.confirm('Delete this task?')) return;
     try {
-      const res = await apiFetch(`$\{API_BASE\}/tasks/${id}/`, {
+      const res = await apiFetch(`${API_BASE}/tasks/${id}/`, {
         method: 'DELETE',
       });
       if (!res.ok) throw new Error('Failed to delete task');
@@ -75,7 +74,7 @@ export default function DailyDiaryPage() {
     }
 
     try {
-      const res = await apiFetch('$\{API_BASE\}/tasks/', {
+      const res = await apiFetch('${API_BASE}/tasks/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

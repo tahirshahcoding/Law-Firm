@@ -1,9 +1,6 @@
-import { API_BASE } from '@/lib/api';
 'use client';
 
-import { useState } from 'react';
-import { X, User, CreditCard, Phone, MapPin, Copy, CheckCheck, Key, Shield } from 'lucide-react';
-import { apiFetch } from '@/lib/api';
+import { API_BASE, apiFetch } from '@/lib/api';
 
 interface AddClientModalProps {
   isOpen: boolean;
@@ -44,7 +41,7 @@ export default function AddClientModal({ isOpen, onClose, onSuccess }: AddClient
     setLoading(true);
     setError(null);
     try {
-      const res = await apiFetch('$\{API_BASE\}/clients/', {
+      const res = await apiFetch('${API_BASE}/clients/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

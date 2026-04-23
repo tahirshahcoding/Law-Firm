@@ -1,9 +1,8 @@
-import { API_BASE } from '@/lib/api';
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import { Plus, Search, FolderOpen, MoreVertical, Eye, Trash2, Edit2, Scale, UserX, Clock, Gavel } from 'lucide-react';
-import { apiFetch } from '@/lib/api';
+import { API_BASE, apiFetch } from '@/lib/api';
 import AddCaseModal from '@/components/AddCaseModal';
 import EditCaseModal from '@/components/EditCaseModal';
 import { useAuth } from '@/context/AuthContext';
@@ -26,7 +25,7 @@ export default function CasesPage() {
       return;
     }
     setLoading(true);
-    apiFetch('$\{API_BASE\}/cases/')
+    apiFetch('${API_BASE}/cases/')
       .then(res => res.json())
       .then(data => {
         setCases(data);
@@ -46,7 +45,7 @@ export default function CasesPage() {
     if (!window.confirm(`Are you sure you want to permanently delete Case ${caseNumber}?`)) return;
     
     try {
-      const res = await apiFetch(`$\{API_BASE\}/cases/${id}/`, {
+      const res = await apiFetch(`${API_BASE}/cases/${id}/`, {
         method: 'DELETE',
       });
       if (!res.ok) throw new Error('Failed to delete case');

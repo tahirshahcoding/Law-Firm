@@ -1,9 +1,8 @@
-import { API_BASE } from '@/lib/api';
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import { Briefcase, Users, Calendar, TrendingUp } from 'lucide-react';
-import { apiFetch } from '@/lib/api';
+import { API_BASE, apiFetch } from '@/lib/api';
 import DailyDiaryWidget from '@/components/DailyDiaryWidget';
 import { useAuth } from '@/context/AuthContext';
 
@@ -18,7 +17,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    apiFetch('$\{API_BASE\}/dashboard/stats/')
+    apiFetch('${API_BASE}/dashboard/stats/')
       .then(res => res.json())
       .then(data => {
         setStats(data);

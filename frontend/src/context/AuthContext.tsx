@@ -1,6 +1,6 @@
-import { API_BASE } from '@/lib/api';
-'use client';
+﻿'use client';
 
+import { API_BASE } from '@/lib/api';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 
@@ -39,7 +39,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       try {
-        const res = await fetch('$\{API_BASE\}/users/me/', {
+        const res = await fetch('${API_BASE}/users/me/', {
           headers: { 'Authorization': `Bearer ${storedToken}` }
         });
         if (res.ok) {
@@ -85,7 +85,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('refresh_token', refresh);
     
     // Fetch user profile immediately
-    const res = await fetch('$\{API_BASE\}/users/me/', {
+    const res = await fetch('${API_BASE}/users/me/', {
       headers: {
         'Authorization': `Bearer ${access}`
       }

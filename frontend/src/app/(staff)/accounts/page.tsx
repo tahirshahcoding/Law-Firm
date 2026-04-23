@@ -1,9 +1,8 @@
-import { API_BASE } from '@/lib/api';
-'use client';
+﻿'use client';
 
 import { useState, useEffect, useRef } from 'react';
 import { CircleDollarSign, Receipt, TrendingUp, Download, ArrowUpRight, Search, FileText } from 'lucide-react';
-import { apiFetch } from '@/lib/api';
+import { API_BASE, apiFetch } from '@/lib/api';
 import InvoiceTemplate from '@/components/InvoiceTemplate';
 import { useAuth } from '@/context/AuthContext';
 
@@ -34,8 +33,8 @@ export default function AccountsPage() {
     const fetchAccounts = async () => {
       try {
         const [ledgerRes, casesRes] = await Promise.all([
-          apiFetch('$\{API_BASE\}/accounts/ledger/'),
-          apiFetch('$\{API_BASE\}/cases/')
+          apiFetch('${API_BASE}/accounts/ledger/'),
+          apiFetch('${API_BASE}/cases/')
         ]);
         
         const ledgerData = await ledgerRes.json();

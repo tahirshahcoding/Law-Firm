@@ -1,9 +1,8 @@
-import { API_BASE } from '@/lib/api';
-'use client';
+﻿'use client';
 
 import { useState, useEffect, useRef } from 'react';
 import { X, FolderOpen, Scale, Gavel, UserX, CircleDollarSign, Search, Check } from 'lucide-react';
-import { apiFetch } from '@/lib/api';
+import { API_BASE, apiFetch } from '@/lib/api';
 
 interface EditCaseModalProps {
   isOpen: boolean;
@@ -37,7 +36,7 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
   useEffect(() => {
     if (isOpen) {
       // Fetch clients for the dropdown
-      apiFetch('$\{API_BASE\}/clients/')
+      apiFetch('${API_BASE}/clients/')
         .then(res => res.json())
         .then(data => {
           setClients(data);
@@ -101,7 +100,7 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
     setError(null);
 
     try {
-      const res = await apiFetch(`$\{API_BASE\}/cases/${caseData.id}/`, {
+      const res = await apiFetch(`${API_BASE}/cases/${caseData.id}/`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

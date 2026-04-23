@@ -1,6 +1,7 @@
-// Central API configuration — all URLs sourced from env vars
+'use client';
+// Central API config — reads from env var, falls back to localhost for dev
 // Set NEXT_PUBLIC_API_URL in .env.local (dev) or Vercel dashboard (prod)
-export const API_BASE = process.env.NEXT_PUBLIC_API_URL || '$\{API_BASE\}';
+export const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 export async function apiFetch(url: string, options: RequestInit = {}) {
   const token = localStorage.getItem('access_token');
