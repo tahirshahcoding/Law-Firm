@@ -53,18 +53,18 @@ export default function PublicHomePage() {
             <a href="#contact" className="hover:text-blue-700 transition-colors">Contact</a>
           </nav>
           <div className="flex items-center gap-3">
-            <Link
-              href="/portal"
+            <a
+              href="https://clientcounsel.vercel.app"
               className="text-sm font-semibold text-blue-700 hover:text-blue-900 transition-colors"
             >
               Client Portal
-            </Link>
-            <Link
-              href="/portal"
+            </a>
+            <a
+              href="https://clientcounsel.vercel.app"
               className="hidden sm:flex items-center gap-1.5 bg-blue-700 hover:bg-blue-800 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-sm transition-all"
             >
               Login <ChevronRight size={16} />
-            </Link>
+            </a>
           </div>
         </div>
       </header>
@@ -107,13 +107,13 @@ export default function PublicHomePage() {
               Book a Consultation
               <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </a>
-            <Link
-              href="/portal"
+            <a
+              href="https://clientcounsel.vercel.app"
               className="group inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 text-white font-semibold px-8 py-4 rounded-xl text-base transition-all duration-300"
             >
               Client Portal Login
               <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
-            </Link>
+            </a>
           </div>
         </div>
 
@@ -210,7 +210,7 @@ export default function PublicHomePage() {
         </div>
         <p>© {new Date().getFullYear()} EagleNest Legal, Swat. All rights reserved.</p>
         <p className="mt-2">
-          <Link href="/portal" className="text-blue-400 hover:text-blue-300 underline">Client Portal</Link>
+          <a href="https://clientcounsel.vercel.app" className="text-blue-400 hover:text-blue-300 underline">Client Portal</a>
           {' · '}
           <Link href="/login" className="text-slate-500 hover:text-slate-300">Staff Login</Link>
         </p>

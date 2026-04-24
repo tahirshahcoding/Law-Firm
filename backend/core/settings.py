@@ -149,7 +149,7 @@ else:
 # ── CORS ──────────────────────────────────────────────────────────────────────
 CORS_ALLOWED_ORIGINS_ENV = os.environ.get(
     'CORS_ALLOWED_ORIGINS',
-    'http://localhost:3000,http://localhost:3001,http://localhost:3002'
+    'http://localhost:3000,http://localhost:3001,http://localhost:3002,https://lawsiteswat.vercel.app,https://clientcounsel.vercel.app'
 )
 CORS_ALLOWED_ORIGINS = [o.strip() for o in CORS_ALLOWED_ORIGINS_ENV.split(',')]
 
