@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect, useRef } from 'react';
 import { X, Calendar, AlignLeft, Search, Check, FolderOpen, FileText, Trash2 } from 'lucide-react';
@@ -204,7 +204,7 @@ export default function EditHearingModal({ isOpen, onClose, onSuccess, hearingDa
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Hearing Date</label>
               <div className="relative">

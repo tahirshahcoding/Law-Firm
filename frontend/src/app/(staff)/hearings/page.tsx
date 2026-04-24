@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import { Plus, Search, Calendar, Edit2, Trash2, MapPin, AlignLeft, FolderOpen, MoreVertical, Check, FileText } from 'lucide-react';
@@ -86,15 +86,15 @@ export default function HearingsPage() {
   );
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Legal Hearings</h2>
-          <p className="text-slate-500 mt-1">Manage all upcoming firm hearings and schedules.</p>
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Legal Hearings</h2>
+          <p className="text-slate-500 mt-1 text-sm sm:text-base">Manage all upcoming firm hearings and schedules.</p>
         </div>
         <button 
           onClick={() => setIsAddModalOpen(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-medium transition-all duration-200 shadow-sm shadow-blue-600/20 flex items-center gap-2"
+          className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-medium transition-all duration-200 shadow-sm shadow-blue-600/20 flex items-center justify-center gap-2"
         >
           <Plus size={18} /> Schedule Hearing
         </button>
@@ -102,8 +102,8 @@ export default function HearingsPage() {
 
       <div className="bg-white rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] border border-slate-100 overflow-hidden">
         {/* Toolbar */}
-        <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-          <div className="relative w-full max-w-sm">
+        <div className="p-4 border-b border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-slate-50/50">
+          <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
             <input 
               type="text" 
@@ -113,7 +113,7 @@ export default function HearingsPage() {
               className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
             />
           </div>
-          <div className="text-sm text-slate-500 font-medium whitespace-nowrap ml-4">
+          <div className="text-sm text-slate-500 font-medium whitespace-nowrap">
             {filteredHearings.length} Scheduled
           </div>
         </div>
@@ -123,36 +123,99 @@ export default function HearingsPage() {
             <div className="w-8 h-8 border-4 border-slate-100 border-t-rose-500 rounded-full animate-spin mb-4"></div>
             <p>Syncing schedule records...</p>
           </div>
+        ) : filteredHearings.length === 0 ? (
+          <div className="px-6 py-12 text-center text-slate-500 bg-slate-50/50">
+            <div className="flex flex-col items-center justify-center max-w-sm mx-auto">
+              <div className="w-12 h-12 bg-white border border-slate-200 rounded-full flex items-center justify-center mb-3">
+                <Calendar className="text-slate-400" size={24} />
+              </div>
+              <p className="text-slate-900 font-medium mb-1">
+                {searchTerm ? 'No schedules found' : 'The Hearings list is empty'}
+              </p>
+              <p className="text-sm">
+                {searchTerm ? 'Adjust your search parameters.' : 'Click "Schedule Hearing" to begin planning.'}
+              </p>
+            </div>
+          </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[800px]">
-              <thead>
-                <tr className="bg-white border-b border-slate-100">
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider w-1/4">Date</th>
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider w-1/4">Target Case</th>
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider w-1/3">Notes & Next Date</th>
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {filteredHearings.length === 0 ? (
-                  <tr>
-                    <td colSpan={4} className="px-6 py-12 text-center text-slate-500 bg-slate-50/50">
-                      <div className="flex flex-col items-center justify-center max-w-sm mx-auto">
-                        <div className="w-12 h-12 bg-white border border-slate-200 rounded-full flex items-center justify-center mb-3">
-                          <Calendar className="text-slate-400" size={24} />
+          <>
+            {/* Mobile Card View */}
+            <div className="md:hidden divide-y divide-slate-100">
+              {filteredHearings.map((h: any) => {
+                const isToday = h.hearing_date === new Date().toISOString().split('T')[0];
+                return (
+                  <div key={h.id} className={`p-4 ${isToday ? 'bg-rose-50/30' : 'hover:bg-slate-50/80'} transition-colors`}>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-start gap-3 flex-1 min-w-0">
+                        <div className={`p-2 rounded-xl border shrink-0 ${isToday ? 'bg-rose-100 border-rose-200 text-rose-600' : 'bg-slate-100 border-slate-200 text-slate-500'}`}>
+                          <Calendar size={16} />
                         </div>
-                        <p className="text-slate-900 font-medium mb-1">
-                          {searchTerm ? 'No schedules found' : 'The Hearings list is empty'}
-                        </p>
-                        <p className="text-sm">
-                          {searchTerm ? 'Adjust your search parameters.' : 'Click "Schedule Hearing" to begin planning.'}
-                        </p>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className={`font-semibold tracking-wide ${isToday ? 'text-rose-700' : 'text-slate-900'}`}>{formatDate(h.hearing_date)}</p>
+                            {isToday && <span className="text-[10px] uppercase font-bold text-rose-500 tracking-wider">Today</span>}
+                          </div>
+                          <div className="flex items-center gap-1.5 text-xs text-slate-700 font-medium mt-0.5">
+                            <FolderOpen size={11} className="text-slate-400" />
+                            {h.case_number}
+                          </div>
+                          {h.notes && (
+                            <p className="text-xs text-slate-500 mt-1 line-clamp-2">{h.notes}</p>
+                          )}
+                          {h.next_date && (
+                            <div className="flex items-center gap-1.5 text-[10px] uppercase font-bold text-emerald-600 bg-emerald-50 w-fit px-2 py-0.5 rounded border border-emerald-100 tracking-wide mt-1.5">
+                              ND: {formatDate(h.next_date)}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </td>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <button 
+                          onClick={() => handleOpenDocs(h)}
+                          className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors relative"
+                          title="Documents"
+                        >
+                          <FileText size={17} />
+                          {h.documents && h.documents.length > 0 && (
+                            <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-blue-600 text-[9px] font-bold text-white ring-2 ring-white">
+                              {h.documents.length}
+                            </span>
+                          )}
+                        </button>
+                        <button 
+                          onClick={() => handleEdit(h)}
+                          className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                          title="Update Hearing"
+                        >
+                          <Edit2 size={17} />
+                        </button>
+                        <button 
+                          onClick={() => handleDelete(h.id, h.case_number, h.hearing_date)}
+                          className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                          title="Cancel Hearing"
+                        >
+                          <Trash2 size={17} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left border-collapse min-w-[800px]">
+                <thead>
+                  <tr className="bg-white border-b border-slate-100">
+                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider w-1/4">Date</th>
+                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider w-1/4">Target Case</th>
+                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider w-1/3">Notes & Next Date</th>
+                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">Actions</th>
                   </tr>
-                ) : (
-                  filteredHearings.map((h: any) => {
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {filteredHearings.map((h: any) => {
                     const isToday = h.hearing_date === new Date().toISOString().split('T')[0];
                     return (
                       <tr key={h.id} className={`hover:bg-slate-50/80 transition-colors duration-200 group ${isToday ? 'bg-rose-50/30' : ''}`}>
@@ -225,11 +288,11 @@ export default function HearingsPage() {
                         </td>
                       </tr>
                     );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
 
@@ -255,3 +318,4 @@ export default function HearingsPage() {
     </div>
   );
 }
+

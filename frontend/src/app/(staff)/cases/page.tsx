@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import { Plus, Search, FolderOpen, MoreVertical, Eye, Trash2, Edit2, Scale, UserX, Clock, Gavel } from 'lucide-react';
@@ -69,15 +69,15 @@ export default function CasesPage() {
   );
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Case Register</h2>
-          <p className="text-slate-500 mt-1">Track and manage active legal proceedings.</p>
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Case Register</h2>
+          <p className="text-slate-500 mt-1 text-sm sm:text-base">Track and manage active legal proceedings.</p>
         </div>
         <button 
           onClick={() => setIsAddModalOpen(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-medium transition-all duration-200 shadow-sm shadow-blue-600/20 flex items-center gap-2"
+          className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-medium transition-all duration-200 shadow-sm shadow-blue-600/20 flex items-center justify-center gap-2"
         >
           <Plus size={18} /> New Case
         </button>
@@ -85,8 +85,8 @@ export default function CasesPage() {
 
       <div className="bg-white rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] border border-slate-100 overflow-hidden">
         {/* Table Toolbar */}
-        <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-          <div className="relative w-full max-w-sm">
+        <div className="p-4 border-b border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-slate-50/50">
+          <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
             <input 
               type="text" 
@@ -96,7 +96,7 @@ export default function CasesPage() {
               className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
             />
           </div>
-          <div className="text-sm text-slate-500 font-medium whitespace-nowrap ml-4">
+          <div className="text-sm text-slate-500 font-medium whitespace-nowrap">
             {filteredCases.length} Active
           </div>
         </div>
@@ -106,36 +106,82 @@ export default function CasesPage() {
             <div className="w-8 h-8 border-4 border-slate-100 border-t-blue-600 rounded-full animate-spin mb-4"></div>
             <p>Loading cases mapping...</p>
           </div>
+        ) : filteredCases.length === 0 ? (
+          <div className="px-6 py-12 text-center text-slate-500 bg-slate-50/50">
+            <div className="flex flex-col items-center justify-center max-w-sm mx-auto">
+              <div className="w-12 h-12 bg-white border border-slate-200 rounded-full flex items-center justify-center mb-3">
+                <FolderOpen className="text-slate-400" size={24} />
+              </div>
+              <p className="text-slate-900 font-medium mb-1">
+                {searchTerm ? 'No cases found matching query' : 'No active cases'}
+              </p>
+              <p className="text-sm">
+                {searchTerm ? 'Try adjusting your search terms.' : "Your firm's active legal proceedings will appear here."}
+              </p>
+            </div>
+          </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[800px]">
-              <thead>
-                <tr className="bg-white border-b border-slate-100">
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider w-1/3">Case Reference</th>
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider w-1/3">Judiciary Details</th>
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {filteredCases.length === 0 ? (
-                  <tr>
-                    <td colSpan={4} className="px-6 py-12 text-center text-slate-500 bg-slate-50/50">
-                      <div className="flex flex-col items-center justify-center max-w-sm mx-auto">
-                        <div className="w-12 h-12 bg-white border border-slate-200 rounded-full flex items-center justify-center mb-3">
-                          <FolderOpen className="text-slate-400" size={24} />
-                        </div>
-                        <p className="text-slate-900 font-medium mb-1">
-                          {searchTerm ? 'No cases found matching query' : 'No active cases'}
-                        </p>
-                        <p className="text-sm">
-                          {searchTerm ? 'Try adjusting your search terms.' : "Your firm's active legal proceedings will appear here."}
-                        </p>
+          <>
+            {/* Mobile Card View */}
+            <div className="md:hidden divide-y divide-slate-100">
+              {filteredCases.map((caseItem: any) => (
+                <div key={caseItem.id} className="p-4 hover:bg-slate-50/80 transition-colors">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start gap-3 flex-1 min-w-0">
+                      <div className="w-9 h-9 shrink-0 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500">
+                        <FolderOpen size={16} />
                       </div>
-                    </td>
+                      <div className="min-w-0">
+                        <p className="font-semibold text-slate-900">{caseItem.case_number}</p>
+                        <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-0.5">
+                          <UserX size={11} className="text-rose-400 shrink-0" />
+                          <span className="truncate">vs. {caseItem.opponent_name}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 text-xs text-slate-600 mt-1 font-medium">
+                          <Scale size={11} className="text-slate-400 shrink-0" />
+                          <span className="truncate">{caseItem.court}</span>
+                        </div>
+                        <div className="mt-2">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                            <Clock size={10} className="mr-1" /> {caseItem.status}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <button 
+                        onClick={() => handleEdit(caseItem)}
+                        className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                        title="Edit Case"
+                      >
+                        <Edit2 size={17} />
+                      </button>
+                      <button 
+                        onClick={() => handleDelete(caseItem.id, caseItem.case_number)}
+                        className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                        title="Delete Case"
+                      >
+                        <Trash2 size={17} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left border-collapse min-w-[800px]">
+                <thead>
+                  <tr className="bg-white border-b border-slate-100">
+                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider w-1/3">Case Reference</th>
+                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider w-1/3">Judiciary Details</th>
+                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">Actions</th>
                   </tr>
-                ) : (
-                  filteredCases.map((caseItem: any) => (
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {filteredCases.map((caseItem: any) => (
                     <tr key={caseItem.id} className="hover:bg-slate-50/80 transition-colors duration-200 group">
                       <td className="px-6 py-4">
                         <div className="flex items-start gap-3">
@@ -195,11 +241,11 @@ export default function CasesPage() {
                         </div>
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
 
@@ -218,3 +264,4 @@ export default function CasesPage() {
     </div>
   );
 }
+

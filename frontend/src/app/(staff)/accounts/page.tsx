@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect, useRef } from 'react';
 import { CircleDollarSign, Receipt, TrendingUp, Download, ArrowUpRight, Search, FileText } from 'lucide-react';
@@ -114,16 +114,16 @@ export default function AccountsPage() {
   );
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500 w-full">
+    <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-500 w-full">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Financial Accounts</h2>
-          <p className="text-slate-500 mt-1">Manage ledgers, revenues, and client invoices.</p>
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Financial Accounts</h2>
+          <p className="text-slate-500 mt-1 text-sm sm:text-base">Manage ledgers, revenues, and client invoices.</p>
         </div>
       </div>
 
       {/* Ledger Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
         <div className="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] border border-slate-100 hover:shadow-md transition-all duration-300">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-sm text-slate-500 uppercase tracking-wider">Total Billed</h3>
@@ -134,7 +134,7 @@ export default function AccountsPage() {
           {loading ? (
              <div className="h-10 w-24 bg-slate-100 animate-pulse rounded mt-2"></div>
           ) : (
-            <p className="text-3xl font-bold text-slate-900 mt-2 font-mono">Rs. {Number(ledger.total_billed).toLocaleString()}</p>
+            <p className="text-2xl sm:text-3xl font-bold text-slate-900 mt-2 font-mono">Rs. {Number(ledger.total_billed).toLocaleString()}</p>
           )}
         </div>
 
@@ -148,7 +148,7 @@ export default function AccountsPage() {
           {loading ? (
              <div className="h-10 w-24 bg-slate-100 animate-pulse rounded mt-2"></div>
           ) : (
-            <p className="text-3xl font-bold text-emerald-600 mt-2 font-mono">Rs. {Number(ledger.total_received).toLocaleString()}</p>
+            <p className="text-2xl sm:text-3xl font-bold text-emerald-600 mt-2 font-mono">Rs. {Number(ledger.total_received).toLocaleString()}</p>
           )}
         </div>
 
@@ -162,19 +162,19 @@ export default function AccountsPage() {
           {loading ? (
              <div className="h-10 w-24 bg-slate-100 animate-pulse rounded mt-2"></div>
           ) : (
-            <p className="text-3xl font-bold text-rose-600 mt-2 font-mono">Rs. {Number(ledger.outstanding_balance).toLocaleString()}</p>
+            <p className="text-2xl sm:text-3xl font-bold text-rose-600 mt-2 font-mono">Rs. {Number(ledger.outstanding_balance).toLocaleString()}</p>
           )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
         {/* Invoice Generator Table */}
-        <div className="lg:col-span-2 bg-white rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] border border-slate-100 overflow-hidden flex flex-col h-[500px]">
-          <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 shrink-0">
+        <div className="lg:col-span-2 bg-white rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] border border-slate-100 overflow-hidden flex flex-col h-auto lg:h-[500px]">
+          <div className="p-4 sm:p-5 border-b border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-slate-50/50 shrink-0">
             <h3 className="font-bold text-slate-900 flex items-center gap-2">
               <FileText size={18} className="text-blue-600" /> Issue Invoices
             </h3>
-            <div className="relative max-w-xs w-full">
+            <div className="relative w-full sm:max-w-xs">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
               <input 
                 type="text" 
@@ -189,25 +189,26 @@ export default function AccountsPage() {
             {loading ? (
                <div className="p-12 flex justify-center"><div className="w-8 h-8 border-4 border-slate-100 border-t-blue-500 rounded-full animate-spin"></div></div>
             ) : (
-              <table className="w-full text-left border-collapse min-w-[500px]">
+              <table className="w-full text-left border-collapse min-w-[400px]">
                 <thead className="sticky top-0 bg-white/90 backdrop-blur border-b border-slate-100 z-10">
                   <tr>
-                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Case Reference</th>
-                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Fee</th>
-                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">Action</th>
+                    <th className="px-4 sm:px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Case Reference</th>
+                    <th className="px-4 sm:px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider hidden sm:table-cell">Total Fee</th>
+                    <th className="px-4 sm:px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {filteredCases.map((c: any) => (
                     <tr key={c.id} className="hover:bg-slate-50/50 transition-colors">
-                      <td className="px-6 py-4">
+                      <td className="px-4 sm:px-6 py-4">
                         <p className="font-semibold text-slate-900">{c.case_number}</p>
                         <p className="text-xs text-slate-500 mt-0.5">vs. {c.opponent_name}</p>
+                        <p className="text-xs font-mono font-medium text-slate-600 mt-0.5 sm:hidden">Rs. {Number(c.total_fee).toLocaleString()}</p>
                       </td>
-                      <td className="px-6 py-4 font-mono font-medium text-slate-700">
+                      <td className="px-4 sm:px-6 py-4 font-mono font-medium text-slate-700 hidden sm:table-cell">
                         Rs. {Number(c.total_fee).toLocaleString()}
                       </td>
-                      <td className="px-6 py-4 text-right">
+                      <td className="px-4 sm:px-6 py-4 text-right">
                         <button 
                           onClick={() => handleGenerateInvoice(c)}
                           disabled={isGeneratingPdf && selectedCaseForInvoice?.id === c.id}
@@ -230,7 +231,7 @@ export default function AccountsPage() {
         </div>
 
         {/* Monthly Revenue Chart */}
-        <div className="bg-white rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] border border-slate-100 overflow-hidden flex flex-col h-[500px]">
+        <div className="bg-white rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] border border-slate-100 overflow-hidden flex flex-col h-[400px] lg:h-[500px]">
           <div className="p-5 border-b border-slate-100 bg-slate-50/50 shrink-0">
             <h3 className="font-bold text-slate-900 flex items-center gap-2">
               <TrendingUp size={18} className="text-emerald-600" /> Monthly Revenue
@@ -280,3 +281,4 @@ export default function AccountsPage() {
     </div>
   );
 }
+
