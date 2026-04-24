@@ -112,7 +112,7 @@ export default function AddClientModal({ isOpen, onClose, onSuccess }: AddClient
 
             <p className="text-xs text-slate-500 text-center">
               Client can log in at <span className="font-semibold text-blue-600">
-                {(process.env.NEXT_PUBLIC_PORTAL_URL || 'localhost:3001').replace(/^https?:\/\//, '')}
+                {(process.env.NEXT_PUBLIC_PORTAL_URL || 'clientcounsel.vercel.app').replace(/^https?:\/\//, '')}
               </span>
             </p>
 
