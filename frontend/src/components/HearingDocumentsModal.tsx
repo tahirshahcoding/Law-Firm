@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import { X, FileText, Trash2, Edit2, Check, Download } from 'lucide-react';
@@ -213,7 +213,7 @@ export default function HearingDocumentsModal({ isOpen, onClose, hearingData, on
                       {editingDocId !== doc.id && (
                         <>
                           <a 
-                            href={`http://localhost:8000${doc.file}`} 
+                            href={doc.file.startsWith('http') ? doc.file : `${API_BASE.replace('/api', '')}${doc.file}`} 
                             target="_blank" 
                             rel="noopener noreferrer"
                             className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"

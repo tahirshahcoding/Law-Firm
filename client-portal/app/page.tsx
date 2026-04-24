@@ -70,7 +70,7 @@ export default function LoginPage() {
           </div>
         </div>
         <a
-          href="http://localhost:3000/home"
+          href={process.env.NEXT_PUBLIC_WEBSITE_URL || "http://localhost:3000"}
           className="text-slate-500 hover:text-slate-300 text-xs transition-colors"
         >
           ← Back to website

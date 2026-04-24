@@ -110,7 +110,11 @@ export default function AddClientModal({ isOpen, onClose, onSuccess }: AddClient
               </div>
             </div>
 
-            <p className="text-xs text-slate-500 text-center">Client can log in at <span className="font-semibold text-blue-600">localhost:3000/portal</span></p>
+            <p className="text-xs text-slate-500 text-center">
+              Client can log in at <span className="font-semibold text-blue-600">
+                {(process.env.NEXT_PUBLIC_PORTAL_URL || 'localhost:3001').replace(/^https?:\/\//, '')}
+              </span>
+            </p>
 
             <button onClick={() => { setCredentials(null); onClose(); }}
               className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded-xl transition-colors">

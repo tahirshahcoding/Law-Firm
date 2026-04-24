@@ -4,7 +4,8 @@ import Link from 'next/link';
 import { Scale, Phone, Mail, MapPin, ChevronRight, Shield, Briefcase, Heart, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 
-const CLIENT_PORTAL_URL = 'http://localhost:3001';
+const CLIENT_PORTAL_URL = process.env.NEXT_PUBLIC_PORTAL_URL || 'http://localhost:3001';
+const STAFF_URL = process.env.NEXT_PUBLIC_STAFF_URL || 'http://localhost:3000';
 
 const practiceAreas = [
   {
@@ -244,7 +245,7 @@ export default function HomePage() {
           <div className="flex items-center gap-4 text-sm">
             <a href={CLIENT_PORTAL_URL} className="text-blue-400 hover:text-blue-300 transition-colors">Client Portal</a>
             <span className="text-slate-700">·</span>
-            <a href="http://localhost:3000/login" className="text-slate-600 hover:text-slate-400 transition-colors text-xs">Staff Login</a>
+            <a href={`${STAFF_URL}/login`} className="text-slate-600 hover:text-slate-400 transition-colors text-xs">Staff Login</a>
           </div>
         </div>
       </footer>
