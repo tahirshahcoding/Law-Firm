@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Scale, Phone, Mail, MapPin, ChevronRight, Shield, Briefcase, Heart, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 
-const CLIENT_PORTAL_URL = process.env.NEXT_PUBLIC_PORTAL_URL || 'https://clientcounsel.vercel.app';
+const CLIENT_PORTAL_URL = 'https://clientcounsel.vercel.app';
 const STAFF_URL = process.env.NEXT_PUBLIC_STAFF_URL || 'http://localhost:3000';
 
 const practiceAreas = [

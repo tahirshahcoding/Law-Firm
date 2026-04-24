@@ -70,7 +70,7 @@ export default function LoginPage() {
           </div>
         </div>
         <a
-          href={process.env.NEXT_PUBLIC_WEBSITE_URL || "https://lawsiteswat.vercel.app"}
+          href="https://lawsiteswat.vercel.app"
           className="text-slate-500 hover:text-slate-300 text-xs transition-colors"
         >
           ← Back to website
