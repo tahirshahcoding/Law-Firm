@@ -209,6 +209,19 @@ class InvoiceViewSet(viewsets.ModelViewSet):
     serializer_class = InvoiceSerializer
     permission_classes = [IsAuthenticated]
 
+from rest_framework.permissions import AllowAny
+from .models import ConsultationRequest
+from .serializers import ConsultationRequestSerializer
+
+class ConsultationViewSet(viewsets.ModelViewSet):
+    queryset = ConsultationRequest.objects.all().order_by('-created_at')
+    serializer_class = ConsultationRequestSerializer
+    
+    def get_permissions(self):
+        if self.action == 'create':
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
 class AccountsLedgerView(APIView):
     permission_classes = [IsAuthenticated]
 

@@ -4,7 +4,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 from .views import (
     ClientViewSet, CaseViewSet, HearingViewSet, HearingDocumentViewSet, TaskViewSet, InvoiceViewSet, 
     AccountsLedgerView, DailyDiaryView, DashboardStatsView, AdminUserView, CurrentUserView,
-    CustomTokenObtainPairView, ClientPortalView, ClientResetPasswordView
+    CustomTokenObtainPairView, ClientPortalView, ClientResetPasswordView, ConsultationViewSet
 )
 
 # Router handles the standard GET/POST/PUT/DELETE for Clients and Cases
@@ -15,6 +15,7 @@ router.register(r'hearings', HearingViewSet, basename='hearing')
 router.register(r'hearing-documents', HearingDocumentViewSet, basename='hearing-document')
 router.register(r'tasks', TaskViewSet, basename='task')
 router.register(r'invoices', InvoiceViewSet, basename='invoice')
+router.register(r'consultations', ConsultationViewSet, basename='consultation')
 
 urlpatterns = [
     # Staff Auth Endpoints

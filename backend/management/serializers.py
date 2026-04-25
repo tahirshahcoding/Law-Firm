@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Client, Case, Hearing, HearingDocument, Task, Payment, Invoice, UserProfile
+from .models import Client, Case, Hearing, HearingDocument, Task, Payment, Invoice, UserProfile, ConsultationRequest
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -77,4 +77,9 @@ class HearingSerializer(serializers.ModelSerializer):
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
+        fields = '__all__'
+
+class ConsultationRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ConsultationRequest
         fields = '__all__'

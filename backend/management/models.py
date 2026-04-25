@@ -101,3 +101,16 @@ class Invoice(models.Model):
 
     def __str__(self):
         return f"{self.invoice_number} for {self.case.case_number}"
+
+class ConsultationRequest(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255)
+    email = models.EmailField(blank=True, null=True)
+    phone = models.CharField(max_length=20)
+    inquiry_type = models.CharField(max_length=100)
+    message = models.TextField()
+    status = models.CharField(max_length=50, default='New') # New, Contacted, Converted, Closed
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name} - {self.inquiry_type} ({self.status})"

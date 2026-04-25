@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Users, FolderOpen, Calendar, Gavel, CircleDollarSign, Settings, X } from 'lucide-react';
+import { LayoutDashboard, Users, FolderOpen, Calendar, Gavel, CircleDollarSign, Settings, X, MessageSquare } from 'lucide-react';
 
 import { useAuth } from '@/context/AuthContext';
 
@@ -22,6 +22,7 @@ export default function Navigation({ mobileOpen = false, onCloseMobile }: Naviga
     { name: 'Hearings', href: '/hearings', icon: Gavel, requiredPermission: 'manage_cases' },
     { name: 'Daily Diary', href: '/diary', icon: Calendar, requiredPermission: null },
     { name: 'Accounts', href: '/accounts', icon: CircleDollarSign, requiredPermission: 'manage_accounts' },
+    { name: 'Consultations', href: '/consultations', icon: MessageSquare, requiredPermission: 'manage_clients' },
   ];
 
   const filteredNavItems = navItems.filter(item => {
@@ -33,7 +34,7 @@ export default function Navigation({ mobileOpen = false, onCloseMobile }: Naviga
   const SidebarContent = ({ onLinkClick }: { onLinkClick?: () => void }) => (
     <>
       <div className="h-16 flex items-center px-6 border-b border-slate-100 shrink-0">
-        <h1 className="text-blue-600 font-bold text-lg tracking-wider">LAW SUIT</h1>
+        <h1 className="text-blue-600 font-bold text-lg tracking-wider">EagleNest Legal Solutions</h1>
       </div>
       <nav className="flex-1 py-6 flex flex-col gap-1 px-4 overflow-y-auto">
         {filteredNavItems.map((item) => {
