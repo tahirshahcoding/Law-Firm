@@ -21,7 +21,6 @@ export default function BookConsultationPage() {
     setStatus('submitting');
     
     try {
-      // Dynamic API call placeholder
       const response = await fetch(`${API_URL}/consultations/`, {
         method: 'POST',
         headers: {
@@ -31,18 +30,14 @@ export default function BookConsultationPage() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to submit');
+        throw new Error(`Server responded with ${response.status}`);
       }
 
       setStatus('success');
       setFormData({ name: '', email: '', phone: '', inquiryType: 'Civil Litigation', message: '' });
     } catch (error) {
       console.error('Submission error:', error);
-      // Fallback for demonstration since API might not be implemented
-      setTimeout(() => {
-        setStatus('success');
-        setFormData({ name: '', email: '', phone: '', inquiryType: 'Civil Litigation', message: '' });
-      }, 1500);
+      setStatus('error');
     }
   };
 
@@ -107,6 +102,22 @@ export default function BookConsultationPage() {
                 className="px-6 py-3 bg-navy text-white font-bold hover:bg-gold transition-colors rounded-sm shadow-md hover:shadow-lg"
               >
                 Submit Additional Documents
+              </button>
+            </div>
+          ) : status === 'error' ? (
+            <div className="bg-rose-50 border border-rose-200 p-8 rounded-sm text-center">
+              <div className="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <AlertCircle size={32} />
+              </div>
+              <h3 className="font-serif text-2xl font-bold text-rose-900 mb-3">Transmission Failed</h3>
+              <p className="text-rose-700 mb-8 max-w-md mx-auto">
+                We could not deliver your request at this time. Please call us directly at <strong>+92 946 123456</strong> or try again in a few moments.
+              </p>
+              <button 
+                onClick={() => setStatus('idle')}
+                className="px-6 py-3 bg-navy text-white font-bold hover:bg-rose-600 transition-colors rounded-sm shadow-md"
+              >
+                Try Again
               </button>
             </div>
           ) : (
