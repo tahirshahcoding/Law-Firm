@@ -26,8 +26,8 @@ export default function RootLayout({
         <nav className="bg-navy text-white py-6 px-8 shadow-md sticky top-0 z-50">
           <div className="max-w-7xl mx-auto flex justify-between items-center">
             <Link href="/" className="font-serif text-2xl font-bold tracking-wide text-white hover:text-gold transition-colors duration-200 flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/10 rounded-lg p-1 flex items-center justify-center">
-                <Image src="/logo.png" alt="EagleNest Logo" width={32} height={32} className="object-contain" />
+              <div className="relative w-10 h-10 rounded-lg overflow-hidden flex-shrink-0">
+                <Image src="/logo.png" alt="EagleNest Logo" fill className="object-cover scale-[1.15]" sizes="40px" />
               </div>
               EagleNest Legal Solutions 
             </Link>
@@ -57,8 +57,8 @@ export default function RootLayout({
           <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
               <h3 className="font-serif text-xl font-bold text-white mb-4 flex items-center gap-3">
-                <div className="w-8 h-8 bg-white/10 rounded-md p-1 flex items-center justify-center">
-                  <Image src="/logo.png" alt="EagleNest Logo" width={24} height={24} className="object-contain" />
+                <div className="relative w-8 h-8 rounded-md overflow-hidden flex-shrink-0">
+                  <Image src="/logo.png" alt="EagleNest Logo" fill className="object-cover scale-[1.15]" sizes="32px" />
                 </div>
                 EagleNest Legal Solutions 
               </h3>

@@ -48,8 +48,8 @@ export default function LoginPage() {
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
         <div className="flex justify-center">
-          <div className="w-20 h-20 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-600/20 bg-white overflow-hidden p-2">
-            <Image src="/logo.png" alt="EagleNest Logo" width={80} height={80} className="object-contain" />
+          <div className="relative w-24 h-24 rounded-3xl shadow-xl shadow-blue-600/20 overflow-hidden ring-4 ring-white">
+            <Image src="/logo.png" alt="EagleNest Logo" fill className="object-cover scale-[1.15]" sizes="96px" />
           </div>
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-slate-900 tracking-tight">
