@@ -11,7 +11,7 @@ export default function BookConsultationPage() {
     name: '',
     email: '',
     phone: '',
-    inquiryType: 'Civil Litigation',
+    inquiry_type: 'Civil Litigation',
     message: ''
   });
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
@@ -34,7 +34,7 @@ export default function BookConsultationPage() {
       }
 
       setStatus('success');
-      setFormData({ name: '', email: '', phone: '', inquiryType: 'Civil Litigation', message: '' });
+      setFormData({ name: '', email: '', phone: '', inquiry_type: 'Civil Litigation', message: '' });
     } catch (error) {
       console.error('Submission error:', error);
       setStatus('error');
@@ -162,11 +162,11 @@ export default function BookConsultationPage() {
                   />
                 </div>
                 <div className="group/input relative">
-                  <label htmlFor="inquiryType" className="block text-xs font-bold tracking-wider text-navy uppercase mb-2">Primary Practice Area</label>
+                  <label htmlFor="inquiry_type" className="block text-xs font-bold tracking-wider text-navy uppercase mb-2">Primary Practice Area</label>
                   <select 
-                    id="inquiryType"
-                    value={formData.inquiryType}
-                    onChange={(e) => setFormData({...formData, inquiryType: e.target.value})}
+                    id="inquiry_type"
+                    value={formData.inquiry_type}
+                    onChange={(e) => setFormData({...formData, inquiry_type: e.target.value})}
                     className="w-full border-b-2 border-slate-300 px-0 py-3 focus:outline-none focus:border-gold bg-transparent transition-colors text-slate-800 font-medium appearance-none cursor-pointer"
                   >
                     <option>Civil Litigation</option>
