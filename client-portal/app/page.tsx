@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Scale, Lock, User, Eye, EyeOff, ShieldAlert } from 'lucide-react';
+import { Lock, User, Eye, EyeOff, ShieldAlert } from 'lucide-react';
+import Image from 'next/image';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
@@ -61,11 +62,11 @@ export default function LoginPage() {
       {/* ── Top bar ── */}
       <header className="flex items-center justify-between px-8 py-5">
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 bg-blue-700 rounded-xl flex items-center justify-center">
-            <Scale size={18} className="text-white" />
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/10 p-1">
+            <Image src="/logo.png" alt="EagleNest Logo" width={32} height={32} className="object-contain" />
           </div>
           <div>
-            <p className="font-bold text-white text-sm leading-none">EagleNest Legal</p>
+            <p className="font-bold text-white text-sm leading-none">EagleNest Legal Solutions</p>
             <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5">Client Portal</p>
           </div>
         </div>
@@ -83,8 +84,8 @@ export default function LoginPage() {
 
           {/* Badge */}
           <div className="flex flex-col items-center mb-10">
-            <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-800 rounded-3xl flex items-center justify-center shadow-2xl shadow-blue-900/60 mb-5 ring-4 ring-white/5">
-              <Scale size={36} className="text-white" />
+            <div className="w-24 h-24 bg-white/10 rounded-3xl flex items-center justify-center shadow-2xl shadow-blue-900/60 mb-5 ring-4 ring-white/5 p-3 overflow-hidden">
+              <Image src="/logo.png" alt="EagleNest Logo" width={80} height={80} className="object-contain drop-shadow-xl" />
             </div>
             <h1 className="text-2xl font-bold text-white tracking-tight">Client Portal Login</h1>
             <p className="text-slate-400 text-sm mt-2 text-center">

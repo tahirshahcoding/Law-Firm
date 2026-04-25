@@ -206,9 +206,9 @@ export default function PublicHomePage() {
       <footer className="bg-slate-950 text-slate-400 py-10 px-6 text-center text-sm">
         <div className="flex items-center justify-center gap-2 mb-3">
           <Scale className="text-amber-500" size={18} />
-          <span className="font-bold text-white">EagleNest Legal</span>
+          <span className="font-bold text-white">EagleNest Legal Solutions</span>
         </div>
-        <p>© {new Date().getFullYear()} EagleNest Legal, Swat. All rights reserved.</p>
+        <p>© {new Date().getFullYear()} EagleNest Legal Solutions, Swat. All rights reserved.</p>
         <p className="mt-2">
           <a href="https://clientcounsel.vercel.app" className="text-blue-400 hover:text-blue-300 underline">Client Portal</a>
           {' · '}

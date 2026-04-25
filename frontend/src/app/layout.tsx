@@ -15,7 +15,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "EagleNest Legal | Expert Legal Solutions in Swat",
+  title: "EagleNest Legal Solutions | Expert Legal Solutions in Swat",
   description: "Top-tier legal services in Swat Valley — Civil, Corporate, Criminal and Family Law.",
 };
 

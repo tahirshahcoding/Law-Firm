@@ -3,6 +3,7 @@ import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
 import { Lock } from "lucide-react";
+import Image from "next/image";
 
 const inter = Inter({ subsets: ["latin"], variable: '--font-inter' });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: '--font-playfair' });
@@ -24,7 +25,10 @@ export default function RootLayout({
         {/* GLOBAL NAVIGATION */}
         <nav className="bg-navy text-white py-6 px-8 shadow-md sticky top-0 z-50">
           <div className="max-w-7xl mx-auto flex justify-between items-center">
-            <Link href="/" className="font-serif text-2xl font-bold tracking-wide text-white hover:text-gold transition-colors duration-200">
+            <Link href="/" className="font-serif text-2xl font-bold tracking-wide text-white hover:text-gold transition-colors duration-200 flex items-center gap-3">
+              <div className="w-10 h-10 bg-white/10 rounded-lg p-1 flex items-center justify-center">
+                <Image src="/logo.png" alt="EagleNest Logo" width={32} height={32} className="object-contain" />
+              </div>
               EagleNest Legal Solutions 
             </Link>
             <div className="hidden md:flex space-x-8 items-center font-medium">
@@ -52,7 +56,12 @@ export default function RootLayout({
         <footer className="bg-navy text-slate-300 py-12 px-8 mt-20">
           <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
-              <h3 className="font-serif text-xl font-bold text-white mb-4">EagleNest Legal Solutions </h3>
+              <h3 className="font-serif text-xl font-bold text-white mb-4 flex items-center gap-3">
+                <div className="w-8 h-8 bg-white/10 rounded-md p-1 flex items-center justify-center">
+                  <Image src="/logo.png" alt="EagleNest Logo" width={24} height={24} className="object-contain" />
+                </div>
+                EagleNest Legal Solutions 
+              </h3>
               <p className="text-sm leading-relaxed">Expert legal solutions and unyielding advocacy for the people and businesses of Swat, KPK.</p>
             </div>
             <div>

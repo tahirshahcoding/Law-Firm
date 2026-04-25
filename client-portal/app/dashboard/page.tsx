@@ -71,7 +71,7 @@ export default function DashboardPage() {
             <Scale size={18} className="text-white" />
           </div>
           <div>
-            <p className="text-white font-bold text-sm leading-none">EagleNest Legal</p>
+            <p className="text-white font-bold text-sm leading-none">EagleNest Legal Solutions</p>
             <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5">Client Portal</p>
           </div>
         </div>
@@ -205,7 +205,7 @@ export default function DashboardPage() {
         )}
 
         <p className="text-center text-[11px] text-slate-400 pb-8">
-          This is a secure read-only portal provided by EagleNest Legal. For queries, contact your lawyer.
+          This is a secure read-only portal provided by EagleNest Legal Solutions. For queries, contact your lawyer.
         </p>
       </main>
     </div>

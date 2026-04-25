@@ -92,7 +92,7 @@ export default function InvoiceTemplate({ caseData }: { caseData: any }) {
           <p className="text-sm mb-3" style={{ color: '#334155' }}>Please make all wire transfers to the following bank account:</p>
           <div className="grid grid-cols-2 gap-y-2 text-sm">
             <p><span className="font-medium mr-2" style={{ color: '#94a3b8' }}>Bank Name:</span> <strong>EagleNest Bank</strong></p>
-            <p><span className="font-medium mr-2" style={{ color: '#94a3b8' }}>Account Name:</span> <strong>EagleNest Legal Associates</strong></p>
+            <p><span className="font-medium mr-2" style={{ color: '#94a3b8' }}>Account Name:</span> <strong>EagleNest Legal Solutions Associates</strong></p>
             <p><span className="font-medium mr-2" style={{ color: '#94a3b8' }}>Account No:</span> <strong className="font-mono">1029384756</strong></p>
             <p><span className="font-medium mr-2" style={{ color: '#94a3b8' }}>IBAN:</span> <strong className="font-mono">PK99 EGN 1029 3847 56</strong></p>
             <p><span className="font-medium mr-2" style={{ color: '#94a3b8' }}>Branch:</span> <strong>Metropolis Central (001)</strong></p>
@@ -101,7 +101,7 @@ export default function InvoiceTemplate({ caseData }: { caseData: any }) {
       </div>
 
       <div className="mt-16 text-center text-xs" style={{ color: '#94a3b8' }}>
-        <p>Thank you for trusting EagleNest Legal Associates with your matters.</p>
+        <p>Thank you for trusting EagleNest Legal Solutions Associates with your matters.</p>
         <p className="mt-1">Generated electronically on {currentDate}. No signature required.</p>
       </div>
     </div>

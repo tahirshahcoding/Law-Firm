@@ -1,9 +1,10 @@
-﻿'use client';
+'use client';
 
 import { API_BASE } from '@/lib/api';
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { Scale, Lock, User, ArrowRight } from 'lucide-react';
+import { Lock, User, ArrowRight } from 'lucide-react';
+import Image from 'next/image';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
@@ -47,12 +48,12 @@ export default function LoginPage() {
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
         <div className="flex justify-center">
-          <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-600/20">
-            <Scale className="text-white" size={32} />
+          <div className="w-20 h-20 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-600/20 bg-white overflow-hidden p-2">
+            <Image src="/logo.png" alt="EagleNest Logo" width={80} height={80} className="object-contain" />
           </div>
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-slate-900 tracking-tight">
-          EagleNest Legal
+          EagleNest Legal Solutions
         </h2>
         <p className="mt-2 text-center text-sm text-slate-600">
           Sign in to access your secure workspace
@@ -123,7 +124,7 @@ export default function LoginPage() {
         </div>
         
         <p className="mt-8 text-center text-xs text-slate-400">
-          &copy; {new Date().getFullYear()} EagleNest Legal Associates. All rights reserved.
+          &copy; {new Date().getFullYear()} EagleNest Legal Solutions Associates. All rights reserved.
         </p>
       </div>
     </div>

@@ -50,7 +50,7 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
             <Menu size={22} />
           </button>
           {/* Brand - mobile only */}
-          <span className="md:hidden text-blue-600 font-bold text-base tracking-wider flex-1">LAW SUIT</span>
+          <span className="md:hidden text-blue-600 font-bold text-base tracking-wider flex-1">EagleNest Legal Solutions</span>
           {/* Role info - desktop */}
           <h2 className="hidden md:block text-slate-800 font-semibold">
             Legal Operations | <span className="text-blue-600 font-bold">{user.role}</span>
