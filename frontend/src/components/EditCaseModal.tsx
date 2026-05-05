@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { X, FolderOpen, Scale, Gavel, UserX, CircleDollarSign, Search, Check } from 'lucide-react';
-import { API_BASE, apiFetch } from '@/lib/api';
+import { API_BASE, apiFetch, safeJson } from '@/lib/api';
 
 interface EditCaseModalProps {
   isOpen: boolean;
@@ -108,7 +108,7 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
         body: JSON.stringify(formData),
       });
 
-      const data = await res.json();
+      const data = await safeJson(res);
 
       if (!res.ok) {
         throw new Error(data.error || data.detail || JSON.stringify(data) || 'Failed to update case');

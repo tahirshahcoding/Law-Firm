@@ -1,8 +1,8 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import { X, User, CreditCard, Phone, MapPin, RefreshCw, Copy, CheckCheck, Key, Shield } from 'lucide-react';
-import { API_BASE, apiFetch } from '@/lib/api';
+import { API_BASE, apiFetch, safeJson } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 
 interface EditClientModalProps {
@@ -52,7 +52,7 @@ export default function EditClientModal({ isOpen, onClose, onSuccess, clientData
     setResetLoading(true);
     try {
       const res = await apiFetch(`${API_BASE}/portal/reset-password/${clientData.id}/`, { method: 'POST' });
-      const data = await res.json();
+      const data = await safeJson(res);
       if (!res.ok) throw new Error(data.error || 'Failed to reset password');
       setNewCredentials(data);
     } catch (err: any) {
@@ -72,7 +72,7 @@ export default function EditClientModal({ isOpen, onClose, onSuccess, clientData
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-      const data = await res.json();
+      const data = await safeJson(res);
       if (!res.ok) throw new Error(data.error || data.detail || 'Failed to update client');
       onSuccess();
       onClose();

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { X, Calendar, AlignLeft, Search, Check, FolderOpen } from 'lucide-react';
-import { API_BASE, apiFetch } from '@/lib/api';
+import { API_BASE, apiFetch, safeJson } from '@/lib/api';
 
 interface AddHearingModalProps {
   isOpen: boolean;
@@ -93,7 +93,7 @@ export default function AddHearingModal({ isOpen, onClose, onSuccess }: AddHeari
         body: JSON.stringify(payload),
       });
 
-      const data = await res.json();
+      const data = await safeJson(res);
 
       if (!res.ok) {
         throw new Error(data.error || data.detail || JSON.stringify(data) || 'Failed to register hearing');

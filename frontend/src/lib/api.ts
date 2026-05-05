@@ -21,3 +21,18 @@ export async function apiFetch(url: string, options: RequestInit = {}) {
 
   return response;
 }
+
+/**
+ * Safely parse a response as JSON.
+ * If the server returns an HTML error page (e.g. 502/404 from a proxy),
+ * this prevents the cryptic "Unexpected token '<'" crash.
+ */
+export async function safeJson(res: Response): Promise<any> {
+  const contentType = res.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) {
+    const text = await res.text();
+    throw new Error(`Server returned non-JSON response (${res.status}): ${text.slice(0, 120)}`);
+  }
+  return res.json();
+}
+

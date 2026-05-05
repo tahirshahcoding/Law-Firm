@@ -1,6 +1,6 @@
 'use client';
 
-import { API_BASE, apiFetch } from '@/lib/api';
+import { API_BASE, apiFetch, safeJson } from '@/lib/api';
 import { useState } from 'react';
 import { X, User, CreditCard, Phone, MapPin, Copy, CheckCheck, Key, Shield } from 'lucide-react';
 
@@ -48,7 +48,7 @@ export default function AddClientModal({ isOpen, onClose, onSuccess }: AddClient
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-      const data = await res.json();
+      const data = await safeJson(res);
       if (!res.ok) throw new Error(data.error || data.detail || 'Failed to create client');
       onSuccess();
       setFormData({ name: '', cnic: '', mobile_number: '', address: '' });
