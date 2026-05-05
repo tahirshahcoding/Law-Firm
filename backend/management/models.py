@@ -24,8 +24,18 @@ class Client(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.client_number:
-            count = Client.objects.all().count()
-            self.client_number = f"C-{(count + 1):03d}"
+            # Use MAX to find the highest number ever issued.
+            # COUNT would fail if any clients were ever deleted (count=4 could
+            # collide with an existing C-005), causing a 500 IntegrityError.
+            from django.db.models import Max
+            import re
+            last = Client.objects.aggregate(max_num=Max('client_number'))['max_num']
+            if last:
+                match = re.search(r'\d+$', last)
+                next_num = (int(match.group()) + 1) if match else 1
+            else:
+                next_num = 1
+            self.client_number = f"C-{next_num:03d}"
         super(Client, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -95,8 +105,15 @@ class Invoice(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.invoice_number:
-            count = Invoice.objects.all().count()
-            self.invoice_number = f"INV-{(count + 1):03d}"
+            from django.db.models import Max
+            import re
+            last = Invoice.objects.aggregate(max_num=Max('invoice_number'))['max_num']
+            if last:
+                match = re.search(r'\d+$', last)
+                next_num = (int(match.group()) + 1) if match else 1
+            else:
+                next_num = 1
+            self.invoice_number = f"INV-{next_num:03d}"
         super(Invoice, self).save(*args, **kwargs)
 
     def __str__(self):
