@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { MessageSquare, Search, Trash2, Phone, Mail, ChevronDown, RefreshCw, CheckCircle2, Clock, X } from 'lucide-react';
 import { API_BASE, apiFetch } from '@/lib/api';
+import { ListSkeleton } from '@/components/SkeletonLoaders';
 
 type Consultation = {
   id: string;
@@ -132,9 +133,8 @@ export default function ConsultationsPage() {
 
       {/* Content */}
       {loading ? (
-        <div className="py-24 flex flex-col items-center justify-center text-slate-400">
-          <div className="w-8 h-8 border-4 border-slate-100 border-t-blue-600 rounded-full animate-spin mb-4"></div>
-          <p>Loading inquiries...</p>
+        <div className="py-4">
+          <ListSkeleton />
         </div>
       ) : filtered.length === 0 ? (
         <div className="py-24 text-center text-slate-400 bg-white rounded-2xl border border-slate-100 shadow-sm">

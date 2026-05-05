@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { Menu } from 'lucide-react';
 import Navigation from '@/components/Navigation';
 import { useAuth } from '@/context/AuthContext';
+import { AppShellSkeleton } from '@/components/SkeletonLoaders';
 
 export default function StaffLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -12,11 +13,7 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   if (loading) {
-    return (
-      <div className="h-screen w-screen flex items-center justify-center bg-slate-50">
-        <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
-      </div>
-    );
+    return <AppShellSkeleton />;
   }
 
   // If on login page or root (which redirects), just render children

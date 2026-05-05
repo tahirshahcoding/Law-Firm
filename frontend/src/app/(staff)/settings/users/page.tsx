@@ -1,9 +1,10 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { Users, Shield, Plus, X, Trash2, Key } from 'lucide-react';
 import { API_BASE, apiFetch } from '@/lib/api';
+import { TableSkeleton } from '@/components/SkeletonLoaders';
 
 export default function UserManagementPage() {
   const { user } = useAuth();
@@ -96,7 +97,7 @@ export default function UserManagementPage() {
 
       <div className="bg-white rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] border border-slate-100 overflow-hidden">
         {loading ? (
-          <div className="p-12 flex justify-center"><div className="w-8 h-8 border-4 border-slate-100 border-t-blue-500 rounded-full animate-spin"></div></div>
+          <TableSkeleton />
         ) : (
           <table className="w-full text-left border-collapse">
             <thead className="bg-slate-50/50 border-b border-slate-100">

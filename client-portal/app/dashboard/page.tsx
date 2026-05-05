@@ -43,14 +43,7 @@ export default function DashboardPage() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-4 border-blue-900 border-t-blue-500 rounded-full animate-spin" />
-          <p className="text-slate-600 text-sm">Loading your portal…</p>
-        </div>
-      </div>
-    );
+    return <PortalSkeleton />;
   }
 
   const today = new Date().toISOString().split('T')[0];
@@ -217,6 +210,72 @@ function EmptyState({ message }: { message: string }) {
     <div className="bg-white border border-slate-100 rounded-2xl p-10 text-center">
       <AlertCircle size={28} className="mx-auto text-slate-200 mb-3" />
       <p className="text-slate-400 text-sm">{message}</p>
+    </div>
+  );
+}
+
+function PortalSkeleton() {
+  return (
+    <div className="min-h-screen bg-slate-50 animate-pulse">
+      {/* Top bar skeleton */}
+      <header className="bg-slate-900 px-6 py-4 flex items-center justify-between shadow-lg">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 bg-slate-800 rounded-xl"></div>
+          <div>
+            <div className="h-4 w-32 bg-slate-800 rounded mb-1"></div>
+            <div className="h-2 w-16 bg-slate-800 rounded"></div>
+          </div>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="text-right hidden sm:block">
+            <div className="h-4 w-24 bg-slate-800 rounded mb-1 ml-auto"></div>
+            <div className="h-3 w-16 bg-slate-800 rounded ml-auto"></div>
+          </div>
+          <div className="w-9 h-9 rounded-full bg-slate-800"></div>
+          <div className="w-20 h-8 rounded-lg bg-slate-800"></div>
+        </div>
+      </header>
+
+      <main className="max-w-2xl mx-auto px-4 py-10 space-y-8">
+        {/* Banner Skeleton */}
+        <div className="bg-slate-900 rounded-2xl p-7 shadow-xl border border-slate-800">
+          <div className="h-3 w-24 bg-slate-800 rounded mb-3"></div>
+          <div className="h-8 w-48 bg-slate-800 rounded mb-2"></div>
+          <div className="h-4 w-64 bg-slate-800 rounded"></div>
+          <div className="grid grid-cols-2 gap-3 mt-5 max-w-xs">
+            <div className="bg-slate-800 rounded-xl px-4 py-3 h-16"></div>
+            <div className="bg-slate-800 rounded-xl px-4 py-3 h-16"></div>
+          </div>
+        </div>
+
+        {/* Section Skeleton */}
+        <section>
+          <div className="h-5 w-32 bg-slate-200 rounded mb-3"></div>
+          <div className="space-y-3">
+            {[1, 2].map((i) => (
+              <div key={i} className="bg-white rounded-2xl border border-slate-100 p-5">
+                <div className="h-5 w-40 bg-slate-200 rounded mb-2"></div>
+                <div className="h-4 w-64 bg-slate-100 rounded mb-2"></div>
+                <div className="h-3 w-32 bg-slate-100 rounded"></div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Section Skeleton */}
+        <section>
+          <div className="h-5 w-48 bg-slate-200 rounded mb-3"></div>
+          <div className="space-y-3">
+            {[1, 2].map((i) => (
+              <div key={i} className="bg-white rounded-2xl border border-slate-100 p-5">
+                <div className="h-6 w-32 bg-slate-200 rounded mb-2"></div>
+                <div className="h-4 w-48 bg-slate-100 rounded mb-2"></div>
+                <div className="h-3 w-40 bg-slate-100 rounded mt-3"></div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </main>
     </div>
   );
 }

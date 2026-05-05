@@ -7,6 +7,7 @@ import AddHearingModal from '@/components/AddHearingModal';
 import EditHearingModal from '@/components/EditHearingModal';
 import HearingDocumentsModal from '@/components/HearingDocumentsModal';
 import { useAuth } from '@/context/AuthContext';
+import { TableSkeleton } from '@/components/SkeletonLoaders';
 
 export default function HearingsPage() {
   const [hearings, setHearings] = useState([]);
@@ -119,10 +120,7 @@ export default function HearingsPage() {
         </div>
 
         {loading ? (
-          <div className="p-12 flex flex-col items-center justify-center text-slate-400">
-            <div className="w-8 h-8 border-4 border-slate-100 border-t-rose-500 rounded-full animate-spin mb-4"></div>
-            <p>Syncing schedule records...</p>
-          </div>
+          <TableSkeleton />
         ) : filteredHearings.length === 0 ? (
           <div className="px-6 py-12 text-center text-slate-500 bg-slate-50/50">
             <div className="flex flex-col items-center justify-center max-w-sm mx-auto">

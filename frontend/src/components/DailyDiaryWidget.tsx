@@ -1,10 +1,11 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import { CalendarCheck, Calendar as CalendarIcon, CheckCircle2, Circle, Clock, Check } from 'lucide-react';
 import { API_BASE, apiFetch } from '@/lib/api';
 import Link from 'next/link';
 import { Calendar, ArrowRight } from 'lucide-react';
+import { WidgetSkeleton } from '@/components/SkeletonLoaders';
 
 export default function DailyDiaryWidget() {
   const [tasks, setTasks] = useState([]);
@@ -56,6 +57,10 @@ export default function DailyDiaryWidget() {
     return dbDate;
   };
 
+  if (loading) {
+    return <WidgetSkeleton />;
+  }
+
   return (
     <div className="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] border border-slate-100 mt-8">
       <div className="flex items-center justify-between mb-6 border-b border-slate-100 pb-4">
@@ -70,11 +75,7 @@ export default function DailyDiaryWidget() {
         </Link>
       </div>
 
-      {loading ? (
-        <div className="flex justify-center py-8">
-          <div className="w-6 h-6 border-2 border-slate-200 border-t-blue-500 rounded-full animate-spin"></div>
-        </div>
-      ) : tasks.length > 0 ? (
+      {tasks.length > 0 ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {tasks.map((t: any) => (
             <div key={t.id} className="group p-4 border border-slate-100 rounded-xl hover:border-slate-200 hover:shadow-sm transition-all duration-200 flex justify-between items-start bg-white">

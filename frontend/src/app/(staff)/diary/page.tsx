@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Calendar as CalendarIcon, Plus, CheckCircle2, Circle, Clock, Trash2 } from 'lucide-react';
 import { API_BASE, apiFetch } from '@/lib/api';
+import { ListSkeleton } from '@/components/SkeletonLoaders';
 
 export default function DailyDiaryPage() {
   const [tasks, setTasks] = useState<any[]>([]);
@@ -162,9 +163,8 @@ export default function DailyDiaryPage() {
 
         {/* Task List */}
         {loading ? (
-          <div className="p-16 flex flex-col items-center justify-center text-slate-400">
-            <div className="w-8 h-8 border-4 border-slate-100 border-t-blue-500 rounded-full animate-spin mb-4"></div>
-            <p>Loading active tasks...</p>
+          <div className="p-6">
+            <ListSkeleton />
           </div>
         ) : (
           <div className="divide-y divide-slate-100">
