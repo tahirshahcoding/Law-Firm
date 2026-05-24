@@ -2,13 +2,26 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Users, FolderOpen, Calendar, Gavel, CircleDollarSign, Settings, X, MessageSquare } from 'lucide-react';
-
+import { LayoutDashboard, Users, FolderOpen, Calendar, Gavel, Coins, Settings, X, MessageSquare, Activity } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import Image from 'next/image';
 
 interface NavigationProps {
   mobileOpen?: boolean;
   onCloseMobile?: () => void;
+}
+
+// Helper: check if user can view a module based on granular permissions
+function canView(user: any, module: string): boolean {
+  if (!user) return false;
+  if (user.role === 'Admin') return true;
+  // Granular permission check (new system)
+  if (user.permissions?.[module]?.view === true) return true;
+  // Legacy flat permission fallback
+  if (module === 'clients' && user.permissions?.manage_clients) return true;
+  if (module === 'cases' && user.permissions?.manage_cases) return true;
+  if (module === 'accounts' && user.permissions?.manage_accounts) return true;
+  return false;
 }
 
 export default function Navigation({ mobileOpen = false, onCloseMobile }: NavigationProps) {
@@ -16,25 +29,33 @@ export default function Navigation({ mobileOpen = false, onCloseMobile }: Naviga
   const { user } = useAuth();
 
   const navItems = [
-    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, requiredPermission: null },
-    { name: 'Clients', href: '/clients', icon: Users, requiredPermission: 'manage_clients' },
-    { name: 'Cases', href: '/cases', icon: FolderOpen, requiredPermission: 'manage_cases' },
-    { name: 'Hearings', href: '/hearings', icon: Gavel, requiredPermission: 'manage_cases' },
-    { name: 'Daily Diary', href: '/diary', icon: Calendar, requiredPermission: null },
-    { name: 'Accounts', href: '/accounts', icon: CircleDollarSign, requiredPermission: 'manage_accounts' },
-    { name: 'Consultations', href: '/consultations', icon: MessageSquare, requiredPermission: 'manage_clients' },
+    { name: 'Dashboard',     href: '/dashboard',    icon: LayoutDashboard, always: true },
+    { name: 'Clients',       href: '/clients',       icon: Users,           module: 'clients' },
+    { name: 'Cases',         href: '/cases',         icon: FolderOpen,      module: 'cases' },
+    { name: 'Hearings',      href: '/hearings',      icon: Gavel,           module: 'hearings' },
+    { name: 'Daily Diary',   href: '/diary',         icon: Calendar,        module: 'diary' },
+    { name: 'Accounts',      href: '/accounts',      icon: Coins,module: 'accounts' },
+    { name: 'Consultations', href: '/consultations', icon: MessageSquare,   module: 'consultations' },
+    // Audit Log: strictly Admin only, never shown by permissions matrix
+    { name: 'Audit Log',     href: '/audit-log',     icon: Activity,        adminOnly: true },
   ];
 
   const filteredNavItems = navItems.filter(item => {
-    if (!item.requiredPermission) return true;
-    if (user?.role === 'Admin') return true;
-    return user?.permissions?.[item.requiredPermission] === true;
+    if (item.always) return true;
+    if (item.adminOnly) return user?.role === 'Admin';
+    if (item.module) return canView(user, item.module);
+    return true;
   });
 
   const SidebarContent = ({ onLinkClick }: { onLinkClick?: () => void }) => (
     <>
-      <div className="h-16 flex items-center px-6 border-b border-slate-100 shrink-0">
-        <h1 className="text-blue-600 font-bold text-lg tracking-wider">EagleNest Legal Solutions</h1>
+      <div className="h-16 flex items-center px-6 border-b border-slate-100 shrink-0 gap-2.5">
+        <div className="relative w-8 h-8 rounded-lg overflow-hidden flex-shrink-0 border border-slate-200 shadow-sm">
+          <Image src="/logo.png" alt="EagleNest Logo" fill className="object-cover scale-[1.15]" sizes="32px" />
+        </div>
+        <h1 className="text-blue-600 font-bold text-base tracking-wider leading-none">
+          EagleNest Legal
+        </h1>
       </div>
       <nav className="flex-1 py-6 flex flex-col gap-1 px-4 overflow-y-auto">
         {filteredNavItems.map((item) => {
@@ -56,12 +77,13 @@ export default function Navigation({ mobileOpen = false, onCloseMobile }: Naviga
           );
         })}
       </nav>
-      <div className="p-4 border-t border-slate-100 shrink-0">
-        {user?.role === 'Admin' && (
+
+      {user?.role === 'Admin' && (
+        <div className="px-4 pb-4 shrink-0">
           <Link
             href="/settings/users"
             onClick={onLinkClick}
-            className={`flex items-center gap-3 px-3 py-2 rounded-lg font-medium transition-all duration-200 mb-1 ${
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-all duration-200 ${
               pathname === '/settings/users'
                 ? 'bg-blue-600 text-white shadow-sm shadow-blue-600/20'
                 : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
@@ -69,32 +91,8 @@ export default function Navigation({ mobileOpen = false, onCloseMobile }: Naviga
           >
             <Settings size={20} /> Admin Settings
           </Link>
-        )}
-        <Link
-          href="/settings/profile"
-          onClick={onLinkClick}
-          className={`flex items-center gap-3 px-3 py-2 rounded-lg font-medium transition-all duration-200 mb-2 ${
-            pathname === '/settings/profile'
-              ? 'bg-blue-600 text-white shadow-sm shadow-blue-600/20'
-              : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
-          }`}
-        >
-          <div className="w-5 h-5 flex items-center justify-center bg-slate-200 rounded-full text-[10px] font-bold text-slate-700">
-            {user?.username?.[0]?.toUpperCase() || 'U'}
-          </div>
-          My Profile
-        </Link>
-        <button
-          onClick={() => {
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('refresh_token');
-            window.location.href = '/login';
-          }}
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg font-medium text-slate-500 hover:bg-slate-50 hover:text-rose-600 transition-all duration-200"
-        >
-          Logout
-        </button>
-      </div>
+        </div>
+      )}
     </>
   );
 
@@ -131,4 +129,3 @@ export default function Navigation({ mobileOpen = false, onCloseMobile }: Naviga
     </>
   );
 }
-

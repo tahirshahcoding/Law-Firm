@@ -1,8 +1,9 @@
 'use client';
 
 import { API_BASE, apiFetch, safeJson } from '@/lib/api';
+import { sendWhatsApp, clientCredentialsMessage } from '@/lib/whatsapp';
 import { useState } from 'react';
-import { X, User, CreditCard, Phone, MapPin, Copy, CheckCheck, Key, Shield } from 'lucide-react';
+import { X, User, CreditCard, Phone, MapPin, Copy, CheckCheck, Key, Shield, MessageCircle } from 'lucide-react';
 
 interface AddClientModalProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ export default function AddClientModal({ isOpen, onClose, onSuccess }: AddClient
   // Credentials shown after successful creation
   const [credentials, setCredentials] = useState<{ portal_username: string; portal_password: string } | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [whatsappSent, setWhatsappSent] = useState(false);
 
   if (!isOpen) return null;
 
@@ -51,9 +53,18 @@ export default function AddClientModal({ isOpen, onClose, onSuccess }: AddClient
       const data = await safeJson(res);
       if (!res.ok) throw new Error(data.error || data.detail || 'Failed to create client');
       onSuccess();
-      setFormData({ name: '', cnic: '', mobile_number: '', address: '' });
       // Show credentials instead of closing
       setCredentials({ portal_username: data.portal_username, portal_password: data.portal_password });
+
+      // Auto-open WhatsApp with credentials message
+      if (formData.mobile_number && data.portal_username && data.portal_password) {
+        const message = clientCredentialsMessage(formData.name, data.portal_username, data.portal_password);
+        const sent = sendWhatsApp(formData.mobile_number, message);
+        setWhatsappSent(sent);
+      }
+
+      // Reset form (but keep mobile_number in closure for the WhatsApp re-send button)
+      setFormData({ name: '', cnic: '', mobile_number: '', address: '' });
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -116,10 +127,31 @@ export default function AddClientModal({ isOpen, onClose, onSuccess }: AddClient
               </span>
             </p>
 
-            <button onClick={() => { setCredentials(null); onClose(); }}
-              className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded-xl transition-colors">
-              Done — Close Window
-            </button>
+            {whatsappSent && (
+              <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs rounded-lg p-3 flex items-center gap-2">
+                <MessageCircle size={14} className="shrink-0" />
+                <p>WhatsApp opened with credentials. Press <strong>Send</strong> in the WhatsApp tab to deliver.</p>
+              </div>
+            )}
+
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  if (credentials) {
+                    const msg = clientCredentialsMessage('Client', credentials.portal_username, credentials.portal_password);
+                    sendWhatsApp(formData.mobile_number, msg);
+                  }
+                }}
+                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+              >
+                <MessageCircle size={16} /> Resend via WhatsApp
+              </button>
+              <button onClick={() => { setCredentials(null); setWhatsappSent(false); onClose(); }}
+                className="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded-xl transition-colors">
+                Done — Close
+              </button>
+            </div>
           </div>
         </div>
       </div>

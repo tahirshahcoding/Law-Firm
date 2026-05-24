@@ -1,10 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
+from simple_history.models import HistoricalRecords
 import uuid
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     role = models.CharField(max_length=50, default='Staff')
+    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
     # Default granular permissions
     permissions = models.JSONField(default=dict)
 
@@ -21,6 +23,7 @@ class Client(models.Model):
     mobile_number = models.CharField(max_length=20)
     address = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    history = HistoricalRecords()
 
     def save(self, *args, **kwargs):
         if not self.client_number:
@@ -44,6 +47,7 @@ class Client(models.Model):
 class Case(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='cases')
+    assigned_to = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name='assigned_cases')
     case_number = models.CharField(max_length=100)
     court = models.CharField(max_length=150)
     judge = models.CharField(max_length=150)
@@ -51,6 +55,7 @@ class Case(models.Model):
     total_fee = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=50, default='Active')
     created_at = models.DateTimeField(auto_now_add=True)
+    history = HistoricalRecords()
 
     def __str__(self):
         return f"{self.case_number} - {self.client.name} vs {self.opponent_name}"
@@ -61,6 +66,7 @@ class Hearing(models.Model):
     hearing_date = models.DateField()
     next_date = models.DateField(null=True, blank=True)
     notes = models.TextField(blank=True, null=True)
+    history = HistoricalRecords()
 
     def __str__(self):
         return f"Hearing on {self.hearing_date} for {self.case.case_number}"
@@ -98,10 +104,13 @@ class Invoice(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     invoice_number = models.CharField(max_length=50, unique=True, blank=True)
     case = models.ForeignKey(Case, on_delete=models.CASCADE, related_name='invoices')
+    amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    description = models.TextField(blank=True, default='Professional Legal Services')
     issue_date = models.DateField()
     due_date = models.DateField()
     status = models.CharField(max_length=50, default='Pending') # Pending, Partial, Paid
     created_at = models.DateTimeField(auto_now_add=True)
+    history = HistoricalRecords()
 
     def save(self, *args, **kwargs):
         if not self.invoice_number:

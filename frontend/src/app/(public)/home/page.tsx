@@ -1,5 +1,3 @@
-'use client';
-
 import Link from 'next/link';
 import { Scale, Phone, Mail, MapPin, ChevronRight, Shield, Users, Briefcase, Heart } from 'lucide-react';
 import Image from 'next/image';

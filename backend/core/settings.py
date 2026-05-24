@@ -10,6 +10,9 @@ import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+from dotenv import load_dotenv
+load_dotenv(BASE_DIR.parent / '.env')
+
 # ── Security ─────────────────────────────────────────────────────────────────
 SECRET_KEY = os.environ.get(
     'SECRET_KEY',
@@ -33,6 +36,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'storages',
+    'simple_history',
+    'django.contrib.postgres',
     'management',
 ]
 
@@ -47,6 +52,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'simple_history.middleware.HistoryRequestMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -114,9 +120,10 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 # ---------------------------------------------------------
 # DYNAMIC STORAGE ENGINE (Local vs. Production)
 # ---------------------------------------------------------
+# Force local storage in DEBUG mode unless USE_S3 is explicitly 'True'
 USE_S3 = os.environ.get('USE_S3') == 'True'
 
-if USE_S3:
+if USE_S3 and not DEBUG:
     # --- PRODUCTION (Render + Supabase S3) ---
     AWS_ACCESS_KEY_ID = os.environ.get('SUPABASE_S3_ACCESS_KEY')
     AWS_SECRET_ACCESS_KEY = os.environ.get('SUPABASE_S3_SECRET_KEY')
@@ -140,27 +147,68 @@ if USE_S3:
         },
     }
 else:
-    # --- LOCAL DEVELOPMENT (Docker Disk Storage) ---
+    # --- LOCAL DEVELOPMENT (Disk Storage) ---
     MEDIA_URL = '/media/'
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+    MEDIA_ROOT = BASE_DIR / 'media'
+
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
 
 
 
 # ── CORS ──────────────────────────────────────────────────────────────────────
 CORS_ALLOWED_ORIGINS_ENV = os.environ.get(
     'CORS_ALLOWED_ORIGINS',
-    'http://localhost:3000,http://localhost:3001,http://localhost:3002,https://lawsiteswat.vercel.app,https://clientcounsel.vercel.app'
+    'http://localhost:3000,http://localhost:3001,http://localhost:3002,http://127.0.0.1:3000,http://127.0.0.1:3001,http://127.0.0.1:3002,https://lawsiteswat.vercel.app,https://clientcounsel.vercel.app'
 )
 CORS_ALLOWED_ORIGINS = [o.strip() for o in CORS_ALLOWED_ORIGINS_ENV.split(',')]
+
+# Allow CORS on both API and media file paths (so browser can load avatar images)
+CORS_URLS_REGEX = r'^/(api|media)/.*$'
+
+# Required for cookie-based auth — browser must send credentials with cross-origin requests
+CORS_ALLOW_CREDENTIALS = True
+
+# Ensure Django uses the client-facing host (localhost:8000) when building absolute
+# URIs inside Docker, rather than the internal container hostname
+USE_X_FORWARDED_HOST = True
 
 # ── REST Framework ────────────────────────────────────────────────────────────
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+        # Reads JWT from the httpOnly 'access_token' cookie instead of the
+        # Authorization header — immune to XSS token theft.
+        'management.authentication.CookieJWTAuthentication',
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20,
+    'PAGE_SIZE_QUERY_PARAM': 'limit',
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+        'rest_framework.throttling.ScopedRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '100/minute',
+        'user': '1000/minute',
+        'login': '10/minute',
+        'consultation': '10/minute',
+    },
+    'EXCEPTION_HANDLER': 'management.exceptions.custom_exception_handler',
 }
 
 # ── JWT ───────────────────────────────────────────────────────────────────────
+# Cookie security: Lax in local dev (same-origin), None+Secure in production
+# (cross-origin between Vercel frontend and Render backend).
+_COOKIE_SAMESITE = 'Lax' if DEBUG else 'None'
+_COOKIE_SECURE   = not DEBUG  # True in production (HTTPS only)
+
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=8),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
@@ -170,6 +218,14 @@ SIMPLE_JWT = {
     'ALGORITHM': 'HS256',
     'SIGNING_KEY': SECRET_KEY,
     'AUTH_HEADER_TYPES': ('Bearer',),
+    # ── Cookie settings (used by CookieJWTAuthentication + login view) ──
+    'AUTH_COOKIE':          'access_token',
+    'AUTH_COOKIE_REFRESH':  'refresh_token',
+    'AUTH_COOKIE_HTTP_ONLY': True,
+    'AUTH_COOKIE_SECURE':    _COOKIE_SECURE,
+    'AUTH_COOKIE_SAMESITE':  _COOKIE_SAMESITE,
+    'AUTH_COOKIE_PATH':      '/',
+    'AUTH_COOKIE_DOMAIN':    None,  # None = same domain; set to '.yourdomain.com' for subdomains
 }
 
 # ── Production Security Headers ───────────────────────────────────────────────

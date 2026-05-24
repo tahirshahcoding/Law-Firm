@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Scale, MapPin, Phone, Mail } from 'lucide-react';
+import Image from 'next/image';
 
 export function Footer() {
   return (
@@ -7,7 +8,9 @@ export function Footer() {
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
         <div className="col-span-1 md:col-span-2">
           <Link href="/" className="flex items-center gap-3 mb-6">
-            <Scale className="text-[#B4935E]" size={28} />
+            <div className="relative w-8 h-8 rounded-md overflow-hidden flex-shrink-0">
+              <Image src="/logo.png" alt="EagleNest Logo" fill className="object-cover scale-[1.15]" sizes="32px" />
+            </div>
             <span className="font-serif font-bold text-xl tracking-tight text-slate-50 uppercase">
               EagleNest Legal Solutions <span className="text-[#B4935E]"></span>
             </span>

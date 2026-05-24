@@ -1,17 +1,25 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Plus, Search, FolderOpen, MoreVertical, Eye, Trash2, Edit2, Scale, UserX, Clock, Gavel } from 'lucide-react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { Plus, Search, FolderOpen, MoreVertical, Eye, Trash2, Edit2, Scale, UserX, Clock, Gavel, ChevronLeft, ChevronRight, Download } from 'lucide-react';
+import { useDebounce } from '@/hooks/useDebounce';
 import { API_BASE, apiFetch } from '@/lib/api';
 import AddCaseModal from '@/components/AddCaseModal';
 import EditCaseModal from '@/components/EditCaseModal';
 import { useAuth } from '@/context/AuthContext';
 import { TableSkeleton } from '@/components/SkeletonLoaders';
 
-export default function CasesPage() {
+function CasesPageContent() {
+  const searchParams = useSearchParams();
+  const initialSearch = searchParams.get('search') || '';
   const [cases, setCases] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(initialSearch);
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
   
   // Modals state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -20,16 +28,32 @@ export default function CasesPage() {
 
   const { user } = useAuth();
 
+  const canViewCases   = user?.role === 'Admin' || user?.permissions?.cases?.view === true;
+  const canAddCases    = user?.role === 'Admin' || user?.permissions?.cases?.add === true;
+  const canEditCases   = user?.role === 'Admin' || user?.permissions?.cases?.edit === true;
+  const canDeleteCases = user?.role === 'Admin' || user?.permissions?.cases?.delete === true;
+
   const fetchCases = () => {
-    if (user && user.role !== 'Admin' && !user.permissions?.manage_cases) {
-      window.location.href = '/';
-      return;
-    }
+    if (!canViewCases) return;
     setLoading(true);
-    apiFetch(`${API_BASE}/cases/`)
+    const query = new URLSearchParams({
+      page: page.toString(),
+      limit: '20',
+      ...(debouncedSearchTerm && { search: debouncedSearchTerm })
+    });
+
+    apiFetch(`${API_BASE}/cases/?${query.toString()}`)
       .then(res => res.json())
       .then(data => {
-        setCases(data);
+        if (data.results) {
+          setCases(data.results);
+          setTotalCount(data.count);
+          setTotalPages(Math.ceil(data.count / 20));
+        } else {
+          setCases(data);
+          setTotalCount(data.length);
+          setTotalPages(1);
+        }
         setLoading(false);
       })
       .catch(err => {
@@ -40,7 +64,11 @@ export default function CasesPage() {
 
   useEffect(() => {
     fetchCases();
-  }, []);
+  }, [page, debouncedSearchTerm]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearchTerm]);
 
   const handleDelete = async (id: string, caseNumber: string) => {
     if (!window.confirm(`Are you sure you want to permanently delete Case ${caseNumber}?`)) return;
@@ -62,12 +90,49 @@ export default function CasesPage() {
     setIsEditModalOpen(true);
   };
 
-  // Set up local search filtering
-  const filteredCases = cases.filter((c: any) => 
-    c.case_number?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    c.opponent_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    c.court?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Server handles filtering now
+
+  const exportToCSV = async () => {
+    // Fetch all cases (no pagination) for export
+    try {
+      const res = await apiFetch(`${API_BASE}/cases/?page_size=10000`);
+      const data = await res.json();
+      const allCases = data.results || data;
+      const headers = ['Case Number', 'Client', 'Opponent', 'Court', 'Judge', 'Status', 'Total Fee', 'Created'];
+      const rows = allCases.map((c: any) => [
+        c.case_number,
+        c.client_name || '',
+        c.opponent_name,
+        c.court,
+        c.judge || '',
+        c.status || 'Active',
+        c.total_fee,
+        c.created_at ? new Date(c.created_at).toLocaleDateString('en-GB') : ''
+      ]);
+      const csvContent = [headers, ...rows].map(row => row.map((cell: any) => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `cases_export_${new Date().toISOString().slice(0, 10)}.csv`;
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Export failed:', err);
+    }
+  };
+
+  if (!canViewCases) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[60vh] text-center">
+        <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+          <FolderOpen size={32} className="text-slate-300" />
+        </div>
+        <h2 className="text-xl font-bold text-slate-700">Access Denied</h2>
+        <p className="text-slate-500 mt-1">You don't have permission to view cases.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-500">
@@ -76,12 +141,14 @@ export default function CasesPage() {
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Case Register</h2>
           <p className="text-slate-500 mt-1 text-sm sm:text-base">Track and manage active legal proceedings.</p>
         </div>
-        <button 
-          onClick={() => setIsAddModalOpen(true)}
-          className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-medium transition-all duration-200 shadow-sm shadow-blue-600/20 flex items-center justify-center gap-2"
-        >
-          <Plus size={18} /> New Case
-        </button>
+        {canAddCases && (
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-medium transition-all duration-200 shadow-sm shadow-blue-600/20 flex items-center justify-center gap-2"
+          >
+            <Plus size={18} /> New Case
+          </button>
+        )}
       </div>
 
       <div className="bg-white rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] border border-slate-100 overflow-hidden">
@@ -97,14 +164,22 @@ export default function CasesPage() {
               className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
             />
           </div>
-          <div className="text-sm text-slate-500 font-medium whitespace-nowrap">
-            {filteredCases.length} Active
+          <div className="flex items-center gap-3">
+            <button
+              onClick={exportToCSV}
+              className="inline-flex items-center gap-1.5 px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-sm font-medium rounded-lg border border-emerald-200 transition-colors whitespace-nowrap"
+            >
+              <Download size={14} /> Export Excel
+            </button>
+            <span className="text-sm text-slate-500 font-medium whitespace-nowrap">
+              {totalCount} Active
+            </span>
           </div>
         </div>
 
         {loading ? (
           <TableSkeleton />
-        ) : filteredCases.length === 0 ? (
+        ) : cases.length === 0 ? (
           <div className="px-6 py-12 text-center text-slate-500 bg-slate-50/50">
             <div className="flex flex-col items-center justify-center max-w-sm mx-auto">
               <div className="w-12 h-12 bg-white border border-slate-200 rounded-full flex items-center justify-center mb-3">
@@ -122,7 +197,7 @@ export default function CasesPage() {
           <>
             {/* Mobile Card View */}
             <div className="md:hidden divide-y divide-slate-100">
-              {filteredCases.map((caseItem: any) => (
+              {cases.map((caseItem: any) => (
                 <div key={caseItem.id} className="p-4 hover:bg-slate-50/80 transition-colors">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-start gap-3 flex-1 min-w-0">
@@ -179,7 +254,7 @@ export default function CasesPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {filteredCases.map((caseItem: any) => (
+                  {cases.map((caseItem: any) => (
                     <tr key={caseItem.id} className="hover:bg-slate-50/80 transition-colors duration-200 group">
                       <td className="px-6 py-4">
                         <div className="flex items-start gap-3">
@@ -243,6 +318,33 @@ export default function CasesPage() {
                 </tbody>
               </table>
             </div>
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="p-4 border-t border-slate-100 flex items-center justify-between bg-slate-50/30">
+                <p className="text-sm text-slate-500">
+                  Showing <span className="font-medium text-slate-900">{(page - 1) * 20 + 1}</span> to <span className="font-medium text-slate-900">{Math.min(page * 20, totalCount)}</span> of <span className="font-medium text-slate-900">{totalCount}</span> results
+                </p>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setPage(p => Math.max(1, p - 1))}
+                    disabled={page === 1}
+                    className="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <ChevronLeft size={16} />
+                  </button>
+                  <span className="text-sm font-medium text-slate-700 px-2">
+                    Page {page} of {totalPages}
+                  </span>
+                  <button
+                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                    disabled={page === totalPages}
+                    className="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
+              </div>
+            )}
           </>
         )}
       </div>
@@ -260,6 +362,14 @@ export default function CasesPage() {
         caseData={selectedCase}
       />
     </div>
+  );
+}
+
+export default function CasesPage() {
+  return (
+    <Suspense fallback={<TableSkeleton />}>
+      <CasesPageContent />
+    </Suspense>
   );
 }
 

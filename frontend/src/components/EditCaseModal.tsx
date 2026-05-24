@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { X, FolderOpen, Scale, Gavel, UserX, CircleDollarSign, Search, Check } from 'lucide-react';
+import { X, FolderOpen, Scale, Gavel, UserX, Coins, Search, Check } from 'lucide-react';
 import { API_BASE, apiFetch, safeJson } from '@/lib/api';
 
 interface EditCaseModalProps {
@@ -36,10 +36,11 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
   useEffect(() => {
     if (isOpen) {
       // Fetch clients for the dropdown
-      apiFetch(`${API_BASE}/clients/`)
+      apiFetch(`${API_BASE}/clients/?page_size=1000`)
         .then(res => res.json())
         .then(data => {
-          setClients(data);
+          const list = Array.isArray(data) ? data : (data.results || []);
+          setClients(list);
           
           // Pre-populate actual data
           if (caseData) {
@@ -54,7 +55,7 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
             });
             
             // Sync client display name
-            const matchingClient = data.find((c: any) => c.id === caseData.client);
+            const matchingClient = list.find((c: any) => c.id === caseData.client);
             if (matchingClient) {
               setSelectedClientName(`${matchingClient.client_number ? matchingClient.client_number + ' - ' : ''}${matchingClient.name}`);
             }
@@ -207,7 +208,7 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Total Agreed Fee</label>
               <div className="relative">
-                <CircleDollarSign size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <Coins size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type="number"
                   step="0.01"

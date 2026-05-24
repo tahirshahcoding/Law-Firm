@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Search, Calendar, Edit2, Trash2, MapPin, AlignLeft, FolderOpen, MoreVertical, Check, FileText } from 'lucide-react';
+import { Plus, Search, Calendar, Edit2, Trash2, MapPin, AlignLeft, FolderOpen, MoreVertical, Check, FileText, Gavel } from 'lucide-react';
 import { API_BASE, apiFetch } from '@/lib/api';
 import AddHearingModal from '@/components/AddHearingModal';
 import EditHearingModal from '@/components/EditHearingModal';
@@ -23,17 +23,20 @@ export default function HearingsPage() {
 
   const { user } = useAuth();
 
+  const canViewHearings   = user?.role === 'Admin' || user?.permissions?.hearings?.view === true;
+  const canAddHearings    = user?.role === 'Admin' || user?.permissions?.hearings?.add === true;
+  const canEditHearings   = user?.role === 'Admin' || user?.permissions?.hearings?.edit === true;
+  const canDeleteHearings = user?.role === 'Admin' || user?.permissions?.hearings?.delete === true;
+
   const fetchHearings = () => {
-    if (user && user.role !== 'Admin' && !user.permissions?.manage_cases) {
-      window.location.href = '/';
-      return;
-    }
+    if (!canViewHearings) return;
     setLoading(true);
     apiFetch(`${API_BASE}/hearings/`)
       .then(res => res.json())
       .then(data => {
+        const hearingsData = data.results || data;
         // Sort chronologically (closest dates first)
-        const sortedData = data.sort((a: any, b: any) => new Date(a.hearing_date).getTime() - new Date(b.hearing_date).getTime());
+        const sortedData = hearingsData.sort((a: any, b: any) => new Date(a.hearing_date).getTime() - new Date(b.hearing_date).getTime());
         setHearings(sortedData);
         setLoading(false);
       })
@@ -86,6 +89,18 @@ export default function HearingsPage() {
     formatDate(h.hearing_date).includes(searchTerm)
   );
 
+  if (!canViewHearings) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[60vh] text-center">
+        <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+          <Gavel size={32} className="text-slate-300" />
+        </div>
+        <h2 className="text-xl font-bold text-slate-700">Access Denied</h2>
+        <p className="text-slate-500 mt-1">You don't have permission to view hearings.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -93,12 +108,14 @@ export default function HearingsPage() {
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Legal Hearings</h2>
           <p className="text-slate-500 mt-1 text-sm sm:text-base">Manage all upcoming firm hearings and schedules.</p>
         </div>
-        <button 
-          onClick={() => setIsAddModalOpen(true)}
-          className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-medium transition-all duration-200 shadow-sm shadow-blue-600/20 flex items-center justify-center gap-2"
-        >
-          <Plus size={18} /> Schedule Hearing
-        </button>
+        {canAddHearings && (
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-medium transition-all duration-200 shadow-sm shadow-blue-600/20 flex items-center justify-center gap-2"
+          >
+            <Plus size={18} /> Schedule Hearing
+          </button>
+        )}
       </div>
 
       <div className="bg-white rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] border border-slate-100 overflow-hidden">

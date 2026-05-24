@@ -1,6 +1,6 @@
 'use client';
 
-import { API_BASE } from '@/lib/api';
+import { API_BASE, apiFetch } from '@/lib/api';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 
@@ -10,13 +10,13 @@ type UserProfile = {
   email: string;
   role: string;
   permissions: any;
+  avatar: string | null;
 };
 
 type AuthContextType = {
   user: UserProfile | null;
-  token: string | null;
-  login: (access: string, refresh: string) => Promise<void>;
-  logout: () => void;
+  login: () => Promise<void>;
+  logout: () => Promise<void>;
   loading: boolean;
 };
 
@@ -24,44 +24,37 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserProfile | null>(null);
-  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
+  const router   = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
     const checkAuth = async () => {
-      const storedToken = localStorage.getItem('access_token');
-
-      // No token stored — nothing to check, just finish loading
-      if (!storedToken) {
-        setLoading(false);
-        return;
-      }
-
       try {
+        // Use plain fetch (not apiFetch) so the 401→/login redirect never fires
+        // during the silent session-restore at startup. The route guard below
+        // handles the redirect once loading is complete.
         const res = await fetch(`${API_BASE}/users/me/`, {
-          headers: { 'Authorization': `Bearer ${storedToken}` }
+          credentials: 'include',
         });
         if (res.ok) {
           const userData = await res.json();
-          // Block client accounts from using the staff system
+          // Block client accounts from accessing the staff system
           if (userData.role === 'Client') {
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('refresh_token');
+            // Clear the server-side cookie and let the route guard redirect
+            await fetch(`${API_BASE}/auth/logout/`, {
+              method: 'POST',
+              credentials: 'include',
+            });
           } else {
             setUser(userData);
-            setToken(storedToken);
           }
-        } else {
-          localStorage.removeItem('access_token');
-          localStorage.removeItem('refresh_token');
         }
-      } catch (err) {
-        // Backend unreachable — silently clear token, don't crash
+        // Non-200 responses (401, 403, etc.) are handled silently here —
+        // the route guard useEffect below redirects to /login once loading=false.
+      } catch {
+        // Backend unreachable — silently stay logged out, don't crash
         console.warn('Auth check skipped: backend unreachable');
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
       }
       setLoading(false);
     };
@@ -69,8 +62,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     checkAuth();
   }, []);
 
+  // ── Route guard ───────────────────────────────────────────────────────────
   useEffect(() => {
-    // Redirect logic — only apply to staff routes, not public or portal routes
     const isPublicPath = pathname === '/home' || pathname.startsWith('/portal');
     if (!loading && !isPublicPath) {
       if (!user && pathname !== '/login') {
@@ -81,35 +74,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user, loading, pathname, router]);
 
-  const login = async (access: string, refresh: string) => {
-    localStorage.setItem('access_token', access);
-    localStorage.setItem('refresh_token', refresh);
-    
-    // Fetch user profile immediately
-    const res = await fetch(`${API_BASE}/users/me/`, {
-      headers: {
-        'Authorization': `Bearer ${access}`
-      }
-    });
-    
+  // ── login — called after the POST to /api/token/ succeeds ────────────────
+  // The Django login view has already set the httpOnly cookies at this point.
+  // We just need to fetch the user profile to populate the context.
+  const login = async () => {
+    const res = await apiFetch(`${API_BASE}/users/me/`);
     if (res.ok) {
       const userData = await res.json();
       setUser(userData);
-      setToken(access);
       router.push('/dashboard');
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
+  // ── logout — clears cookies server-side, then clears local state ──────────
+  const logout = async () => {
+    try {
+      await apiFetch(`${API_BASE}/auth/logout/`, { method: 'POST' });
+    } catch {
+      // Even if the request fails, clear local state so the UI logs out
+    }
     setUser(null);
-    setToken(null);
     router.push('/login');
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

@@ -33,19 +33,18 @@ export default function HearingDocumentsModal({ isOpen, onClose, hearingData, on
   const handleUploadDocument = async () => {
     if (!uploadFile || !uploadName) return;
     setIsUploading(true);
-    
+
     const formData = new FormData();
     formData.append('hearing', hearingData.id);
     formData.append('file', uploadFile);
     formData.append('name', uploadName);
 
     try {
-      const res = await fetch(`${API_BASE}/hearing-documents/`, {
+      // Use apiFetch so the httpOnly cookie is sent and CSRF header is injected
+      const res = await apiFetch(`${API_BASE}/hearing-documents/`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-        },
-        body: formData
+        body: formData,
+        // Do NOT set Content-Type — the browser sets it with the correct boundary
       });
 
       if (res.ok) {
@@ -212,15 +211,28 @@ export default function HearingDocumentsModal({ isOpen, onClose, hearingData, on
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       {editingDocId !== doc.id && (
                         <>
-                          <a 
-                            href={doc.file.startsWith('http') ? doc.file : `${API_BASE.replace('/api', '')}${doc.file}`} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
+                          <button
+                            onClick={async () => {
+                              // Request a short-lived pre-signed URL from Django.
+                              // The URL expires in 15 minutes, so even if leaked
+                              // it cannot be used to access court documents long-term.
+                              try {
+                                const res = await apiFetch(
+                                  `${API_BASE}/hearing-documents/${doc.id}/presigned_url/`
+                                );
+                                if (!res.ok) throw new Error('Failed to get download link');
+                                const { url } = await res.json();
+                                window.open(url, '_blank', 'noopener,noreferrer');
+                              } catch (err) {
+                                alert('Could not generate download link. Please try again.');
+                                console.error(err);
+                              }
+                            }}
                             className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                            title="Download"
+                            title="Download (secure link, expires in 15 min)"
                           >
                             <Download size={18} />
-                          </a>
+                          </button>
                           <button 
                             onClick={() => handleStartRename(doc)}
                             className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"

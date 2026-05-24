@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Scale, Briefcase, Calendar, LogOut, Clock, AlertCircle } from 'lucide-react';
+import Image from 'next/image';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
@@ -13,20 +14,21 @@ export default function DashboardPage() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const token = sessionStorage.getItem('cp_access');
-    if (!token) { router.replace('/'); return; }
-
+    // No token needed — the httpOnly cookie is sent automatically by the browser.
+    // If the cookie is absent or expired, the backend returns 401 and we redirect.
     fetch(`${API}/portal/data/`, {
-      headers: { Authorization: `Bearer ${token}` },
+      credentials: 'include',
     })
       .then(r => { if (!r.ok) throw new Error(); return r.json(); })
       .then(d => { setData(d); setLoading(false); })
       .catch(() => { router.replace('/'); });
   }, [router]);
 
-  const handleLogout = () => {
-    sessionStorage.removeItem('cp_access');
-    sessionStorage.removeItem('cp_refresh');
+  const handleLogout = async () => {
+    // Delete the httpOnly cookies server-side, then redirect to login
+    try {
+      await fetch(`${API}/auth/logout/`, { method: 'POST', credentials: 'include' });
+    } catch { /* ignore network errors — redirect anyway */ }
     router.push('/');
   };
 
@@ -60,8 +62,8 @@ export default function DashboardPage() {
       {/* ── Top bar ── */}
       <header className="bg-slate-900 px-6 py-4 flex items-center justify-between sticky top-0 z-10 shadow-lg">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-blue-700 rounded-xl flex items-center justify-center">
-            <Scale size={18} className="text-white" />
+          <div className="relative w-9 h-9 rounded-xl overflow-hidden flex-shrink-0 border border-slate-700 shadow-sm">
+            <Image src="/logo.png" alt="EagleNest Logo" fill className="object-cover scale-[1.15]" sizes="36px" />
           </div>
           <div>
             <p className="text-white font-bold text-sm leading-none">EagleNest Legal Solutions</p>

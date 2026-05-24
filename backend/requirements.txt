@@ -10,3 +10,7 @@ whitenoise[brotli]
 dj-database-url
 django-storages
 boto3
+django-simple-history
+pillow
+pytest
+pytest-django

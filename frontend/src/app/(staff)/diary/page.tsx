@@ -1,35 +1,47 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Calendar as CalendarIcon, Plus, CheckCircle2, Circle, Clock, Trash2 } from 'lucide-react';
+import { Calendar as CalendarIcon, Plus, CheckCircle2, Circle, Clock, Trash2, Gavel, Scale, FolderOpen } from 'lucide-react';
 import { API_BASE, apiFetch } from '@/lib/api';
 import { ListSkeleton } from '@/components/SkeletonLoaders';
+import { toast } from 'sonner';
 
 export default function DailyDiaryPage() {
   const [tasks, setTasks] = useState<any[]>([]);
+  const [hearings, setHearings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [newTaskDueDate, setNewTaskDueDate] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const fetchTasks = () => {
-    apiFetch(`${API_BASE}/tasks/`)
-      .then(res => res.json())
-      .then(data => {
-        setTasks(data);
+  const fetchTasksAndHearings = () => {
+    setLoading(true);
+    Promise.all([
+      apiFetch(`${API_BASE}/tasks/`).then(res => res.json()),
+      apiFetch(`${API_BASE}/diary/today/`).then(res => res.json())
+    ])
+      .then(([tasksData, hearingsData]) => {
+        setTasks(tasksData.results || tasksData);
+        setHearings(Array.isArray(hearingsData) ? hearingsData : []);
         setLoading(false);
       })
       .catch(err => {
-        console.error('Failed to fetch tasks:', err);
+        console.error('Failed to fetch data:', err);
+        toast.error("Failed to load daily diary data");
         setLoading(false);
       });
   };
 
   useEffect(() => {
-    fetchTasks();
+    fetchTasksAndHearings();
   }, []);
 
   const handleToggleTask = async (task: any) => {
+    // Fully Optimistic UI: update immediately
+    setTasks((prevTasks: any) => 
+      prevTasks.map((t: any) => t.id === task.id ? { ...t, is_completed: !task.is_completed } : t)
+    );
+
     try {
       const res = await apiFetch(`${API_BASE}/tasks/${task.id}/`, {
         method: 'PATCH',
@@ -37,13 +49,12 @@ export default function DailyDiaryPage() {
         body: JSON.stringify({ is_completed: !task.is_completed }),
       });
       if (!res.ok) throw new Error('Failed to update task');
-      
-      // Optimistically update UI
-      setTasks((prevTasks: any) => 
-        prevTasks.map((t: any) => t.id === task.id ? { ...t, is_completed: !task.is_completed } : t)
-      );
     } catch (err) {
       console.error(err);
+      // Revert optimism on failure
+      setTasks((prevTasks: any) => 
+        prevTasks.map((t: any) => t.id === task.id ? { ...t, is_completed: task.is_completed } : t)
+      );
     }
   };
 
@@ -54,6 +65,7 @@ export default function DailyDiaryPage() {
         method: 'DELETE',
       });
       if (!res.ok) throw new Error('Failed to delete task');
+      toast.success("Task deleted");
       setTasks((prevTasks: any) => prevTasks.filter((t: any) => t.id !== id));
     } catch (err) {
       console.error(err);
@@ -86,10 +98,11 @@ export default function DailyDiaryPage() {
       
       setNewTaskTitle('');
       setNewTaskDueDate('');
-      fetchTasks();
+      toast.success("Task added");
+      fetchTasksAndHearings();
     } catch (err) {
       console.error(err);
-      alert('Error adding task: ' + (err instanceof Error ? err.message : String(err)));
+      toast.error('Error adding task: ' + (err instanceof Error ? err.message : String(err)));
     } finally {
       setIsSubmitting(false);
     }
@@ -161,6 +174,41 @@ export default function DailyDiaryPage() {
           </form>
         </div>
 
+        {/* Today's Hearings */}
+        {!loading && hearings.length > 0 && (
+          <div className="border-b border-slate-100 bg-slate-50">
+            <div className="px-6 py-4">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 mb-4 flex items-center gap-2">
+                <Gavel size={16} /> Cause List - Today's Hearings ({hearings.length})
+              </h3>
+              <div className="grid grid-cols-1 gap-3">
+                {hearings.map((h: any) => (
+                  <div key={h.id} className="bg-white border border-slate-200 rounded-xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-bold text-lg text-slate-900">{h.case?.case_number}</span>
+                          <span className="text-sm font-medium text-slate-500">vs {h.case?.opponent_name}</span>
+                        </div>
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-slate-600">
+                          <span className="flex items-center gap-1.5"><Scale size={14} className="text-slate-400" /> {h.case?.court}</span>
+                          <span className="hidden sm:inline text-slate-300">•</span>
+                          <span className="flex items-center gap-1.5"><FolderOpen size={14} className="text-slate-400" /> {h.case?.judge}</span>
+                        </div>
+                      </div>
+                      {h.notes && (
+                        <div className="bg-amber-50 text-amber-700 px-3 py-2 rounded-lg text-sm w-full sm:w-auto mt-2 sm:mt-0">
+                          {h.notes}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Task List */}
         {loading ? (
           <div className="p-6">
@@ -215,8 +263,8 @@ export default function DailyDiaryPage() {
                     {completedTasks.map((task: any) => (
                       <div key={task.id} className="group flex items-center justify-between p-3 opacity-60 hover:opacity-100 transition-opacity duration-200">
                         <div className="flex items-center gap-4 flex-1">
-                          <button onClick={() => handleToggleTask(task)} className="text-emerald-500">
-                            <CheckCircle2 size={22} />
+                          <button onClick={() => handleToggleTask(task)} className="text-amber-500">
+                            <CheckCircle2 size={22} className="fill-amber-50" />
                           </button>
                           <div className="flex-1">
                             <p className="text-slate-500 font-medium line-through decoration-slate-300">{task.title}</p>

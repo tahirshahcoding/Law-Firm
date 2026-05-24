@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { X, FolderOpen, Scale, Gavel, UserX, CircleDollarSign, Search, Check } from 'lucide-react';
+import { X, FolderOpen, Scale, Gavel, UserX, Coins, Search, Check } from 'lucide-react';
 import { API_BASE, apiFetch, safeJson } from '@/lib/api';
+import { sendWhatsApp, caseRegisteredMessage } from '@/lib/whatsapp';
+import { toast } from 'sonner';
 
 interface AddCaseModalProps {
   isOpen: boolean;
@@ -21,7 +23,6 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
   });
   
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   
   // Combobox specific state
   const [clients, setClients] = useState<any[]>([]);
@@ -33,9 +34,9 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
   useEffect(() => {
     if (isOpen) {
       // Fetch clients for the dropdown
-      apiFetch(`${API_BASE}/clients/`)
+      apiFetch(`${API_BASE}/clients/?page_size=1000`)
         .then(res => res.json())
-        .then(data => setClients(data))
+        .then(data => setClients(Array.isArray(data) ? data : (data.results || [])))
         .catch(err => console.error("Failed to load clients:", err));
     }
   }, [isOpen]);
@@ -68,12 +69,11 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.client) {
-      setError("Please select a client from the dropdown.");
+      toast.error("Please select a client from the dropdown.");
       return;
     }
 
     setLoading(true);
-    setError(null);
 
     try {
       const res = await apiFetch(`${API_BASE}/cases/`, {
@@ -90,12 +90,28 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
         throw new Error(data.error || data.detail || JSON.stringify(data) || 'Failed to create case');
       }
 
+      toast.success("Case registered successfully");
+
+      // Auto-send WhatsApp notification to the client
+      const selectedClient = clients.find((c: any) => c.id === formData.client);
+      if (selectedClient?.mobile_number) {
+        const message = caseRegisteredMessage(
+          selectedClient.name,
+          formData.case_number,
+          formData.opponent_name,
+          formData.court,
+          formData.judge,
+        );
+        sendWhatsApp(selectedClient.mobile_number, message);
+        toast.success('WhatsApp notification opened — press Send to deliver.', { icon: '📱' });
+      }
+
       onSuccess();
       setFormData({ client: '', case_number: '', court: '', judge: '', opponent_name: '', total_fee: '' });
       setSelectedClientName('');
       onClose();
     } catch (err: any) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setLoading(false);
     }
@@ -112,11 +128,6 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-5 custom-scrollbar">
-          {error && (
-            <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-sm text-rose-600 font-medium">
-              {error}
-            </div>
-          )}
 
           {/* Client Selection Combobox */}
           <div className="relative" ref={dropdownRef}>
@@ -185,7 +196,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Total Agreed Fee</label>
               <div className="relative">
-                <CircleDollarSign size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <Coins size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type="number"
                   step="0.01"

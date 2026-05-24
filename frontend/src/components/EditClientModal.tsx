@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, User, CreditCard, Phone, MapPin, RefreshCw, Copy, CheckCheck, Key, Shield } from 'lucide-react';
+import { X, User, CreditCard, Phone, MapPin, RefreshCw, Copy, CheckCheck, Key, Shield, MessageCircle } from 'lucide-react';
 import { API_BASE, apiFetch, safeJson } from '@/lib/api';
+import { sendWhatsApp, credentialsResetMessage } from '@/lib/whatsapp';
 import { useAuth } from '@/context/AuthContext';
 
 interface EditClientModalProps {
@@ -55,6 +56,17 @@ export default function EditClientModal({ isOpen, onClose, onSuccess, clientData
       const data = await safeJson(res);
       if (!res.ok) throw new Error(data.error || 'Failed to reset password');
       setNewCredentials(data);
+
+      // Auto-open WhatsApp with updated credentials
+      const phone = formData.mobile_number || clientData.mobile_number;
+      if (phone && data.portal_username && data.portal_password) {
+        const message = credentialsResetMessage(
+          formData.name || clientData.name,
+          data.portal_username,
+          data.portal_password,
+        );
+        sendWhatsApp(phone, message);
+      }
     } catch (err: any) {
       alert('Error: ' + err.message);
     } finally {
@@ -150,10 +162,26 @@ export default function EditClientModal({ isOpen, onClose, onSuccess, clientData
                       <div className="flex items-center gap-1.5 text-emerald-700 text-xs font-bold"><Shield size={12} /> New Credentials (save immediately)</div>
                       <div className="flex items-center justify-between">
                         <span className="font-mono text-sm font-bold text-slate-900">{newCredentials.portal_password}</span>
-                        <button type="button" onClick={() => copyToClipboard(newCredentials.portal_password, 'reset')}
-                          className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold transition-all ${copiedField === 'reset' ? 'bg-emerald-200 text-emerald-800' : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'}`}>
-                          {copiedField === 'reset' ? <><CheckCheck size={12} /> Copied</> : <><Copy size={12} /> Copy</>}
-                        </button>
+                        <div className="flex items-center gap-1.5">
+                          <button type="button" onClick={() => {
+                            const phone = formData.mobile_number || clientData.mobile_number;
+                            if (phone) {
+                              const msg = credentialsResetMessage(
+                                formData.name || clientData.name,
+                                newCredentials.portal_username,
+                                newCredentials.portal_password,
+                              );
+                              sendWhatsApp(phone, msg);
+                            }
+                          }}
+                            className="flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold bg-green-100 text-green-700 hover:bg-green-200 transition-all">
+                            <MessageCircle size={12} /> WhatsApp
+                          </button>
+                          <button type="button" onClick={() => copyToClipboard(newCredentials.portal_password, 'reset')}
+                            className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold transition-all ${copiedField === 'reset' ? 'bg-emerald-200 text-emerald-800' : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'}`}>
+                            {copiedField === 'reset' ? <><CheckCheck size={12} /> Copied</> : <><Copy size={12} /> Copy</>}
+                          </button>
+                        </div>
                       </div>
                     </div>
                   )}

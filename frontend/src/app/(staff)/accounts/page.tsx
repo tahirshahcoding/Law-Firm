@@ -1,226 +1,373 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { CircleDollarSign, Receipt, TrendingUp, Download, ArrowUpRight, Search, FileText } from 'lucide-react';
-import { API_BASE, apiFetch } from '@/lib/api';
+import { useState, useEffect, useRef, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { Coins, TrendingUp, Download, Search, FileText, Plus, Trash2, Wallet, ShieldAlert, Share2 } from 'lucide-react';
+import { API_BASE, apiFetch, safeJson } from '@/lib/api';
 import InvoiceTemplate from '@/components/InvoiceTemplate';
+import GenerateChallanModal from '@/components/GenerateChallanModal';
+import AddPaymentModal from '@/components/AddPaymentModal';
 import { useAuth } from '@/context/AuthContext';
 
-export default function AccountsPage() {
+function AccountsContent() {
+  const searchParams = useSearchParams();
+  const initialSearch = searchParams.get('search') || '';
+  
   const [ledger, setLedger] = useState({
     total_billed: 0,
     total_received: 0,
     outstanding_balance: 0,
     revenue_chart: [] as { month: string, revenue: number }[]
   });
-  const [cases, setCases] = useState([]);
+  const [challans, setChallans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(initialSearch);
+  const [statusFilter, setStatusFilter] = useState('All');
   
-  // State for PDF Generation
+  // Modals state
+  const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [selectedChallanForPayment, setSelectedChallanForPayment] = useState<any | null>(null);
+
+  // PDF State
   const [selectedCaseForInvoice, setSelectedCaseForInvoice] = useState<any>(null);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
-  const invoiceContainerRef = useRef<HTMLDivElement>(null);
 
   const { user } = useAuth();
-  
-  useEffect(() => {
-    if (user && user.role !== 'Admin' && !user.permissions?.manage_accounts) {
-      window.location.href = '/';
-      return;
-    }
+  const canViewAccounts = user?.role === 'Admin' || user?.permissions?.accounts?.view === true;
+  const canManageAccounts = user?.role === 'Admin' || user?.permissions?.accounts?.edit === true;
+  const canDeleteAccounts = user?.role === 'Admin' || user?.permissions?.accounts?.delete === true;
 
-    const fetchAccounts = async () => {
-      try {
-        const [ledgerRes, casesRes] = await Promise.all([
-          apiFetch(`${API_BASE}/accounts/ledger/`),
-          apiFetch(`${API_BASE}/cases/`)
-        ]);
-        
-        const ledgerData = await ledgerRes.json();
-        const casesData = await casesRes.json();
-        
-        setLedger(ledgerData);
-        setCases(casesData);
-        setLoading(false);
-      } catch (err) {
-        console.error('Failed to fetch accounts data:', err);
-        setLoading(false);
-      }
-    };
-    fetchAccounts();
-  }, []);
-
-  const handleGenerateInvoice = async (caseObj: any) => {
-    setSelectedCaseForInvoice(caseObj);
-    setIsGeneratingPdf(true);
-
+  const fetchAccounts = async () => {
     try {
-      // Wait for React to render the InvoiceTemplate
-      setTimeout(() => {
-        const element = document.getElementById('invoice-template-container');
-        if (!element) return;
-        
-        // Native Print Approach: Best quality, no canvas bugs!
-        const printWindow = window.open('', '', 'width=800,height=900');
-        if (!printWindow) {
-          alert('Please allow popups to generate the invoice.');
-          setIsGeneratingPdf(false);
-          setSelectedCaseForInvoice(null);
-          return;
-        }
-
-        // We inject Tailwind CSS directly into the print window to ensure styles are perfect
-        printWindow.document.write(`
-          <html>
-            <head>
-              <title>Invoice - ${caseObj.case_number}</title>
-              <script src="https://cdn.tailwindcss.com"></script>
-              <style>
-                @media print {
-                  @page { margin: 0; }
-                  body { margin: 1.6cm; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-                }
-              </style>
-            </head>
-            <body>
-              ${element.innerHTML}
-              <script>
-                // Wait for Tailwind to process
-                setTimeout(() => {
-                  window.print();
-                  window.close();
-                }, 500);
-              </script>
-            </body>
-          </html>
-        `);
-        printWindow.document.close();
-        
-        setIsGeneratingPdf(false);
-        setSelectedCaseForInvoice(null);
-      }, 500);
+      const [ledgerRes, challansRes] = await Promise.all([
+        apiFetch(`${API_BASE}/accounts/ledger/`),
+        apiFetch(`${API_BASE}/invoices/`)
+      ]);
       
+      const ledgerData = await safeJson(ledgerRes);
+      const challansData = await safeJson(challansRes);
+      
+      setLedger(ledgerData.results || ledgerData);
+      setChallans(challansData.results || challansData);
     } catch (err) {
-      console.error('Error generating PDF:', err);
-      setIsGeneratingPdf(false);
-      alert('Error generating PDF.');
+      console.error('Failed to fetch accounts data:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const filteredCases = cases.filter((c: any) => 
-    c.case_number?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    c.opponent_name?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  useEffect(() => {
+    if (canViewAccounts) {
+      fetchAccounts();
+    }
+  }, [canViewAccounts]);
+
+  const handleDeleteChallan = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this challan? This action cannot be undone.')) return;
+    try {
+      await apiFetch(`${API_BASE}/invoices/${id}/`, { method: 'DELETE' });
+      fetchAccounts();
+    } catch (err) {
+      alert('Failed to delete challan');
+    }
+  };
+
+  const handleGeneratePdf = async (challan: any) => {
+    setIsGeneratingPdf(true);
+    let originalGetComputedStyle: typeof window.getComputedStyle | null = null;
+
+    try {
+      // Force synchronous render of the hidden invoice template so it's in the DOM immediately
+      const { flushSync } = await import('react-dom');
+      flushSync(() => {
+        setSelectedCaseForInvoice(challan);
+      });
+
+      const element = document.getElementById('invoice-template-container');
+      if (!element) throw new Error("Template container not found");
+      
+      // html2canvas crashes on Tailwind v4's oklch/lab colors.
+      // We safely proxy getComputedStyle. To avoid Illegal Invocation on CSSStyleDeclaration,
+      // we must NOT pass the proxy receiver to Reflect.get or property access,
+      // and we MUST bind all functions to the original native target.
+      originalGetComputedStyle = window.getComputedStyle;
+      window.getComputedStyle = function(el, pseudoElt) {
+        const style = originalGetComputedStyle!(el, pseudoElt);
+        return new Proxy(style, {
+          get(target, prop) {
+            // Native property access without receiver preserves the correct 'this' for internal slots
+            const val = (target as any)[prop];
+            
+            if (typeof val === 'function') {
+              if (prop === 'getPropertyValue') {
+                return function(property: string) {
+                  const res = target.getPropertyValue(property);
+                  if (typeof res === 'string' && (res.includes('lab(') || res.includes('oklch(') || res.includes('color('))) {
+                    return 'rgb(255, 255, 255)'; // Safe fallback
+                  }
+                  return res;
+                };
+              }
+              // Bind other methods to the native object to prevent Illegal Invocation
+              return val.bind(target);
+            }
+            
+            if (typeof val === 'string' && (val.includes('lab(') || val.includes('oklch(') || val.includes('color('))) {
+              return 'rgb(255, 255, 255)';
+            }
+            
+            return val;
+          }
+        });
+      };
+
+      const html2pdfModule = await import('html2pdf.js');
+      const html2pdf = html2pdfModule.default || html2pdfModule;
+      
+      const opt = {
+        margin:       0,
+        filename:     `Challan_${challan.invoice_number}.pdf`,
+        image:        { type: 'jpeg' as const, quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' as const }
+      };
+
+      let pdfBlob;
+      if (navigator.share && navigator.canShare) {
+        const pdfBlob = await html2pdf().set(opt).from(element).output('blob');
+        const file = new File([pdfBlob], opt.filename, { type: 'application/pdf' });
+        
+        if (navigator.canShare({ files: [file] })) {
+           await navigator.share({
+             files: [file],
+             title: `Challan ${challan.invoice_number}`,
+             text: 'Please find the payment challan attached.'
+           });
+        } else {
+           html2pdf().set(opt).from(element).save();
+        }
+      } else {
+        // Desktop fallback: just download
+        html2pdf().set(opt).from(element).save();
+      }
+    } catch (err: any) {
+      console.error("PDF generation error:", err);
+      // If sharing failed (e.g. NotAllowedError due to user gesture), fallback to download
+      if (err.name === 'NotAllowedError' || err.message?.includes('share')) {
+        try {
+          const element = document.getElementById('invoice-template-container');
+          const html2pdfModule = await import('html2pdf.js');
+          const html2pdf = html2pdfModule.default || html2pdfModule;
+          html2pdf().set({ filename: `Challan_${challan.invoice_number}.pdf` }).from(element!).save();
+        } catch (fallbackErr) {
+          alert(`Error generating PDF: ${fallbackErr}`);
+        }
+      } else {
+        alert(`Error generating or sharing PDF: ${err.message || err}`);
+      }
+    } finally {
+      if (originalGetComputedStyle) {
+        window.getComputedStyle = originalGetComputedStyle;
+      }
+
+      setIsGeneratingPdf(false);
+      setSelectedCaseForInvoice(null);
+    }
+  };
+
+  const filteredChallans = challans.filter((c: any) => {
+    const matchesSearch = 
+      c.case_number?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      c.client_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      c.invoice_number?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesStatus = statusFilter === 'All' || c.status === statusFilter;
+    
+    return matchesSearch && matchesStatus;
+  });
+
+  if (!canViewAccounts) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[60vh] text-center">
+        <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+          <ShieldAlert size={32} className="text-slate-300" />
+        </div>
+        <h2 className="text-xl font-bold text-slate-700">Access Denied</h2>
+        <p className="text-slate-500 mt-1">You don't have permission to view accounts.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-500 w-full">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Financial Accounts</h2>
-          <p className="text-slate-500 mt-1 text-sm sm:text-base">Manage ledgers, revenues, and client invoices.</p>
+          <p className="text-slate-500 mt-1 text-sm sm:text-base">Manage ledgers, issue challans, and record payments.</p>
         </div>
+        {canManageAccounts && (
+          <button 
+            onClick={() => setIsGenerateModalOpen(true)}
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-medium transition-colors shadow-sm shadow-blue-600/20"
+          >
+            <Plus size={18} /> Generate Challan
+          </button>
+        )}
       </div>
 
       {/* Ledger Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-        <div className="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] border border-slate-100 hover:shadow-md transition-all duration-300">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-sm text-slate-500 uppercase tracking-wider">Total Billed</h3>
-            <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
-              <Receipt size={20} />
-            </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-6 rounded-2xl shadow-lg shadow-blue-500/20 text-white relative overflow-hidden group">
+          <div className="absolute right-[-10px] top-[-10px] opacity-10 group-hover:scale-110 transition-transform duration-500"><FileText size={100} /></div>
+          <div className="relative z-10">
+            <h3 className="font-semibold text-blue-100 uppercase tracking-wider text-sm mb-1">Total Billed</h3>
+            {loading ? <div className="h-8 w-24 bg-blue-400/50 animate-pulse rounded mt-2"></div> : (
+              <p className="text-3xl font-black font-mono">Rs. {Number(ledger.total_billed).toLocaleString()}</p>
+            )}
           </div>
-          {loading ? (
-             <div className="h-10 w-24 bg-slate-100 animate-pulse rounded mt-2"></div>
-          ) : (
-            <p className="text-2xl sm:text-3xl font-bold text-slate-900 mt-2 font-mono">Rs. {Number(ledger.total_billed).toLocaleString()}</p>
-          )}
         </div>
 
-        <div className="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] border border-slate-100 hover:shadow-md transition-all duration-300">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-sm text-slate-500 uppercase tracking-wider">Total Received</h3>
-            <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
-              <CircleDollarSign size={20} />
-            </div>
+        <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 p-6 rounded-2xl shadow-lg shadow-emerald-500/20 text-white relative overflow-hidden group">
+          <div className="absolute right-[-10px] top-[-10px] opacity-10 group-hover:scale-110 transition-transform duration-500"><Wallet size={100} /></div>
+          <div className="relative z-10">
+            <h3 className="font-semibold text-emerald-100 uppercase tracking-wider text-sm mb-1">Total Received</h3>
+            {loading ? <div className="h-8 w-24 bg-emerald-400/50 animate-pulse rounded mt-2"></div> : (
+              <p className="text-3xl font-black font-mono">Rs. {Number(ledger.total_received).toLocaleString()}</p>
+            )}
           </div>
-          {loading ? (
-             <div className="h-10 w-24 bg-slate-100 animate-pulse rounded mt-2"></div>
-          ) : (
-            <p className="text-2xl sm:text-3xl font-bold text-emerald-600 mt-2 font-mono">Rs. {Number(ledger.total_received).toLocaleString()}</p>
-          )}
         </div>
 
-        <div className="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] border border-slate-100 hover:shadow-md transition-all duration-300">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-sm text-slate-500 uppercase tracking-wider">Outstanding</h3>
-            <div className="p-2 bg-rose-50 text-rose-600 rounded-lg">
-              <TrendingUp size={20} />
-            </div>
+        <div className="bg-gradient-to-br from-rose-500 to-rose-600 p-6 rounded-2xl shadow-lg shadow-rose-500/20 text-white relative overflow-hidden group">
+          <div className="absolute right-[-10px] top-[-10px] opacity-10 group-hover:scale-110 transition-transform duration-500"><TrendingUp size={100} /></div>
+          <div className="relative z-10">
+            <h3 className="font-semibold text-rose-100 uppercase tracking-wider text-sm mb-1">Outstanding</h3>
+            {loading ? <div className="h-8 w-24 bg-rose-400/50 animate-pulse rounded mt-2"></div> : (
+              <p className="text-3xl font-black font-mono">Rs. {Number(ledger.outstanding_balance).toLocaleString()}</p>
+            )}
           </div>
-          {loading ? (
-             <div className="h-10 w-24 bg-slate-100 animate-pulse rounded mt-2"></div>
-          ) : (
-            <p className="text-2xl sm:text-3xl font-bold text-rose-600 mt-2 font-mono">Rs. {Number(ledger.outstanding_balance).toLocaleString()}</p>
-          )}
+        </div>
+
+        <div className="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] border border-slate-100 relative overflow-hidden group">
+          <div className="absolute right-[-10px] top-[-10px] opacity-5 text-slate-400 group-hover:scale-110 transition-transform duration-500"><Coins size={100} /></div>
+          <div className="relative z-10">
+            <h3 className="font-semibold text-slate-500 uppercase tracking-wider text-sm mb-1">Active Challans</h3>
+            {loading ? <div className="h-8 w-16 bg-slate-100 animate-pulse rounded mt-2"></div> : (
+              <p className="text-3xl font-black text-slate-900">{challans.length}</p>
+            )}
+          </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-        {/* Invoice Generator Table */}
-        <div className="lg:col-span-2 bg-white rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] border border-slate-100 overflow-hidden flex flex-col h-auto lg:h-[500px]">
-          <div className="p-4 sm:p-5 border-b border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-slate-50/50 shrink-0">
+        {/* Main Challan Table Area */}
+        <div className="lg:col-span-2 bg-white rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] border border-slate-100 overflow-hidden flex flex-col h-[600px]">
+          <div className="p-4 sm:p-5 border-b border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-slate-50/50 shrink-0">
             <h3 className="font-bold text-slate-900 flex items-center gap-2">
-              <FileText size={18} className="text-blue-600" /> Issue Invoices
+              <FileText size={18} className="text-blue-600" /> Challans
             </h3>
-            <div className="relative w-full sm:max-w-xs">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
-              <input 
-                type="text" 
-                placeholder="Search case..." 
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
-              />
+            
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+              <select 
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="pl-3 pr-8 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              >
+                <option value="All">All Statuses</option>
+                <option value="Paid">Paid</option>
+                <option value="Partial">Partial</option>
+                <option value="Pending">Pending</option>
+              </select>
+
+              <div className="relative w-full sm:w-64">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+                <input 
+                  type="text" 
+                  placeholder="Search challans..." 
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                />
+              </div>
             </div>
           </div>
+
           <div className="overflow-y-auto flex-1 custom-scrollbar">
             {loading ? (
                <div className="p-12 flex justify-center"><div className="w-8 h-8 border-4 border-slate-100 border-t-blue-500 rounded-full animate-spin"></div></div>
+            ) : filteredChallans.length === 0 ? (
+               <div className="p-12 text-center text-slate-500">No challans found.</div>
             ) : (
-              <table className="w-full text-left border-collapse min-w-[400px]">
+              <table className="w-full text-left border-collapse min-w-[600px]">
                 <thead className="sticky top-0 bg-white/90 backdrop-blur border-b border-slate-100 z-10">
                   <tr>
-                    <th className="px-4 sm:px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Case Reference</th>
-                    <th className="px-4 sm:px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider hidden sm:table-cell">Total Fee</th>
-                    <th className="px-4 sm:px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">Action</th>
+                    <th className="px-4 sm:px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Details</th>
+                    <th className="px-4 sm:px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Amount</th>
+                    <th className="px-4 sm:px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Status</th>
+                    <th className="px-4 sm:px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {filteredCases.map((c: any) => (
-                    <tr key={c.id} className="hover:bg-slate-50/50 transition-colors">
+                  {filteredChallans.map((c: any) => (
+                    <tr key={c.id} className="hover:bg-slate-50/50 transition-colors group">
                       <td className="px-4 sm:px-6 py-4">
-                        <p className="font-semibold text-slate-900">{c.case_number}</p>
-                        <p className="text-xs text-slate-500 mt-0.5">vs. {c.opponent_name}</p>
-                        <p className="text-xs font-mono font-medium text-slate-600 mt-0.5 sm:hidden">Rs. {Number(c.total_fee).toLocaleString()}</p>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-mono text-xs font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">{c.invoice_number}</span>
+                        </div>
+                        <p className="font-semibold text-slate-900">{c.client_name}</p>
+                        <p className="text-xs text-slate-500 mt-0.5">Case: {c.case_number}</p>
                       </td>
-                      <td className="px-4 sm:px-6 py-4 font-mono font-medium text-slate-700 hidden sm:table-cell">
-                        Rs. {Number(c.total_fee).toLocaleString()}
+                      <td className="px-4 sm:px-6 py-4">
+                        <p className="font-mono font-bold text-slate-900">Rs. {Number(c.amount).toLocaleString()}</p>
+                        <p className="text-xs text-slate-500 mt-0.5">Paid: <span className="font-medium text-emerald-600">Rs. {Number(c.amount_paid || 0).toLocaleString()}</span></p>
                       </td>
-                      <td className="px-4 sm:px-6 py-4 text-right">
-                        <button 
-                          onClick={() => handleGenerateInvoice(c)}
-                          disabled={isGeneratingPdf && selectedCaseForInvoice?.id === c.id}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
-                        >
-                          {(isGeneratingPdf && selectedCaseForInvoice?.id === c.id) ? (
-                            <div className="w-4 h-4 border-2 border-slate-400 border-t-slate-700 rounded-full animate-spin"></div>
-                          ) : (
-                            <Download size={14} />
+                      <td className="px-4 sm:px-6 py-4">
+                        <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-semibold ${
+                          c.status === 'Paid' ? 'bg-emerald-100 text-emerald-700' :
+                          c.status === 'Partial' ? 'bg-amber-100 text-amber-700' :
+                          'bg-rose-100 text-rose-700'
+                        }`}>
+                          {c.status}
+                        </span>
+                      </td>
+                      <td className="px-4 sm:px-6 py-4">
+                        <div className="flex items-center justify-end gap-2">
+                          <button 
+                            onClick={() => handleGeneratePdf(c)}
+                            disabled={isGeneratingPdf && selectedCaseForInvoice?.id === c.id}
+                            title="Share / Download PDF"
+                            className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50"
+                          >
+                            {(isGeneratingPdf && selectedCaseForInvoice?.id === c.id) ? (
+                              <div className="w-4 h-4 border-2 border-slate-400 border-t-blue-600 rounded-full animate-spin"></div>
+                            ) : (
+                              <Share2 size={16} />
+                            )}
+                          </button>
+
+                          {canManageAccounts && c.status !== 'Paid' && (
+                            <button 
+                              onClick={() => {
+                                setSelectedChallanForPayment(c);
+                                setIsPaymentModalOpen(true);
+                              }}
+                              title="Add Payment"
+                              className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                            >
+                              <Coins size={16} />
+                            </button>
                           )}
-                          PDF
-                        </button>
+
+                          {canDeleteAccounts && (
+                            <button 
+                              onClick={() => handleDeleteChallan(c.id)}
+                              title="Delete Challan"
+                              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -231,7 +378,7 @@ export default function AccountsPage() {
         </div>
 
         {/* Monthly Revenue Chart */}
-        <div className="bg-white rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] border border-slate-100 overflow-hidden flex flex-col h-[400px] lg:h-[500px]">
+        <div className="bg-white rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] border border-slate-100 overflow-hidden flex flex-col h-[400px] lg:h-[600px]">
           <div className="p-5 border-b border-slate-100 bg-slate-50/50 shrink-0">
             <h3 className="font-bold text-slate-900 flex items-center gap-2">
               <TrendingUp size={18} className="text-emerald-600" /> Monthly Revenue
@@ -239,24 +386,23 @@ export default function AccountsPage() {
           </div>
           <div className="p-6 flex-1 flex flex-col justify-end">
             {ledger.revenue_chart.length > 0 ? (
-              <div className="flex items-end justify-between h-64 gap-2">
+              <div className="flex items-end justify-between h-full gap-2 pt-8">
                 {ledger.revenue_chart.map((data, idx) => {
-                  // Calculate max revenue to scale the bars
                   const maxRevenue = Math.max(...ledger.revenue_chart.map(d => d.revenue));
                   const heightPercentage = maxRevenue > 0 ? (data.revenue / maxRevenue) * 100 : 0;
                   
                   return (
-                    <div key={idx} className="flex flex-col items-center gap-2 flex-1 group">
-                      <div className="opacity-0 group-hover:opacity-100 transition-opacity text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md mb-1 whitespace-nowrap z-10 absolute -mt-8">
+                    <div key={idx} className="flex flex-col items-center gap-2 flex-1 group relative h-full justify-end">
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md mb-1 whitespace-nowrap z-10 absolute top-0 -mt-6">
                         Rs. {Number(data.revenue).toLocaleString()}
                       </div>
-                      <div className="w-full bg-slate-100 rounded-t-sm overflow-hidden flex items-end h-full">
+                      <div className="w-full bg-slate-50 rounded-t-sm overflow-hidden flex items-end h-full border-b border-slate-200">
                         <div 
-                          className="w-full bg-emerald-500 hover:bg-emerald-400 transition-all duration-300 cursor-pointer"
-                          style={{ height: `${heightPercentage}%` }}
+                          className="w-full bg-gradient-to-t from-emerald-600 to-emerald-400 rounded-t-sm hover:from-emerald-500 hover:to-emerald-300 transition-all duration-300 cursor-pointer shadow-sm shadow-emerald-500/20"
+                          style={{ height: `${heightPercentage}%`, minHeight: heightPercentage > 0 ? '4px' : '0' }}
                         ></div>
                       </div>
-                      <span className="text-xs font-medium text-slate-500 -rotate-45 origin-top-left mt-2">{data.month.split(' ')[0]}</span>
+                      <span className="text-xs font-semibold text-slate-500 mt-2">{data.month.split(' ')[0]}</span>
                     </div>
                   );
                 })}
@@ -270,15 +416,39 @@ export default function AccountsPage() {
         </div>
       </div>
 
-      {/* Hidden Invoice Template - only rendered into the DOM temporarily when generating a PDF */}
+      {/* Hidden Invoice Template for PDF generation */}
       <div className="absolute top-[-9999px] left-[-9999px]">
         {selectedCaseForInvoice && (
-          <div id="invoice-template-container" style={{ width: '800px', backgroundColor: '#ffffff', color: '#000000', fontSize: '14px' }}>
+          <div id="invoice-template-container" style={{ width: '800px' }}>
             <InvoiceTemplate caseData={selectedCaseForInvoice} />
           </div>
         )}
       </div>
+
+      {/* Modals */}
+      <GenerateChallanModal 
+        isOpen={isGenerateModalOpen} 
+        onClose={() => setIsGenerateModalOpen(false)} 
+        onSuccess={fetchAccounts} 
+      />
+      
+      <AddPaymentModal 
+        isOpen={isPaymentModalOpen} 
+        onClose={() => {
+          setIsPaymentModalOpen(false);
+          setSelectedChallanForPayment(null);
+        }} 
+        onSuccess={fetchAccounts}
+        challan={selectedChallanForPayment}
+      />
     </div>
   );
 }
 
+export default function AccountsPage() {
+  return (
+    <Suspense fallback={<div className="p-12 flex justify-center"><div className="w-8 h-8 border-4 border-slate-100 border-t-blue-500 rounded-full animate-spin"></div></div>}>
+      <AccountsContent />
+    </Suspense>
+  );
+}

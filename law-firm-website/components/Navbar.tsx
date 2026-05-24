@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Lock, Menu, X, Scale } from 'lucide-react';
 import { useState } from 'react';
+import Image from 'next/image';
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -11,7 +12,9 @@ export function Navbar() {
     <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900 border-b border-slate-800">
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3">
-          <Scale className="text-[#B4935E]" size={28} />
+          <div className="relative w-8 h-8 rounded-lg overflow-hidden flex-shrink-0">
+            <Image src="/logo.png" alt="EagleNest Logo" fill className="object-cover scale-[1.15]" sizes="32px" />
+          </div>
           <span className="font-serif font-bold text-xl tracking-tight text-slate-50 uppercase">
             EagleNest Legal Solutions <span className="text-[#B4935E]"></span>
           </span>

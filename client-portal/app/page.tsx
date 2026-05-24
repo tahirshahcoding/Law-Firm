@@ -20,14 +20,16 @@ export default function LoginPage() {
     setError('');
 
     try {
-      // Dedicated portal token endpoint
+      // POST credentials to the dedicated portal token endpoint.
+      // Django sets httpOnly access_token + refresh_token cookies on success.
+      // credentials: 'include' is required so the browser accepts the Set-Cookie header.
       const res = await fetch(`${API}/portal/token/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
+        credentials: 'include',
       });
 
-      const data = await res.json();
       if (!res.ok) {
         setError('Invalid username or password. Please try again.');
         return;
@@ -35,18 +37,16 @@ export default function LoginPage() {
 
       // Verify this is a Client account (block staff from using this portal)
       const meRes = await fetch(`${API}/users/me/`, {
-        headers: { Authorization: `Bearer ${data.access}` },
+        credentials: 'include',  // sends the newly set cookie
       });
       const me = await meRes.json();
 
       if (me.role !== 'Client') {
+        // Clear the cookie immediately — staff must use the staff system
+        await fetch(`${API}/auth/logout/`, { method: 'POST', credentials: 'include' });
         setError('This portal is for clients only. Staff must use the staff system.');
         return;
       }
-
-      // Store tokens in sessionStorage (tab-scoped, cleared on tab close)
-      sessionStorage.setItem('cp_access', data.access);
-      sessionStorage.setItem('cp_refresh', data.refresh);
 
       router.push('/dashboard');
     } catch {

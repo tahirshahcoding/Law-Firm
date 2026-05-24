@@ -1,8 +1,8 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { User, Mail, Lock, CheckCircle2, ShieldAlert } from 'lucide-react';
+import { User, Mail, Lock, CheckCircle2, ShieldAlert, Upload } from 'lucide-react';
 import { API_BASE, apiFetch } from '@/lib/api';
 
 export default function ProfileSettingsPage() {
@@ -17,6 +17,8 @@ export default function ProfileSettingsPage() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{type: 'success' | 'error', text: string} | null>(null);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -25,8 +27,17 @@ export default function ProfileSettingsPage() {
         username: user.username,
         email: user.email || ''
       }));
+      setAvatarPreview(user.avatar || null);
     }
   }, [user]);
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setAvatarFile(file);
+      setAvatarPreview(URL.createObjectURL(file));
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,23 +51,24 @@ export default function ProfileSettingsPage() {
     setIsLoading(true);
 
     try {
+      const data = new FormData();
+      data.append('username', formData.username);
+      if (formData.email) data.append('email', formData.email);
+      if (formData.password) data.append('password', formData.password);
+      if (avatarFile) data.append('avatar', avatarFile);
+
       const res = await apiFetch(`${API_BASE}/users/me/`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username: formData.username,
-          email: formData.email,
-          ...(formData.password ? { password: formData.password } : {})
-        })
+        body: data,
       });
 
-      const data = await res.json();
+      const resData = await res.json();
       
       if (res.ok) {
         setMessage({ type: 'success', text: 'Profile updated successfully. If you changed your username/password, you may need to log in again.' });
         setFormData(prev => ({ ...prev, password: '', confirmPassword: '' }));
       } else {
-        setMessage({ type: 'error', text: data.error || 'Failed to update profile.' });
+        setMessage({ type: 'error', text: resData.error || 'Failed to update profile.' });
       }
     } catch (err: any) {
       setMessage({ type: 'error', text: err.message || 'Network error occurred.' });
@@ -76,11 +88,21 @@ export default function ProfileSettingsPage() {
 
       <div className="bg-white rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] border border-slate-100 overflow-hidden">
         
-        <div className="p-8 border-b border-slate-100 flex items-center gap-6 bg-slate-50/50">
-          <div className="w-20 h-20 bg-blue-600 rounded-2xl flex items-center justify-center text-3xl font-bold text-white shadow-lg shadow-blue-600/20">
-            {user.username[0].toUpperCase()}
+        <div className="p-8 border-b border-slate-100 flex flex-col md:flex-row items-center gap-6 bg-slate-50/50">
+          <div className="relative group cursor-pointer">
+            <div className="w-24 h-24 bg-blue-600 rounded-full overflow-hidden flex items-center justify-center text-3xl font-bold text-white shadow-lg border-4 border-white">
+              {avatarPreview ? (
+                <img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
+              ) : (
+                user.username[0].toUpperCase()
+              )}
+            </div>
+            <label className="absolute inset-0 bg-slate-900/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
+              <Upload size={20} className="text-white" />
+              <input type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
+            </label>
           </div>
-          <div>
+          <div className="text-center md:text-left">
             <h3 className="text-xl font-bold text-slate-900">{user.username}</h3>
             <p className="text-slate-500 font-medium">{user.role}</p>
           </div>

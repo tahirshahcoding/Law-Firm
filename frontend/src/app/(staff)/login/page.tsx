@@ -19,18 +19,21 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
+      // POST credentials — Django sets the httpOnly access_token cookie on success.
+      // We never touch the token value in JavaScript.
       const res = await fetch(`${API_BASE}/token/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({ username, password }),
+        credentials: 'include',  // required so the Set-Cookie header is accepted
       });
 
       if (!res.ok) {
         throw new Error('Invalid credentials');
       }
 
-      const data = await res.json();
-      await login(data.access, data.refresh);
+      // Cookie is now set — login() fetches the user profile to populate context
+      await login();
     } catch (err: any) {
       setError(err.message || 'Failed to login');
       setIsLoading(false);
@@ -84,6 +87,7 @@ export default function LoginPage() {
                   onChange={(e) => setUsername(e.target.value)}
                   className="appearance-none block w-full pl-10 pr-3 py-2.5 border border-slate-200 rounded-lg shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 sm:text-sm transition-colors"
                   placeholder="admin"
+                  suppressHydrationWarning
                 />
               </div>
             </div>
@@ -101,6 +105,7 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   className="appearance-none block w-full pl-10 pr-3 py-2.5 border border-slate-200 rounded-lg shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 sm:text-sm transition-colors"
                   placeholder="••••••••"
+                  suppressHydrationWarning
                 />
               </div>
             </div>
@@ -110,6 +115,7 @@ export default function LoginPage() {
                 type="submit"
                 disabled={isLoading}
                 className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 group"
+                suppressHydrationWarning
               >
                 {isLoading ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>

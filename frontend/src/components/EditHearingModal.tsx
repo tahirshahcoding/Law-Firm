@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Calendar, AlignLeft, Search, Check, FolderOpen, FileText, Trash2 } from 'lucide-react';
 import { API_BASE, apiFetch } from '@/lib/api';
+import { toast } from 'sonner';
 
 interface EditHearingModalProps {
   isOpen: boolean;
@@ -21,7 +22,6 @@ export default function EditHearingModal({ isOpen, onClose, onSuccess, hearingDa
   });
   
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   
   // Document state
   const [documents, setDocuments] = useState<any[]>([]);
@@ -39,21 +39,21 @@ export default function EditHearingModal({ isOpen, onClose, onSuccess, hearingDa
   useEffect(() => {
     if (isOpen) {
       // Fetch cases for the dropdown
-      apiFetch(`${API_BASE}/cases/`)
+      apiFetch(`${API_BASE}/cases/?page_size=1000`)
         .then(res => res.json())
         .then(data => {
-          setCases(data);
+          const list = Array.isArray(data) ? data : (data.results || []);
+          setCases(list);
           
           if (hearingData) {
             setFormData({
               case: hearingData.case || '',
-              // The backend returns YYYY-MM-DD which native type="date" natively requires!
               hearing_date: hearingData.hearing_date || '',
               next_date: hearingData.next_date || '',
               notes: hearingData.notes || ''
             });
 
-            const matchingCase = data.find((c: any) => c.id === hearingData.case);
+            const matchingCase = list.find((c: any) => c.id === hearingData.case);
             if (matchingCase) {
               setSelectedCaseName(`${matchingCase.case_number} (vs. ${matchingCase.opponent_name})`);
             }
@@ -94,12 +94,12 @@ export default function EditHearingModal({ isOpen, onClose, onSuccess, hearingDa
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.case) {
-      setError("Please select a target case from the dropdown.");
+      toast.error("Please select a target case from the dropdown.");
       return;
     }
 
     if (!formData.hearing_date) {
-      setError("Hearing Date is required.");
+      toast.error("Hearing Date is required.");
       return;
     }
 
@@ -110,7 +110,6 @@ export default function EditHearingModal({ isOpen, onClose, onSuccess, hearingDa
     }
 
     setLoading(true);
-    setError(null);
 
     try {
       const res = await apiFetch(`${API_BASE}/hearings/${hearingData.id}/`, {
@@ -127,10 +126,11 @@ export default function EditHearingModal({ isOpen, onClose, onSuccess, hearingDa
         throw new Error(data.error || data.detail || JSON.stringify(data) || 'Failed to update hearing');
       }
 
+      toast.success("Hearing updated successfully");
       onSuccess();
       onClose();
     } catch (err: any) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setLoading(false);
     }
@@ -147,11 +147,6 @@ export default function EditHearingModal({ isOpen, onClose, onSuccess, hearingDa
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-5 custom-scrollbar">
-          {error && (
-            <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-sm text-rose-600 font-medium whitespace-pre-wrap">
-              {error}
-            </div>
-          )}
 
           {/* Case Selection Combobox */}
           <div className="relative" ref={dropdownRef}>

@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Calendar, AlignLeft, Search, Check, FolderOpen } from 'lucide-react';
 import { API_BASE, apiFetch, safeJson } from '@/lib/api';
+import { sendWhatsApp, hearingScheduledMessage } from '@/lib/whatsapp';
+import { toast } from 'sonner';
 
 interface AddHearingModalProps {
   isOpen: boolean;
@@ -19,7 +21,6 @@ export default function AddHearingModal({ isOpen, onClose, onSuccess }: AddHeari
   });
   
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   
   // Combobox specific state
   const [cases, setCases] = useState<any[]>([]);
@@ -31,9 +32,9 @@ export default function AddHearingModal({ isOpen, onClose, onSuccess }: AddHeari
   useEffect(() => {
     if (isOpen) {
       // Fetch cases for the dropdown
-      apiFetch(`${API_BASE}/cases/`)
+      apiFetch(`${API_BASE}/cases/?page_size=1000`)
         .then(res => res.json())
-        .then(data => setCases(data))
+        .then(data => setCases(Array.isArray(data) ? data : (data.results || [])))
         .catch(err => console.error("Failed to load cases:", err));
     }
   }, [isOpen]);
@@ -66,12 +67,12 @@ export default function AddHearingModal({ isOpen, onClose, onSuccess }: AddHeari
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.case) {
-      setError("Please select a target case from the dropdown.");
+      toast.error("Please select a target case from the dropdown.");
       return;
     }
     
     if (!formData.hearing_date) {
-      setError("Hearing Date is required.");
+      toast.error("Hearing Date is required.");
       return;
     }
 
@@ -82,7 +83,6 @@ export default function AddHearingModal({ isOpen, onClose, onSuccess }: AddHeari
     }
 
     setLoading(true);
-    setError(null);
 
     try {
       const res = await apiFetch(`${API_BASE}/hearings/`, {
@@ -99,12 +99,28 @@ export default function AddHearingModal({ isOpen, onClose, onSuccess }: AddHeari
         throw new Error(data.error || data.detail || JSON.stringify(data) || 'Failed to register hearing');
       }
 
+      toast.success("Hearing scheduled successfully");
+
+      // Auto-send WhatsApp notification to the client
+      const selectedCase = cases.find((c: any) => c.id === formData.case);
+      if (selectedCase?.client_mobile) {
+        const message = hearingScheduledMessage(
+          selectedCase.client_name || 'Client',
+          selectedCase.case_number,
+          formData.hearing_date,
+          formData.next_date || undefined,
+          formData.notes || undefined,
+        );
+        sendWhatsApp(selectedCase.client_mobile, message);
+        toast.success('WhatsApp notification opened — press Send to deliver.', { icon: '📱' });
+      }
+
       onSuccess();
       setFormData({ case: '', hearing_date: '', next_date: '', notes: '' });
       setSelectedCaseName('');
       onClose();
     } catch (err: any) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setLoading(false);
     }
@@ -121,12 +137,6 @@ export default function AddHearingModal({ isOpen, onClose, onSuccess }: AddHeari
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-5 custom-scrollbar">
-          {error && (
-            <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-sm text-rose-600 font-medium whitespace-pre-wrap">
-              {error}
-            </div>
-          )}
-
           {/* Case Selection Combobox */}
           <div className="relative" ref={dropdownRef}>
             <label className="block text-sm font-medium text-slate-700 mb-1">Target Case</label>
