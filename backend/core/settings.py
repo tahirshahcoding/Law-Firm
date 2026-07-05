@@ -24,6 +24,13 @@ DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 ALLOWED_HOSTS_ENV = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1')
 ALLOWED_HOSTS = [h.strip() for h in ALLOWED_HOSTS_ENV.split(',') if h.strip()]
 
+# Hugging Face Spaces automatically sets the SPACE_ID environment variable.
+# We add '*' to ALLOWED_HOSTS so the Space can be accessed via the Hugging Face domain.
+if os.environ.get('SPACE_ID'):
+    ALLOWED_HOSTS.append('*')
+elif not ALLOWED_HOSTS:
+    ALLOWED_HOSTS = ['*']
+
 # ── Installed Apps ────────────────────────────────────────────────────────────
 INSTALLED_APPS = [
     'django.contrib.admin',
