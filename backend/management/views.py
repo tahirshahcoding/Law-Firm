@@ -652,3 +652,18 @@ class AuditLogView(APIView):
         
         logs.sort(key=lambda x: x['date'], reverse=True)
         return Response(logs[:100], status=status.HTTP_200_OK)
+
+
+# ── System Ping (Keep-alive) ──────────────────────────────────────────────────
+
+class PingView(APIView):
+    """
+    Zero-overhead endpoint to keep the Render server awake.
+    """
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        return Response({
+            "status": "active",
+            "system": "Legal Office Backend Awake"
+        }, status=status.HTTP_200_OK)

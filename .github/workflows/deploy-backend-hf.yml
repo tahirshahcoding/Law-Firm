@@ -1,0 +1,54 @@
+name: Deploy Backend to Hugging Face Spaces
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'backend/**' # Only trigger if changes are made inside the backend folder
+  workflow_dispatch: # Allows you to manually trigger the workflow from GitHub Actions tab
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Push to Hugging Face Spaces
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_USERNAME: ${{ secrets.HF_USERNAME }}
+          HF_SPACE_NAME: ${{ secrets.HF_SPACE_NAME }}
+        run: |
+          # 1. Clone the Hugging Face Space repository
+          git clone https://huggingface.co/spaces/$HF_USERNAME/$HF_SPACE_NAME hf-space
+          cd hf-space
+          
+          # 2. Set the remote URL to include the token for authentication
+          git remote set-url origin https://$HF_USERNAME:$HF_TOKEN@huggingface.co/spaces/$HF_USERNAME/$HF_SPACE_NAME
+          
+          # 3. Remove all existing files from the Space (except .git to keep history, and README.md if it exists)
+          find . -maxdepth 1 ! -name '.git' ! -name 'README.md' ! -name '.gitattributes' ! -name '.' -exec rm -rf {} +
+          
+          # 4. Copy the backend files from the GitHub repository into the HF Space directory
+          cp -a ../backend/. .
+          
+          # 5. Configure Git user for the commit
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          
+          # 6. Add changes and commit
+          git add .
+          
+          # Only commit and push if there are changes
+          if git diff --staged --quiet; then
+            echo "No changes to deploy to Hugging Face."
+            exit 0
+          fi
+          
+          git commit -m "Deploy backend from GitHub Actions (Commit: ${GITHUB_SHA::7})"
+          
+          # 7. Push the code to Hugging Face Spaces
+          git push origin main

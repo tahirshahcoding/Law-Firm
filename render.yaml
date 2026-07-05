@@ -14,8 +14,16 @@ services:
       - key: DEBUG
         value: "False"
       - key: ALLOWED_HOSTS
-        value: "law-firm.onrender.com"
+        value: "law-firm-8jow.onrender.com"
       - key: PYTHON_VERSION
         value: "3.11.0"
     healthCheckPath: /
     autoDeploy: true
+
+  - type: cron
+    name: law-firm-wake-up
+    runtime: python
+    schedule: "*/10 * * * *"
+    buildCommand: ""
+    startCommand: "curl -I https://law-firm-8jow.onrender.com/api/system/ping/"
+

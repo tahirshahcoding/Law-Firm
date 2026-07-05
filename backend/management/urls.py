@@ -4,7 +4,8 @@ from .views import (
     ClientViewSet, CaseViewSet, HearingViewSet, HearingDocumentViewSet, TaskViewSet, InvoiceViewSet,
     AccountsLedgerView, DailyDiaryView, DashboardStatsView, AdminUserView, AdminUserDetailView, CurrentUserView,
     CustomTokenObtainPairView, TokenRefreshCookieView, LogoutView,
-    ClientPortalView, ClientResetPasswordView, ConsultationViewSet, AuditLogView, PaymentViewSet
+    ClientPortalView, ClientResetPasswordView, ConsultationViewSet, AuditLogView, PaymentViewSet,
+    PingView
 )
 
 # Router handles the standard GET/POST/PUT/DELETE for all resource ViewSets
@@ -43,4 +44,5 @@ urlpatterns = [
     path('diary/today/',      DailyDiaryView.as_view(),        name='diary-today'),
     path('dashboard/stats/',  DashboardStatsView.as_view(),    name='dashboard-stats'),
     path('audit-log/',        AuditLogView.as_view(),          name='audit-log'),
+    path('system/ping/',      PingView.as_view(),              name='keep-alive-ping'),
 ]
