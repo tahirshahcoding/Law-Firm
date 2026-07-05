@@ -1,7 +1,9 @@
 'use client';
 // Central API config — reads from env var, falls back to localhost for dev
-// Set NEXT_PUBLIC_API_URL in .env.local (dev) or Vercel dashboard (prod)
-export const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+let rawApi = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+if (rawApi.endsWith('/')) rawApi = rawApi.slice(0, -1);
+if (!rawApi.endsWith('/api')) rawApi += '/api';
+export const API_BASE = rawApi;
 
 // ── CSRF helper ───────────────────────────────────────────────────────────────
 /**
