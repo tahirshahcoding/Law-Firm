@@ -14,7 +14,7 @@ services:
       - key: DEBUG
         value: "False"
       - key: ALLOWED_HOSTS
-        value: "law-firm-8jow.onrender.com"
+        value: "tahirshahcoding-law-firm.hf.space"
       - key: PYTHON_VERSION
         value: "3.11.0"
     healthCheckPath: /
@@ -25,5 +25,5 @@ services:
     runtime: python
     schedule: "*/10 * * * *"
     buildCommand: ""
-    startCommand: "curl -I https://law-firm-8jow.onrender.com/api/system/ping/"
+    startCommand: "curl -I https://tahirshahcoding-law-firm.hf.space/api/system/ping/"
 
