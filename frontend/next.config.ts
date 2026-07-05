@@ -58,6 +58,19 @@ const nextConfig: NextConfig = {
   reactCompiler: false,
   turbopack: {},
   allowedDevOrigins: ['127.0.0.1', 'localhost'],
+  async rewrites() {
+    const isDev = process.env.NODE_ENV === 'development';
+    const backendUrl = isDev 
+      ? 'http://localhost:8000' 
+      : 'https://tahirshahcoding-law-firm.hf.space';
+      
+    return [
+      {
+        source: '/api/:path*',
+        destination: `${backendUrl}/api/:path*`, // Proxy to Backend to avoid CORS completely
+      },
+    ];
+  },
 };
 
 export default nextConfig;

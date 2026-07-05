@@ -1,9 +1,6 @@
 'use client';
-// Central API config — reads from env var, falls back to localhost for dev
-let rawApi = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
-if (rawApi.endsWith('/')) rawApi = rawApi.slice(0, -1);
-if (!rawApi.endsWith('/api')) rawApi += '/api';
-export const API_BASE = rawApi;
+// We proxy through Next.js rewrites to completely avoid CORS issues
+export const API_BASE = '/api';
 
 // ── CSRF helper ───────────────────────────────────────────────────────────────
 /**
