@@ -2,13 +2,20 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Scale, Briefcase, Calendar, LogOut, Clock, AlertCircle } from 'lucide-react';
+import { 
+  Scale, 
+  Briefcase, 
+  Calendar, 
+  LogOut, 
+  Clock, 
+  AlertCircle, 
+  Building2, 
+  User2, 
+  CheckCircle2 
+} from 'lucide-react';
 import Image from 'next/image';
 
-let rawApi = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
-if (rawApi.endsWith('/')) rawApi = rawApi.slice(0, -1);
-if (!rawApi.endsWith('/api')) rawApi += '/api';
-const API = rawApi;
+const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -17,9 +24,12 @@ export default function DashboardPage() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    // No token needed — the httpOnly cookie is sent automatically by the browser.
-    // If the cookie is absent or expired, the backend returns 401 and we redirect.
-    fetch(`${API}/portal/data/`, {
+    // Normalizing API base URL in local code to prevent trailing slash issues
+    let rawApi = API;
+    if (rawApi.endsWith('/')) rawApi = rawApi.slice(0, -1);
+    if (!rawApi.endsWith('/api')) rawApi += '/api';
+
+    fetch(`${rawApi}/portal/data/`, {
       credentials: 'include',
     })
       .then(r => { if (!r.ok) throw new Error(); return r.json(); })
@@ -28,23 +38,56 @@ export default function DashboardPage() {
   }, [router]);
 
   const handleLogout = async () => {
-    // Delete the httpOnly cookies server-side, then redirect to login
     try {
-      await fetch(`${API}/auth/logout/`, { method: 'POST', credentials: 'include' });
+      let rawApi = API;
+      if (rawApi.endsWith('/')) rawApi = rawApi.slice(0, -1);
+      if (!rawApi.endsWith('/api')) rawApi += '/api';
+      await fetch(`${rawApi}/auth/logout/`, { method: 'POST', credentials: 'include' });
     } catch { /* ignore network errors — redirect anyway */ }
     router.push('/');
   };
 
   const fmt = (d: string) => {
     if (!d) return '';
-    const [y, m, day] = d.split('-');
-    return `${day}/${m}/${y}`;
+    try {
+      const date = new Date(d);
+      if (isNaN(date.getTime())) {
+        const [y, m, day] = d.split('-');
+        return `${day}/${m}/${y}`;
+      }
+      return date.toLocaleDateString('en-US', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      });
+    } catch {
+      const [y, m, day] = d.split('-');
+      return `${day}/${m}/${y}`;
+    }
+  };
+
+  const getRelativeDays = (dateStr: string) => {
+    const todayStr = new Date().toISOString().split('T')[0];
+    if (dateStr === todayStr) return 'Today';
+    
+    try {
+      const diffTime = new Date(dateStr).getTime() - new Date(todayStr).getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays === 1) return 'Tomorrow';
+      if (diffDays > 1) return `In ${diffDays} days`;
+      if (diffDays === -1) return 'Yesterday';
+      if (diffDays < -1) return `${Math.abs(diffDays)} days ago`;
+      return '';
+    } catch {
+      return '';
+    }
   };
 
   const statusStyle = (s: string) => {
-    if (s === 'Active') return 'bg-emerald-100 text-emerald-700 border-emerald-200';
-    if (s === 'Closed') return 'bg-slate-100 text-slate-500 border-slate-200';
-    return 'bg-amber-100 text-amber-700 border-amber-200';
+    if (s === 'Active') return 'bg-emerald-50 text-emerald-700 border-emerald-200/60 ring-2 ring-emerald-500/5';
+    if (s === 'Closed') return 'bg-slate-100 text-slate-500 border-slate-200/60';
+    return 'bg-amber-50 text-amber-700 border-amber-200/60 ring-2 ring-amber-500/5';
   };
 
   if (loading) {
@@ -60,80 +103,102 @@ export default function DashboardPage() {
     .sort((a: any, b: any) => b.hearing_date.localeCompare(a.hearing_date));
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50/50 relative overflow-hidden flex flex-col font-sans">
+      {/* Background Mesh Gradients */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
+        <div className="absolute -top-[10%] -right-[10%] w-[50%] h-[50%] rounded-full bg-gradient-to-br from-blue-100/30 to-indigo-100/20 blur-3xl opacity-70"></div>
+        <div className="absolute top-[40%] -left-[10%] w-[45%] h-[45%] rounded-full bg-gradient-to-tr from-sky-100/30 to-blue-50/20 blur-3xl opacity-50"></div>
+      </div>
 
-      {/* ── Top bar ── */}
-      <header className="bg-slate-900 px-6 py-4 flex items-center justify-between sticky top-0 z-10 shadow-lg">
+      {/* Sticky Frosted Header */}
+      <header className="bg-white/80 backdrop-blur-md px-6 py-4 flex items-center justify-between sticky top-0 z-50 border-b border-slate-100 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.02)]">
         <div className="flex items-center gap-3">
-          <div className="relative w-9 h-9 rounded-xl overflow-hidden flex-shrink-0 border border-slate-700 shadow-sm">
+          <div className="relative w-9 h-9 rounded-xl overflow-hidden flex-shrink-0 border border-slate-200 shadow-sm">
             <Image src="/logo.png" alt="EagleNest Logo" fill className="object-cover scale-[1.15]" sizes="36px" />
           </div>
           <div>
-            <p className="text-white font-bold text-sm leading-none">EagleNest Legal Solutions</p>
-            <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5">Client Portal</p>
+            <p className="text-slate-800 font-bold text-sm leading-none">EagleNest Legal Solutions</p>
+            <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5 font-semibold">Client Portal</p>
           </div>
         </div>
 
         <div className="flex items-center gap-4">
           <div className="text-right hidden sm:block">
-            <p className="text-white text-sm font-semibold">{data?.client?.name}</p>
-            <p className="text-slate-500 text-xs font-mono">{data?.client?.client_number}</p>
+            <p className="text-slate-800 text-sm font-semibold">{data?.client?.name}</p>
+            <p className="text-slate-400 text-xs font-mono">{data?.client?.client_number}</p>
           </div>
-          <div className="w-9 h-9 rounded-full bg-blue-700 flex items-center justify-center text-white font-bold text-sm">
+          <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-md shadow-blue-500/10">
             {data?.client?.name?.[0]?.toUpperCase() ?? 'C'}
           </div>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-1.5 text-slate-500 hover:text-white text-xs transition-colors px-2 py-1.5 rounded-lg hover:bg-white/10"
+            className="group flex items-center gap-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100/80 px-3 py-2 rounded-xl transition-all duration-200 text-xs font-medium"
           >
-            <LogOut size={15} /> <span className="hidden sm:inline">Sign Out</span>
+            <LogOut size={15} className="group-hover:translate-x-0.5 transition-transform" /> <span className="hidden sm:inline">Sign Out</span>
           </button>
         </div>
       </header>
 
-      {/* ── Main content ── */}
-      <main className="max-w-2xl mx-auto px-4 py-10 space-y-8">
-
-        {/* Welcome banner */}
-        <div className="bg-gradient-to-br from-blue-900 to-slate-900 rounded-2xl p-7 text-white shadow-xl">
-          <p className="text-blue-400 text-xs font-bold uppercase tracking-widest mb-1">Welcome back</p>
-          <h2 className="text-2xl font-bold">{data?.client?.name}</h2>
-          <p className="text-slate-400 text-sm mt-1">Read-only view of your legal matters.</p>
-          <div className="grid grid-cols-2 gap-3 mt-5 max-w-xs">
-            <div className="bg-white/10 rounded-xl px-4 py-3">
-              <p className="text-2xl font-bold">{data?.cases?.length ?? 0}</p>
-              <p className="text-xs text-slate-400 mt-0.5">Total Cases</p>
-            </div>
-            <div className="bg-white/10 rounded-xl px-4 py-3">
-              <p className="text-2xl font-bold">{upcoming.length}</p>
-              <p className="text-xs text-slate-400 mt-0.5">Upcoming Hearings</p>
-            </div>
+      {/* Content Main */}
+      <main className="max-w-2xl mx-auto px-4 py-8 space-y-8 relative z-10 w-full flex-1">
+        {/* Welcome Banner Card (Dark contrast visual anchor) */}
+        <div className="bg-gradient-to-br from-slate-900 via-slate-950 to-blue-950 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-slate-800">
+          <div className="absolute -right-10 -bottom-10 w-44 h-44 bg-white/[0.02] rounded-full blur-xl pointer-events-none"></div>
+          <div className="absolute right-12 top-4 w-28 h-28 bg-blue-500/[0.04] rounded-full blur-lg pointer-events-none"></div>
+          
+          <div className="relative z-10">
+             <p className="text-blue-400 text-xs font-extrabold uppercase tracking-widest mb-1.5">Welcome back</p>
+             <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">{data?.client?.name}</h2>
+             <p className="text-slate-400 text-xs sm:text-sm mt-1">Below is the current status of your active cases and scheduled hearings.</p>
+             
+             <div className="grid grid-cols-2 gap-4 mt-6 max-w-sm">
+               <div className="bg-white/[0.04] backdrop-blur-sm border border-white/[0.06] rounded-2xl px-5 py-4 transition-all hover:bg-white/[0.08] hover:border-white/[0.1]">
+                 <p className="text-3xl font-extrabold text-white tracking-tight">{data?.cases?.length ?? 0}</p>
+                 <p className="text-xs text-slate-400 mt-1 font-medium">Active Matters</p>
+               </div>
+               <div className="bg-white/[0.04] backdrop-blur-sm border border-white/[0.06] rounded-2xl px-5 py-4 transition-all hover:bg-white/[0.08] hover:border-white/[0.1]">
+                 <p className="text-3xl font-extrabold text-white tracking-tight">{upcoming.length}</p>
+                 <p className="text-xs text-slate-400 mt-1 font-medium">Upcoming Hearings</p>
+               </div>
+             </div>
           </div>
         </div>
 
-        {/* Cases */}
-        <section>
-          <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider mb-3 flex items-center gap-2">
-            <Briefcase size={16} className="text-blue-600" /> My Cases
+        {/* Cases Section */}
+        <section className="space-y-4">
+          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+            <Briefcase size={14} className="text-blue-600" /> My Cases
           </h3>
           {data?.cases?.length === 0 ? (
             <EmptyState message="No cases on file." />
           ) : (
-            <div className="space-y-3">
+            <div className="grid gap-4">
               {data.cases.map((c: any) => (
-                <div key={c.id} className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md hover:border-blue-100 transition-all">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="font-bold text-slate-900 font-mono text-sm">{c.case_number}</span>
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${statusStyle(c.status)}`}>
+                <div key={c.id} className="bg-white rounded-2xl border border-slate-100 p-5 sm:p-6 shadow-sm hover:shadow-md hover:border-blue-200/50 transition-all duration-300 group relative overflow-hidden">
+                  <div className="absolute top-0 bottom-0 left-0 w-[3px] bg-blue-600 scale-y-0 group-hover:scale-y-100 transition-transform origin-top duration-300"></div>
+                  
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                    <div className="space-y-2.5">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-bold text-slate-800 font-mono text-sm tracking-tight bg-slate-50 border border-slate-200/60 px-2.5 py-0.5 rounded-lg">{c.case_number}</span>
+                        <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${statusStyle(c.status)}`}>
+                          {c.status === 'Active' && (
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                          )}
                           {c.status}
                         </span>
                       </div>
-                      <p className="text-sm text-slate-500">
-                        vs. <span className="font-medium text-slate-700">{c.opponent_name}</span>
-                      </p>
-                      <p className="text-xs text-slate-400 mt-1">{c.court}</p>
+                      
+                      <div className="space-y-2">
+                        <p className="text-sm text-slate-500 flex items-center gap-2">
+                          <User2 size={14} className="text-slate-400" />
+                          Opponent: <span className="font-semibold text-slate-700">{c.opponent_name}</span>
+                        </p>
+                        <p className="text-xs text-slate-400 flex items-center gap-2 pl-0.5">
+                          <Building2 size={14} className="text-slate-400" />
+                          {c.court}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -142,39 +207,50 @@ export default function DashboardPage() {
           )}
         </section>
 
-        {/* Upcoming Hearings */}
-        <section>
-          <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider mb-3 flex items-center gap-2">
-            <Calendar size={16} className="text-rose-500" /> Upcoming Hearings
+        {/* Upcoming Hearings Section */}
+        <section className="space-y-4">
+          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+            <Calendar size={14} className="text-rose-500" /> Upcoming Hearings
           </h3>
           {upcoming.length === 0 ? (
             <EmptyState message="No upcoming hearings scheduled." />
           ) : (
-            <div className="space-y-3">
+            <div className="relative border-l border-slate-200/80 pl-6 ml-3 py-1 space-y-6">
               {upcoming.map((h: any) => {
                 const isToday = h.hearing_date === today;
+                const relativeTime = getRelativeDays(h.hearing_date);
                 return (
-                  <div key={h.id} className={`bg-white rounded-2xl border p-5 transition-all ${isToday ? 'border-rose-200 ring-1 ring-rose-100' : 'border-slate-100 hover:shadow-md'}`}>
-                    <div className="flex items-center justify-between gap-2">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <p className={`text-lg font-bold ${isToday ? 'text-rose-700' : 'text-slate-900'}`}>
-                            {fmt(h.hearing_date)}
-                          </p>
-                          {isToday && (
-                            <span className="text-[9px] font-extrabold tracking-widest uppercase text-rose-500 bg-rose-50 border border-rose-100 px-2 py-0.5 rounded-full">
-                              Today
-                            </span>
-                          )}
+                  <div key={h.id} className="relative group">
+                    <div className={`absolute -left-[32px] top-2.5 w-4 h-4 rounded-full border-4 border-slate-50 shadow transition-transform duration-300 group-hover:scale-110 ${isToday ? 'bg-rose-500 animate-pulse border-rose-100' : 'bg-blue-600 border-white'}`}></div>
+                    
+                    <div className={`bg-white rounded-2xl border p-5 transition-all duration-300 shadow-sm hover:shadow-md ${isToday ? 'border-rose-200 ring-4 ring-rose-500/5 shadow-rose-100/20' : 'border-slate-100 hover:border-blue-200/50'}`}>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between flex-wrap gap-2">
+                          <div className="flex items-center gap-2">
+                            <p className={`text-base sm:text-lg font-extrabold ${isToday ? 'text-rose-600' : 'text-slate-800'}`}>
+                              {fmt(h.hearing_date)}
+                            </p>
+                            {relativeTime && (
+                              <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border uppercase tracking-wider ${isToday ? 'bg-rose-50 border-rose-100 text-rose-600' : 'bg-blue-50 border-blue-100 text-blue-600'}`}>
+                                {relativeTime}
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-xs text-slate-400 font-mono font-medium">Case: {h.case_number}</span>
                         </div>
-                        <p className="text-sm text-slate-500">
-                          Case: <span className="font-mono font-semibold text-slate-700">{h.case_number}</span>
-                        </p>
-                        {h.notes && <p className="text-xs text-slate-400 mt-1">{h.notes}</p>}
+                        
+                        {h.notes && (
+                          <div className="bg-slate-50 border-l-2 border-slate-300 p-3 rounded-r-xl text-slate-600 text-xs leading-relaxed">
+                            <p className="font-semibold text-slate-700 mb-0.5">Court Notes:</p>
+                            {h.notes}
+                          </div>
+                        )}
+
                         {h.next_date && (
-                          <p className="text-xs font-semibold text-emerald-600 mt-2 flex items-center gap-1">
-                            <Clock size={11} /> Next: {fmt(h.next_date)}
-                          </p>
+                          <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-600 bg-emerald-50/50 border border-emerald-100/60 px-3 py-1.5 rounded-xl w-fit">
+                            <Clock size={12} />
+                            Next Scheduled Date: {fmt(h.next_date)}
+                          </div>
                         )}
                       </div>
                     </div>
@@ -185,25 +261,28 @@ export default function DashboardPage() {
           )}
         </section>
 
-        {/* Past Hearings */}
+        {/* Past Hearings Section */}
         {past.length > 0 && (
-          <section>
-            <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-2">
-              <Calendar size={13} /> Past Hearings
+          <section className="space-y-3">
+            <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+              <CheckCircle2 size={13} className="text-slate-400" /> Past Hearings
             </h3>
-            <div className="space-y-2">
+            <div className="divide-y divide-slate-100 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
               {past.slice(0, 5).map((h: any) => (
-                <div key={h.id} className="bg-white border border-slate-100 rounded-xl px-4 py-3 flex items-center justify-between opacity-60 hover:opacity-100 transition-opacity">
-                  <p className="text-sm text-slate-700 font-medium">{fmt(h.hearing_date)}</p>
-                  <span className="text-xs text-slate-400 font-mono">{h.case_number}</span>
+                <div key={h.id} className="px-5 py-4 flex items-center justify-between hover:bg-slate-50/40 transition-colors group">
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 rounded-full bg-slate-300 group-hover:bg-slate-400 transition-colors"></div>
+                    <p className="text-sm text-slate-600 font-semibold">{fmt(h.hearing_date)}</p>
+                  </div>
+                  <span className="text-xs font-mono text-slate-400 bg-slate-50 px-2 py-0.5 rounded border border-slate-100">{h.case_number}</span>
                 </div>
               ))}
             </div>
           </section>
         )}
 
-        <p className="text-center text-[11px] text-slate-400 pb-8">
-          This is a secure read-only portal provided by EagleNest Legal Solutions. For queries, contact your lawyer.
+        <p className="text-center text-[11px] text-slate-400 pt-4 pb-4">
+          This is a secure read-only portal provided by EagleNest Legal Solutions. For details or edits, contact the office directly.
         </p>
       </main>
     </div>
@@ -212,70 +291,52 @@ export default function DashboardPage() {
 
 function EmptyState({ message }: { message: string }) {
   return (
-    <div className="bg-white border border-slate-100 rounded-2xl p-10 text-center">
-      <AlertCircle size={28} className="mx-auto text-slate-200 mb-3" />
-      <p className="text-slate-400 text-sm">{message}</p>
+    <div className="bg-white border border-slate-100 rounded-2xl p-12 text-center shadow-sm">
+      <AlertCircle size={32} className="mx-auto text-slate-300 mb-3" />
+      <p className="text-slate-400 text-sm font-medium">{message}</p>
     </div>
   );
 }
 
 function PortalSkeleton() {
   return (
-    <div className="min-h-screen bg-slate-50 animate-pulse">
-      {/* Top bar skeleton */}
-      <header className="bg-slate-900 px-6 py-4 flex items-center justify-between shadow-lg">
+    <div className="min-h-screen bg-slate-50/50 flex flex-col font-sans animate-pulse">
+      <header className="bg-white px-6 py-4 flex items-center justify-between border-b border-slate-100 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-slate-800 rounded-xl"></div>
+          <div className="w-9 h-9 bg-slate-200 rounded-xl"></div>
           <div>
-            <div className="h-4 w-32 bg-slate-800 rounded mb-1"></div>
-            <div className="h-2 w-16 bg-slate-800 rounded"></div>
+            <div className="h-4 w-32 bg-slate-200 rounded mb-1.5"></div>
+            <div className="h-2 w-16 bg-slate-200 rounded"></div>
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <div className="text-right hidden sm:block">
-            <div className="h-4 w-24 bg-slate-800 rounded mb-1 ml-auto"></div>
-            <div className="h-3 w-16 bg-slate-800 rounded ml-auto"></div>
-          </div>
-          <div className="w-9 h-9 rounded-full bg-slate-800"></div>
-          <div className="w-20 h-8 rounded-lg bg-slate-800"></div>
+          <div className="w-24 h-4 bg-slate-200 rounded hidden sm:block"></div>
+          <div className="w-9 h-9 rounded-full bg-slate-200"></div>
+          <div className="w-16 h-8 rounded-xl bg-slate-200"></div>
         </div>
       </header>
 
-      <main className="max-w-2xl mx-auto px-4 py-10 space-y-8">
+      <main className="max-w-2xl mx-auto px-4 py-8 space-y-8 w-full flex-1">
         {/* Banner Skeleton */}
-        <div className="bg-slate-900 rounded-2xl p-7 shadow-xl border border-slate-800">
-          <div className="h-3 w-24 bg-slate-800 rounded mb-3"></div>
+        <div className="bg-slate-900 rounded-3xl p-8 h-48 border border-slate-800">
+          <div className="h-3.5 w-24 bg-slate-800 rounded mb-3"></div>
           <div className="h-8 w-48 bg-slate-800 rounded mb-2"></div>
           <div className="h-4 w-64 bg-slate-800 rounded"></div>
-          <div className="grid grid-cols-2 gap-3 mt-5 max-w-xs">
-            <div className="bg-slate-800 rounded-xl px-4 py-3 h-16"></div>
-            <div className="bg-slate-800 rounded-xl px-4 py-3 h-16"></div>
+          <div className="grid grid-cols-2 gap-4 mt-6 max-w-sm">
+            <div className="bg-white/[0.04] rounded-2xl h-16"></div>
+            <div className="bg-white/[0.04] rounded-2xl h-16"></div>
           </div>
         </div>
 
-        {/* Section Skeleton */}
-        <section>
-          <div className="h-5 w-32 bg-slate-200 rounded mb-3"></div>
+        {/* Cases Skeleton */}
+        <section className="space-y-4">
+          <div className="h-4 w-28 bg-slate-200 rounded"></div>
           <div className="space-y-3">
             {[1, 2].map((i) => (
-              <div key={i} className="bg-white rounded-2xl border border-slate-100 p-5">
-                <div className="h-5 w-40 bg-slate-200 rounded mb-2"></div>
-                <div className="h-4 w-64 bg-slate-100 rounded mb-2"></div>
-                <div className="h-3 w-32 bg-slate-100 rounded"></div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Section Skeleton */}
-        <section>
-          <div className="h-5 w-48 bg-slate-200 rounded mb-3"></div>
-          <div className="space-y-3">
-            {[1, 2].map((i) => (
-              <div key={i} className="bg-white rounded-2xl border border-slate-100 p-5">
-                <div className="h-6 w-32 bg-slate-200 rounded mb-2"></div>
-                <div className="h-4 w-48 bg-slate-100 rounded mb-2"></div>
-                <div className="h-3 w-40 bg-slate-100 rounded mt-3"></div>
+              <div key={i} className="bg-white rounded-2xl border border-slate-100 p-6 h-32">
+                <div className="h-5 w-40 bg-slate-200 rounded mb-3"></div>
+                <div className="h-4 w-60 bg-slate-100 rounded mb-2"></div>
+                <div className="h-3.5 w-32 bg-slate-100 rounded"></div>
               </div>
             ))}
           </div>
