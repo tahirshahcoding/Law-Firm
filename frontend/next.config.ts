@@ -9,7 +9,23 @@ const withPWA = withPWAInit({
   disable: process.env.NODE_ENV === "development",
   workboxOptions: {
     disableDevLogs: true,
+    // Force the new SW to activate immediately (replaces any old broken SW)
+    skipWaiting: true,
+    clientsClaim: true,
+    // ── Never let the SW touch auth or token endpoints ─────────────────────
+    // These patterns are excluded from ALL SW caching/interception.
+    // Without this, the SW intercepts GET /api/token/ repeatedly,
+    // causing the 20+ request loop visible in DevTools.
+    navigateFallbackDenylist: [/^\/api\//],
     runtimeCaching: [
+      {
+        // Explicitly pass auth endpoints straight to the network — no cache.
+        urlPattern: /\/api\/(token|auth)\//,
+        handler: "NetworkOnly",
+        options: {
+          cacheName: "auth-no-cache",
+        },
+      },
       {
         // Cache the daily diary API responses
         urlPattern: /\/api\/diary\/today\//,
