@@ -119,6 +119,7 @@ export default function LoginPage() {
                   onChange={e => setForm({ ...form, username: e.target.value })}
                   placeholder="e.g. C-001"
                   className="w-full bg-white/8 border border-white/10 text-white placeholder:text-slate-600 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition"
+                  suppressHydrationWarning
                 />
               </div>
               <p className="text-[11px] text-slate-600 mt-1.5">Your username was provided by the office.</p>
@@ -138,11 +139,13 @@ export default function LoginPage() {
                   onChange={e => setForm({ ...form, password: e.target.value })}
                   placeholder="Your provided password"
                   className="w-full bg-white/8 border border-white/10 text-white placeholder:text-slate-600 rounded-xl pl-10 pr-12 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition"
+                  suppressHydrationWarning
                 />
                 <button
                   type="button"
                   onClick={() => setShowPwd(!showPwd)}
                   className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-600 hover:text-slate-400 transition-colors"
+                  suppressHydrationWarning
                 >
                   {showPwd ? <EyeOff size={17} /> : <Eye size={17} />}
                 </button>
@@ -153,6 +156,7 @@ export default function LoginPage() {
               type="submit"
               disabled={loading}
               className="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-blue-900/50 flex items-center justify-center gap-2 mt-1"
+              suppressHydrationWarning
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
