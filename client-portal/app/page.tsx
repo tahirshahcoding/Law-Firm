@@ -5,7 +5,10 @@ import { useRouter } from 'next/navigation';
 import { Lock, User, Eye, EyeOff, ShieldAlert } from 'lucide-react';
 import Image from 'next/image';
 
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+let rawApi = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+if (rawApi.endsWith('/')) rawApi = rawApi.slice(0, -1);
+if (!rawApi.endsWith('/api')) rawApi += '/api';
+const API = rawApi;
 
 export default function LoginPage() {
   const router = useRouter();
