@@ -83,7 +83,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: `${backendUrl}/api/:path*`, // Proxy to Backend to avoid CORS completely
+        destination: `${backendUrl}/api/:path*`, // Proxy to Backend
       },
     ];
   },

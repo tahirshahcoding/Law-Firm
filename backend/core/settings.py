@@ -64,6 +64,11 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'core.urls'
 
+# Prevent Django from throwing RuntimeError on POST requests missing a trailing
+# slash. The Next.js proxy sometimes strips trailing slashes, and Django's
+# APPEND_SLASH redirect cannot preserve POST body — causing a 500 error.
+APPEND_SLASH = False
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
