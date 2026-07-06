@@ -1,6 +1,6 @@
 'use client';
-// We proxy through Next.js rewrites to completely avoid CORS issues
-export const API_BASE = '/api';
+// We connect directly to the API server to completely avoid Next.js proxy/rewrite trailing-slash normalizations.
+export const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 // ── CSRF helper ───────────────────────────────────────────────────────────────
 /**
