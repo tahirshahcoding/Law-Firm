@@ -57,8 +57,8 @@ interface UIContextValue {
   confirm: (opts: ConfirmOptions) => Promise<boolean>;
   toast: {
     success: (message: string) => void;
-    error:   (message: string) => void;
-    info:    (message: string) => void;
+    error: (message: string) => void;
+    info: (message: string) => void;
     warning: (message: string) => void;
   };
   showLoading: (message?: string) => void;
@@ -174,9 +174,9 @@ export function UIProvider({ children }: { children: ReactNode }) {
 
   const toast = {
     success: (msg: string) => addToast('success', msg),
-    error:   (msg: string) => addToast('error',   msg),
-    info:    (msg: string) => addToast('info',     msg),
-    warning: (msg: string) => addToast('warning',  msg),
+    error: (msg: string) => addToast('error', msg),
+    info: (msg: string) => addToast('info', msg),
+    warning: (msg: string) => addToast('warning', msg),
   };
 
   // ── Loading state ─────────────────────────────────────────────────────────

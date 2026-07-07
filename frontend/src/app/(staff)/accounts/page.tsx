@@ -245,42 +245,12 @@ function AccountsContent() {
       if (action === 'print') {
         const pdfUrl = await html2pdf().set(opt).from(element).output('bloburl');
         window.open(pdfUrl, '_blank');
-      } else if (action === 'download_only') {
-        html2pdf().set(opt).from(element).save();
       } else {
-        if (navigator.share && navigator.canShare) {
-          const pdfBlob = await html2pdf().set(opt).from(element).output('blob');
-          const file = new File([pdfBlob], opt.filename, { type: 'application/pdf' });
-          
-          if (navigator.canShare({ files: [file] })) {
-             await navigator.share({
-               files: [file],
-               title: `Challan ${challan.invoice_number}`,
-               text: 'Please find the payment challan attached.'
-             });
-          } else {
-             html2pdf().set(opt).from(element).save();
-          }
-        } else {
-          // Desktop fallback: just download
-          html2pdf().set(opt).from(element).save();
-        }
+        await html2pdf().set(opt).from(element).save();
       }
     } catch (err: any) {
       console.error("PDF generation error:", err);
-      // If sharing failed (e.g. NotAllowedError due to user gesture), fallback to download
-      if (err.name === 'NotAllowedError' || err.message?.includes('share')) {
-        try {
-          const element = document.getElementById('invoice-template-container');
-          const html2pdfModule = await import('html2pdf.js');
-          const html2pdf = html2pdfModule.default || html2pdfModule;
-          html2pdf().set({ filename: `Challan_${challan.invoice_number}.pdf` }).from(element!).save();
-        } catch (fallbackErr) {
-          toast.error(`Error generating PDF: ${fallbackErr}`);
-        }
-      } else {
-        toast.error(`Error generating or sharing PDF: ${err.message || err}`);
-      }
+      toast.error(`Error generating PDF: ${err.message || err}`);
     } finally {
       if (originalGetComputedStyle) {
         window.getComputedStyle = originalGetComputedStyle;
