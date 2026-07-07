@@ -106,7 +106,7 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
               {/* Name + Role */}
               <div className="hidden sm:block text-left">
                 <p className="text-sm font-semibold text-slate-800 leading-tight max-w-[120px] truncate">
-                  {user.username}
+                  {user.username ? user.username.charAt(0).toUpperCase() + user.username.slice(1) : ''}
                 </p>
                 <p className="text-xs text-slate-400 leading-tight">{user.role}</p>
               </div>
@@ -121,7 +121,9 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
               <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-xl shadow-lg border border-slate-100 py-1.5 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
                 {/* User info header */}
                 <div className="px-4 py-2.5 border-b border-slate-100 mb-1">
-                  <p className="text-sm font-bold text-slate-900 truncate">{user.username}</p>
+                  <p className="text-sm font-bold text-slate-900 truncate">
+                    {user.username ? user.username.charAt(0).toUpperCase() + user.username.slice(1) : ''}
+                  </p>
                   {user.email && (
                     <p className="text-xs text-slate-400 truncate mt-0.5">{user.email}</p>
                   )}

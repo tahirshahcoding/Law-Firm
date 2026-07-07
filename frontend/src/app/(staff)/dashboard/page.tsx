@@ -9,7 +9,8 @@ import {
   Sun, 
   Sunset, 
   Moon, 
-  ArrowUpRight
+  ArrowUpRight,
+  Clock
 } from 'lucide-react';
 import { API_BASE, apiFetch } from '@/lib/api';
 import DailyDiaryWidget from '@/components/DailyDiaryWidget';
@@ -27,6 +28,12 @@ export default function Dashboard() {
     total_revenue: 0
   });
   const [loading, setLoading] = useState(true);
+  const [time, setTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     apiFetch(`${API_BASE}/dashboard/stats/`)
@@ -72,7 +79,7 @@ export default function Dashboard() {
             <div className="flex items-center gap-2">
               {getGreetingIcon()}
               <h2 className="text-2xl font-extrabold text-slate-800 tracking-tight">
-                {getGreeting()}, {user?.username || 'Member'}!
+                {getGreeting()}, {user?.username ? user.username.charAt(0).toUpperCase() + user.username.slice(1) : 'Member'}!
               </h2>
             </div>
             <p className="text-slate-500 max-w-xl leading-relaxed text-sm sm:text-base font-medium">
@@ -80,13 +87,21 @@ export default function Dashboard() {
             </p>
           </div>
           
-          {/* User Role Badge */}
-          {user?.role && (
-            <div className="shrink-0 flex items-center gap-2 bg-white/80 border border-slate-200/60 px-4 py-2 rounded-2xl shadow-sm w-fit">
-              <span className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse"></span>
-              <span className="text-xs font-bold text-slate-700 tracking-wide uppercase">{user.role} Workspace</span>
+          {/* Live Clock & User Role Badge */}
+          <div className="shrink-0 flex flex-col md:items-end gap-3">
+            <div className="bg-white/80 border border-slate-200/60 px-4 py-2 rounded-2xl shadow-sm flex items-center gap-2 w-fit">
+              <Clock size={16} className="text-slate-500" />
+              <span className="text-sm font-bold text-slate-700 font-mono tracking-wide">
+                {time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true })}
+              </span>
             </div>
-          )}
+            {user?.role && (
+              <div className="shrink-0 flex items-center gap-2 bg-white/80 border border-slate-200/60 px-4 py-2 rounded-2xl shadow-sm w-fit">
+                <span className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse"></span>
+                <span className="text-xs font-bold text-slate-700 tracking-wide uppercase">{user.role} Workspace</span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
       
