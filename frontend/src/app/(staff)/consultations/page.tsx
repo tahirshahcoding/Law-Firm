@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { MessageSquare, Search, Trash2, Phone, Mail, ChevronDown, RefreshCw, CheckCircle2, Clock, X } from 'lucide-react';
 import { API_BASE, apiFetch } from '@/lib/api';
+import { useUI } from '@/context/UIContext';
 import { ListSkeleton } from '@/components/SkeletonLoaders';
 
 type Consultation = {
@@ -29,6 +30,7 @@ export default function ConsultationsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
   const [expanded, setExpanded] = useState<string | null>(null);
+  const { confirm, toast } = useUI();
 
   const fetchConsultations = () => {
     setLoading(true);
@@ -60,11 +62,19 @@ export default function ConsultationsPage() {
   };
 
   const handleDelete = async (id: string, name: string) => {
-    if (!window.confirm(`Delete consultation request from "${name}"?`)) return;
+    const ok = await confirm({
+      title: 'Delete Consultation',
+      message: `This will permanently delete the consultation request from "${name}".`,
+      confirmLabel: 'Delete',
+      variant: 'danger',
+    });
+    if (!ok) return;
     try {
       await apiFetch(`${API_BASE}/consultations/${id}/`, { method: 'DELETE' });
+      toast.success('Consultation request deleted.');
       fetchConsultations();
     } catch (err) {
+      toast.error('Failed to delete consultation.');
       console.error('Failed to delete:', err);
     }
   };

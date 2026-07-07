@@ -5,6 +5,7 @@ import { Calendar as CalendarIcon, Plus, CheckCircle2, Circle, Clock, Trash2, Ga
 import { API_BASE, apiFetch } from '@/lib/api';
 import { ListSkeleton } from '@/components/SkeletonLoaders';
 import { toast } from 'sonner';
+import { useUI } from '@/context/UIContext';
 
 export default function DailyDiaryPage() {
   const [tasks, setTasks] = useState<any[]>([]);
@@ -13,6 +14,7 @@ export default function DailyDiaryPage() {
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [newTaskDueDate, setNewTaskDueDate] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { confirm } = useUI();
 
   const fetchTasksAndHearings = () => {
     setLoading(true);
@@ -59,7 +61,13 @@ export default function DailyDiaryPage() {
   };
 
   const handleDeleteTask = async (id: string) => {
-    if (!window.confirm('Delete this task?')) return;
+    const ok = await confirm({
+      title: 'Delete Task',
+      message: 'This will permanently remove the task from your diary.',
+      confirmLabel: 'Delete',
+      variant: 'danger',
+    });
+    if (!ok) return;
     try {
       const res = await apiFetch(`${API_BASE}/tasks/${id}/`, {
         method: 'DELETE',

@@ -8,6 +8,7 @@ import InvoiceTemplate from '@/components/InvoiceTemplate';
 import GenerateChallanModal from '@/components/GenerateChallanModal';
 import AddPaymentModal from '@/components/AddPaymentModal';
 import { useAuth } from '@/context/AuthContext';
+import { useUI } from '@/context/UIContext';
 
 function AccountsContent() {
   const searchParams = useSearchParams();
@@ -42,6 +43,7 @@ function AccountsContent() {
   const canViewAccounts = user?.role === 'Admin' || user?.permissions?.accounts?.view === true;
   const canManageAccounts = user?.role === 'Admin' || user?.permissions?.accounts?.edit === true;
   const canDeleteAccounts = user?.role === 'Admin' || user?.permissions?.accounts?.delete === true;
+  const { confirm, toast } = useUI();
 
   const fetchAccounts = async () => {
     try {
@@ -81,17 +83,24 @@ function AccountsContent() {
   };
 
   const handleDeletePayment = async (id: string) => {
-    if (!window.confirm('Are you sure you want to reverse/delete this payment? This will update the associated challan status.')) return;
+    const ok = await confirm({
+      title: 'Reverse Payment',
+      message: 'This will permanently delete the payment record and update the associated challan status accordingly.',
+      confirmLabel: 'Reverse Payment',
+      variant: 'warning',
+    });
+    if (!ok) return;
     try {
       const res = await apiFetch(`${API_BASE}/payments/${id}/`, { method: 'DELETE' });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        alert(data.error || `Failed to delete payment (${res.status})`);
+        toast.error(data.error || `Failed to delete payment (${res.status})`);
         return;
       }
+      toast.success('Payment reversed successfully.');
       handleSuccess();
     } catch (err) {
-      alert('Failed to delete payment: network error');
+      toast.error('Failed to reverse payment: network error');
     }
   };
 
@@ -103,17 +112,24 @@ function AccountsContent() {
   }, [canViewAccounts]);
 
   const handleDeleteChallan = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this challan? This action cannot be undone.')) return;
+    const ok = await confirm({
+      title: 'Delete Challan',
+      message: 'This will permanently delete this challan. This action cannot be undone.',
+      confirmLabel: 'Delete',
+      variant: 'danger',
+    });
+    if (!ok) return;
     try {
       const res = await apiFetch(`${API_BASE}/invoices/${id}/`, { method: 'DELETE' });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        alert(data.error || `Failed to delete challan (${res.status})`);
+        toast.error(data.error || `Failed to delete challan (${res.status})`);
         return;
       }
+      toast.success('Challan deleted.');
       fetchAccounts();
     } catch (err) {
-      alert('Failed to delete challan: network error');
+      toast.error('Failed to delete challan: network error');
     }
   };
 
@@ -205,10 +221,10 @@ function AccountsContent() {
           const html2pdf = html2pdfModule.default || html2pdfModule;
           html2pdf().set({ filename: `Challan_${challan.invoice_number}.pdf` }).from(element!).save();
         } catch (fallbackErr) {
-          alert(`Error generating PDF: ${fallbackErr}`);
+          toast.error(`Error generating PDF: ${fallbackErr}`);
         }
       } else {
-        alert(`Error generating or sharing PDF: ${err.message || err}`);
+        toast.error(`Error generating or sharing PDF: ${err.message || err}`);
       }
     } finally {
       if (originalGetComputedStyle) {

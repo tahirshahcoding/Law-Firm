@@ -5,6 +5,7 @@ import { X, User, CreditCard, Phone, MapPin, RefreshCw, Copy, CheckCheck, Key, S
 import { API_BASE, apiFetch, safeJson } from '@/lib/api';
 import { sendWhatsApp, credentialsResetMessage } from '@/lib/whatsapp';
 import { useAuth } from '@/context/AuthContext';
+import { useUI } from '@/context/UIContext';
 
 interface EditClientModalProps {
   isOpen: boolean;
@@ -15,6 +16,7 @@ interface EditClientModalProps {
 
 export default function EditClientModal({ isOpen, onClose, onSuccess, clientData }: EditClientModalProps) {
   const { user } = useAuth();
+  const { confirm, toast } = useUI();
   const [formData, setFormData] = useState({ name: '', cnic: '', mobile_number: '', address: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -49,13 +51,20 @@ export default function EditClientModal({ isOpen, onClose, onSuccess, clientData
   };
 
   const handleResetPassword = async () => {
-    if (!window.confirm(`Reset portal password for ${clientData.name}? The old password will become invalid immediately.`)) return;
+    const ok = await confirm({
+      title: 'Reset Portal Password',
+      message: `This will immediately invalidate the existing portal password for ${clientData.name}. A new password will be generated. Continue?`,
+      confirmLabel: 'Reset Password',
+      variant: 'warning',
+    });
+    if (!ok) return;
     setResetLoading(true);
     try {
       const res = await apiFetch(`${API_BASE}/portal/reset-password/${clientData.id}/`, { method: 'POST' });
       const data = await safeJson(res);
       if (!res.ok) throw new Error(data.error || 'Failed to reset password');
       setNewCredentials(data);
+      toast.success('Password reset successfully.');
 
       // Auto-open WhatsApp with updated credentials
       const phone = formData.mobile_number || clientData.mobile_number;
@@ -68,7 +77,7 @@ export default function EditClientModal({ isOpen, onClose, onSuccess, clientData
         sendWhatsApp(phone, message);
       }
     } catch (err: any) {
-      alert('Error: ' + err.message);
+      toast.error('Error: ' + err.message);
     } finally {
       setResetLoading(false);
     }

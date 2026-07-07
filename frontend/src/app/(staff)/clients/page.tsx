@@ -8,6 +8,7 @@ import { API_BASE, apiFetch } from '@/lib/api';
 import AddClientModal from '@/components/AddClientModal';
 import EditClientModal from '@/components/EditClientModal';
 import { useAuth } from '@/context/AuthContext';
+import { useUI } from '@/context/UIContext';
 import { TableSkeleton } from '@/components/SkeletonLoaders';
 
 function ClientsPageContent() {
@@ -27,6 +28,7 @@ function ClientsPageContent() {
   const [selectedClient, setSelectedClient] = useState(null);
 
   const { user } = useAuth();
+  const { confirm, toast } = useUI();
 
   const canViewClients = user?.role === 'Admin' || user?.permissions?.clients?.view === true;
   const canAddClients  = user?.role === 'Admin' || user?.permissions?.clients?.add === true;
@@ -73,16 +75,23 @@ function ClientsPageContent() {
 
 
   const handleDelete = async (id: string, name: string) => {
-    if (!window.confirm(`Are you sure you want to permanently delete the profile for ${name}?`)) return;
+    const ok = await confirm({
+      title: 'Delete Client',
+      message: `This will permanently remove the profile for ${name} and all associated records. This action cannot be undone.`,
+      confirmLabel: 'Delete',
+      variant: 'danger',
+    });
+    if (!ok) return;
     
     try {
       const res = await apiFetch(`${API_BASE}/clients/${id}/`, {
         method: 'DELETE',
       });
       if (!res.ok) throw new Error('Failed to delete client');
+      toast.success(`Client "${name}" has been deleted.`);
       fetchClients();
     } catch (err) {
-      alert('Error deleting client.');
+      toast.error('Failed to delete client. Please try again.');
       console.error(err);
     }
   };

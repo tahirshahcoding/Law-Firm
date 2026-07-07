@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useUI } from '@/context/UIContext';
 import { Users, Shield, Plus, X, Trash2, Key, Edit2, Upload, ToggleLeft, ToggleRight, ChevronDown } from 'lucide-react';
 import { API_BASE, apiFetch } from '@/lib/api';
 import { TableSkeleton } from '@/components/SkeletonLoaders';
@@ -229,6 +230,7 @@ function PermissionsMatrix({
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function UserManagementPage() {
   const { user } = useAuth();
+  const { confirm, toast } = useUI();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -300,12 +302,19 @@ export default function UserManagementPage() {
   };
 
   const handleDelete = async (id: number, name: string) => {
-    if (!window.confirm(`Permanently delete user ${name}?`)) return;
+    const ok = await confirm({
+      title: 'Delete Staff Account',
+      message: `This will permanently delete the account for "${name}". This action cannot be undone.`,
+      confirmLabel: 'Delete',
+      variant: 'danger',
+    });
+    if (!ok) return;
     try {
       const res = await apiFetch(`${API_BASE}/users/admin/${id}/`, { method: 'DELETE' });
       if (!res.ok) { const err = await res.json(); throw new Error(err.error || 'Failed'); }
+      toast.success(`User "${name}" has been deleted.`);
       fetchUsers();
-    } catch (err: any) { alert(err.message); }
+    } catch (err: any) { toast.error(err.message); }
   };
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -354,9 +363,10 @@ export default function UserManagementPage() {
         fetchUsers();
         setIsModalOpen(false);
         resetForm();
+        toast.success(isEditMode ? 'Staff account updated.' : 'Staff account created.');
       } else {
         const error = await res.json();
-        alert(error.error || 'Failed to save user');
+        toast.error(error.error || 'Failed to save user');
       }
     } catch (err) {
       console.error(err);

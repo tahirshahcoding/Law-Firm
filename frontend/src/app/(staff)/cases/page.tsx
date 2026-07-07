@@ -8,6 +8,7 @@ import { API_BASE, apiFetch } from '@/lib/api';
 import AddCaseModal from '@/components/AddCaseModal';
 import EditCaseModal from '@/components/EditCaseModal';
 import { useAuth } from '@/context/AuthContext';
+import { useUI } from '@/context/UIContext';
 import { TableSkeleton } from '@/components/SkeletonLoaders';
 
 function CasesPageContent() {
@@ -27,6 +28,7 @@ function CasesPageContent() {
   const [selectedCase, setSelectedCase] = useState(null);
 
   const { user } = useAuth();
+  const { confirm, toast } = useUI();
 
   const canViewCases   = user?.role === 'Admin' || user?.permissions?.cases?.view === true;
   const canAddCases    = user?.role === 'Admin' || user?.permissions?.cases?.add === true;
@@ -74,16 +76,23 @@ function CasesPageContent() {
 
 
   const handleDelete = async (id: string, caseNumber: string) => {
-    if (!window.confirm(`Are you sure you want to permanently delete Case ${caseNumber}?`)) return;
+    const ok = await confirm({
+      title: 'Delete Case',
+      message: `This will permanently delete Case ${caseNumber} along with all hearings, invoices, and payments. This action cannot be undone.`,
+      confirmLabel: 'Delete',
+      variant: 'danger',
+    });
+    if (!ok) return;
     
     try {
       const res = await apiFetch(`${API_BASE}/cases/${id}/`, {
         method: 'DELETE',
       });
       if (!res.ok) throw new Error('Failed to delete case');
+      toast.success(`Case ${caseNumber} has been deleted.`);
       fetchCases();
     } catch (err) {
-      alert('Error deleting case.');
+      toast.error('Failed to delete case. Please try again.');
       console.error(err);
     }
   };

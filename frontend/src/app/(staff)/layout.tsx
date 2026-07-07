@@ -9,7 +9,7 @@ import CommandPalette from '@/components/CommandPalette';
 import QuickAddModal from '@/components/QuickAddModal';
 import { useAuth } from '@/context/AuthContext';
 import { AppShellSkeleton } from '@/components/SkeletonLoaders';
-import { Toaster } from 'sonner';
+import { UIProvider } from '@/context/UIContext';
 import Image from 'next/image';
 
 export default function StaffLayout({ children }: { children: React.ReactNode }) {
@@ -52,7 +52,7 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className="flex h-screen overflow-hidden w-full">
-      <Toaster theme="dark" position="bottom-right" />
+      <UIProvider>
       <CommandPalette />
       <QuickAddModal />
       <Navigation
@@ -154,6 +154,7 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
           {children}
         </div>
       </main>
+      </UIProvider>
     </div>
   );
 }

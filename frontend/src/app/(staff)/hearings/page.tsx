@@ -7,6 +7,7 @@ import AddHearingModal from '@/components/AddHearingModal';
 import EditHearingModal from '@/components/EditHearingModal';
 import HearingDocumentsModal from '@/components/HearingDocumentsModal';
 import { useAuth } from '@/context/AuthContext';
+import { useUI } from '@/context/UIContext';
 import { TableSkeleton } from '@/components/SkeletonLoaders';
 
 export default function HearingsPage() {
@@ -22,6 +23,7 @@ export default function HearingsPage() {
   const [selectedDocsHearing, setSelectedDocsHearing] = useState(null);
 
   const { user } = useAuth();
+  const { confirm, toast } = useUI();
 
   const canViewHearings   = user?.role === 'Admin' || user?.permissions?.hearings?.view === true;
   const canAddHearings    = user?.role === 'Admin' || user?.permissions?.hearings?.add === true;
@@ -52,16 +54,23 @@ export default function HearingsPage() {
   }, []);
 
   const handleDelete = async (id: string, caseNumber: string, date: string) => {
-    if (!window.confirm(`Delete the hearing scheduled on ${date} for Case ${caseNumber}?`)) return;
+    const ok = await confirm({
+      title: 'Delete Hearing',
+      message: `This will permanently delete the hearing scheduled on ${date} for Case ${caseNumber}.`,
+      confirmLabel: 'Delete',
+      variant: 'danger',
+    });
+    if (!ok) return;
     
     try {
       const res = await apiFetch(`${API_BASE}/hearings/${id}/`, {
         method: 'DELETE',
       });
       if (!res.ok) throw new Error('Failed to delete hearing');
+      toast.success('Hearing deleted successfully.');
       fetchHearings();
     } catch (err) {
-      alert('Error deleting hearing.');
+      toast.error('Failed to delete hearing. Please try again.');
       console.error(err);
     }
   };

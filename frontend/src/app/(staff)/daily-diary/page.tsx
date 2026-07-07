@@ -4,12 +4,14 @@ import { API_BASE, apiFetch } from '@/lib/api';
 import { useState, useEffect } from 'react';
 import { Plus, CheckCircle2, Circle, Trash2, Calendar, ListTodo, CalendarDays } from 'lucide-react';
 import { ListSkeleton } from '@/components/SkeletonLoaders';
+import { useUI } from '@/context/UIContext';
 
 export default function DailyDiaryPage() {
   const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [newTaskDueDate, setNewTaskDueDate] = useState('');
+  const { confirm, toast } = useUI();
 
   const fetchTasks = async () => {
     setLoading(true);
@@ -73,7 +75,13 @@ export default function DailyDiaryPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this task?')) return;
+    const ok = await confirm({
+      title: 'Delete Task',
+      message: 'This will permanently remove the task from your diary.',
+      confirmLabel: 'Delete',
+      variant: 'danger',
+    });
+    if (!ok) return;
     
     // Optimistic UI update
     setTasks(prevTasks => prevTasks.filter((t: any) => t.id !== id));
@@ -83,8 +91,10 @@ export default function DailyDiaryPage() {
         method: 'DELETE',
       });
       if (!res.ok) {
-        // Revert on failure
         fetchTasks();
+        toast.error('Failed to delete task.');
+      } else {
+        toast.success('Task deleted.');
       }
     } catch (err) {
       console.error('Error deleting task:', err);

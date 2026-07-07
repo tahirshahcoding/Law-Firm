@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { X, FileText, Trash2, Edit2, Check, Download } from 'lucide-react';
 import { API_BASE, apiFetch } from '@/lib/api';
+import { useUI } from '@/context/UIContext';
 
 interface HearingDocumentsModalProps {
   isOpen: boolean;
@@ -17,6 +18,7 @@ export default function HearingDocumentsModal({ isOpen, onClose, hearingData, on
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadName, setUploadName] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+  const { confirm, toast } = useUI();
 
   // Rename state
   const [editingDocId, setEditingDocId] = useState<string | null>(null);
@@ -52,30 +54,38 @@ export default function HearingDocumentsModal({ isOpen, onClose, hearingData, on
         setDocuments([...documents, newDoc]);
         setUploadFile(null);
         setUploadName('');
+        toast.success('Document uploaded successfully.');
         onSuccess();
       } else {
         const data = await res.json();
-        alert('Failed to upload document: ' + JSON.stringify(data));
+        toast.error('Failed to upload document: ' + JSON.stringify(data));
       }
     } catch (err) {
       console.error(err);
-      alert('Upload failed');
+      toast.error('Upload failed. Please try again.');
     } finally {
       setIsUploading(false);
     }
   };
 
   const handleDeleteDocument = async (docId: string) => {
-    if (!window.confirm("Are you sure you want to delete this document?")) return;
+    const ok = await confirm({
+      title: 'Delete Document',
+      message: 'This will permanently delete this document from the hearing record.',
+      confirmLabel: 'Delete',
+      variant: 'danger',
+    });
+    if (!ok) return;
     try {
       const res = await apiFetch(`${API_BASE}/hearing-documents/${docId}/`, {
         method: 'DELETE'
       });
       if (res.ok) {
         setDocuments(documents.filter(d => d.id !== docId));
+        toast.success('Document deleted.');
         onSuccess();
       } else {
-        alert("Failed to delete document.");
+        toast.error('Failed to delete document.');
       }
     } catch (err) {
       console.error(err);
@@ -100,9 +110,10 @@ export default function HearingDocumentsModal({ isOpen, onClose, hearingData, on
       if (res.ok) {
         setDocuments(documents.map(d => d.id === docId ? { ...d, name: editDocName } : d));
         setEditingDocId(null);
+        toast.success('Document renamed.');
         onSuccess();
       } else {
-        alert("Failed to rename document.");
+        toast.error('Failed to rename document.');
       }
     } catch (err) {
       console.error(err);
@@ -224,7 +235,7 @@ export default function HearingDocumentsModal({ isOpen, onClose, hearingData, on
                                 const { url } = await res.json();
                                 window.open(url, '_blank', 'noopener,noreferrer');
                               } catch (err) {
-                                alert('Could not generate download link. Please try again.');
+                                toast.error('Could not generate download link. Please try again.');
                                 console.error(err);
                               }
                             }}
