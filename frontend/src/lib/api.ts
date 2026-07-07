@@ -10,6 +10,10 @@ function buildApiBase(): string {
   // 1. Explicit env var always wins — used as-is.
   const envUrl = process.env.NEXT_PUBLIC_API_URL;
   if (envUrl) {
+    // If the configured URL is hugging face, we MUST use our internal proxy to avoid CORS stripping
+    if (envUrl.includes('hf.space')) {
+      return '/api-proxy';
+    }
     let url = envUrl.replace(/\/$/, ''); // strip trailing slash only
     if (!url.endsWith('/api')) {
       url += '/api';
@@ -26,7 +30,7 @@ function buildApiBase(): string {
       hostname.startsWith('192.168.');
     return isLocal
       ? 'http://localhost:8000/api'
-      : 'https://tahirshahcoding-law-firm.hf.space/api';
+      : '/api-proxy';
   }
 
   // 3. SSR fallback — always local during build/server render.

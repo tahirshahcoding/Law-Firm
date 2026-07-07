@@ -74,6 +74,15 @@ const nextConfig: NextConfig = {
   reactCompiler: false,
   turbopack: {},
   allowedDevOrigins: ['127.0.0.1', 'localhost', '10.93.38.3'],
+  async rewrites() {
+    return [
+      {
+        // Proxy all requests starting with /api-proxy to the Hugging Face backend
+        source: '/api-proxy/:path*',
+        destination: 'https://tahirshahcoding-law-firm.hf.space/api/:path*'
+      }
+    ];
+  },
 };
 
 export default nextConfig;

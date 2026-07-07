@@ -8,10 +8,12 @@ if (typeof window !== 'undefined') {
   
   if (!isLocal) {
     // Production API server
-    apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://tahirshahcoding-law-firm.hf.space/api';
+    const envUrl = process.env.NEXT_PUBLIC_API_URL || 'https://tahirshahcoding-law-firm.hf.space/api';
+    apiBase = envUrl.includes('hf.space') ? '/api-proxy' : envUrl;
   } else {
     // Local dev API server
-    apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+    const envUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+    apiBase = envUrl.includes('hf.space') ? '/api-proxy' : envUrl;
   }
 } else {
   // Server-side rendering (SSR) fallback
