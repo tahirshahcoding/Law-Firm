@@ -9,12 +9,17 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 def api_root(request):
     return JsonResponse({"message": "Welcome to the Legal Office System API. The API endpoints are located at /api/."})
 
+def ping_view(request):
+    return JsonResponse({"status": "active", "message": "pong"})
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     # Map the management URLs to an 'api/' prefix
     path('api/', include('management.urls')),
     # Add a root view to avoid 404
     path('', api_root, name='api-root'),
+    # Simple ping endpoint for cronjobs / keep-alive
+    path('ping/', ping_view, name='ping'),
 ]
 
 if settings.DEBUG:
