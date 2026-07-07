@@ -187,6 +187,13 @@ CORS_ALLOWED_ORIGINS_ENV = os.environ.get(
 )
 CORS_ALLOWED_ORIGINS = [o.strip() for o in CORS_ALLOWED_ORIGINS_ENV.split(',') if o.strip()]
 
+# Add Vercel domains to trusted origins so Django accepts the proxied POST
+CSRF_TRUSTED_ORIGINS = [
+    "https://lawadmin.vercel.app",
+    "https://clientcounsel.vercel.app",
+    "https://lawsiteswat.vercel.app"
+]
+
 # Allow CORS on both API and media file paths (so browser can load avatar images)
 CORS_URLS_REGEX = r'^/(api|media)/.*$'
 
