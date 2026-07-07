@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Coins, TrendingUp, Download, Search, FileText, Plus, Trash2, Wallet, ShieldAlert, Share2, Printer, MessageCircle } from 'lucide-react';
 import { API_BASE, apiFetch, safeJson } from '@/lib/api';
-import { sendWhatsApp, challanMessage } from '@/lib/whatsapp';
+import { sendWhatsApp, challanMessage, getWhatsAppUrl } from '@/lib/whatsapp';
 import InvoiceTemplate from '@/components/InvoiceTemplate';
 import GenerateChallanModal from '@/components/GenerateChallanModal';
 import AddPaymentModal from '@/components/AddPaymentModal';
@@ -140,11 +140,12 @@ function AccountsContent() {
     }
   };
 
-  const handleWhatsApp = (challan: any) => {
+  const handleWhatsApp = async (challan: any) => {
     if (!challan.client_mobile) {
       toast.error("Client does not have a registered mobile number.");
       return;
     }
+
     const message = challanMessage(
       challan.client_name,
       challan.invoice_number,
@@ -153,15 +154,35 @@ function AccountsContent() {
       challan.due_date,
       challan.description || 'Professional Legal Services'
     );
-    const success = sendWhatsApp(challan.client_mobile, message);
-    if (success) {
-      toast.success("WhatsApp opened!");
-    } else {
-      toast.error("Could not open WhatsApp.");
+
+    const url = getWhatsAppUrl(challan.client_mobile, message);
+    if (!url) {
+      toast.error("Invalid mobile number.");
+      return;
+    }
+
+    // 1. Open blank tab synchronously to prevent popup blocker
+    const newTab = window.open('about:blank', '_blank');
+
+    try {
+      showLoading('Preparing PDF...');
+      // 2. Generate and download PDF
+      await handleGeneratePdf(challan, 'download_only');
+      
+      // 3. Redirect the tab to WhatsApp
+      if (newTab) {
+        newTab.location.href = url;
+      }
+      toast.success("PDF downloaded and WhatsApp opened!");
+    } catch (err) {
+      if (newTab) newTab.close();
+      toast.error("Failed to prepare WhatsApp share.");
+    } finally {
+      hideLoading();
     }
   };
 
-  const handleGeneratePdf = async (challan: any, action: 'download' | 'print' = 'download') => {
+  const handleGeneratePdf = async (challan: any, action: 'download' | 'print' | 'download_only' = 'download') => {
     setIsGeneratingPdf(true);
     let originalGetComputedStyle: typeof window.getComputedStyle | null = null;
 
@@ -224,6 +245,8 @@ function AccountsContent() {
       if (action === 'print') {
         const pdfUrl = await html2pdf().set(opt).from(element).output('bloburl');
         window.open(pdfUrl, '_blank');
+      } else if (action === 'download_only') {
+        html2pdf().set(opt).from(element).save();
       } else {
         if (navigator.share && navigator.canShare) {
           const pdfBlob = await html2pdf().set(opt).from(element).output('blob');

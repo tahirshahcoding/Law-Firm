@@ -40,18 +40,20 @@ function normalizePhone(phone: string): string {
   return digits;
 }
 
-// ── Core sender ──────────────────────────────────────────────────────────────
+export function getWhatsAppUrl(phone: string, message: string): string | null {
+  if (!phone || !phone.trim()) return null;
+  const normalized = normalizePhone(phone);
+  const encoded = encodeURIComponent(message.trim());
+  return `https://wa.me/${normalized}?text=${encoded}`;
+}
 
 /**
  * Opens WhatsApp Web / Desktop with a pre-filled message for the given number.
  * Returns true if the tab was opened, false if the phone was missing.
  */
 export function sendWhatsApp(phone: string, message: string): boolean {
-  if (!phone || !phone.trim()) return false;
-
-  const normalized = normalizePhone(phone);
-  const encoded = encodeURIComponent(message.trim());
-  const url = `https://wa.me/${normalized}?text=${encoded}`;
+  const url = getWhatsAppUrl(phone, message);
+  if (!url) return false;
 
   window.open(url, '_blank', 'noopener,noreferrer');
   return true;
