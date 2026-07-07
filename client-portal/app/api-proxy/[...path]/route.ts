@@ -3,8 +3,8 @@ import { NextRequest } from 'next/server';
 // 1. CRITICAL: Prevent Next.js from caching these proxy requests
 export const dynamic = 'force-dynamic';
 
-// Replace with your actual Hugging Face Space direct URL
-const HF_BASE_URL = 'https://tahirshahcoding-law-firm.hf.space/api';
+// Replace with your actual Hugging Face Space direct URL (no /api suffix since path already includes it)
+const HF_BASE_URL = 'https://tahirshahcoding-law-firm.hf.space';
 
 async function handleProxy(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
     // Reconstruct path, ensuring we handle root proxy calls safely
