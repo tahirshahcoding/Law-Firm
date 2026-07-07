@@ -280,6 +280,9 @@ class CurrentUserView(APIView):
     def get(self, request):
         return Response(UserSerializer(request.user, context={'request': request}).data)
 
+    def post(self, request):
+        return self.put(request)
+
     @transaction.atomic
     def put(self, request):
         user = request.user
@@ -298,7 +301,7 @@ class CurrentUserView(APIView):
 
         user.save()
 
-        profile = getattr(user, 'profile', None)
+        profile = user.profile if hasattr(user, 'profile') else None
         if profile and 'avatar' in request.FILES:
             profile.avatar = request.FILES['avatar']
             profile.save()

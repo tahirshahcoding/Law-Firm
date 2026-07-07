@@ -58,7 +58,7 @@ export default function ProfileSettingsPage() {
       if (avatarFile) data.append('avatar', avatarFile);
 
       const res = await apiFetch(`${API_BASE}/users/me/`, {
-        method: 'PUT',
+        method: 'POST',
         body: data,
       });
 
