@@ -10,7 +10,11 @@ function buildApiBase(): string {
   // 1. Explicit env var always wins — used as-is.
   const envUrl = process.env.NEXT_PUBLIC_API_URL;
   if (envUrl) {
-    return envUrl.replace(/\/$/, ''); // strip trailing slash only
+    let url = envUrl.replace(/\/$/, ''); // strip trailing slash only
+    if (!url.endsWith('/api')) {
+      url += '/api';
+    }
+    return url;
   }
 
   // 2. Client-side: use hostname to decide local vs production.
