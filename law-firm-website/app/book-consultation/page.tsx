@@ -67,7 +67,7 @@ export default function BookConsultationPage() {
             Secure Your <span className="text-gold">Representation.</span>
           </h1>
           <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed drop-shadow-md">
-            Contact EagleNest Legal Solutions to schedule a confidential legal consultation. We provide immediate, strategic counsel for urgent and complex matters.
+            Contact Rahimullah Advocate to schedule a confidential legal consultation. We provide immediate, strategic counsel for urgent and complex matters.
           </p>
         </div>
       </section>
@@ -234,7 +234,7 @@ export default function BookConsultationPage() {
                   <MapPin className="text-gold" size={20} />
                 </div>
                 <div>
-                  <p className="font-bold tracking-wide">EagleNest Legal Solutions Solutions</p>
+                  <p className="font-bold tracking-wide">Rahimullah Advocate</p>
                   <p className="text-slate-300 text-sm leading-relaxed mt-1">
                     District Courts Complex<br />
                     G.T. Road, Mingora<br />
@@ -269,7 +269,7 @@ export default function BookConsultationPage() {
                 </div>
                 <div>
                   <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-0.5">Legal Inquiries</p>
-                  <p className="font-bold">contact@eaglenestlegalsolutions.com</p>
+                  <p className="font-bold">contact@rahimullahadvocate.pk</p>
                 </div>
               </div>
 

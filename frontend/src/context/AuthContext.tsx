@@ -81,6 +81,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const res = await apiFetch(`${API_BASE}/users/me/`);
     if (res.ok) {
       const userData = await res.json();
+      // Block client accounts from accessing the staff system — same guard as checkAuth.
+      if (userData.role === 'Client') {
+        await apiFetch(`${API_BASE}/auth/logout/`, { method: 'POST' });
+        return;
+      }
       setUser(userData);
       router.push('/dashboard');
     }

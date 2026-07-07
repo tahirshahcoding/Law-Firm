@@ -73,7 +73,7 @@ const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: false,
   turbopack: {},
-  allowedDevOrigins: ['127.0.0.1', 'localhost'],
+  allowedDevOrigins: ['127.0.0.1', 'localhost', '10.93.38.3'],
 };
 
 export default nextConfig;

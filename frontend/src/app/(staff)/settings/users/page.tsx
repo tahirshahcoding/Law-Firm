@@ -59,6 +59,14 @@ const MODULES = [
     ],
   },
   {
+    key: 'cause_list',
+    label: 'Cause List',
+    actions: [
+      { key: 'view',   label: 'View' },
+      { key: 'print',  label: 'Print' },
+    ],
+  },
+  {
     key: 'consultations',
     label: 'Consultations',
     actions: [
@@ -70,13 +78,17 @@ const MODULES = [
 ];
 
 // ── Default permissions per role preset ──────────────────────────────────────
-type PermModule = { view: boolean; add: boolean; edit: boolean; delete: boolean };
+type PermModule = { view: boolean; add: boolean; edit: boolean; delete: boolean; print: boolean };
 type Permissions = Record<string, Partial<PermModule>>;
 
 function buildFullPermissions(overrides: Permissions): Permissions {
   const base: Permissions = {};
   MODULES.forEach(m => {
-    base[m.key] = { view: false, add: false, edit: false, delete: false };
+    const actionsObj: any = {};
+    m.actions.forEach(a => {
+      actionsObj[a.key] = false;
+    });
+    base[m.key] = actionsObj;
   });
   Object.entries(overrides).forEach(([mod, perms]) => {
     base[mod] = { ...base[mod], ...perms };
@@ -91,6 +103,7 @@ const ROLE_PRESETS: Record<string, Permissions> = {
     hearings:      { view: true, add: true, edit: true, delete: false },
     accounts:      { view: true, add: true, edit: true, delete: false },
     diary:         { view: true, add: true, edit: true, delete: true },
+    cause_list:    { view: true, print: true },
     consultations: { view: true, edit: true, delete: false },
   }),
   'Senior Partner': buildFullPermissions({
@@ -99,6 +112,7 @@ const ROLE_PRESETS: Record<string, Permissions> = {
     hearings:      { view: true, add: true, edit: true, delete: true },
     accounts:      { view: true, add: true, edit: true, delete: true },
     diary:         { view: true, add: true, edit: true, delete: true },
+    cause_list:    { view: true, print: true },
     consultations: { view: true, edit: true, delete: true },
   }),
   Associate: buildFullPermissions({
@@ -106,6 +120,7 @@ const ROLE_PRESETS: Record<string, Permissions> = {
     cases:         { view: true, edit: true },
     hearings:      { view: true, add: true, edit: true },
     diary:         { view: true, add: true, edit: true, delete: true },
+    cause_list:    { view: true, print: true },
     consultations: { view: true },
   }),
   Accountant: buildFullPermissions({
@@ -117,6 +132,7 @@ const ROLE_PRESETS: Record<string, Permissions> = {
     cases:         { view: true },
     hearings:      { view: true },
     diary:         { view: true, add: true, edit: true, delete: true },
+    cause_list:    { view: true, print: true },
     consultations: { view: true },
   }),
   Admin: buildFullPermissions({
@@ -125,6 +141,7 @@ const ROLE_PRESETS: Record<string, Permissions> = {
     hearings:      { view: true, add: true, edit: true, delete: true },
     accounts:      { view: true, add: true, edit: true, delete: true },
     diary:         { view: true, add: true, edit: true, delete: true },
+    cause_list:    { view: true, print: true },
     consultations: { view: true, edit: true, delete: true },
   }),
 };

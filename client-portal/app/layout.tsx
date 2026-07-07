@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Client Portal | EagleNest Legal Solutions',
-  description: 'Secure client access to case status and hearing updates — EagleNest Legal Solutions, Swat.',
+  title: 'Client Portal | Rahimullah Advocate',
+  description: 'Secure client access to case status and hearing updates — Rahimullah Advocate, Swat.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

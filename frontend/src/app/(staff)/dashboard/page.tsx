@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import { API_BASE, apiFetch } from '@/lib/api';
 import DailyDiaryWidget from '@/components/DailyDiaryWidget';
+import CauseListWidget from '@/components/CauseListWidget';
+import AccountsDashboardWidget from '@/components/AccountsDashboardWidget';
 import { useAuth } from '@/context/AuthContext';
 import { StatsCardSkeleton } from '@/components/SkeletonLoaders';
 
@@ -30,7 +32,11 @@ export default function Dashboard() {
     apiFetch(`${API_BASE}/dashboard/stats/`)
       .then(res => res.json())
       .then(data => {
-        setStats(data);
+        if (data && typeof data === 'object' && 'active_cases' in data) {
+          setStats(data);
+        } else {
+          console.warn('Unexpected dashboard stats format:', data);
+        }
         setLoading(false);
       })
       .catch(err => {
@@ -171,8 +177,32 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* Embedded Daily Diary Widget */}
-      <DailyDiaryWidget />
+      {/* Embedded Daily Diary & Cause List Widgets */}
+      {(() => {
+        const canViewCauseList = user?.role === 'Admin' || user?.permissions?.cause_list?.view === true;
+        return (
+          <div className={`grid grid-cols-1 ${canViewCauseList ? 'lg:grid-cols-2' : 'lg:grid-cols-1'} gap-6 items-stretch`}>
+            <div className="[&>div]:mt-0 mt-8">
+              <DailyDiaryWidget />
+            </div>
+            {canViewCauseList && (
+              <div className="mt-8">
+                <CauseListWidget />
+              </div>
+            )}
+          </div>
+        );
+      })()}
+
+      {/* Embedded Accounts Widget */}
+      {(() => {
+        const canViewAccounts = user?.role === 'Admin' || user?.permissions?.accounts?.view === true;
+        return canViewAccounts ? (
+          <div className="mt-8">
+            <AccountsDashboardWidget />
+          </div>
+        ) : null;
+      })()}
     </div>
   );
 }

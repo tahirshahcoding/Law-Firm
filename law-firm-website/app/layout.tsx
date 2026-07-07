@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ["latin"], variable: '--font-inter' });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: '--font-playfair' });
 
 export const metadata: Metadata = {
-  title: "EagleNest Legal Solutions  | Expert Legal Solutions in Swat",
+  title: "Rahimullah Advocate | Expert Legal Services in Swat",
   description: "Relentless representation and strategic counsel for businesses and individuals in Khyber Pakhtunkhwa.",
 };
 
@@ -27,9 +27,9 @@ export default function RootLayout({
           <div className="max-w-7xl mx-auto flex justify-between items-center">
             <Link href="/" className="font-serif text-2xl font-bold tracking-wide text-white hover:text-gold transition-colors duration-200 flex items-center gap-3">
               <div className="relative w-10 h-10 rounded-lg overflow-hidden flex-shrink-0">
-                <Image src="/logo.png" alt="EagleNest Logo" fill className="object-cover scale-[1.15]" sizes="40px" />
+                <Image src="/logo.png" alt="Rahimullah Advocate Logo" fill className="object-cover scale-[1.15]" sizes="40px" />
               </div>
-              EagleNest Legal Solutions 
+              Rahimullah Advocate
             </Link>
             <div className="hidden md:flex space-x-8 items-center font-medium">
               <Link href="/" className="hover:text-gold transition-colors duration-200">Home</Link>
@@ -58,9 +58,9 @@ export default function RootLayout({
             <div>
               <h3 className="font-serif text-xl font-bold text-white mb-4 flex items-center gap-3">
                 <div className="relative w-8 h-8 rounded-md overflow-hidden flex-shrink-0">
-                  <Image src="/logo.png" alt="EagleNest Logo" fill className="object-cover scale-[1.15]" sizes="32px" />
+                  <Image src="/logo.png" alt="Rahimullah Advocate Logo" fill className="object-cover scale-[1.15]" sizes="32px" />
                 </div>
-                EagleNest Legal Solutions 
+                Rahimullah Advocate
               </h3>
               <p className="text-sm leading-relaxed">Expert legal solutions and unyielding advocacy for the people and businesses of Swat, KPK.</p>
             </div>
@@ -79,7 +79,7 @@ export default function RootLayout({
             </div>
           </div>
           <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-slate-700 text-xs text-center">
-            &copy; {new Date().getFullYear()} EagleNest Legal Solutions . All rights reserved. Strictly confidential.
+            &copy; {new Date().getFullYear()} Rahimullah Advocate. All rights reserved. Strictly confidential.
           </div>
         </footer>
 

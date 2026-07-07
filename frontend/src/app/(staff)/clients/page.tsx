@@ -45,20 +45,24 @@ function ClientsPageContent() {
     apiFetch(`${API_BASE}/clients/?${query.toString()}`)
       .then(res => res.json())
       .then(data => {
-        if (data.results) {
+        if (data && Array.isArray(data.results)) {
           setClients(data.results);
-          setTotalCount(data.count);
-          setTotalPages(Math.ceil(data.count / 20));
-        } else {
-          // Fallback if pagination is disabled
+          setTotalCount(data.count ?? data.results.length);
+          setTotalPages(Math.ceil((data.count ?? data.results.length) / 20));
+        } else if (Array.isArray(data)) {
           setClients(data);
           setTotalCount(data.length);
+          setTotalPages(1);
+        } else {
+          setClients([]);
+          setTotalCount(0);
           setTotalPages(1);
         }
         setLoading(false);
       })
       .catch(err => {
         console.error('Failed to fetch clients:', err);
+        setClients([]);
         setLoading(false);
       });
   };
@@ -67,10 +71,6 @@ function ClientsPageContent() {
     fetchClients();
   }, [page, debouncedSearchTerm]);
 
-  // Reset page to 1 when search term changes
-  useEffect(() => {
-    setPage(1);
-  }, [debouncedSearchTerm]);
 
   const handleDelete = async (id: string, name: string) => {
     if (!window.confirm(`Are you sure you want to permanently delete the profile for ${name}?`)) return;
@@ -132,7 +132,10 @@ function ClientsPageContent() {
               type="text" 
               placeholder="Search by ID, name, CNIC, or Case No..." 
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setPage(1);
+              }}
               className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
             />
           </div>

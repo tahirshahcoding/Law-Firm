@@ -41,6 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
+    # Token blacklist is required for BLACKLIST_AFTER_ROTATION = True.
+    # Without it, old refresh tokens are never invalidated after rotation.
+    'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'storages',
     'simple_history',
@@ -95,6 +98,9 @@ if DATABASE_URL:
         'default': dj_database_url.parse(
             DATABASE_URL,
             conn_max_age=600,
+            # Re-validate persistent connections before reuse so a Neon cold start
+            # (where the DB scales to zero) doesn't cause a 500 on the first request.
+            conn_health_checks=True,
             ssl_require=True,
         )
     }

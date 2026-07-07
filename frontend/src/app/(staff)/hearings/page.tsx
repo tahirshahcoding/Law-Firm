@@ -34,14 +34,15 @@ export default function HearingsPage() {
     apiFetch(`${API_BASE}/hearings/`)
       .then(res => res.json())
       .then(data => {
-        const hearingsData = data.results || data;
+        const hearingsData = data && Array.isArray(data.results) ? data.results : Array.isArray(data) ? data : [];
         // Sort chronologically (closest dates first)
-        const sortedData = hearingsData.sort((a: any, b: any) => new Date(a.hearing_date).getTime() - new Date(b.hearing_date).getTime());
+        const sortedData = [...hearingsData].sort((a: any, b: any) => new Date(a.hearing_date).getTime() - new Date(b.hearing_date).getTime());
         setHearings(sortedData);
         setLoading(false);
       })
       .catch(err => {
         console.error('Failed to fetch hearings:', err);
+        setHearings([]);
         setLoading(false);
       });
   };
@@ -174,6 +175,9 @@ export default function HearingsPage() {
                             <FolderOpen size={11} className="text-slate-400" />
                             {h.case_number}
                           </div>
+                          <div className="text-[11px] text-slate-500 font-medium mt-0.5">
+                            Advocate: {h.advocate_name || 'Senior Partner'}
+                          </div>
                           {h.notes && (
                             <p className="text-xs text-slate-500 mt-1 line-clamp-2">{h.notes}</p>
                           )}
@@ -223,9 +227,10 @@ export default function HearingsPage() {
               <table className="w-full text-left border-collapse min-w-[800px]">
                 <thead>
                   <tr className="bg-white border-b border-slate-100">
-                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider w-1/4">Date</th>
-                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider w-1/4">Target Case</th>
-                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider w-1/3">Notes & Next Date</th>
+                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider w-1/5">Date</th>
+                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider w-1/5">Target Case</th>
+                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider w-1/5">Advocate</th>
+                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider w-1/4">Notes & Next Date</th>
                     <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">Actions</th>
                   </tr>
                 </thead>
@@ -251,6 +256,11 @@ export default function HearingsPage() {
                               <FolderOpen size={14} className="text-slate-400" />
                               {h.case_number}
                             </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="text-sm font-medium text-slate-700">
+                            {h.advocate_name || 'Senior Partner'}
                           </div>
                         </td>
                         <td className="px-6 py-4">

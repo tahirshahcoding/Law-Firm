@@ -19,7 +19,9 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
     court: '',
     judge: '',
     opponent_name: '',
-    total_fee: ''
+    total_fee: '',
+    district: '',
+    tehsil: ''
   });
   
   const [loading, setLoading] = useState(false);
@@ -107,7 +109,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
       }
 
       onSuccess();
-      setFormData({ client: '', case_number: '', court: '', judge: '', opponent_name: '', total_fee: '' });
+      setFormData({ client: '', case_number: '', court: '', judge: '', opponent_name: '', total_fee: '', district: '', tehsil: '' });
       setSelectedClientName('');
       onClose();
     } catch (err: any) {
@@ -207,6 +209,29 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
                   placeholder="e.g. 150000.00"
                 />
               </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">District (Optional)</label>
+              <input
+                type="text"
+                value={formData.district}
+                onChange={(e) => setFormData({...formData, district: e.target.value})}
+                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
+                placeholder="e.g. Swat"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Tehsil (Optional)</label>
+              <input
+                type="text"
+                value={formData.tehsil}
+                onChange={(e) => setFormData({...formData, tehsil: e.target.value})}
+                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
+                placeholder="e.g. Kabal"
+              />
             </div>
           </div>
 

@@ -1,6 +1,36 @@
 'use client';
-// We connect directly to the API server to completely avoid Next.js proxy/rewrite trailing-slash normalizations.
-export const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+
+// ── API Base URL ──────────────────────────────────────────────────────────────
+// Priority: NEXT_PUBLIC_API_URL env var > runtime hostname heuristic > default
+//
+// IMPORTANT: If NEXT_PUBLIC_API_URL is set, it is used AS-IS (no /api appended).
+// It should already include /api, e.g. https://example.com/api
+// This prevents silent double-appending when the env var is already correct.
+function buildApiBase(): string {
+  // 1. Explicit env var always wins — used as-is.
+  const envUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (envUrl) {
+    return envUrl.replace(/\/$/, ''); // strip trailing slash only
+  }
+
+  // 2. Client-side: use hostname to decide local vs production.
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    const isLocal =
+      hostname === 'localhost' ||
+      hostname === '127.0.0.1' ||
+      hostname.startsWith('192.168.');
+    return isLocal
+      ? 'http://localhost:8000/api'
+      : 'https://tahirshahcoding-law-firm.hf.space/api';
+  }
+
+  // 3. SSR fallback — always local during build/server render.
+  return 'http://localhost:8000/api';
+}
+
+export const API_BASE = buildApiBase();
+
 
 // ── CSRF helper ───────────────────────────────────────────────────────────────
 /**

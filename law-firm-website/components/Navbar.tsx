@@ -13,10 +13,10 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3">
           <div className="relative w-8 h-8 rounded-lg overflow-hidden flex-shrink-0">
-            <Image src="/logo.png" alt="EagleNest Logo" fill className="object-cover scale-[1.15]" sizes="32px" />
+            <Image src="/logo.png" alt="Rahimullah Advocate Logo" fill className="object-cover scale-[1.15]" sizes="32px" />
           </div>
           <span className="font-serif font-bold text-xl tracking-tight text-slate-50 uppercase">
-            EagleNest Legal Solutions <span className="text-[#B4935E]"></span>
+            Rahimullah Advocate <span className="text-[#B4935E]"></span>
           </span>
         </Link>
 

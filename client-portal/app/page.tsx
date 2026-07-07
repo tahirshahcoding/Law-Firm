@@ -5,10 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Lock, User, Eye, EyeOff, ShieldAlert } from 'lucide-react';
 import Image from 'next/image';
 
-let rawApi = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
-if (rawApi.endsWith('/')) rawApi = rawApi.slice(0, -1);
-if (!rawApi.endsWith('/api')) rawApi += '/api';
-const API = rawApi;
+import { API_BASE } from '@/lib/api';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -26,7 +23,7 @@ export default function LoginPage() {
       // POST credentials to the dedicated portal token endpoint.
       // Django sets httpOnly access_token + refresh_token cookies on success.
       // credentials: 'include' is required so the browser accepts the Set-Cookie header.
-      const res = await fetch(`${API}/portal/token/`, {
+      const res = await fetch(`${API_BASE}/portal/token/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
@@ -39,14 +36,14 @@ export default function LoginPage() {
       }
 
       // Verify this is a Client account (block staff from using this portal)
-      const meRes = await fetch(`${API}/users/me/`, {
+      const meRes = await fetch(`${API_BASE}/users/me/`, {
         credentials: 'include',  // sends the newly set cookie
       });
       const me = await meRes.json();
 
       if (me.role !== 'Client') {
         // Clear the cookie immediately — staff must use the staff system
-        await fetch(`${API}/auth/logout/`, { method: 'POST', credentials: 'include' });
+        await fetch(`${API_BASE}/auth/logout/`, { method: 'POST', credentials: 'include' });
         setError('This portal is for clients only. Staff must use the staff system.');
         return;
       }
@@ -66,10 +63,10 @@ export default function LoginPage() {
       <header className="flex items-center justify-between px-8 py-5">
         <div className="flex items-center gap-2.5">
           <div className="relative w-10 h-10 rounded-xl overflow-hidden flex-shrink-0">
-            <Image src="/logo.png" alt="EagleNest Logo" fill className="object-cover scale-[1.15]" sizes="40px" />
+            <Image src="/logo.png" alt="Rahimullah Advocate Logo" fill className="object-cover scale-[1.15]" sizes="40px" />
           </div>
           <div>
-            <p className="font-bold text-white text-sm leading-none">EagleNest Legal Solutions</p>
+            <p className="font-bold text-white text-sm leading-none">Rahimullah Advocate</p>
             <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5">Client Portal</p>
           </div>
         </div>
@@ -88,7 +85,7 @@ export default function LoginPage() {
           {/* Badge */}
           <div className="flex flex-col items-center mb-10">
             <div className="relative w-24 h-24 rounded-3xl shadow-2xl shadow-blue-900/60 mb-5 ring-4 ring-white/10 overflow-hidden">
-              <Image src="/logo.png" alt="EagleNest Logo" fill className="object-cover scale-[1.15] drop-shadow-xl" sizes="96px" />
+              <Image src="/logo.png" alt="Rahimullah Advocate Logo" fill className="object-cover scale-[1.15] drop-shadow-xl" sizes="96px" />
             </div>
             <h1 className="text-2xl font-bold text-white tracking-tight">Client Portal Login</h1>
             <p className="text-slate-400 text-sm mt-2 text-center">

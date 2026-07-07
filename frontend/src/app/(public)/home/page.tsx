@@ -45,9 +45,9 @@ export default function PublicHomePage() {
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="relative w-8 h-8 rounded-lg overflow-hidden flex-shrink-0 border border-slate-200 shadow-sm">
-              <Image src="/logo.png" alt="EagleNest Logo" fill className="object-cover scale-[1.15]" sizes="32px" />
+              <Image src="/logo.png" alt="Rahimullah Advocate Logo" fill className="object-cover scale-[1.15]" sizes="32px" />
             </div>
-            <span className="font-bold text-xl tracking-tight text-slate-900">EagleNest <span className="text-blue-700">Legal</span></span>
+            <span className="font-bold text-xl tracking-tight text-slate-900">Rahimullah <span className="text-blue-700">Advocate</span></span>
           </div>
           <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
             <a href="#practice-areas" className="hover:text-blue-700 transition-colors">Practice Areas</a>
@@ -81,10 +81,10 @@ export default function PublicHomePage() {
       >
         {/* Dark overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-slate-950/80 via-blue-950/70 to-slate-900/80" />
-        
+
         {/* Decorative gold lines */}
         <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-500/60 to-transparent" />
-        
+
         <div className="relative z-10 text-center px-6 max-w-5xl mx-auto pt-24">
           <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-amber-300 text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full mb-8 shadow-lg">
             <Scale size={12} />
@@ -97,7 +97,7 @@ export default function PublicHomePage() {
             </span>
           </h1>
           <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed mb-12">
-            Trusted advocacy and counsel for individuals and businesses across Khyber Pakhtunkhwa. 
+            Trusted advocacy and counsel for individuals and businesses across Khyber Pakhtunkhwa.
             We combine local expertise with modern legal strategy to protect what matters most to you.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -184,7 +184,7 @@ export default function PublicHomePage() {
           <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             {[
               { icon: Phone, label: 'Call Us', value: '+92 300 123 4567', sub: 'Mon–Sat, 9am to 6pm' },
-              { icon: Mail, label: 'Email Us', value: 'info@eaglenestlegal.pk', sub: 'We reply within 24 hours' },
+              { icon: Mail, label: 'Email Us', value: 'info@rahimullahadvocate.pk', sub: 'We reply within 24 hours' },
               { icon: MapPin, label: 'Visit Us', value: 'Bar Association Road', sub: 'Mingora, Swat' },
             ].map(item => {
               const Icon = item.icon;
@@ -207,9 +207,9 @@ export default function PublicHomePage() {
       <footer className="bg-slate-950 text-slate-400 py-10 px-6 text-center text-sm">
         <div className="flex items-center justify-center gap-2 mb-3">
           <Scale className="text-amber-500" size={18} />
-          <span className="font-bold text-white">EagleNest Legal Solutions</span>
+          <span className="font-bold text-white">Rahimullah Advocate</span>
         </div>
-        <p>© {new Date().getFullYear()} EagleNest Legal Solutions, Swat. All rights reserved.</p>
+        <p>© {new Date().getFullYear()} Rahimullah Advocate, Swat. All rights reserved.</p>
         <p className="mt-2">
           <a href="https://clientcounsel.vercel.app" className="text-blue-400 hover:text-blue-300 underline">Client Portal</a>
           {' · '}

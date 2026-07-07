@@ -18,7 +18,7 @@ services:
     container_name: legal_backend
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - ./backend:/app
+      - ./backend:/home/user/app
     ports:
       - "8000:8000"
     environment:

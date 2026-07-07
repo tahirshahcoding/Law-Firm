@@ -143,48 +143,59 @@ export default function EditClientModal({ isOpen, onClose, onSuccess, clientData
             {user?.role === 'Admin' && (
               <div className="pt-2 border-t border-slate-100">
                 <p className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2"><Key size={15} className="text-amber-500" /> Client Portal Access</p>
-                <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-medium text-slate-700">Portal Username</p>
-                      <p className="text-slate-500 text-xs font-mono mt-0.5">{clientData.client_number}</p>
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
+                  {/* Username & Password Display */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between bg-white border border-slate-100 p-2.5 rounded-lg">
+                      <div>
+                        <p className="text-[10px] uppercase font-bold text-slate-400">Portal Username</p>
+                        <p className="text-slate-800 text-sm font-mono font-bold mt-0.5">{clientData.client_number}</p>
+                      </div>
+                      <button type="button" onClick={() => copyToClipboard(clientData.client_number, 'username')}
+                        className={`p-1.5 rounded transition-all ${copiedField === 'username' ? 'text-emerald-600 bg-emerald-50' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'}`}>
+                        {copiedField === 'username' ? <CheckCheck size={14} /> : <Copy size={14} />}
+                      </button>
                     </div>
+
+                    <div className="flex items-center justify-between bg-white border border-slate-100 p-2.5 rounded-lg">
+                      <div>
+                        <p className="text-[10px] uppercase font-bold text-slate-400">Portal Password</p>
+                        <p className="text-slate-800 text-sm font-mono font-bold mt-0.5">{newCredentials?.portal_password || clientData.portal_password || 'Not Set'}</p>
+                      </div>
+                      <button type="button" onClick={() => copyToClipboard(newCredentials?.portal_password || clientData.portal_password || '', 'password')}
+                        disabled={!newCredentials?.portal_password && !clientData.portal_password}
+                        className={`p-1.5 rounded transition-all disabled:opacity-30 ${copiedField === 'password' ? 'text-emerald-600 bg-emerald-50' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'}`}>
+                        {copiedField === 'password' ? <CheckCheck size={14} /> : <Copy size={14} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Actions Row */}
+                  <div className="flex items-center justify-between pt-1">
                     <button type="button" onClick={handleResetPassword} disabled={resetLoading}
-                      className="flex items-center gap-1.5 px-3 py-2 bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 rounded-lg text-xs font-semibold transition-all disabled:opacity-50">
+                      className="flex items-center gap-1.5 px-3 py-2 bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 rounded-lg text-xs font-bold transition-all disabled:opacity-50">
                       {resetLoading ? <div className="w-3 h-3 border-2 border-amber-400/30 border-t-amber-600 rounded-full animate-spin" /> : <RefreshCw size={13} />}
                       Reset Password
                     </button>
-                  </div>
 
-                  {/* New credentials after reset */}
-                  {newCredentials && (
-                    <div className="mt-4 bg-emerald-50 border border-emerald-200 rounded-lg p-3 space-y-2">
-                      <div className="flex items-center gap-1.5 text-emerald-700 text-xs font-bold"><Shield size={12} /> New Credentials (save immediately)</div>
-                      <div className="flex items-center justify-between">
-                        <span className="font-mono text-sm font-bold text-slate-900">{newCredentials.portal_password}</span>
-                        <div className="flex items-center gap-1.5">
-                          <button type="button" onClick={() => {
-                            const phone = formData.mobile_number || clientData.mobile_number;
-                            if (phone) {
-                              const msg = credentialsResetMessage(
-                                formData.name || clientData.name,
-                                newCredentials.portal_username,
-                                newCredentials.portal_password,
-                              );
-                              sendWhatsApp(phone, msg);
-                            }
-                          }}
-                            className="flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold bg-green-100 text-green-700 hover:bg-green-200 transition-all">
-                            <MessageCircle size={12} /> WhatsApp
-                          </button>
-                          <button type="button" onClick={() => copyToClipboard(newCredentials.portal_password, 'reset')}
-                            className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold transition-all ${copiedField === 'reset' ? 'bg-emerald-200 text-emerald-800' : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'}`}>
-                            {copiedField === 'reset' ? <><CheckCheck size={12} /> Copied</> : <><Copy size={12} /> Copy</>}
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                    {(newCredentials || clientData.portal_password) && (
+                      <button type="button" onClick={() => {
+                        const phone = formData.mobile_number || clientData.mobile_number;
+                        const pass = newCredentials?.portal_password || clientData.portal_password;
+                        if (phone && pass) {
+                          const msg = credentialsResetMessage(
+                            formData.name || clientData.name,
+                            clientData.client_number,
+                            pass,
+                          );
+                          sendWhatsApp(phone, msg);
+                        }
+                      }}
+                        className="flex items-center gap-1.5 px-3 py-2 bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 rounded-lg text-xs font-bold transition-all">
+                        <MessageCircle size={13} /> WhatsApp
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             )}

@@ -45,19 +45,25 @@ function CasesPageContent() {
     apiFetch(`${API_BASE}/cases/?${query.toString()}`)
       .then(res => res.json())
       .then(data => {
-        if (data.results) {
+        if (data && Array.isArray(data.results)) {
           setCases(data.results);
-          setTotalCount(data.count);
-          setTotalPages(Math.ceil(data.count / 20));
-        } else {
+          setTotalCount(data.count ?? data.results.length);
+          setTotalPages(Math.ceil((data.count ?? data.results.length) / 20));
+        } else if (Array.isArray(data)) {
           setCases(data);
           setTotalCount(data.length);
+          setTotalPages(1);
+        } else {
+          // API returned an error object or unexpected shape — stay safe
+          setCases([]);
+          setTotalCount(0);
           setTotalPages(1);
         }
         setLoading(false);
       })
       .catch(err => {
         console.error('Failed to fetch cases:', err);
+        setCases([]);
         setLoading(false);
       });
   };
@@ -66,9 +72,6 @@ function CasesPageContent() {
     fetchCases();
   }, [page, debouncedSearchTerm]);
 
-  useEffect(() => {
-    setPage(1);
-  }, [debouncedSearchTerm]);
 
   const handleDelete = async (id: string, caseNumber: string) => {
     if (!window.confirm(`Are you sure you want to permanently delete Case ${caseNumber}?`)) return;
@@ -160,7 +163,10 @@ function CasesPageContent() {
               type="text" 
               placeholder="Search by Case No. or Opponent..." 
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setPage(1);
+              }}
               className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
             />
           </div>

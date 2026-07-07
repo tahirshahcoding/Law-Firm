@@ -2,9 +2,201 @@
 
 import React from 'react';
 
-// Using strictly inline styles for ALL colors/borders to prevent html2canvas crashing on Tailwind v4 lab/oklch colors
+const COLORS = {
+  slate900: '#0f172a',
+  slate800: '#1e293b',
+  slate700: '#334155',
+  slate600: '#475569',
+  slate500: '#64748b',
+  slate400: '#94a3b8',
+  slate300: '#cbd5e1',
+  slate200: '#e2e8f0',
+  slate100: '#f1f5f9',
+  slate50: '#f8fafc',
+  blue600: '#2563eb',
+  blue50: '#eff6ff',
+  emerald700: '#047857',
+  emerald50: '#ecfdf5',
+  rose700: '#be123c',
+  rose600: '#e11d48',
+  rose50: '#fff1f2',
+  amber700: '#b45309',
+  amber50: '#fef3c7',
+  white: '#ffffff',
+  black: '#000000',
+};
+
+// Single Challan Copy sub-component using STRICTLY hex values for color and background properties
+function ChallanCopy({ 
+  copyType, 
+  caseData, 
+  currentDate, 
+  dueDate, 
+  invoiceNumber, 
+  amount, 
+  amountPaid, 
+  remaining 
+}: { 
+  copyType: string;
+  caseData: any;
+  currentDate: string;
+  dueDate: string;
+  invoiceNumber: string;
+  amount: number;
+  amountPaid: number;
+  remaining: number;
+}) {
+  const isPaid = caseData.status === 'Paid';
+  const isPartial = caseData.status === 'Partial';
+
+  const statusBg = isPaid ? COLORS.emerald50 : isPartial ? COLORS.amber50 : COLORS.rose50;
+  const statusBorder = isPaid ? COLORS.emerald700 : isPartial ? COLORS.amber700 : COLORS.rose600;
+  const statusColor = isPaid ? COLORS.emerald700 : isPartial ? COLORS.amber700 : COLORS.rose700;
+
+  return (
+    <div 
+      className="flex flex-col justify-between h-[302px] border rounded-xl p-4 bg-white relative font-sans" 
+      style={{ boxSizing: 'border-box', borderColor: COLORS.slate300, backgroundColor: COLORS.white, color: COLORS.slate800 }}
+    >
+      {/* Status Watermark in Background */}
+      <div 
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-5xl font-black uppercase tracking-widest opacity-[0.04] rotate-[-20deg] pointer-events-none"
+        style={{ color: statusColor }}
+      >
+        {caseData.status}
+      </div>
+
+      {/* Top row */}
+      <div className="flex justify-between items-center relative z-10">
+        {/* Firm Logo & Title */}
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg overflow-hidden relative border border-slate-200 shadow-sm shrink-0">
+            <img src="/logo.png" alt="Logo" className="w-full h-full object-cover scale-[1.15]" />
+          </div>
+          <div>
+            <h1 className="text-sm font-extrabold tracking-tight uppercase leading-none" style={{ color: COLORS.slate900 }}>Rahimullah Advocate</h1>
+            <p className="text-[9px] font-semibold tracking-wider uppercase mt-0.5" style={{ color: COLORS.slate500 }}>Advocate High Court</p>
+          </div>
+        </div>
+
+        {/* Copy Label & Status Badges */}
+        <div className="flex items-center gap-2">
+          <div 
+            className="border px-3 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-widest"
+            style={{ backgroundColor: COLORS.slate100, borderColor: COLORS.slate200, color: COLORS.slate800 }}
+          >
+            {copyType}
+          </div>
+          <span 
+            className="px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider border"
+            style={{ backgroundColor: statusBg, borderColor: statusBorder, color: statusColor }}
+          >
+            {caseData.status}
+          </span>
+        </div>
+
+        {/* Barcode and Challan Info */}
+        <div className="text-right">
+          <div className="flex gap-0.5 items-center justify-end h-5 mb-1" title={invoiceNumber}>
+            {[2, 1, 3, 1, 2, 4, 1, 2, 3, 1, 2, 1, 4, 2, 1, 3].map((w, idx) => (
+              <div key={idx} className="h-full" style={{ width: `${w}px`, backgroundColor: COLORS.black }} />
+            ))}
+          </div>
+          <p className="text-[10px] font-mono font-bold" style={{ color: COLORS.slate700 }}>Challan No: {invoiceNumber}</p>
+        </div>
+      </div>
+
+      {/* Grid: Client vs Case Info */}
+      <div 
+        className="grid grid-cols-2 gap-4 border-y py-2 my-1 text-xs relative z-10"
+        style={{ borderColor: COLORS.slate100 }}
+      >
+        <div>
+          <h3 className="text-[9px] font-bold uppercase tracking-wider mb-0.5" style={{ color: COLORS.slate400 }}>Depositor Details</h3>
+          <p className="font-bold" style={{ color: COLORS.slate900 }}>{caseData.client_name}</p>
+          <p className="text-[10px] mt-0.5" style={{ color: COLORS.slate500 }}>
+            ID: <span className="font-semibold" style={{ color: COLORS.blue600 }}>{caseData.client_number || 'N/A'}</span> | Mob: {caseData.client_mobile || 'N/A'}
+          </p>
+        </div>
+        <div className="text-right">
+          <h3 className="text-[9px] font-bold uppercase tracking-wider mb-0.5" style={{ color: COLORS.slate400 }}>Case Reference</h3>
+          <p className="font-semibold truncate max-w-[200px] ml-auto" style={{ color: COLORS.slate900 }} title={caseData.case_number}>
+            {caseData.case_number}
+          </p>
+          <p className="text-[10px] truncate mt-0.5" style={{ color: COLORS.slate500 }} title={caseData.court}>
+            Court: {caseData.court || 'N/A'}
+          </p>
+        </div>
+      </div>
+
+      {/* Grid: Description and breakdown */}
+      <div className="grid grid-cols-12 gap-2 text-xs relative z-10">
+        <div className="col-span-7">
+          <h4 className="text-[9px] font-bold uppercase tracking-wider mb-0.5" style={{ color: COLORS.slate400 }}>Particulars</h4>
+          <p className="font-semibold leading-tight" style={{ color: COLORS.slate800 }}>{caseData.description || 'Professional Legal Services'}</p>
+          <p className="text-[10px] mt-1 max-w-[420px] leading-tight" style={{ color: COLORS.slate500 }}>
+            Legal counsel and representation fees regarding the matter of {caseData.client_name || 'Client'} vs. {caseData.opponent_name || 'Opponent'}.
+          </p>
+        </div>
+        <div 
+          className="col-span-5 text-right flex flex-col justify-end space-y-0.5 pl-4 border-l"
+          style={{ borderColor: COLORS.slate100 }}
+        >
+          <div className="flex justify-between text-[10px]" style={{ color: COLORS.slate500 }}>
+            <span>Subtotal:</span>
+            <span className="font-mono font-semibold">Rs. {amount.toLocaleString()}</span>
+          </div>
+          {amountPaid > 0 && (
+            <div className="flex justify-between text-[10px]" style={{ color: COLORS.emerald700 }}>
+              <span>Paid:</span>
+              <span className="font-mono font-semibold">- Rs. {amountPaid.toLocaleString()}</span>
+            </div>
+          )}
+          <div 
+            className="flex justify-between font-bold pt-1 mt-0.5 border-t"
+            style={{ color: COLORS.slate900, borderColor: COLORS.slate100 }}
+          >
+            <span className="text-[10px] uppercase">Net Payable:</span>
+            <span className="font-mono text-sm" style={{ color: COLORS.rose600 }}>Rs. {remaining.toLocaleString()}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer bank info & signatures */}
+      <div 
+        className="flex justify-between items-end pt-1.5 text-[9px] border-t relative z-10"
+        style={{ color: COLORS.slate500, borderColor: COLORS.slate100 }}
+      >
+        <div>
+          <span className="font-bold block uppercase tracking-wider text-[8px] mb-0.5" style={{ color: COLORS.slate600 }}>Bank Details & Due Date</span>
+          <p className="leading-tight">Deposit at <strong style={{ color: COLORS.slate800 }}>Bank of Khyber</strong> | Account No: <strong className="font-mono" style={{ color: COLORS.slate800 }}>1029384756</strong></p>
+          <p className="leading-tight">IBAN: <strong className="font-mono" style={{ color: COLORS.slate800 }}>PK99 BOK 1029 3847 56</strong> | Due Date: <strong className="font-bold" style={{ color: COLORS.rose600 }}>{dueDate}</strong></p>
+        </div>
+
+        <div className="flex gap-6 items-end">
+          <div className="text-center w-24">
+            <div className="h-10 border-b" style={{ borderColor: COLORS.slate200 }}></div>
+            <p className="mt-1 uppercase text-[7px] font-bold" style={{ color: COLORS.slate400 }}>Depositor Signature</p>
+          </div>
+          <div className="text-center w-24">
+            <div className="h-10 border-b" style={{ borderColor: COLORS.slate200 }}></div>
+            <p className="mt-1 uppercase text-[7px] font-bold" style={{ color: COLORS.slate400 }}>Authorized Stamp</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Developer Watermark */}
+      <div 
+        className="absolute bottom-1.5 right-4 text-[6.5px] font-mono select-none"
+        style={{ color: COLORS.slate400, opacity: 0.8 }}
+      >
+        Software provided by EagleNest Creations (03464451505)
+      </div>
+    </div>
+  );
+}
+
 export default function InvoiceTemplate({ caseData }: { caseData: any }) {
-  // caseData here is the challan/invoice object which includes case and amount data
   const currentDate = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
   const dueDate = new Date(caseData.due_date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
   const invoiceNumber = caseData.invoice_number || `INV-${new Date().getTime().toString().slice(-4)}`;
@@ -12,140 +204,42 @@ export default function InvoiceTemplate({ caseData }: { caseData: any }) {
   const amountPaid = Number(caseData.amount_paid || 0);
   const remaining = amount - amountPaid;
 
+  const copies = [
+    { type: 'BANK COPY' },
+    { type: 'OFFICE COPY' },
+    { type: 'CLIENT COPY' }
+  ];
+
   return (
     <div 
-      className="p-12 w-full h-full font-sans relative" 
-      style={{ backgroundColor: '#ffffff', color: '#1e293b', borderTop: '8px solid #2563eb', minHeight: '1056px' }} 
+      className="p-6 w-full flex flex-col justify-between" 
+      style={{ minHeight: '1056px', maxHeight: '1056px', boxSizing: 'border-box', backgroundColor: COLORS.white }}
     >
-      {/* Status Watermark */}
-      <div 
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-9xl font-black uppercase tracking-widest opacity-[0.03] rotate-[-30deg] pointer-events-none"
-        style={{ color: caseData.status === 'Paid' ? '#10b981' : caseData.status === 'Partial' ? '#f59e0b' : '#ef4444' }}
-      >
-        {caseData.status}
-      </div>
-
-      {/* Header */}
-      <div className="flex justify-between items-start mb-12">
-        <div>
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-xl" style={{ backgroundColor: '#2563eb', color: '#ffffff' }}>
-              EN
+      {copies.map((copy, index) => (
+        <React.Fragment key={copy.type}>
+          <ChallanCopy 
+            copyType={copy.type}
+            caseData={caseData}
+            currentDate={currentDate}
+            dueDate={dueDate}
+            invoiceNumber={invoiceNumber}
+            amount={amount}
+            amountPaid={amountPaid}
+            remaining={remaining}
+          />
+          {index < copies.length - 1 && (
+            <div className="relative my-2.5 flex items-center justify-center shrink-0">
+              <div className="w-full border-t border-dashed" style={{ borderColor: COLORS.slate300 }}></div>
+              <span 
+                className="absolute px-3 text-[9px] font-bold uppercase tracking-widest flex items-center gap-1 font-mono"
+                style={{ backgroundColor: COLORS.white, color: COLORS.slate400 }}
+              >
+                ✂ Cut here to separate copies
+              </span>
             </div>
-            <div>
-              <h1 className="text-3xl font-black tracking-tighter uppercase" style={{ color: '#0f172a' }}>EagleNest</h1>
-              <p className="text-xs font-semibold tracking-widest uppercase" style={{ color: '#64748b' }}>Legal Solutions</p>
-            </div>
-          </div>
-          
-          <div className="mt-6 text-sm space-y-1" style={{ color: '#475569' }}>
-            <p>123 Justice Boulevard, Suite 400</p>
-            <p>Metropolis, NY 10001</p>
-            <p>contact@eaglenestlegal.com</p>
-            <p>+1 (555) 123-4567</p>
-          </div>
-        </div>
-        
-        <div className="text-right">
-          <h2 className="text-4xl font-black uppercase tracking-widest mb-4" style={{ color: '#2563eb' }}>CHALLAN</h2>
-          <div className="space-y-1.5 p-4 rounded-xl" style={{ backgroundColor: '#f8fafc', border: '1px solid #f1f5f9' }}>
-            <p className="text-sm flex justify-between gap-8"><span style={{ color: '#64748b' }}>Challan No:</span> <span className="font-bold font-mono text-base">{invoiceNumber}</span></p>
-            <p className="text-sm flex justify-between gap-8"><span style={{ color: '#64748b' }}>Issue Date:</span> <span className="font-bold font-mono">{currentDate}</span></p>
-            <p className="text-sm flex justify-between gap-8"><span style={{ color: '#64748b' }}>Due Date:</span> <span className="font-bold font-mono" style={{ color: '#ef4444' }}>{dueDate}</span></p>
-          </div>
-        </div>
-      </div>
-
-      <hr className="mb-8 border-0" style={{ borderTop: '1px solid #f1f5f9' }} />
-
-      {/* Bill To & Case Info */}
-      <div className="flex justify-between mb-12">
-        <div>
-          <h3 className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: '#94a3b8' }}>Billed To</h3>
-          <p className="text-xl font-bold" style={{ color: '#0f172a' }}>{caseData.client_name || 'Client Name'}</p>
-          <p className="text-sm mt-1" style={{ color: '#475569' }}>{caseData.client_mobile || 'N/A'}</p>
-        </div>
-        <div className="text-right">
-          <h3 className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: '#94a3b8' }}>Case Reference</h3>
-          <p className="text-lg font-bold" style={{ color: '#0f172a' }}>{caseData.case_number}</p>
-          <p className="text-sm mt-1 font-medium" style={{ color: '#475569' }}>vs. {caseData.opponent_name}</p>
-          <p className="text-sm mt-0.5" style={{ color: '#64748b' }}>{caseData.court || 'Court'}</p>
-        </div>
-      </div>
-
-      {/* Itemized Table */}
-      <div className="rounded-xl overflow-hidden mb-8" style={{ border: '1px solid #e2e8f0' }}>
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-              <th className="py-4 px-6 text-xs font-bold uppercase tracking-wider" style={{ color: '#64748b' }}>Description</th>
-              <th className="py-4 px-6 text-xs font-bold uppercase tracking-wider text-right" style={{ color: '#64748b' }}>Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td className="py-6 px-6">
-                <p className="font-bold text-base" style={{ color: '#0f172a' }}>{caseData.description || 'Professional Legal Services'}</p>
-                <p className="text-sm mt-1 max-w-md" style={{ color: '#64748b' }}>Legal representation and advisory services concerning the matter of {caseData.case_number}.</p>
-              </td>
-              <td className="py-6 px-6 text-right font-mono font-bold text-lg" style={{ color: '#0f172a' }}>
-                Rs. {amount.toLocaleString()}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      {/* Totals */}
-      <div className="flex justify-end mb-16">
-        <div className="w-80 p-6 rounded-xl" style={{ border: '1px solid #e2e8f0', backgroundColor: '#f8fafc' }}>
-          <div className="space-y-4">
-            <div className="flex justify-between text-sm">
-              <span className="font-medium uppercase tracking-wider" style={{ color: '#64748b' }}>Subtotal</span>
-              <span className="font-mono font-bold">Rs. {amount.toLocaleString()}</span>
-            </div>
-            
-            {amountPaid > 0 && (
-              <div className="flex justify-between text-sm">
-                <span className="font-medium uppercase tracking-wider" style={{ color: '#64748b' }}>Amount Paid</span>
-                <span className="font-mono font-bold" style={{ color: '#10b981' }}>- Rs. {amountPaid.toLocaleString()}</span>
-              </div>
-            )}
-            
-            <div className="pt-4" style={{ borderTop: '1px solid #cbd5e1' }}>
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-bold uppercase tracking-wider" style={{ color: '#0f172a' }}>Total Due</span>
-                <span className="text-2xl font-black font-mono" style={{ color: remaining > 0 ? '#ef4444' : '#10b981' }}>
-                  Rs. {remaining.toLocaleString()}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Bank Details Footer (pushed to bottom) */}
-      <div className="absolute bottom-12 left-12 right-12">
-        <hr className="mb-6 border-0" style={{ borderTop: '1px solid #f1f5f9' }} />
-        <div className="flex justify-between items-start">
-          <div>
-            <h3 className="text-xs font-bold uppercase tracking-widest mb-3 flex items-center gap-2" style={{ color: '#94a3b8' }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2" ry="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
-              Payment Instructions
-            </h3>
-            <div className="grid grid-cols-2 gap-x-12 gap-y-1.5 text-sm" style={{ color: '#475569' }}>
-              <p><span className="font-medium mr-2" style={{ color: '#94a3b8' }}>Bank Name:</span> <strong style={{ color: '#0f172a' }}>EagleNest Bank</strong></p>
-              <p><span className="font-medium mr-2" style={{ color: '#94a3b8' }}>Account No:</span> <strong className="font-mono" style={{ color: '#0f172a' }}>1029384756</strong></p>
-              <p><span className="font-medium mr-2" style={{ color: '#94a3b8' }}>Account Name:</span> <strong style={{ color: '#0f172a' }}>EagleNest Legal Solutions</strong></p>
-              <p><span className="font-medium mr-2" style={{ color: '#94a3b8' }}>IBAN:</span> <strong className="font-mono" style={{ color: '#0f172a' }}>PK99 EGN 1029 3847 56</strong></p>
-            </div>
-          </div>
-          
-          <div className="text-right text-xs" style={{ color: '#94a3b8' }}>
-            <p className="max-w-xs">Generated electronically on {currentDate}. This is a computer generated document and requires no signature.</p>
-          </div>
-        </div>
-      </div>
+          )}
+        </React.Fragment>
+      ))}
     </div>
   );
 }

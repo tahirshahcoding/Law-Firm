@@ -52,11 +52,11 @@ export default function LoginPage() {
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
         <div className="flex justify-center">
           <div className="relative w-24 h-24 rounded-3xl shadow-xl shadow-blue-600/20 overflow-hidden ring-4 ring-white">
-            <Image src="/logo.png" alt="EagleNest Logo" fill className="object-cover scale-[1.15]" sizes="96px" />
+            <Image src="/logo.png" alt="Rahimullah Advocate Logo" fill className="object-cover scale-[1.15]" sizes="96px" />
           </div>
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-slate-900 tracking-tight">
-          EagleNest Legal Solutions
+          Rahimullah Advocate
         </h2>
         <p className="mt-2 text-center text-sm text-slate-600">
           Sign in to access your secure workspace
@@ -130,7 +130,7 @@ export default function LoginPage() {
         </div>
         
         <p className="mt-8 text-center text-xs text-slate-400">
-          &copy; {new Date().getFullYear()} EagleNest Legal Solutions Associates. All rights reserved.
+          &copy; {new Date().getFullYear()} Rahimullah Advocate Associates. All rights reserved.
         </p>
       </div>
     </div>

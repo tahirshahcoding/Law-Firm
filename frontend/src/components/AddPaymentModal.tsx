@@ -35,26 +35,9 @@ export default function AddPaymentModal({ isOpen, onClose, onSuccess, challan }:
 
       const data = await safeJson(res);
       if (!res.ok) throw new Error(data.error || data.detail || 'Failed to record payment');
-      
-      // Update the invoice status if needed based on the payment
-      const newPaidTotal = parseFloat(challan.amount_paid || 0) + parseFloat(amountReceived);
-      const challanAmount = parseFloat(challan.amount);
-      
-      let newStatus = challan.status;
-      if (newPaidTotal >= challanAmount) {
-        newStatus = 'Paid';
-      } else if (newPaidTotal > 0) {
-        newStatus = 'Partial';
-      }
 
-      if (newStatus !== challan.status) {
-         await apiFetch(`${API_BASE}/invoices/${challan.id}/`, {
-           method: 'PATCH',
-           headers: { 'Content-Type': 'application/json' },
-           body: JSON.stringify({ status: newStatus }),
-         });
-      }
-
+      // The backend recalculates invoice status atomically inside Payment.save().
+      // No frontend patch needed — just refresh the list.
       onSuccess();
       onClose();
     } catch (err: any) {

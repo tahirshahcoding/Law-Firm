@@ -9,16 +9,16 @@ export function Footer() {
         <div className="col-span-1 md:col-span-2">
           <Link href="/" className="flex items-center gap-3 mb-6">
             <div className="relative w-8 h-8 rounded-md overflow-hidden flex-shrink-0">
-              <Image src="/logo.png" alt="EagleNest Logo" fill className="object-cover scale-[1.15]" sizes="32px" />
+              <Image src="/logo.png" alt="Rahimullah Advocate Logo" fill className="object-cover scale-[1.15]" sizes="32px" />
             </div>
             <span className="font-serif font-bold text-xl tracking-tight text-slate-50 uppercase">
-              EagleNest Legal Solutions <span className="text-[#B4935E]"></span>
+              Rahimullah Advocate <span className="text-[#B4935E]"></span>
             </span>
           </Link>
           <p className="text-slate-400 text-sm leading-relaxed max-w-sm mb-6">
             Relentless representation and strategic counsel for businesses and individuals in Khyber Pakhtunkhwa. Your rights, secured.
           </p>
-          <p className="text-sm">© {new Date().getFullYear()} EagleNest Legal Solutions Solutions. All rights reserved.</p>
+          <p className="text-sm">© {new Date().getFullYear()} Rahimullah Advocate. All rights reserved.</p>
         </div>
 
         <div>
@@ -34,7 +34,7 @@ export function Footer() {
             </li>
             <li className="flex items-center gap-3">
               <Mail className="text-[#B4935E] shrink-0" size={18} />
-              <span>contact@eaglenestlegalsolutions.com</span>
+              <span>contact@rahimullahadvocate.pk</span>
             </li>
           </ul>
         </div>

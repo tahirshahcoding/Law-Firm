@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Menu, LogOut, UserCircle, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import Navigation from '@/components/Navigation';
@@ -14,6 +14,7 @@ import Image from 'next/image';
 
 export default function StaffLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const { loading, user, logout } = useAuth();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -30,18 +31,22 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  if (loading) {
-    return <AppShellSkeleton />;
-  }
+  // Redirect unauthenticated or client users safely after render to avoid bad setState during render warning
+  useEffect(() => {
+    if (!loading && pathname !== '/login' && (!user || user.role === 'Client')) {
+      router.push('/login');
+    }
+  }, [user, loading, pathname, router]);
 
   if (pathname === '/login' || pathname === '/') {
     return <>{children}</>;
   }
 
+  if (loading) {
+    return <AppShellSkeleton />;
+  }
+
   if (!user || user.role === 'Client') {
-    if (typeof window !== 'undefined') {
-      window.location.href = '/login';
-    }
     return null;
   }
 
@@ -56,7 +61,7 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
       />
       <main className="flex-1 flex flex-col overflow-y-auto relative bg-slate-50 min-w-0">
         {/* ── Top Bar ──────────────────────────────────────────── */}
-        <div className="h-16 bg-white/90 backdrop-blur-md border-b border-slate-200 flex items-center px-4 md:px-8 sticky top-0 z-10 gap-3">
+        <div className="h-16 bg-white/90 backdrop-blur-md border-b border-slate-200 flex items-center px-4 md:px-8 sticky top-0 z-20 gap-3">
           {/* Hamburger - mobile only */}
           <button
             className="md:hidden p-2 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-800 transition-colors shrink-0"
@@ -69,10 +74,10 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
           {/* Brand - mobile only */}
           <div className="md:hidden flex items-center gap-2 flex-1">
             <div className="relative w-7 h-7 rounded-lg overflow-hidden flex-shrink-0 border border-slate-200 shadow-sm">
-              <Image src="/logo.png" alt="EagleNest Logo" fill className="object-cover scale-[1.15]" sizes="28px" />
+              <Image src="/logo.png" alt="Rahimullah Advocate Logo" fill className="object-cover scale-[1.15]" sizes="28px" />
             </div>
             <span className="text-blue-600 font-bold text-sm tracking-wider leading-none">
-              EagleNest Legal
+              Rahimullah Advocate
             </span>
           </div>
 

@@ -17,7 +17,8 @@ export default function AddHearingModal({ isOpen, onClose, onSuccess }: AddHeari
     case: '',
     hearing_date: '',
     next_date: '',
-    notes: ''
+    notes: '',
+    hearing_stage: 'Attendance'
   });
   
   const [loading, setLoading] = useState(false);
@@ -116,7 +117,7 @@ export default function AddHearingModal({ isOpen, onClose, onSuccess }: AddHeari
       }
 
       onSuccess();
-      setFormData({ case: '', hearing_date: '', next_date: '', notes: '' });
+      setFormData({ case: '', hearing_date: '', next_date: '', notes: '', hearing_stage: 'Attendance' });
       setSelectedCaseName('');
       onClose();
     } catch (err: any) {
@@ -213,6 +214,29 @@ export default function AddHearingModal({ isOpen, onClose, onSuccess }: AddHeari
                 />
               </div>
             </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Hearing Stage / Class</label>
+            <input
+              type="text"
+              list="stages-list"
+              required
+              value={formData.hearing_stage}
+              onChange={(e) => setFormData({...formData, hearing_stage: e.target.value})}
+              className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 font-medium"
+              placeholder="e.g. Attendance, Arguments, Evidence..."
+            />
+            <datalist id="stages-list">
+              <option value="Attendance" />
+              <option value="Arguments" />
+              <option value="Evidence" />
+              <option value="Written Statement" />
+              <option value="Issues" />
+              <option value="Framing of Charge" />
+              <option value="Judgment" />
+              <option value="Miscellaneous" />
+            </datalist>
           </div>
 
           <div>

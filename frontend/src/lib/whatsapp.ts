@@ -4,7 +4,7 @@
  * Opens WhatsApp Web/Desktop with a pre-filled message; staff just hits Send.
  */
 
-const FIRM_NAME = 'EagleNest Legal Solutions';
+const FIRM_NAME = 'Rahimullah Advocate';
 const PORTAL_URL = process.env.NEXT_PUBLIC_PORTAL_URL || 'https://clientcounsel.vercel.app';
 
 // ── Phone number normalizer ──────────────────────────────────────────────────
@@ -213,9 +213,9 @@ export function challanMessage(
     `━━━━━━━━━━━━━━━━━━━━`,
     ``,
     `🏦 *Bank Details*`,
-    `Bank: EagleNest Bank`,
+    `Bank: Bank of Khyber`,
     `A/C: 1029384756`,
-    `IBAN: PK99 EGN 1029 3847 56`,
+    `IBAN: PK99 BOK 1029 3847 56`,
     ``,
     `Please make the payment before the due date. Contact us for any queries.`,
     ``,

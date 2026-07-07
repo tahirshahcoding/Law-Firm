@@ -31,11 +31,14 @@ def custom_exception_handler(exc, context):
         # Log the traceback details internally for debugging
         logger.error("Unhandled API Exception: %s", str(exc), exc_info=True)
 
-        # Return a safe, clean JSON payload rather than Django's default HTML 500 template
+        # Return a safe, clean JSON payload rather than Django's default HTML 500 template.
+        # Only expose the raw exception string in DEBUG mode — in production it may leak
+        # internal schema details (table names, column names, stack traces, etc.)
+        from django.conf import settings as django_settings
         response = Response(
             {
                 'error': 'Internal Server Error',
-                'detail': str(exc) if hasattr(exc, '__str__') else 'An unexpected error occurred on the server.',
+                'detail': str(exc) if django_settings.DEBUG else 'An unexpected error occurred on the server.',
                 'status_code': 500
             },
             status=status.HTTP_500_INTERNAL_SERVER_ERROR

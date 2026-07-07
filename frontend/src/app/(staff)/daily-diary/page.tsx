@@ -57,7 +57,7 @@ export default function DailyDiaryPage() {
     setTasks(prevTasks => prevTasks.map((t: any) => t.id === task.id ? { ...t, is_completed: !t.is_completed } : t));
     
     try {
-      const res = await fetch(`${API_BASE}/tasks/${task.id}/`, {
+      const res = await apiFetch(`${API_BASE}/tasks/${task.id}/`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ is_completed: !task.is_completed }),
@@ -79,7 +79,7 @@ export default function DailyDiaryPage() {
     setTasks(prevTasks => prevTasks.filter((t: any) => t.id !== id));
     
     try {
-      const res = await fetch(`${API_BASE}/tasks/${id}/`, {
+      const res = await apiFetch(`${API_BASE}/tasks/${id}/`, {
         method: 'DELETE',
       });
       if (!res.ok) {

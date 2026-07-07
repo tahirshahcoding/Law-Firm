@@ -81,7 +81,7 @@ export default function Home() {
           <div className="absolute -inset-4 bg-gold/10 transform rotate-3 rounded-sm z-0"></div>
           <Image 
             src="/images/about.png" 
-            alt="EagleNest Legal Solutions Solutions Legal Team" 
+            alt="Rahimullah Advocate Legal Team" 
             width={600} 
             height={400} 
             className="relative z-10 w-full h-auto object-cover rounded-sm shadow-xl"
@@ -93,7 +93,7 @@ export default function Home() {
             Unwavering Commitment to Justice.
           </h3>
           <p className="text-lg text-slate-600 leading-relaxed">
-            At EagleNest Legal Solutions Solutions, we don't just practice law; we master it. For over two decades, our firm has been the bedrock of legal defense and corporate strategy in Swat Valley. 
+            At Rahimullah Advocate, we don't just practice law; we master it. For over two decades, our firm has been the bedrock of legal defense and corporate strategy in Swat Valley. 
           </p>
           <ul className="space-y-4 mt-6">
             <li className="flex items-start gap-3">

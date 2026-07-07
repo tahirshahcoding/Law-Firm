@@ -1,0 +1,8 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./frontend" },
+    { "path": "./law-firm-website" },
+    { "path": "./client-portal" }
+  ]
+}

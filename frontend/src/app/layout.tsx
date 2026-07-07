@@ -15,7 +15,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "EagleNest Legal Solutions | Expert Legal Solutions in Swat",
+  title: "Rahimullah Advocate | Expert Legal Services in Swat",
   description: "Top-tier legal services in Swat Valley — Civil, Corporate, Criminal and Family Law.",
   manifest: "/manifest.json",
   icons: [
