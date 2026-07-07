@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useUI } from '@/context/UIContext';
 import { User, Mail, Lock, CheckCircle2, ShieldAlert, Upload } from 'lucide-react';
 import { API_BASE, apiFetch } from '@/lib/api';
 
 export default function ProfileSettingsPage() {
   const { user } = useAuth();
+  const { showLoading, hideLoading } = useUI();
   
   const [formData, setFormData] = useState({
     username: '',
@@ -15,7 +17,6 @@ export default function ProfileSettingsPage() {
     confirmPassword: ''
   });
 
-  const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{type: 'success' | 'error', text: string} | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
@@ -48,9 +49,8 @@ export default function ProfileSettingsPage() {
       return;
     }
 
-    setIsLoading(true);
-
     try {
+      showLoading('Updating profile...');
       const data = new FormData();
       data.append('username', formData.username);
       if (formData.email) data.append('email', formData.email);
@@ -73,7 +73,7 @@ export default function ProfileSettingsPage() {
     } catch (err: any) {
       setMessage({ type: 'error', text: err.message || 'Network error occurred.' });
     } finally {
-      setIsLoading(false);
+      hideLoading();
     }
   };
 
@@ -194,14 +194,9 @@ export default function ProfileSettingsPage() {
           <div className="pt-4 flex justify-end">
             <button
               type="submit"
-              disabled={isLoading}
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium shadow-sm transition-colors flex items-center gap-2 disabled:opacity-50"
             >
-              {isLoading ? (
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-              ) : (
-                'Save Changes'
-              )}
+              Save Changes
             </button>
           </div>
 

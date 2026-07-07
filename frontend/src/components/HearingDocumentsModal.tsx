@@ -18,7 +18,7 @@ export default function HearingDocumentsModal({ isOpen, onClose, hearingData, on
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadName, setUploadName] = useState('');
   const [isUploading, setIsUploading] = useState(false);
-  const { confirm, toast } = useUI();
+  const { confirm, toast, showLoading, hideLoading } = useUI();
 
   // Rename state
   const [editingDocId, setEditingDocId] = useState<string | null>(null);
@@ -35,6 +35,7 @@ export default function HearingDocumentsModal({ isOpen, onClose, hearingData, on
   const handleUploadDocument = async () => {
     if (!uploadFile || !uploadName) return;
     setIsUploading(true);
+    showLoading('Uploading document...');
 
     const formData = new FormData();
     formData.append('hearing', hearingData.id);
@@ -65,6 +66,7 @@ export default function HearingDocumentsModal({ isOpen, onClose, hearingData, on
       toast.error('Upload failed. Please try again.');
     } finally {
       setIsUploading(false);
+      hideLoading();
     }
   };
 
@@ -77,6 +79,7 @@ export default function HearingDocumentsModal({ isOpen, onClose, hearingData, on
     });
     if (!ok) return;
     try {
+      showLoading('Deleting document...');
       const res = await apiFetch(`${API_BASE}/hearing-documents/${docId}/`, {
         method: 'DELETE'
       });
@@ -89,6 +92,8 @@ export default function HearingDocumentsModal({ isOpen, onClose, hearingData, on
       }
     } catch (err) {
       console.error(err);
+    } finally {
+      hideLoading();
     }
   };
 

@@ -28,7 +28,7 @@ function CasesPageContent() {
   const [selectedCase, setSelectedCase] = useState(null);
 
   const { user } = useAuth();
-  const { confirm, toast } = useUI();
+  const { confirm, toast, showLoading, hideLoading } = useUI();
 
   const canViewCases   = user?.role === 'Admin' || user?.permissions?.cases?.view === true;
   const canAddCases    = user?.role === 'Admin' || user?.permissions?.cases?.add === true;
@@ -85,6 +85,7 @@ function CasesPageContent() {
     if (!ok) return;
     
     try {
+      showLoading('Deleting case record...');
       const res = await apiFetch(`${API_BASE}/cases/${id}/`, {
         method: 'DELETE',
       });
@@ -94,6 +95,8 @@ function CasesPageContent() {
     } catch (err) {
       toast.error('Failed to delete case. Please try again.');
       console.error(err);
+    } finally {
+      hideLoading();
     }
   };
 

@@ -230,7 +230,7 @@ function PermissionsMatrix({
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function UserManagementPage() {
   const { user } = useAuth();
-  const { confirm, toast } = useUI();
+  const { confirm, toast, showLoading, hideLoading } = useUI();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -310,11 +310,16 @@ export default function UserManagementPage() {
     });
     if (!ok) return;
     try {
+      showLoading('Deleting staff account...');
       const res = await apiFetch(`${API_BASE}/users/admin/${id}/`, { method: 'DELETE' });
       if (!res.ok) { const err = await res.json(); throw new Error(err.error || 'Failed'); }
       toast.success(`User "${name}" has been deleted.`);
       fetchUsers();
-    } catch (err: any) { toast.error(err.message); }
+    } catch (err: any) { 
+      toast.error(err.message); 
+    } finally {
+      hideLoading();
+    }
   };
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -336,6 +341,7 @@ export default function UserManagementPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      showLoading(isEditMode ? 'Updating staff account...' : 'Creating staff account...');
       const url = isEditMode ? `${API_BASE}/users/admin/${selectedUserId}/` : `${API_BASE}/users/admin/`;
       const method = isEditMode ? 'PUT' : 'POST';
       let res;
@@ -370,6 +376,9 @@ export default function UserManagementPage() {
       }
     } catch (err) {
       console.error(err);
+      toast.error('Network error occurred.');
+    } finally {
+      hideLoading();
     }
   };
 

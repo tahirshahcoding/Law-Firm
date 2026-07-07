@@ -28,7 +28,7 @@ function ClientsPageContent() {
   const [selectedClient, setSelectedClient] = useState(null);
 
   const { user } = useAuth();
-  const { confirm, toast } = useUI();
+  const { confirm, toast, showLoading, hideLoading } = useUI();
 
   const canViewClients = user?.role === 'Admin' || user?.permissions?.clients?.view === true;
   const canAddClients  = user?.role === 'Admin' || user?.permissions?.clients?.add === true;
@@ -84,6 +84,7 @@ function ClientsPageContent() {
     if (!ok) return;
     
     try {
+      showLoading('Deleting client profile...');
       const res = await apiFetch(`${API_BASE}/clients/${id}/`, {
         method: 'DELETE',
       });
@@ -93,6 +94,8 @@ function ClientsPageContent() {
     } catch (err) {
       toast.error('Failed to delete client. Please try again.');
       console.error(err);
+    } finally {
+      hideLoading();
     }
   };
 

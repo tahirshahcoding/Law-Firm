@@ -61,6 +61,8 @@ interface UIContextValue {
     info:    (message: string) => void;
     warning: (message: string) => void;
   };
+  showLoading: (message?: string) => void;
+  hideLoading: () => void;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -177,10 +179,24 @@ export function UIProvider({ children }: { children: ReactNode }) {
     warning: (msg: string) => addToast('warning',  msg),
   };
 
+  // ── Loading state ─────────────────────────────────────────────────────────
+  const [loadingState, setLoadingState] = useState<{ active: boolean; message: string }>({
+    active: false,
+    message: 'Processing...',
+  });
+
+  const showLoading = useCallback((message = 'Processing...') => {
+    setLoadingState({ active: true, message });
+  }, []);
+
+  const hideLoading = useCallback(() => {
+    setLoadingState(prev => ({ ...prev, active: false }));
+  }, []);
+
   const cfg = dialog ? variantConfig[dialog.variant ?? 'default'] : null;
 
   return (
-    <UIContext.Provider value={{ confirm, toast }}>
+    <UIContext.Provider value={{ confirm, toast, showLoading, hideLoading }}>
       {children}
 
       {/* ── Confirm Dialog ─────────────────────────────────────────────── */}
@@ -263,6 +279,22 @@ export function UIProvider({ children }: { children: ReactNode }) {
           );
         })}
       </div>
+
+      {/* ── Loading Overlay ────────────────────────────────────────────── */}
+      {loadingState.active && (
+        <div className="fixed inset-0 z-[10050] flex flex-col items-center justify-center bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="bg-white/80 backdrop-blur-xl border border-white/20 p-8 rounded-2xl shadow-2xl flex flex-col items-center max-w-xs text-center scale-95 animate-in zoom-in duration-200">
+            <div className="relative w-16 h-16 flex items-center justify-center mb-4">
+              {/* Spinning Ring */}
+              <div className="absolute inset-0 border-4 border-slate-100 rounded-full" />
+              <div className="absolute inset-0 border-4 border-t-blue-600 border-r-blue-600/30 border-b-blue-600/10 border-l-blue-600/5 rounded-full animate-spin" />
+            </div>
+            <p className="text-slate-900 font-semibold text-[15px] tracking-wide leading-snug">
+              {loadingState.message}
+            </p>
+          </div>
+        </div>
+      )}
     </UIContext.Provider>
   );
 }

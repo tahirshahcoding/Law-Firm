@@ -23,7 +23,7 @@ export default function HearingsPage() {
   const [selectedDocsHearing, setSelectedDocsHearing] = useState(null);
 
   const { user } = useAuth();
-  const { confirm, toast } = useUI();
+  const { confirm, toast, showLoading, hideLoading } = useUI();
 
   const canViewHearings   = user?.role === 'Admin' || user?.permissions?.hearings?.view === true;
   const canAddHearings    = user?.role === 'Admin' || user?.permissions?.hearings?.add === true;
@@ -63,6 +63,7 @@ export default function HearingsPage() {
     if (!ok) return;
     
     try {
+      showLoading('Deleting hearing record...');
       const res = await apiFetch(`${API_BASE}/hearings/${id}/`, {
         method: 'DELETE',
       });
@@ -72,6 +73,8 @@ export default function HearingsPage() {
     } catch (err) {
       toast.error('Failed to delete hearing. Please try again.');
       console.error(err);
+    } finally {
+      hideLoading();
     }
   };
 

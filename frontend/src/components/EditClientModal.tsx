@@ -16,13 +16,11 @@ interface EditClientModalProps {
 
 export default function EditClientModal({ isOpen, onClose, onSuccess, clientData }: EditClientModalProps) {
   const { user } = useAuth();
-  const { confirm, toast } = useUI();
+  const { confirm, toast, showLoading, hideLoading } = useUI();
   const [formData, setFormData] = useState({ name: '', cnic: '', mobile_number: '', address: '' });
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Reset password state
-  const [resetLoading, setResetLoading] = useState(false);
   const [newCredentials, setNewCredentials] = useState<{ portal_username: string; portal_password: string } | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
@@ -58,8 +56,9 @@ export default function EditClientModal({ isOpen, onClose, onSuccess, clientData
       variant: 'warning',
     });
     if (!ok) return;
-    setResetLoading(true);
+    
     try {
+      showLoading('Resetting password...');
       const res = await apiFetch(`${API_BASE}/portal/reset-password/${clientData.id}/`, { method: 'POST' });
       const data = await safeJson(res);
       if (!res.ok) throw new Error(data.error || 'Failed to reset password');
@@ -79,15 +78,15 @@ export default function EditClientModal({ isOpen, onClose, onSuccess, clientData
     } catch (err: any) {
       toast.error('Error: ' + err.message);
     } finally {
-      setResetLoading(false);
+      hideLoading();
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError(null);
     try {
+      showLoading('Updating client profile...');
       const res = await apiFetch(`${API_BASE}/clients/${clientData.id}/`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -95,12 +94,13 @@ export default function EditClientModal({ isOpen, onClose, onSuccess, clientData
       });
       const data = await safeJson(res);
       if (!res.ok) throw new Error(data.error || data.detail || 'Failed to update client');
+      toast.success('Client updated successfully');
       onSuccess();
       onClose();
     } catch (err: any) {
       setError(err.message);
     } finally {
-      setLoading(false);
+      hideLoading();
     }
   };
 
@@ -181,9 +181,9 @@ export default function EditClientModal({ isOpen, onClose, onSuccess, clientData
 
                   {/* Actions Row */}
                   <div className="flex items-center justify-between pt-1">
-                    <button type="button" onClick={handleResetPassword} disabled={resetLoading}
+                    <button type="button" onClick={handleResetPassword}
                       className="flex items-center gap-1.5 px-3 py-2 bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 rounded-lg text-xs font-bold transition-all disabled:opacity-50">
-                      {resetLoading ? <div className="w-3 h-3 border-2 border-amber-400/30 border-t-amber-600 rounded-full animate-spin" /> : <RefreshCw size={13} />}
+                      <RefreshCw size={13} />
                       Reset Password
                     </button>
 
@@ -211,9 +211,9 @@ export default function EditClientModal({ isOpen, onClose, onSuccess, clientData
 
             <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 mt-2">
               <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg font-medium text-slate-600 hover:bg-slate-50 border border-slate-200 transition-colors">Cancel</button>
-              <button type="submit" disabled={loading}
+              <button type="submit"
                 className="px-6 py-2 rounded-lg font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-sm shadow-blue-600/20 disabled:opacity-50 flex items-center justify-center min-w-[100px]">
-                {loading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : 'Save Changes'}
+                Save Changes
               </button>
             </div>
           </form>

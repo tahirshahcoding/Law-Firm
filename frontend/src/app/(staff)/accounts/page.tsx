@@ -43,7 +43,7 @@ function AccountsContent() {
   const canViewAccounts = user?.role === 'Admin' || user?.permissions?.accounts?.view === true;
   const canManageAccounts = user?.role === 'Admin' || user?.permissions?.accounts?.edit === true;
   const canDeleteAccounts = user?.role === 'Admin' || user?.permissions?.accounts?.delete === true;
-  const { confirm, toast } = useUI();
+  const { confirm, toast, showLoading, hideLoading } = useUI();
 
   const fetchAccounts = async () => {
     try {
@@ -91,6 +91,7 @@ function AccountsContent() {
     });
     if (!ok) return;
     try {
+      showLoading('Reversing payment...');
       const res = await apiFetch(`${API_BASE}/payments/${id}/`, { method: 'DELETE' });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -101,6 +102,8 @@ function AccountsContent() {
       handleSuccess();
     } catch (err) {
       toast.error('Failed to reverse payment: network error');
+    } finally {
+      hideLoading();
     }
   };
 
@@ -120,16 +123,19 @@ function AccountsContent() {
     });
     if (!ok) return;
     try {
+      showLoading('Deleting challan...');
       const res = await apiFetch(`${API_BASE}/invoices/${id}/`, { method: 'DELETE' });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         toast.error(data.error || `Failed to delete challan (${res.status})`);
         return;
       }
-      toast.success('Challan deleted.');
-      fetchAccounts();
+      toast.success('Challan deleted successfully.');
+      handleSuccess();
     } catch (err) {
       toast.error('Failed to delete challan: network error');
+    } finally {
+      hideLoading();
     }
   };
 

@@ -11,7 +11,7 @@ export default function DailyDiaryPage() {
   const [loading, setLoading] = useState(true);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [newTaskDueDate, setNewTaskDueDate] = useState('');
-  const { confirm, toast } = useUI();
+  const { confirm, toast, showLoading, hideLoading } = useUI();
 
   const fetchTasks = async () => {
     setLoading(true);
@@ -35,6 +35,7 @@ export default function DailyDiaryPage() {
     if (!newTaskTitle.trim()) return;
 
     try {
+      showLoading('Adding task...');
       const res = await apiFetch(`${API_BASE}/tasks/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -51,18 +52,20 @@ export default function DailyDiaryPage() {
       }
     } catch (err) {
       console.error('Error adding task:', err);
+    } finally {
+      hideLoading();
     }
   };
 
-  const toggleTaskStatus = async (task: any) => {
+  const handleToggleTask = async (id: string, currentStatus: boolean) => {
     // Optimistic UI update
-    setTasks(prevTasks => prevTasks.map((t: any) => t.id === task.id ? { ...t, is_completed: !t.is_completed } : t));
+    setTasks(prevTasks => prevTasks.map((t: any) => t.id === id ? { ...t, is_completed: !currentStatus } : t));
     
     try {
-      const res = await apiFetch(`${API_BASE}/tasks/${task.id}/`, {
+      const res = await apiFetch(`${API_BASE}/tasks/${id}/`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ is_completed: !task.is_completed }),
+        body: JSON.stringify({ is_completed: !currentStatus }),
       });
       if (!res.ok) {
         // Revert on failure
@@ -83,10 +86,8 @@ export default function DailyDiaryPage() {
     });
     if (!ok) return;
     
-    // Optimistic UI update
-    setTasks(prevTasks => prevTasks.filter((t: any) => t.id !== id));
-    
     try {
+      showLoading('Deleting task...');
       const res = await apiFetch(`${API_BASE}/tasks/${id}/`, {
         method: 'DELETE',
       });
@@ -95,10 +96,13 @@ export default function DailyDiaryPage() {
         toast.error('Failed to delete task.');
       } else {
         toast.success('Task deleted.');
+        setTasks(prevTasks => prevTasks.filter((t: any) => t.id !== id));
       }
     } catch (err) {
       console.error('Error deleting task:', err);
       fetchTasks();
+    } finally {
+      hideLoading();
     }
   };
 
@@ -198,7 +202,7 @@ export default function DailyDiaryPage() {
                 className={`p-4 sm:p-5 flex items-start gap-4 transition-all duration-200 group hover:bg-slate-50/80 ${task.is_completed ? 'bg-slate-50/50' : ''}`}
               >
                 <button 
-                  onClick={() => toggleTaskStatus(task)}
+                  onClick={() => handleToggleTask(task.id, task.is_completed)}
                   className={`mt-0.5 shrink-0 transition-colors ${task.is_completed ? 'text-emerald-500 hover:text-emerald-600' : 'text-slate-300 hover:text-blue-500'}`}
                 >
                   {task.is_completed ? <CheckCircle2 size={24} /> : <Circle size={24} />}

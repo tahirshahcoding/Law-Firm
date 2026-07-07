@@ -30,7 +30,7 @@ export default function ConsultationsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
   const [expanded, setExpanded] = useState<string | null>(null);
-  const { confirm, toast } = useUI();
+  const { confirm, toast, showLoading, hideLoading } = useUI();
 
   const fetchConsultations = () => {
     setLoading(true);
@@ -50,6 +50,7 @@ export default function ConsultationsPage() {
 
   const handleStatusChange = async (id: string, newStatus: string) => {
     try {
+      showLoading('Updating status...');
       await apiFetch(`${API_BASE}/consultations/${id}/`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -58,6 +59,8 @@ export default function ConsultationsPage() {
       fetchConsultations();
     } catch (err) {
       console.error('Failed to update status:', err);
+    } finally {
+      hideLoading();
     }
   };
 
@@ -70,12 +73,15 @@ export default function ConsultationsPage() {
     });
     if (!ok) return;
     try {
+      showLoading('Deleting consultation request...');
       await apiFetch(`${API_BASE}/consultations/${id}/`, { method: 'DELETE' });
       toast.success('Consultation request deleted.');
       fetchConsultations();
     } catch (err) {
       toast.error('Failed to delete consultation.');
       console.error('Failed to delete:', err);
+    } finally {
+      hideLoading();
     }
   };
 

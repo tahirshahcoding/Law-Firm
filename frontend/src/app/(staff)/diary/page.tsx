@@ -13,8 +13,7 @@ export default function DailyDiaryPage() {
   const [loading, setLoading] = useState(true);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [newTaskDueDate, setNewTaskDueDate] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { confirm } = useUI();
+  const { confirm, showLoading, hideLoading } = useUI();
 
   const fetchTasksAndHearings = () => {
     setLoading(true);
@@ -23,13 +22,17 @@ export default function DailyDiaryPage() {
       apiFetch(`${API_BASE}/diary/today/`).then(res => res.json())
     ])
       .then(([tasksData, hearingsData]) => {
-        setTasks(tasksData.results || tasksData);
-        setHearings(Array.isArray(hearingsData) ? hearingsData : []);
-        setLoading(false);
+        setTasks(Array.isArray(tasksData) ? tasksData : tasksData.results || []);
+        // Handle nested results for hearings array if paginated
+        const parsedHearings = Array.isArray(hearingsData) ? hearingsData : hearingsData.results || [];
+        // Sort hearings by case title naturally
+        parsedHearings.sort((a: any, b: any) => a.case_title?.localeCompare(b.case_title));
+        setHearings(parsedHearings);
       })
       .catch(err => {
         console.error('Failed to fetch data:', err);
-        toast.error("Failed to load daily diary data");
+      })
+      .finally(() => {
         setLoading(false);
       });
   };
@@ -69,6 +72,7 @@ export default function DailyDiaryPage() {
     });
     if (!ok) return;
     try {
+      showLoading('Deleting task...');
       const res = await apiFetch(`${API_BASE}/tasks/${id}/`, {
         method: 'DELETE',
       });
@@ -77,13 +81,14 @@ export default function DailyDiaryPage() {
       setTasks((prevTasks: any) => prevTasks.filter((t: any) => t.id !== id));
     } catch (err) {
       console.error(err);
+    } finally {
+      hideLoading();
     }
   };
 
   const handleAddTask = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTaskTitle.trim()) return;
-    setIsSubmitting(true);
 
     const payload: any = {
       title: newTaskTitle,
@@ -95,6 +100,7 @@ export default function DailyDiaryPage() {
     }
 
     try {
+      showLoading('Adding task...');
       const res = await apiFetch(`${API_BASE}/tasks/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -112,7 +118,7 @@ export default function DailyDiaryPage() {
       console.error(err);
       toast.error('Error adding task: ' + (err instanceof Error ? err.message : String(err)));
     } finally {
-      setIsSubmitting(false);
+      hideLoading();
     }
   };
 
@@ -168,16 +174,10 @@ export default function DailyDiaryPage() {
             </div>
             <button 
               type="submit"
-              disabled={isSubmitting || !newTaskTitle.trim()}
+              disabled={!newTaskTitle.trim()}
               className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-sm shadow-blue-600/20 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? (
-                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-              ) : (
-                <>
-                  <Plus size={18} /> Add
-                </>
-              )}
+              <Plus size={18} /> Add
             </button>
           </form>
         </div>
