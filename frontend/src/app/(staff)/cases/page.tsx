@@ -13,7 +13,7 @@ import { TableSkeleton } from '@/components/SkeletonLoaders';
 function CasesPageContent() {
   const searchParams = useSearchParams();
   const initialSearch = searchParams.get('search') || '';
-  const [cases, setCases] = useState([]);
+  const [cases, setCases] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState(initialSearch);
   const debouncedSearchTerm = useDebounce(searchTerm, 300);

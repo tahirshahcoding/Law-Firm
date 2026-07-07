@@ -10,7 +10,7 @@ import { useAuth } from '@/context/AuthContext';
 import { TableSkeleton } from '@/components/SkeletonLoaders';
 
 export default function HearingsPage() {
-  const [hearings, setHearings] = useState([]);
+  const [hearings, setHearings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   
