@@ -28,7 +28,7 @@ export default function ServicesPage() {
             Comprehensive Legal <span className="text-gold">Mastery.</span>
           </h1>
           <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed drop-shadow-md">
-            Delivering precision, authority, and tactical dominance. We specialize in areas of law critical to protecting your assets, freedom, and business.
+            Delivering precise, authoritative, and strategic legal counsel. Our practice concentrates on the areas of law essential to protecting assets, liberties, and business enterprises.
           </p>
         </div>
       </section>
@@ -52,7 +52,7 @@ export default function ServicesPage() {
                 <h2 className="font-serif text-3xl md:text-4xl font-bold text-navy mb-4 group-hover:text-gold transition-colors duration-300">Civil Litigation</h2>
                 <div className="h-0.5 w-16 bg-gold mb-6 group-hover:w-32 transition-all duration-500"></div>
                 <p className="text-slate-600 leading-relaxed text-lg mb-6">
-                  Resolving complex property, contract, and personal disputes with aggressive, evidence-backed representation. We approach every civil case as if trial is inevitable, preparing meticulous legal briefs and strategies that pressure opposing parties to settle favorably or face defeat in the courtroom.
+                  Resolving complex property, contractual, and civil disputes through thorough evidentiary analysis and court representation. We prepare every matter with the rigorous diligence required for trial, drafting precise legal arguments designed to secure favorable settlements or successful outcomes in court.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
                   <div className="flex items-center gap-2 text-sm text-slate-700 font-medium"><CheckCircle2 size={16} className="text-gold" /> Property Disputes</div>
@@ -61,7 +61,7 @@ export default function ServicesPage() {
                   <div className="flex items-center gap-2 text-sm text-slate-700 font-medium"><CheckCircle2 size={16} className="text-gold" /> Appellate Practice</div>
                 </div>
                 <Link href="/book-consultation" className="inline-flex items-center gap-2 bg-navy text-white hover:bg-gold px-6 py-3 font-bold text-sm tracking-wide transition-colors duration-300 rounded-sm">
-                  Consult a Civil Attorney <ArrowRight size={16} />
+                  Retain Civil Counsel <ArrowRight size={16} />
                 </Link>
               </div>
             </div>
@@ -82,7 +82,7 @@ export default function ServicesPage() {
                 <h2 className="font-serif text-3xl md:text-4xl font-bold text-navy mb-4 group-hover:text-gold transition-colors duration-300">Corporate Law</h2>
                 <div className="h-0.5 w-16 bg-gold mb-6 group-hover:w-32 transition-all duration-500"></div>
                 <p className="text-slate-600 leading-relaxed text-lg mb-6">
-                  Structuring businesses, drafting airtight contracts, and defending corporate entities to ensure your enterprise scales safely. We act as external general counsel for prominent businesses in Swat, mitigating legal risks before they impact your operational continuity and bottom line.
+                  Structuring corporate entities, drafting precise commercial agreements, and representing businesses to protect enterprise value. We act as external general counsel to leading local enterprises, mitigating legal and compliance risks to safeguard operations.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
                   <div className="flex items-center gap-2 text-sm text-slate-700 font-medium"><CheckCircle2 size={16} className="text-gold" /> Entity Formation</div>
@@ -91,7 +91,7 @@ export default function ServicesPage() {
                   <div className="flex items-center gap-2 text-sm text-slate-700 font-medium"><CheckCircle2 size={16} className="text-gold" /> Intellectual Property</div>
                 </div>
                 <Link href="/book-consultation" className="inline-flex items-center gap-2 bg-navy text-white hover:bg-gold px-6 py-3 font-bold text-sm tracking-wide transition-colors duration-300 rounded-sm">
-                  Consult a Corporate Attorney <ArrowRight size={16} />
+                  Retain Corporate Counsel <ArrowRight size={16} />
                 </Link>
               </div>
             </div>
@@ -112,7 +112,7 @@ export default function ServicesPage() {
                 <h2 className="font-serif text-3xl md:text-4xl font-bold text-navy mb-4 group-hover:text-rose-600 transition-colors duration-300">Criminal Defense</h2>
                 <div className="h-0.5 w-16 bg-gold mb-6 group-hover:bg-rose-600 group-hover:w-32 transition-all duration-500"></div>
                 <p className="text-slate-600 leading-relaxed text-lg mb-6">
-                  Strategic, uncompromising defense. We protect your freedom and constitutional rights at every stage of the criminal justice system. From white-collar investigations to serious felonies, our rapid-response team dismantles prosecutorial narratives with rigorous cross-examination and procedural expertise.
+                  Providing rigorous, strategic representation to safeguard constitutional rights and legal protections at all stages of the judicial process. From corporate white-collar investigations to felony defense, we challenge prosecution cases through detailed cross-examination and strict procedural compliance.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
                   <div className="flex items-center gap-2 text-sm text-slate-700 font-medium"><CheckCircle2 size={16} className="text-rose-600" /> White-Collar Crime</div>
@@ -121,7 +121,7 @@ export default function ServicesPage() {
                   <div className="flex items-center gap-2 text-sm text-slate-700 font-medium"><CheckCircle2 size={16} className="text-rose-600" /> Federal Investigations</div>
                 </div>
                 <Link href="/book-consultation" className="inline-flex items-center gap-2 bg-navy text-white hover:bg-rose-600 px-6 py-3 font-bold text-sm tracking-wide transition-colors duration-300 rounded-sm">
-                  Emergency Defense Consultation <ArrowRight size={16} />
+                  Retain Criminal Defense Counsel <ArrowRight size={16} />
                 </Link>
               </div>
             </div>
@@ -142,7 +142,7 @@ export default function ServicesPage() {
                 <h2 className="font-serif text-3xl md:text-4xl font-bold text-navy mb-4 group-hover:text-gold transition-colors duration-300">Family Law</h2>
                 <div className="h-0.5 w-16 bg-gold mb-6 group-hover:w-32 transition-all duration-500"></div>
                 <p className="text-slate-600 leading-relaxed text-lg mb-6">
-                  Navigating sensitive divorces, custody battles, and inheritance disputes with absolute discretion. We understand that family matters require both relentless advocacy in court and pragmatic negotiation outside of it to protect your assets and your children's future.
+                  Advising on family law matters, including marital dissolutions, child custody, and estate succession, with absolute discretion. We balance firm advocacy in judicial proceedings with professional negotiation to protect familial interests and estate assets.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
                   <div className="flex items-center gap-2 text-sm text-slate-700 font-medium"><CheckCircle2 size={16} className="text-gold" /> High-Net-Worth Divorce</div>
@@ -151,7 +151,7 @@ export default function ServicesPage() {
                   <div className="flex items-center gap-2 text-sm text-slate-700 font-medium"><CheckCircle2 size={16} className="text-gold" /> Pre-nuptial Agreements</div>
                 </div>
                 <Link href="/book-consultation" className="inline-flex items-center gap-2 bg-navy text-white hover:bg-gold px-6 py-3 font-bold text-sm tracking-wide transition-colors duration-300 rounded-sm">
-                  Consult a Family Attorney <ArrowRight size={16} />
+                  Retain Family Counsel <ArrowRight size={16} />
                 </Link>
               </div>
             </div>

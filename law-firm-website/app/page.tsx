@@ -25,14 +25,14 @@ export default function Home() {
         <div className="relative z-10 max-w-7xl w-full flex flex-col md:flex-row items-center justify-between gap-12">
           <div className="max-w-3xl flex flex-col items-start text-left animate-in fade-in slide-in-from-bottom-8 duration-1000 fill-mode-both">
             <div className="inline-flex items-center gap-2 bg-gold/20 border border-gold/50 px-4 py-2 text-gold text-sm font-bold tracking-widest uppercase mb-6 backdrop-blur-sm rounded-sm">
-              <Scale size={16} /> Elite Legal Counsel in Swat
+              <Scale size={16} /> Preeminent Legal Advocacy & Counsel
             </div>
             <h1 className="font-serif text-5xl md:text-7xl font-bold leading-[1.1] mb-6 drop-shadow-lg">
-              Relentless Advocacy.<br/>
-              <span className="text-gold">Proven Results.</span>
+              Rigorous Advocacy.<br/>
+              <span className="text-gold">Exceptional Outcomes.</span>
             </h1>
             <p className="text-lg md:text-xl text-slate-200 mb-10 max-w-2xl leading-relaxed drop-shadow-md">
-              We provide aggressive representation and strategic counsel for businesses and individuals in Khyber Pakhtunkhwa. When your future is on the line, we protect your rights with uncompromising dedication.
+              We deliver authoritative legal representation and strategic counsel to corporate entities and private individuals across Khyber Pakhtunkhwa. Guided by professional excellence and legal precision, we safeguard our clients' interests with absolute commitment.
             </p>
             <div className="flex flex-col sm:flex-row gap-5 w-full">
               <Link href="/book-consultation" className="group bg-gold hover:bg-goldHover text-white px-8 py-4 text-lg font-bold rounded-sm transition-all duration-300 w-full sm:w-auto text-center flex items-center justify-center gap-3 shadow-lg shadow-gold/20 hover:shadow-gold/40 hover:-translate-y-1">
@@ -93,25 +93,25 @@ export default function Home() {
             Unwavering Commitment to Justice.
           </h3>
           <p className="text-lg text-slate-600 leading-relaxed">
-            At Rahimullah Advocate, we don't just practice law; we master it. For over two decades, our firm has been the bedrock of legal defense and corporate strategy in Swat Valley. 
+            Rahimullah Advocate & Associates operates on a foundation of legal precision and professional excellence. For over two decades, our chambers have served as a cornerstone of legal advocacy, complex litigation, and strategic advisory services in Swat. 
           </p>
           <ul className="space-y-4 mt-6">
             <li className="flex items-start gap-3">
               <CheckCircle2 className="text-gold flex-shrink-0 mt-1" size={20} />
-              <span className="text-slate-700">Senior partners directly handle every critical case phase.</span>
+              <span className="text-slate-700">Every matter is personally directed and managed by senior partners.</span>
             </li>
             <li className="flex items-start gap-3">
               <CheckCircle2 className="text-gold flex-shrink-0 mt-1" size={20} />
-              <span className="text-slate-700">Deep-rooted relationships within the KP judicial system.</span>
+              <span className="text-slate-700">Extensive expertise and a proven record within the regional courts of Khyber Pakhtunkhwa.</span>
             </li>
             <li className="flex items-start gap-3">
               <CheckCircle2 className="text-gold flex-shrink-0 mt-1" size={20} />
-              <span className="text-slate-700">Discreet, highly secure digital infrastructure for client data.</span>
+              <span className="text-slate-700">Discreet, highly secure systems for client records and communications.</span>
             </li>
           </ul>
           <div className="pt-6">
             <Link href="/services" className="inline-flex items-center gap-2 border-b-2 border-gold text-navy font-bold pb-1 hover:text-gold transition-colors">
-              Discover Our Approach <ArrowRight size={16} />
+              Our Professional Methodology <ArrowRight size={16} />
             </Link>
           </div>
         </div>
@@ -121,9 +121,9 @@ export default function Home() {
       <section className="py-24 px-8 bg-slate-50 relative">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 max-w-2xl mx-auto">
-            <h2 className="font-serif text-4xl md:text-5xl font-bold text-navy mb-6">Dedicated Legal Expertise</h2>
+            <h2 className="font-serif text-4xl md:text-5xl font-bold text-navy mb-6">Specialized Fields of Practice</h2>
             <div className="h-1 w-20 bg-gold mx-auto mb-6"></div>
-            <p className="text-slate-600 text-lg">We focus our formidable resources on key practice areas, ensuring our clients receive highly specialized, tactical representation.</p>
+            <p className="text-slate-600 text-lg">We concentrate our resources on key practice areas to ensure our clients receive specialized, results-oriented legal advocacy.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -133,7 +133,7 @@ export default function Home() {
               <div className="absolute top-0 left-0 w-full h-1 bg-transparent group-hover:bg-gold transition-colors duration-500"></div>
               <Scale className="text-navy group-hover:text-gold transition-colors duration-500 mb-6" size={48} />
               <h3 className="font-serif text-2xl font-bold text-navy mb-4">Civil Litigation</h3>
-              <p className="text-slate-600 text-sm leading-relaxed mb-8 flex-grow">Resolving complex property, contract, and personal disputes with aggressive, evidence-backed representation.</p>
+              <p className="text-slate-600 text-sm leading-relaxed mb-8 flex-grow">Resolving complex property, contractual, and civil disputes through thorough evidentiary analysis and court representation.</p>
               <Link href="/services" className="inline-flex items-center gap-2 text-gold font-bold text-sm hover:text-navy transition-colors duration-200 uppercase tracking-wide">
                 Learn More <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform duration-300"/>
               </Link>
@@ -144,7 +144,7 @@ export default function Home() {
               <div className="absolute top-0 left-0 w-full h-1 bg-transparent group-hover:bg-gold transition-colors duration-500"></div>
               <Briefcase className="text-navy group-hover:text-gold transition-colors duration-500 mb-6" size={48} />
               <h3 className="font-serif text-2xl font-bold text-navy mb-4">Corporate Law</h3>
-              <p className="text-slate-600 text-sm leading-relaxed mb-8 flex-grow">Structuring businesses, drafting contracts, and defending corporate entities to ensure your enterprise scales safely.</p>
+              <p className="text-slate-600 text-sm leading-relaxed mb-8 flex-grow">Structuring corporate entities, drafting commercial agreements, and representing businesses to protect enterprise value.</p>
               <Link href="/services" className="inline-flex items-center gap-2 text-gold font-bold text-sm hover:text-navy transition-colors duration-200 uppercase tracking-wide">
                 Learn More <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform duration-300"/>
               </Link>
@@ -155,7 +155,7 @@ export default function Home() {
               <div className="absolute top-0 left-0 w-full h-1 bg-transparent group-hover:bg-gold transition-colors duration-500"></div>
               <Shield className="text-navy group-hover:text-gold transition-colors duration-500 mb-6" size={48} />
               <h3 className="font-serif text-2xl font-bold text-navy mb-4">Criminal Defense</h3>
-              <p className="text-slate-600 text-sm leading-relaxed mb-8 flex-grow">Strategic, uncompromising defense. We protect your freedom and constitutional rights at every stage.</p>
+              <p className="text-slate-600 text-sm leading-relaxed mb-8 flex-grow">Providing rigorous, strategic representation to safeguard constitutional rights and legal protections at all stages of the judicial process.</p>
               <Link href="/services" className="inline-flex items-center gap-2 text-gold font-bold text-sm hover:text-navy transition-colors duration-200 uppercase tracking-wide">
                 Learn More <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform duration-300"/>
               </Link>
@@ -166,7 +166,7 @@ export default function Home() {
               <div className="absolute top-0 left-0 w-full h-1 bg-transparent group-hover:bg-gold transition-colors duration-500"></div>
               <Users className="text-navy group-hover:text-gold transition-colors duration-500 mb-6" size={48} />
               <h3 className="font-serif text-2xl font-bold text-navy mb-4">Family Law</h3>
-              <p className="text-slate-600 text-sm leading-relaxed mb-8 flex-grow">Navigating sensitive divorces, custody battles, and inheritance disputes with absolute discretion.</p>
+              <p className="text-slate-600 text-sm leading-relaxed mb-8 flex-grow">Advising on family law matters, including marital dissolutions, child custody, and estate succession, with absolute discretion.</p>
               <Link href="/services" className="inline-flex items-center gap-2 text-gold font-bold text-sm hover:text-navy transition-colors duration-200 uppercase tracking-wide">
                 Learn More <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform duration-300"/>
               </Link>
@@ -184,15 +184,15 @@ export default function Home() {
         <div className="relative z-10 max-w-6xl mx-auto flex flex-col lg:flex-row items-center gap-16">
           <div className="flex-1">
             <div className="inline-flex items-center gap-2 bg-white/10 px-3 py-1 rounded-full text-gold text-xs font-bold tracking-widest uppercase mb-6 border border-white/20">
-              <LockKeyhole size={14} /> Military-Grade Encryption
+              <LockKeyhole size={14} /> Industry-Standard Encrypted Vault
             </div>
-            <h2 className="font-serif text-4xl md:text-5xl font-bold mb-6 leading-tight">The Modern Legal Standard:<br/>100% Secure Portal</h2>
+            <h2 className="font-serif text-4xl md:text-5xl font-bold mb-6 leading-tight">Secure Electronic Case<br/>Management System</h2>
             <p className="text-slate-300 leading-relaxed mb-10 text-lg">
-              We don't leave your sensitive legal documents to chance. Every client receives private, 256-bit encrypted access to our digital portal. Track your case files, monitor court dates, and communicate directly with your legal team—securely, from anywhere in the world.
+              We maintain the confidentiality and security of all client records. Through our secure electronic portal, clients can access case documentation, review scheduled court appearances, and communicate securely with their legal counsel in compliance with privacy regulations.
             </p>
             <a href={process.env.NEXT_PUBLIC_PORTAL_URL || "https://clientcounsel.vercel.app"} className="group inline-flex items-center gap-3 bg-white text-navy hover:bg-gold hover:text-white px-8 py-4 font-bold rounded-sm transition-all duration-300 shadow-xl hover:-translate-y-1">
               <LockKeyhole size={20} className="group-hover:animate-pulse" />
-              Access Your Secure Vault
+              Client Portal Access
             </a>
           </div>
           
