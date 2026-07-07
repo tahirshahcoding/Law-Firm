@@ -157,6 +157,7 @@ const ROLE_COLORS: Record<string, string> = {
   Associate:       'bg-emerald-50 text-emerald-700 border-emerald-200',
   Accountant:      'bg-amber-50 text-amber-700 border-amber-200',
   Staff:           'bg-slate-100 text-slate-600 border-slate-200',
+  Client:          'bg-orange-50 text-orange-700 border-orange-200',
 };
 
 // ── Toggle Switch component ───────────────────────────────────────────────────
@@ -404,8 +405,8 @@ export default function UserManagementPage() {
     <div className="space-y-8 animate-in fade-in duration-500 w-full">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Staff Management</h2>
-          <p className="text-slate-500 mt-1">Manage office staff, roles, and granular access permissions.</p>
+          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">User Management</h2>
+          <p className="text-slate-500 mt-1">Manage office staff, clients, roles, and granular access permissions.</p>
         </div>
         <button
           onClick={handleOpenAddModal}
@@ -429,7 +430,13 @@ export default function UserManagementPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {users.map((u: any) => (
+              {/* STAFF SECTION */}
+              <tr className="bg-slate-50/80 font-semibold text-slate-700">
+                <td colSpan={4} className="px-6 py-2.5 border-y border-slate-200 text-xs font-extrabold uppercase tracking-wider text-slate-500 bg-slate-50">
+                  🏢 Staff Members ({users.filter((u: any) => u.role !== 'Client').length})
+                </td>
+              </tr>
+              {users.filter((u: any) => u.role !== 'Client').map((u: any) => (
                 <tr key={u.id} className="hover:bg-slate-50/50 transition-colors group">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
@@ -485,6 +492,57 @@ export default function UserManagementPage() {
                   </td>
                 </tr>
               ))}
+
+              {/* CLIENT SECTION */}
+              {users.filter((u: any) => u.role === 'Client').length > 0 && (
+                <>
+                  <tr className="bg-slate-50/80 font-semibold text-slate-700">
+                    <td colSpan={4} className="px-6 py-2.5 border-y border-slate-200 text-xs font-extrabold uppercase tracking-wider text-slate-500 bg-slate-50">
+                      👥 Clients ({users.filter((u: any) => u.role === 'Client').length})
+                    </td>
+                  </tr>
+                  {users.filter((u: any) => u.role === 'Client').map((u: any) => (
+                    <tr key={u.id} className="hover:bg-slate-50/50 transition-colors group">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          {u.avatar ? (
+                            <img src={u.avatar} alt="Avatar" className="w-10 h-10 rounded-full object-cover border border-slate-200" />
+                          ) : (
+                            <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600 font-bold border border-orange-100">
+                              {u.first_name ? u.first_name[0] : u.username[0].toUpperCase()}
+                            </div>
+                          )}
+                          <div>
+                            <p className="font-semibold text-slate-900">
+                              {u.first_name} {u.last_name}
+                              <span className="text-slate-400 font-normal ml-1">@{u.username}</span>
+                            </p>
+                            <p className="text-xs text-slate-500">{u.email || 'No email provided'}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`px-2.5 py-1 rounded-md text-xs font-bold border ${ROLE_COLORS[u.role] || ROLE_COLORS['Staff']}`}>
+                          {u.role}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-xs text-slate-400 italic">Client Portal Access</span>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button onClick={() => handleOpenEditModal(u)} className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" title="Edit">
+                            <Edit2 size={18} />
+                          </button>
+                          <button onClick={() => handleDelete(u.id, u.username)} className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors" title="Delete">
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </>
+              )}
             </tbody>
           </table>
         )}
