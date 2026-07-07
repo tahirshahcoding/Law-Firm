@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { X, Search, FileText, Calendar, Banknote, AlignLeft } from 'lucide-react';
 import { API_BASE, apiFetch, safeJson } from '@/lib/api';
+import { useUI } from '@/context/UIContext';
 
 interface GenerateChallanModalProps {
   isOpen: boolean;
@@ -11,6 +12,7 @@ interface GenerateChallanModalProps {
 }
 
 export default function GenerateChallanModal({ isOpen, onClose, onSuccess }: GenerateChallanModalProps) {
+  const { toast, showLoading, hideLoading } = useUI();
   const [cases, setCases] = useState<any[]>([]);
   const [loadingCases, setLoadingCases] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -21,9 +23,6 @@ export default function GenerateChallanModal({ isOpen, onClose, onSuccess }: Gen
   const [dueDate, setDueDate] = useState('');
   const [description, setDescription] = useState('Professional Legal Services');
   const [issueDate, setIssueDate] = useState(new Date().toISOString().split('T')[0]);
-
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   // Fetch cases for combobox
   useEffect(() => {
@@ -48,7 +47,6 @@ export default function GenerateChallanModal({ isOpen, onClose, onSuccess }: Gen
       setAmount('');
       setDueDate('');
       setDescription('Professional Legal Services');
-      setError(null);
     }
   }, [isOpen]);
 
@@ -68,14 +66,12 @@ export default function GenerateChallanModal({ isOpen, onClose, onSuccess }: Gen
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedCase) {
-      setError("Please select a case.");
+      toast.error("Please select a case.");
       return;
     }
-    
-    setSubmitting(true);
-    setError(null);
 
     try {
+      showLoading('Generating challan...');
       const res = await apiFetch(`${API_BASE}/invoices/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -91,12 +87,13 @@ export default function GenerateChallanModal({ isOpen, onClose, onSuccess }: Gen
       const data = await safeJson(res);
       if (!res.ok) throw new Error(data.error || data.detail || 'Failed to generate challan');
       
+      toast.success('Challan generated successfully.');
       onSuccess();
       onClose();
     } catch (err: any) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
-      setSubmitting(false);
+      hideLoading();
     }
   };
 
@@ -115,8 +112,6 @@ export default function GenerateChallanModal({ isOpen, onClose, onSuccess }: Gen
 
         <div className="overflow-y-auto">
           <form onSubmit={handleSubmit} className="p-6 space-y-5">
-            {error && <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-sm text-rose-600 font-medium">{error}</div>}
-
             {/* Case Selector */}
             <div className="relative">
               <label className="block text-sm font-medium text-slate-700 mb-1">Select Case *</label>
@@ -214,9 +209,9 @@ export default function GenerateChallanModal({ isOpen, onClose, onSuccess }: Gen
 
             <div className="pt-4 flex justify-end gap-3 border-t border-slate-100">
               <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg font-medium text-slate-600 hover:bg-slate-50 border border-slate-200 transition-colors">Cancel</button>
-              <button type="submit" disabled={submitting || !selectedCase}
+              <button type="submit" disabled={!selectedCase}
                 className="px-6 py-2 rounded-lg font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-sm shadow-blue-600/20 disabled:opacity-50 flex items-center justify-center min-w-[140px]">
-                {submitting ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : 'Generate Challan'}
+                Generate Challan
               </button>
             </div>
           </form>

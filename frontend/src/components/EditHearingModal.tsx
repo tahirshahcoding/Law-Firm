@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { X, Calendar, AlignLeft, Search, Check, FolderOpen, FileText, Trash2 } from 'lucide-react';
 import { API_BASE, apiFetch } from '@/lib/api';
 import { toast } from 'sonner';
+import { useUI } from '@/context/UIContext';
 
 interface EditHearingModalProps {
   isOpen: boolean;
@@ -14,6 +15,7 @@ interface EditHearingModalProps {
 }
 
 export default function EditHearingModal({ isOpen, onClose, onSuccess, hearingData }: EditHearingModalProps) {
+  const { toast: uiToast, showLoading, hideLoading } = useUI();
   const [formData, setFormData] = useState({
     case: '',
     hearing_date: '',
@@ -21,8 +23,6 @@ export default function EditHearingModal({ isOpen, onClose, onSuccess, hearingDa
     notes: '',
     hearing_stage: 'Attendance'
   });
-  
-  const [loading, setLoading] = useState(false);
   
   // Document state
   const [documents, setDocuments] = useState<any[]>([]);
@@ -96,12 +96,12 @@ export default function EditHearingModal({ isOpen, onClose, onSuccess, hearingDa
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.case) {
-      toast.error("Please select a target case from the dropdown.");
+      uiToast.error("Please select a target case from the dropdown.");
       return;
     }
 
     if (!formData.hearing_date) {
-      toast.error("Hearing Date is required.");
+      uiToast.error("Hearing Date is required.");
       return;
     }
 
@@ -111,9 +111,8 @@ export default function EditHearingModal({ isOpen, onClose, onSuccess, hearingDa
       delete (payload as any).next_date;
     }
 
-    setLoading(true);
-
     try {
+      showLoading('Updating hearing...');
       const res = await apiFetch(`${API_BASE}/hearings/${hearingData.id}/`, {
         method: 'PATCH',
         headers: {
@@ -128,13 +127,13 @@ export default function EditHearingModal({ isOpen, onClose, onSuccess, hearingDa
         throw new Error(data.error || data.detail || JSON.stringify(data) || 'Failed to update hearing');
       }
 
-      toast.success("Hearing updated successfully");
+      uiToast.success("Hearing updated successfully");
       onSuccess();
       onClose();
     } catch (err: any) {
-      toast.error(err.message);
+      uiToast.error(err.message);
     } finally {
-      setLoading(false);
+      hideLoading();
     }
   };
 
@@ -275,14 +274,9 @@ export default function EditHearingModal({ isOpen, onClose, onSuccess, hearingDa
             </button>
             <button
                type="submit"
-               disabled={loading}
-               className="px-6 py-2 rounded-lg font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-sm shadow-blue-600/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[100px]"
+               className="px-6 py-2 rounded-lg font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-sm shadow-blue-600/20 flex items-center justify-center min-w-[100px]"
              >
-               {loading ? (
-                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-               ) : (
-                 'Save Changes'
-               )}
+               Save Changes
              </button>
           </div>
         </form>

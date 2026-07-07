@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Coins, TrendingUp, Download, Search, FileText, Plus, Trash2, Wallet, ShieldAlert, Share2 } from 'lucide-react';
+import { Coins, TrendingUp, Download, Search, FileText, Plus, Trash2, Wallet, ShieldAlert, Share2, Printer, MessageCircle } from 'lucide-react';
 import { API_BASE, apiFetch, safeJson } from '@/lib/api';
+import { sendWhatsApp, challanMessage } from '@/lib/whatsapp';
 import InvoiceTemplate from '@/components/InvoiceTemplate';
 import GenerateChallanModal from '@/components/GenerateChallanModal';
 import AddPaymentModal from '@/components/AddPaymentModal';
@@ -139,7 +140,28 @@ function AccountsContent() {
     }
   };
 
-  const handleGeneratePdf = async (challan: any) => {
+  const handleWhatsApp = (challan: any) => {
+    if (!challan.client_mobile) {
+      toast.error("Client does not have a registered mobile number.");
+      return;
+    }
+    const message = challanMessage(
+      challan.client_name,
+      challan.invoice_number,
+      challan.case_number,
+      challan.amount,
+      challan.due_date,
+      challan.description || 'Professional Legal Services'
+    );
+    const success = sendWhatsApp(challan.client_mobile, message);
+    if (success) {
+      toast.success("WhatsApp opened!");
+    } else {
+      toast.error("Could not open WhatsApp.");
+    }
+  };
+
+  const handleGeneratePdf = async (challan: any, action: 'download' | 'print' = 'download') => {
     setIsGeneratingPdf(true);
     let originalGetComputedStyle: typeof window.getComputedStyle | null = null;
 
@@ -199,23 +221,27 @@ function AccountsContent() {
         jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' as const }
       };
 
-      let pdfBlob;
-      if (navigator.share && navigator.canShare) {
-        const pdfBlob = await html2pdf().set(opt).from(element).output('blob');
-        const file = new File([pdfBlob], opt.filename, { type: 'application/pdf' });
-        
-        if (navigator.canShare({ files: [file] })) {
-           await navigator.share({
-             files: [file],
-             title: `Challan ${challan.invoice_number}`,
-             text: 'Please find the payment challan attached.'
-           });
-        } else {
-           html2pdf().set(opt).from(element).save();
-        }
+      if (action === 'print') {
+        const pdfUrl = await html2pdf().set(opt).from(element).output('bloburl');
+        window.open(pdfUrl, '_blank');
       } else {
-        // Desktop fallback: just download
-        html2pdf().set(opt).from(element).save();
+        if (navigator.share && navigator.canShare) {
+          const pdfBlob = await html2pdf().set(opt).from(element).output('blob');
+          const file = new File([pdfBlob], opt.filename, { type: 'application/pdf' });
+          
+          if (navigator.canShare({ files: [file] })) {
+             await navigator.share({
+               files: [file],
+               title: `Challan ${challan.invoice_number}`,
+               text: 'Please find the payment challan attached.'
+             });
+          } else {
+             html2pdf().set(opt).from(element).save();
+          }
+        } else {
+          // Desktop fallback: just download
+          html2pdf().set(opt).from(element).save();
+        }
       }
     } catch (err: any) {
       console.error("PDF generation error:", err);
@@ -454,15 +480,36 @@ function AccountsContent() {
                           <td className="px-4 sm:px-6 py-4">
                             <div className="flex items-center justify-end gap-2">
                               <button 
-                                onClick={() => handleGeneratePdf(c)}
+                                onClick={() => handleGeneratePdf(c, 'print')}
                                 disabled={isGeneratingPdf && selectedCaseForInvoice?.id === c.id}
-                                title="Share / Download PDF"
-                                className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50"
+                                title="Print Challan"
+                                className="p-1.5 text-slate-400 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-50"
+                              >
+                                {(isGeneratingPdf && selectedCaseForInvoice?.id === c.id) ? (
+                                  <div className="w-4 h-4 border-2 border-slate-400 border-t-slate-800 rounded-full animate-spin"></div>
+                                ) : (
+                                  <Printer size={16} />
+                                )}
+                              </button>
+
+                              <button 
+                                onClick={() => handleWhatsApp(c)}
+                                title="Share via WhatsApp"
+                                className="p-1.5 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                              >
+                                <MessageCircle size={16} />
+                              </button>
+
+                              <button 
+                                onClick={() => handleGeneratePdf(c, 'download')}
+                                disabled={isGeneratingPdf && selectedCaseForInvoice?.id === c.id}
+                                title="Download PDF"
+                                className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50 hidden sm:inline-flex"
                               >
                                 {(isGeneratingPdf && selectedCaseForInvoice?.id === c.id) ? (
                                   <div className="w-4 h-4 border-2 border-slate-400 border-t-blue-600 rounded-full animate-spin"></div>
                                 ) : (
-                                  <Share2 size={16} />
+                                  <Download size={16} />
                                 )}
                               </button>
 
@@ -532,15 +579,36 @@ function AccountsContent() {
                                 <td className="px-4 sm:px-6 py-4">
                                   <div className="flex items-center justify-end gap-2">
                                     <button 
-                                      onClick={() => handleGeneratePdf(c)}
+                                      onClick={() => handleGeneratePdf(c, 'print')}
                                       disabled={isGeneratingPdf && selectedCaseForInvoice?.id === c.id}
-                                      title="Share / Download PDF"
-                                      className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50"
+                                      title="Print Challan"
+                                      className="p-1.5 text-slate-400 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-50"
+                                    >
+                                      {(isGeneratingPdf && selectedCaseForInvoice?.id === c.id) ? (
+                                        <div className="w-4 h-4 border-2 border-slate-400 border-t-slate-800 rounded-full animate-spin"></div>
+                                      ) : (
+                                        <Printer size={16} />
+                                      )}
+                                    </button>
+
+                                    <button 
+                                      onClick={() => handleWhatsApp(c)}
+                                      title="Share via WhatsApp"
+                                      className="p-1.5 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                                    >
+                                      <MessageCircle size={16} />
+                                    </button>
+
+                                    <button 
+                                      onClick={() => handleGeneratePdf(c, 'download')}
+                                      disabled={isGeneratingPdf && selectedCaseForInvoice?.id === c.id}
+                                      title="Download PDF"
+                                      className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50 hidden sm:inline-flex"
                                     >
                                       {(isGeneratingPdf && selectedCaseForInvoice?.id === c.id) ? (
                                         <div className="w-4 h-4 border-2 border-slate-400 border-t-blue-600 rounded-full animate-spin"></div>
                                       ) : (
-                                        <Share2 size={16} />
+                                        <Download size={16} />
                                       )}
                                     </button>
 

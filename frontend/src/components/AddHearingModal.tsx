@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { X, Calendar, AlignLeft, Search, Check, FolderOpen } from 'lucide-react';
 import { API_BASE, apiFetch, safeJson } from '@/lib/api';
 import { sendWhatsApp, hearingScheduledMessage } from '@/lib/whatsapp';
-import { toast } from 'sonner';
+import { useUI } from '@/context/UIContext';
 
 interface AddHearingModalProps {
   isOpen: boolean;
@@ -13,6 +13,7 @@ interface AddHearingModalProps {
 }
 
 export default function AddHearingModal({ isOpen, onClose, onSuccess }: AddHearingModalProps) {
+  const { toast, showLoading, hideLoading } = useUI();
   const [formData, setFormData] = useState({
     case: '',
     hearing_date: '',
@@ -20,8 +21,6 @@ export default function AddHearingModal({ isOpen, onClose, onSuccess }: AddHeari
     notes: '',
     hearing_stage: 'Attendance'
   });
-  
-  const [loading, setLoading] = useState(false);
   
   // Combobox specific state
   const [cases, setCases] = useState<any[]>([]);
@@ -83,9 +82,8 @@ export default function AddHearingModal({ isOpen, onClose, onSuccess }: AddHeari
       delete (payload as any).next_date;
     }
 
-    setLoading(true);
-
     try {
+      showLoading('Scheduling hearing...');
       const res = await apiFetch(`${API_BASE}/hearings/`, {
         method: 'POST',
         headers: {
@@ -113,7 +111,7 @@ export default function AddHearingModal({ isOpen, onClose, onSuccess }: AddHeari
           formData.notes || undefined,
         );
         sendWhatsApp(selectedCase.client_mobile, message);
-        toast.success('WhatsApp notification opened — press Send to deliver.', { icon: '📱' });
+        toast.success('WhatsApp notification opened — press Send to deliver.');
       }
 
       onSuccess();
@@ -123,7 +121,7 @@ export default function AddHearingModal({ isOpen, onClose, onSuccess }: AddHeari
     } catch (err: any) {
       toast.error(err.message);
     } finally {
-      setLoading(false);
+      hideLoading();
     }
   };
 
@@ -263,14 +261,9 @@ export default function AddHearingModal({ isOpen, onClose, onSuccess }: AddHeari
             </button>
             <button
               type="submit"
-              disabled={loading}
-              className="px-6 py-2 rounded-lg font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-sm shadow-blue-600/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[100px]"
+              className="px-6 py-2 rounded-lg font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-sm shadow-blue-600/20 flex items-center justify-center min-w-[100px]"
             >
-              {loading ? (
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-              ) : (
-                'Schedule Hearing'
-              )}
+              Schedule Hearing
             </button>
           </div>
         </form>

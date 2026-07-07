@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { X, Banknote, Calendar, CreditCard } from 'lucide-react';
 import { API_BASE, apiFetch, safeJson } from '@/lib/api';
+import { useUI } from '@/context/UIContext';
 
 interface AddPaymentModalProps {
   isOpen: boolean;
@@ -12,18 +13,16 @@ interface AddPaymentModalProps {
 }
 
 export default function AddPaymentModal({ isOpen, onClose, onSuccess, challan }: AddPaymentModalProps) {
+  const { toast, showLoading, hideLoading } = useUI();
   const [amountReceived, setAmountReceived] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   if (!isOpen || !challan) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitting(true);
-    setError(null);
 
     try {
+      showLoading('Recording payment...');
       const res = await apiFetch(`${API_BASE}/payments/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -38,12 +37,13 @@ export default function AddPaymentModal({ isOpen, onClose, onSuccess, challan }:
 
       // The backend recalculates invoice status atomically inside Payment.save().
       // No frontend patch needed — just refresh the list.
+      toast.success('Payment recorded successfully.');
       onSuccess();
       onClose();
     } catch (err: any) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
-      setSubmitting(false);
+      hideLoading();
     }
   };
 
@@ -61,8 +61,6 @@ export default function AddPaymentModal({ isOpen, onClose, onSuccess, challan }:
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
-          {error && <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-sm text-rose-600 font-medium">{error}</div>}
-
           {/* Context Info */}
           <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-2">
             <div className="flex justify-between text-sm">
@@ -115,9 +113,9 @@ export default function AddPaymentModal({ isOpen, onClose, onSuccess, challan }:
 
           <div className="pt-4 flex justify-end gap-3 border-t border-slate-100">
             <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg font-medium text-slate-600 hover:bg-slate-50 border border-slate-200 transition-colors">Cancel</button>
-            <button type="submit" disabled={submitting || !amountReceived}
+            <button type="submit" disabled={!amountReceived}
               className="px-6 py-2 rounded-lg font-medium text-white bg-emerald-600 hover:bg-emerald-700 transition-colors shadow-sm shadow-emerald-600/20 disabled:opacity-50 flex items-center justify-center min-w-[140px]">
-              {submitting ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : 'Record Payment'}
+              Record Payment
             </button>
           </div>
         </form>
