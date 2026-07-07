@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
+  LayoutDashboard,
   Scale,
   Briefcase,
   Calendar,
@@ -147,6 +148,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const [data, setData]       = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<'overview' | 'cases' | 'hearings' | 'financials'>('overview');
 
   // accordion state
   const [expandedCase, setExpandedCase] = useState<string | null>(null);
@@ -210,10 +212,31 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 py-8 space-y-8 w-full flex-1">
+      <main className="max-w-4xl mx-auto px-4 py-8 space-y-6 w-full flex-1">
 
-        {/* ── Hero welcome banner ── */}
-        <div className="bg-gradient-to-br from-slate-900 via-slate-950 to-blue-950 rounded-3xl p-6 sm:p-8 text-white relative overflow-hidden border border-slate-800 shadow-xl">
+        {/* ── Tabs Navigation ── */}
+        <div className="flex overflow-x-auto hide-scrollbar gap-2 pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+          {[
+            { id: 'overview', label: 'Overview', icon: <LayoutDashboard size={14} /> },
+            { id: 'cases', label: 'My Cases', icon: <Briefcase size={14} /> },
+            { id: 'hearings', label: 'Hearings', icon: <Calendar size={14} /> },
+            { id: 'financials', label: 'Financials', icon: <FileText size={14} /> },
+          ].map(t => (
+            <button
+              key={t.id}
+              onClick={() => setActiveTab(t.id as any)}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all whitespace-nowrap ${activeTab === t.id ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-white text-slate-500 hover:text-slate-800 hover:bg-slate-50 border border-slate-200'}`}
+            >
+              {t.icon} {t.label}
+            </button>
+          ))}
+        </div>
+
+
+        {activeTab === 'overview' && (
+          <div className="space-y-6 animate-in fade-in duration-500">
+            {/* ── Hero welcome banner ── */}
+            <div className="bg-blue-900 rounded-3xl p-6 sm:p-8 text-white relative overflow-hidden border border-slate-800 shadow-xl">
           <div className="absolute -right-12 -top-12 w-48 h-48 bg-blue-500/5 rounded-full blur-2xl pointer-events-none" />
           <div className="absolute -left-8 bottom-0 w-36 h-36 bg-indigo-500/5 rounded-full blur-2xl pointer-events-none" />
           <div className="relative z-10">
@@ -235,36 +258,13 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+          </div>
+        )}
 
-        {/* ── Financial summary cards ── */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <StatCard
-            icon={<FileText />}
-            label="Total Billed"
-            value={`Rs. ${totalBilled.toLocaleString()}`}
-            sub={`${invoices.length} challans issued`}
-            color="bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-blue-500/20"
-          />
-          <StatCard
-            icon={<Wallet />}
-            label="Total Paid"
-            value={`Rs. ${totalPaid.toLocaleString()}`}
-            sub={`${payments.length} payments recorded`}
-            color="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-emerald-500/20"
-          />
-          <StatCard
-            icon={<TrendingUp />}
-            label="Outstanding"
-            value={`Rs. ${outstanding.toLocaleString()}`}
-            sub={outstanding === 0 ? 'Fully settled ✓' : 'Balance remaining'}
-            color={outstanding === 0
-              ? "bg-white border border-slate-100 text-slate-800"
-              : "bg-gradient-to-br from-rose-500 to-rose-600 text-white shadow-rose-500/20"}
-          />
-        </div>
-
-        {/* ── My Cases (accordion) ── */}
-        <section>
+        {activeTab === 'cases' && (
+          <div className="space-y-6 animate-in fade-in duration-500">
+            {/* ── My Cases (accordion) ── */}
+            <section>
           <SectionHeader icon={<Briefcase size={14} />} title="My Cases" count={cases.length} />
           {cases.length === 0 ? (
             <EmptyState message="No cases on file." />
@@ -384,9 +384,13 @@ export default function DashboardPage() {
             </div>
           )}
         </section>
+          </div>
+        )}
 
-        {/* ── Upcoming Hearings ── */}
-        <section>
+        {activeTab === 'hearings' && (
+          <div className="space-y-6 animate-in fade-in duration-500">
+            {/* ── Upcoming Hearings ── */}
+            <section>
           <SectionHeader icon={<Calendar size={14} />} title="Upcoming Hearings" count={upcoming.length} />
           {upcoming.length === 0 ? (
             <EmptyState message="No upcoming hearings scheduled." />
@@ -433,9 +437,61 @@ export default function DashboardPage() {
             </div>
           )}
         </section>
+            
+            {/* ── Past Hearings ── */}
+            {past.length > 0 && (
+          <section>
+            <SectionHeader icon={<CheckCircle2 size={14} />} title="Past Hearings" count={past.length} />
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+              <div className="divide-y divide-slate-50">
+                {past.slice(0, 8).map((h: any) => (
+                  <div key={h.id} className="flex items-center justify-between px-5 py-3.5 hover:bg-slate-50/60 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <span className="w-2 h-2 rounded-full bg-slate-300 shrink-0" />
+                      <p className="text-sm font-semibold text-slate-600">{fmt(h.hearing_date)}</p>
+                      {h.hearing_stage && <span className="text-[10px] text-slate-400 font-semibold hidden sm:inline">{h.hearing_stage}</span>}
+                    </div>
+                    <span className="text-xs font-mono text-slate-400 bg-slate-50 border border-slate-100 px-2 py-0.5 rounded">{h.case_number}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+          </div>
+        )}
 
-        {/* ── Invoices / Challans ── */}
-        <section>
+        {activeTab === 'financials' && (
+          <div className="space-y-6 animate-in fade-in duration-500">
+            {/* ── Financial summary cards ── */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <StatCard
+            icon={<FileText />}
+            label="Total Billed"
+            value={`Rs. ${totalBilled.toLocaleString()}`}
+            sub={`${invoices.length} challans issued`}
+            color="bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-blue-500/20"
+          />
+          <StatCard
+            icon={<Wallet />}
+            label="Total Paid"
+            value={`Rs. ${totalPaid.toLocaleString()}`}
+            sub={`${payments.length} payments recorded`}
+            color="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-emerald-500/20"
+          />
+          <StatCard
+            icon={<TrendingUp />}
+            label="Outstanding"
+            value={`Rs. ${outstanding.toLocaleString()}`}
+            sub={outstanding === 0 ? 'Fully settled ✓' : 'Balance remaining'}
+            color={outstanding === 0
+              ? "bg-white border border-slate-100 text-slate-800"
+              : "bg-gradient-to-br from-rose-500 to-rose-600 text-white shadow-rose-500/20"}
+          />
+        </div>
+            
+            {/* ── Invoices / Challans ── */}
+            <section>
           <SectionHeader icon={<FileText size={14} />} title="All Challans & Invoices" count={invoices.length} />
           {invoices.length === 0 ? (
             <EmptyState message="No challans issued yet." />
@@ -472,9 +528,9 @@ export default function DashboardPage() {
             </div>
           )}
         </section>
-
-        {/* ── Payment History ── */}
-        <section>
+            
+            {/* ── Payment History ── */}
+            <section>
           <SectionHeader icon={<CreditCard size={14} />} title="Payment History" count={payments.length} />
           {payments.length === 0 ? (
             <EmptyState message="No payments recorded yet." />
@@ -510,29 +566,11 @@ export default function DashboardPage() {
             </div>
           )}
         </section>
-
-        {/* ── Past Hearings ── */}
-        {past.length > 0 && (
-          <section>
-            <SectionHeader icon={<CheckCircle2 size={14} />} title="Past Hearings" count={past.length} />
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-              <div className="divide-y divide-slate-50">
-                {past.slice(0, 8).map((h: any) => (
-                  <div key={h.id} className="flex items-center justify-between px-5 py-3.5 hover:bg-slate-50/60 transition-colors">
-                    <div className="flex items-center gap-3">
-                      <span className="w-2 h-2 rounded-full bg-slate-300 shrink-0" />
-                      <p className="text-sm font-semibold text-slate-600">{fmt(h.hearing_date)}</p>
-                      {h.hearing_stage && <span className="text-[10px] text-slate-400 font-semibold hidden sm:inline">{h.hearing_stage}</span>}
-                    </div>
-                    <span className="text-xs font-mono text-slate-400 bg-slate-50 border border-slate-100 px-2 py-0.5 rounded">{h.case_number}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
+          </div>
         )}
 
         <p className="text-center text-[11px] text-slate-400 pb-6">
+
           This is a secure, read-only portal provided by Rahimullah Advocate.
           For details or edits, please contact the office directly.
         </p>

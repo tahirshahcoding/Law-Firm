@@ -57,22 +57,22 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 flex flex-col">
+    <div className="min-h-screen bg-slate-50 flex flex-col">
 
       {/* ── Top bar ── */}
-      <header className="flex items-center justify-between px-8 py-5">
-        <div className="flex items-center gap-2.5">
-          <div className="relative w-10 h-10 rounded-xl overflow-hidden flex-shrink-0">
+      <header className="flex items-center justify-between px-8 py-5 border-b border-slate-200/60 bg-white shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="relative w-10 h-10 rounded-xl overflow-hidden flex-shrink-0 border border-slate-100 shadow-sm">
             <Image src="/logo.png" alt="Rahimullah Advocate Logo" fill className="object-cover scale-[1.15]" sizes="40px" />
           </div>
           <div>
-            <p className="font-bold text-white text-sm leading-none">Rahimullah Advocate</p>
-            <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5">Client Portal</p>
+            <p className="font-bold text-slate-800 text-sm leading-none">Rahimullah Advocate</p>
+            <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5 font-semibold">Client Portal</p>
           </div>
         </div>
         <a
           href="https://lawsiteswat.vercel.app"
-          className="text-slate-500 hover:text-slate-300 text-xs transition-colors"
+          className="text-slate-500 hover:text-slate-800 text-xs font-medium transition-colors"
         >
           ← Back to website
         </a>
@@ -83,12 +83,12 @@ export default function LoginPage() {
         <div className="w-full max-w-sm">
 
           {/* Badge */}
-          <div className="flex flex-col items-center mb-10">
-            <div className="relative w-24 h-24 rounded-3xl shadow-2xl shadow-blue-900/60 mb-5 ring-4 ring-white/10 overflow-hidden">
-              <Image src="/logo.png" alt="Rahimullah Advocate Logo" fill className="object-cover scale-[1.15] drop-shadow-xl" sizes="96px" />
+          <div className="flex flex-col items-center mb-8">
+            <div className="relative w-24 h-24 rounded-3xl shadow-lg shadow-slate-200 mb-5 border border-slate-100 overflow-hidden bg-white">
+              <Image src="/logo.png" alt="Rahimullah Advocate Logo" fill className="object-cover scale-[1.15]" sizes="96px" />
             </div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">Client Portal Login</h1>
-            <p className="text-slate-400 text-sm mt-2 text-center">
+            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Client Portal Login</h1>
+            <p className="text-slate-500 text-sm mt-2 text-center">
               Sign in to view your case status and hearing schedule.
             </p>
           </div>
@@ -96,10 +96,10 @@ export default function LoginPage() {
           {/* Form */}
           <form
             onSubmit={handleLogin}
-            className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-7 space-y-5 shadow-2xl"
+            className="bg-white border border-slate-200 rounded-2xl p-7 space-y-5 shadow-xl shadow-slate-200/50"
           >
             {error && (
-              <div className="flex items-start gap-3 p-3.5 bg-rose-500/10 border border-rose-500/25 rounded-xl text-rose-300 text-sm">
+              <div className="flex items-start gap-3 p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-sm">
                 <ShieldAlert size={17} className="shrink-0 mt-0.5" />
                 <p>{error}</p>
               </div>
@@ -107,44 +107,44 @@ export default function LoginPage() {
 
             {/* Username */}
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
                 Client Username
               </label>
               <div className="relative">
-                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-600" size={17} />
+                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={17} />
                 <input
                   type="text"
                   required
                   value={form.username}
                   onChange={e => setForm({ ...form, username: e.target.value })}
                   placeholder="e.g. C-001"
-                  className="w-full bg-white/8 border border-white/10 text-white placeholder:text-slate-600 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition"
+                  className="w-full bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition"
                   suppressHydrationWarning
                 />
               </div>
-              <p className="text-[11px] text-slate-600 mt-1.5">Your username was provided by the office.</p>
+              <p className="text-[11px] text-slate-500 mt-1.5 font-medium">Your username was provided by the office.</p>
             </div>
 
             {/* Password */}
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-600" size={17} />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={17} />
                 <input
                   type={showPwd ? 'text' : 'password'}
                   required
                   value={form.password}
                   onChange={e => setForm({ ...form, password: e.target.value })}
                   placeholder="Your provided password"
-                  className="w-full bg-white/8 border border-white/10 text-white placeholder:text-slate-600 rounded-xl pl-10 pr-12 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition"
+                  className="w-full bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 rounded-xl pl-10 pr-12 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition"
                   suppressHydrationWarning
                 />
                 <button
                   type="button"
                   onClick={() => setShowPwd(!showPwd)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-600 hover:text-slate-400 transition-colors"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                   suppressHydrationWarning
                 >
                   {showPwd ? <EyeOff size={17} /> : <Eye size={17} />}
@@ -155,7 +155,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-blue-900/50 flex items-center justify-center gap-2 mt-1"
+              className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 mt-2"
               suppressHydrationWarning
             >
               {loading ? (
@@ -166,7 +166,7 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <p className="text-center text-slate-600 text-xs mt-6">
+          <p className="text-center text-slate-500 text-xs mt-6 font-medium">
             Forgot your credentials? Contact the office directly.
           </p>
         </div>
