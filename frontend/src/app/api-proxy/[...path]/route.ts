@@ -1,84 +1,57 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 
-const BACKEND_URL = 'https://tahirshahcoding-law-firm.hf.space/api';
+// Replace with your actual Hugging Face Space direct URL
+const HF_BASE_URL = 'https://tahirshahcoding-law-firm.hf.space/api';
 
-export async function GET(req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
-  return proxyRequest(req, await params);
+async function handleProxy(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+    // 1. Reconstruct the target path and query parameters
+    const resolvedParams = await params;
+    const path = resolvedParams.path?.join('/') || '';
+    const url = new URL(request.url);
+    const targetUrl = `${HF_BASE_URL}/${path}${url.search}`;
+
+    // 2. Clone headers and sanitize them for the external proxy
+    const headers = new Headers(request.headers);
+    
+    // CRITICAL: Delete origin, host, and referer. 
+    // This forces the fetch API to generate new ones matching the HF domain,
+    // preventing Hugging Face's Traefik proxy from dropping the request (which causes the 404s).
+    headers.delete('host');
+    headers.delete('origin');
+    headers.delete('referer');
+
+    try {
+        // 3. Forward the request to Django
+        const response = await fetch(targetUrl, {
+            method: request.method,
+            headers,
+            // Only attach body for methods that support it
+            body: ['GET', 'HEAD'].includes(request.method) ? undefined : await request.text(),
+            // Ensure we don't automatically follow redirects if Django sends them
+            redirect: 'manual', 
+        });
+
+        // 4. Return the exact response from Django to the browser
+        // This automatically includes the Set-Cookie header containing your HttpOnly JWT
+        return new Response(response.body, {
+            status: response.status,
+            statusText: response.statusText,
+            headers: response.headers,
+        });
+        
+    } catch (error) {
+        console.error('Proxy Error:', error);
+        return new Response(JSON.stringify({ error: 'Proxy failed' }), {
+            status: 502,
+            headers: { 'Content-Type': 'application/json' },
+        });
+    }
 }
 
-export async function POST(req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
-  return proxyRequest(req, await params);
-}
-
-export async function PUT(req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
-  return proxyRequest(req, await params);
-}
-
-export async function PATCH(req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
-  return proxyRequest(req, await params);
-}
-
-export async function DELETE(req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
-  return proxyRequest(req, await params);
-}
-
-export async function OPTIONS(req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
-  return proxyRequest(req, await params);
-}
-
-async function proxyRequest(req: NextRequest, params: { path: string[] }) {
-  const path = params.path?.join('/') ?? '';
-  const search = req.nextUrl.search ?? '';
-  const targetUrl = `${BACKEND_URL}/${path}/${search}`;
-
-  // Forward relevant headers but drop host/origin to avoid conflicts
-  const forwardHeaders: Record<string, string> = {
-    'Content-Type': req.headers.get('content-type') || 'application/json',
-  };
-
-  // Forward cookies so JWT auth works
-  const cookie = req.headers.get('cookie');
-  if (cookie) forwardHeaders['Cookie'] = cookie;
-
-  // Forward CSRF token if present
-  const csrf = req.headers.get('x-csrftoken');
-  if (csrf) forwardHeaders['X-CSRFToken'] = csrf;
-
-  let body: BodyInit | null = null;
-  const method = req.method.toUpperCase();
-  if (!['GET', 'HEAD', 'OPTIONS'].includes(method)) {
-    body = await req.text();
-  }
-
-  try {
-    const backendRes = await fetch(targetUrl, {
-      method,
-      headers: forwardHeaders,
-      body: body || undefined,
-    });
-
-    // Forward Set-Cookie headers from backend to client
-    const responseHeaders = new Headers();
-    const contentType = backendRes.headers.get('content-type');
-    if (contentType) responseHeaders.set('Content-Type', contentType);
-
-    // Forward ALL Set-Cookie headers (JWT tokens)
-    backendRes.headers.forEach((value, key) => {
-      if (key.toLowerCase() === 'set-cookie') {
-        responseHeaders.append('Set-Cookie', value);
-      }
-    });
-
-    const responseBody = await backendRes.text();
-
-    return new NextResponse(responseBody, {
-      status: backendRes.status,
-      headers: responseHeaders,
-    });
-  } catch (err: any) {
-    return NextResponse.json(
-      { error: 'Proxy error', detail: err.message },
-      { status: 502 }
-    );
-  }
-}
+// Export the handler for all necessary HTTP methods
+export const GET = handleProxy;
+export const POST = handleProxy;
+export const PUT = handleProxy;
+export const PATCH = handleProxy;
+export const DELETE = handleProxy;
+export const OPTIONS = handleProxy;
