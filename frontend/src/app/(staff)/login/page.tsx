@@ -18,24 +18,56 @@ export default function LoginPage() {
     setError('');
     setIsLoading(true);
 
+    let res: Response | null = null;
     try {
       // POST credentials — Django sets the httpOnly access_token cookie on success.
       // We never touch the token value in JavaScript.
-      const res = await fetch(`${API_BASE}/token/`, {
+      res = await fetch(`${API_BASE}/token/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
         credentials: 'include',  // required so the Set-Cookie header is accepted
       });
+    } catch (networkErr: any) {
+      // Network-level failure — CORS block, no internet, backend offline, etc.
+      setError(
+        `Cannot reach the server. This is likely a network or CORS issue — not wrong credentials. (${API_BASE})`
+      );
+      setIsLoading(false);
+      return;
+    }
 
-      if (!res.ok) {
-        throw new Error('Invalid credentials');
-      }
+    if (res.status === 401) {
+      setError('Wrong username or password. Please try again.');
+      setIsLoading(false);
+      return;
+    }
 
+    if (res.status === 429) {
+      setError('Too many login attempts. Please wait a minute and try again.');
+      setIsLoading(false);
+      return;
+    }
+
+    if (res.status >= 500) {
+      setError(`Server error (${res.status}). The backend may be starting up — please try again in a moment.`);
+      setIsLoading(false);
+      return;
+    }
+
+    if (!res.ok) {
+      let detail = '';
+      try { detail = (await res.json()).detail || ''; } catch {}
+      setError(`Login failed (${res.status})${detail ? ': ' + detail : ''}`);
+      setIsLoading(false);
+      return;
+    }
+
+    try {
       // Cookie is now set — login() fetches the user profile to populate context
       await login();
     } catch (err: any) {
-      setError(err.message || 'Failed to login');
+      setError('Logged in but failed to load your profile. Please refresh.');
       setIsLoading(false);
     }
   };
