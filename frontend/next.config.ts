@@ -16,11 +16,11 @@ const withPWA = withPWAInit({
     // These patterns are excluded from ALL SW caching/interception.
     // Without this, the SW intercepts GET /api/token/ repeatedly,
     // causing the 20+ request loop visible in DevTools.
-    navigateFallbackDenylist: [/^\/api\//],
+    navigateFallbackDenylist: [/^\/api\//, /^\/api-proxy\//],
     runtimeCaching: [
       {
         // Explicitly pass auth endpoints straight to the network — no cache.
-        urlPattern: /\/api\/(token|auth)\//,
+        urlPattern: /\/(api|api-proxy)\/(token|auth)\//,
         handler: "NetworkOnly",
         options: {
           cacheName: "auth-no-cache",
@@ -28,7 +28,7 @@ const withPWA = withPWAInit({
       },
       {
         // Cache the daily diary API responses
-        urlPattern: /\/api\/diary\/today\//,
+        urlPattern: /\/(api|api-proxy)\/diary\/today\//,
         handler: "NetworkFirst",
         options: {
           cacheName: "diary-today-cache",
@@ -41,7 +41,7 @@ const withPWA = withPWAInit({
       },
       {
         // Cache tasks API responses
-        urlPattern: /\/api\/tasks\//,
+        urlPattern: /\/(api|api-proxy)\/tasks\//,
         handler: "NetworkFirst",
         options: {
           cacheName: "tasks-cache",
@@ -54,7 +54,7 @@ const withPWA = withPWAInit({
       },
       {
         // Cache cases API responses
-        urlPattern: /\/api\/cases\//,
+        urlPattern: /\/(api|api-proxy)\/cases\//,
         handler: "NetworkFirst",
         options: {
           cacheName: "cases-cache",
