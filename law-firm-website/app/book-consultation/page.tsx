@@ -61,13 +61,13 @@ export default function BookConsultationPage() {
 
         <div className="relative z-10 max-w-4xl mx-auto text-center flex flex-col items-center pt-10">
           <div className="inline-flex items-center gap-2 bg-gold/20 border border-gold/50 px-4 py-1.5 text-gold text-xs font-bold tracking-widest uppercase mb-6 backdrop-blur-sm rounded-full">
-            <FileText size={16} /> Client Intake
+            <FileText size={16} /> Legal Consultation
           </div>
           <h1 className="font-serif text-5xl md:text-6xl font-bold mb-6 drop-shadow-lg leading-tight">
-            Secure Your <span className="text-gold">Representation.</span>
+            Request a <span className="text-gold">Consultation.</span>
           </h1>
           <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed drop-shadow-md">
-            Contact Rahimullah Advocate to schedule a confidential legal consultation. We provide immediate, strategic counsel for urgent and complex matters.
+            We invite you to contact Rahimullah Advocate to arrange a confidential legal consultation. Our chambers provide professional counsel across a broad range of civil, criminal, and corporate matters.
           </p>
         </div>
       </section>
@@ -81,7 +81,7 @@ export default function BookConsultationPage() {
           
           <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 border-b border-slate-100 pb-6 gap-4">
             <h2 className="font-serif text-3xl font-bold text-navy flex items-center gap-3">
-              Confidential Intake
+              Consultation Request Form
             </h2>
             <div className="flex items-center gap-2 text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100">
               <ShieldCheck size={16} /> SSL Encrypted Connection
@@ -93,15 +93,15 @@ export default function BookConsultationPage() {
               <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
                 <CheckCircle2 size={32} />
               </div>
-              <h3 className="font-serif text-2xl font-bold text-emerald-900 mb-3">Transmission Secure</h3>
+              <h3 className="font-serif text-2xl font-bold text-emerald-900 mb-3">Enquiry Received</h3>
               <p className="text-emerald-800 mb-8 max-w-md mx-auto">
-                Your consultation request has been securely transmitted to our partners. You will be contacted via your preferred method within 24 hours.
+                Your consultation request has been received and will be reviewed by our chambers. A member of our team will contact you within one business day to confirm your appointment.
               </p>
               <button 
                 onClick={() => setStatus('idle')}
                 className="px-6 py-3 bg-navy text-white font-bold hover:bg-gold transition-colors rounded-sm shadow-md hover:shadow-lg"
               >
-                Submit Additional Documents
+                Submit Another Enquiry
               </button>
             </div>
           ) : status === 'error' ? (
@@ -109,15 +109,15 @@ export default function BookConsultationPage() {
               <div className="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-6">
                 <AlertCircle size={32} />
               </div>
-              <h3 className="font-serif text-2xl font-bold text-rose-900 mb-3">Transmission Failed</h3>
+              <h3 className="font-serif text-2xl font-bold text-rose-900 mb-3">Submission Unsuccessful</h3>
               <p className="text-rose-700 mb-8 max-w-md mx-auto">
-                We could not deliver your request at this time. Please call us directly at <strong>+92 946 123456</strong> or try again in a few moments.
+                We were unable to process your request at this time. Kindly contact our office directly at <strong>+92 946 123456</strong> or attempt your submission again shortly.
               </p>
               <button 
                 onClick={() => setStatus('idle')}
                 className="px-6 py-3 bg-navy text-white font-bold hover:bg-rose-600 transition-colors rounded-sm shadow-md"
               >
-                Try Again
+                Retry Submission
               </button>
             </div>
           ) : (
@@ -132,7 +132,7 @@ export default function BookConsultationPage() {
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
                     className="w-full border-b-2 border-slate-300 px-0 py-3 focus:outline-none focus:border-gold bg-transparent transition-colors text-slate-800 placeholder-slate-400 font-medium"
-                    placeholder="Enter your full name"
+                    placeholder="As it appears on official documents"
                   />
                 </div>
                 <div className="group/input relative">
@@ -179,14 +179,14 @@ export default function BookConsultationPage() {
               </div>
 
               <div className="group/input relative pt-2">
-                <label htmlFor="message" className="block text-xs font-bold tracking-wider text-navy uppercase mb-2">Brief Description of Legal Matter *</label>
+                <label htmlFor="message" className="block text-xs font-bold tracking-wider text-navy uppercase mb-2">Summary of Legal Matter *</label>
                 <textarea 
                   id="message" 
                   rows={4}
                   required
                   value={formData.message}
                   onChange={(e) => setFormData({...formData, message: e.target.value})}
-                  placeholder="Please avoid sharing highly sensitive details until formal retention is established."
+                  placeholder="Please provide a brief summary of your legal matter. Kindly refrain from disclosing sensitive details until a formal attorney-client relationship has been established."
                   className="w-full border-2 border-slate-200 px-4 py-3 rounded-sm focus:outline-none focus:border-gold bg-slate-50 focus:bg-white transition-all text-slate-800 resize-none font-medium mt-1"
                 ></textarea>
               </div>
@@ -200,17 +200,17 @@ export default function BookConsultationPage() {
                   {status === 'submitting' ? (
                     <span className="flex items-center gap-2">
                       <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                      Encrypting & Sending...
+                      Submitting...
                     </span>
                   ) : (
                     <>
-                      Transmit Request <Send size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                      Submit Enquiry <Send size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                     </>
                   )}
                 </button>
                 <p className="text-xs text-slate-500 max-w-xs flex items-start gap-2">
                   <ShieldCheck size={16} className="text-gold flex-shrink-0" />
-                  Submitting this form does not establish an attorney-client relationship. All data is kept strictly confidential.
+                  Submission of this form does not constitute or establish an attorney-client relationship. All information provided is treated with strict confidentiality.
                 </p>
               </div>
             </form>
