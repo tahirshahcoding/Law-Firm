@@ -139,7 +139,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 # DYNAMIC STORAGE ENGINE (Local vs. Production)
 # ---------------------------------------------------------
 # Force local storage in DEBUG mode unless USE_S3 is explicitly 'True'
-USE_S3 = str(os.environ.get('USE_S3', '')).lower() == 'true'
+USE_S3 = os.environ.get('USE_S3', '').lower() == 'true'
 
 if USE_S3 and not DEBUG:
     # --- PRODUCTION (Render + Supabase S3) ---
