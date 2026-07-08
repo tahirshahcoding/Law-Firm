@@ -149,6 +149,7 @@ if USE_S3 and not DEBUG:
     AWS_S3_ENDPOINT_URL = os.environ.get('SUPABASE_S3_ENDPOINT')
     AWS_S3_REGION_NAME = os.environ.get('SUPABASE_S3_REGION')
 
+    AWS_S3_ADDRESSING_STYLE = "path"
     STORAGES = {
         "default": {
             "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
@@ -158,7 +159,6 @@ if USE_S3 and not DEBUG:
                 "bucket_name": AWS_STORAGE_BUCKET_NAME,
                 "endpoint_url": AWS_S3_ENDPOINT_URL,
                 "region_name": AWS_S3_REGION_NAME,
-                "addressing_style": "path",
             },
         },
         "staticfiles": {
