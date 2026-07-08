@@ -166,7 +166,6 @@ if USE_S3:
                 "bucket_name": AWS_STORAGE_BUCKET_NAME,
                 "endpoint_url": AWS_S3_ENDPOINT_URL,
                 "region_name": AWS_S3_REGION_NAME,
-                "client_config": AWS_S3_CLIENT_CONFIG,
             },
         },
         "staticfiles": {
