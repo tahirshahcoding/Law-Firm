@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { X, FolderOpen, Scale, Gavel, UserX, Coins, Search, Check } from 'lucide-react';
 import { API_BASE, apiFetch, safeJson } from '@/lib/api';
 import { sendWhatsApp, caseRegisteredMessage } from '@/lib/whatsapp';
-import { toast } from 'sonner';
+import { useUI } from '@/context/UIContext';
 
 interface AddCaseModalProps {
   isOpen: boolean;
@@ -25,6 +25,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
   });
   
   const [loading, setLoading] = useState(false);
+  const { toast, showLoading, hideLoading } = useUI();
   
   // Combobox specific state
   const [clients, setClients] = useState<any[]>([]);
@@ -76,6 +77,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
     }
 
     setLoading(true);
+    showLoading('Registering Case...');
 
     try {
       const res = await apiFetch(`${API_BASE}/cases/`, {
@@ -105,7 +107,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
           formData.judge,
         );
         sendWhatsApp(selectedClient.mobile_number, message);
-        toast.success('WhatsApp notification opened — press Send to deliver.', { icon: '📱' });
+        toast.success('📱 WhatsApp notification opened — press Send to deliver.');
       }
 
       onSuccess();
@@ -116,6 +118,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
       toast.error(err.message);
     } finally {
       setLoading(false);
+      hideLoading();
     }
   };
 

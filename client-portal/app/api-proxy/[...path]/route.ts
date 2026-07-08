@@ -27,7 +27,7 @@ async function handleProxy(request: NextRequest, { params }: { params: Promise<{
         const response = await fetch(targetUrl, {
             method: request.method,
             headers,
-            body: ['GET', 'HEAD'].includes(request.method) ? undefined : await request.text(),
+            body: ['GET', 'HEAD'].includes(request.method) ? undefined : await request.arrayBuffer(),
             redirect: 'manual', 
         });
 

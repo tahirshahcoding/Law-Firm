@@ -146,12 +146,17 @@ function AccountsContent() {
       return;
     }
 
+    const casePayments = payments.filter(p => p.case_number === challan.case_number);
+
     const message = challanMessage(
       challan.client_name,
       challan.invoice_number,
       challan.case_number,
       challan.amount,
+      challan.amount_paid || 0,
+      challan.balance_due !== undefined ? challan.balance_due : challan.amount,
       challan.due_date,
+      casePayments,
       challan.description || 'Professional Legal Services'
     );
 

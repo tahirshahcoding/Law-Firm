@@ -196,11 +196,14 @@ export function challanMessage(
   clientName: string,
   challanNumber: string,
   caseNumber: string,
-  amount: number,
+  totalAmount: number,
+  amountPaid: number,
+  balanceDue: number,
   dueDate: string,
+  payments: any[],
   description?: string,
 ): string {
-  return [
+  const lines = [
     `Assalam-o-Alaikum ${clientName},`,
     ``,
     `Please find your payment challan from *${FIRM_NAME}*.`,
@@ -209,19 +212,54 @@ export function challanMessage(
     `━━━━━━━━━━━━━━━━━━━━`,
     `📋 Challan No: *${challanNumber}*`,
     `📂 Case No: *${caseNumber}*`,
-    `💰 Amount Due: *Rs. ${Number(amount).toLocaleString()}*`,
-    `📅 Due Date: *${dueDate}*`,
-    description ? `📝 For: ${description}` : '',
-    `━━━━━━━━━━━━━━━━━━━━`,
-    ``,
-    `🏦 *Bank Details*`,
-    `Bank: Bank of Khyber`,
-    `A/C: 1029384756`,
-    `IBAN: PK99 BOK 1029 3847 56`,
-    ``,
-    `Please make the payment before the due date. Contact us for any queries.`,
+    `💰 Total Amount: *Rs. ${Number(totalAmount).toLocaleString()}*`,
+  ];
+
+  if (amountPaid > 0) {
+    lines.push(`✅ Amount Paid: *Rs. ${Number(amountPaid).toLocaleString()}*`);
+  }
+
+  lines.push(
+    `❗ Balance Due: *Rs. ${Number(balanceDue).toLocaleString()}*`,
+    `📅 Due Date: *${dueDate}*`
+  );
+
+  if (description) {
+    lines.push(`📝 For: ${description}`);
+  }
+  lines.push(`━━━━━━━━━━━━━━━━━━━━`);
+
+  if (payments && payments.length > 0) {
+    lines.push(``, `💸 *Payment History*`);
+    payments.forEach(p => {
+      const pDate = new Date(p.payment_date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      lines.push(`• ${pDate}: Rs. ${Number(p.amount_received).toLocaleString()}`);
+    });
+    lines.push(`━━━━━━━━━━━━━━━━━━━━`);
+  }
+
+  if (balanceDue > 0) {
+    lines.push(
+      ``,
+      `🏦 *Bank Details*`,
+      `Bank: Bank of Khyber`,
+      `A/C: 1029384756`,
+      `IBAN: PK99 BOK 1029 3847 56`,
+      ``,
+      `Please make the payment before the due date. Contact us for any queries.`
+    );
+  } else {
+    lines.push(
+      ``,
+      `Your balance is fully paid. Thank you!`
+    );
+  }
+
+  lines.push(
     ``,
     `Regards,`,
-    `${FIRM_NAME}`,
-  ].filter(Boolean).join('\n');
+    `${FIRM_NAME}`
+  );
+
+  return lines.filter(line => line !== undefined).join('\n');
 }
