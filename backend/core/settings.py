@@ -141,7 +141,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 # Force local storage in DEBUG mode unless USE_S3 is explicitly 'True'
 USE_S3 = os.environ.get('USE_S3', '').lower() == 'true'
 
-if USE_S3 and not DEBUG:
+if USE_S3:
     # --- PRODUCTION (Render + Supabase S3) ---
     AWS_ACCESS_KEY_ID = os.environ.get('SUPABASE_S3_ACCESS_KEY')
     AWS_SECRET_ACCESS_KEY = os.environ.get('SUPABASE_S3_SECRET_KEY')
