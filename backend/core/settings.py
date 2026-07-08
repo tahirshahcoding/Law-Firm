@@ -149,7 +149,14 @@ if USE_S3:
     AWS_S3_ENDPOINT_URL = os.environ.get('SUPABASE_S3_ENDPOINT')
     AWS_S3_REGION_NAME = os.environ.get('SUPABASE_S3_REGION')
 
-    AWS_S3_ADDRESSING_STYLE = "path"
+    import botocore.client
+    AWS_S3_CLIENT_CONFIG = botocore.client.Config(
+        signature_version='s3v4',
+        s3={'addressing_style': 'path'},
+        connect_timeout=10,
+        read_timeout=10,
+    )
+
     STORAGES = {
         "default": {
             "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
@@ -159,6 +166,7 @@ if USE_S3:
                 "bucket_name": AWS_STORAGE_BUCKET_NAME,
                 "endpoint_url": AWS_S3_ENDPOINT_URL,
                 "region_name": AWS_S3_REGION_NAME,
+                "client_config": AWS_S3_CLIENT_CONFIG,
             },
         },
         "staticfiles": {
