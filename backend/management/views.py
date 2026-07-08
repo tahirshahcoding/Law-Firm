@@ -214,8 +214,10 @@ class AdvocatesView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        users = User.objects.exclude(
-            client_profile__isnull=False
+        users = User.objects.filter(
+            Q(profile__role__in=['Admin', 'Staff', 'Associate']) |
+            Q(is_staff=True) |
+            Q(is_superuser=True)
         ).select_related('profile').distinct()
         serializer = UserSerializer(users, many=True, context={'request': request})
         return Response(serializer.data)
