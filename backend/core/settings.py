@@ -149,6 +149,12 @@ if USE_S3 and not DEBUG:
     AWS_S3_ENDPOINT_URL = os.environ.get('SUPABASE_S3_ENDPOINT')
     AWS_S3_REGION_NAME = os.environ.get('SUPABASE_S3_REGION')
 
+    # Parse custom domain for Supabase Public URLs
+    AWS_S3_CUSTOM_DOMAIN = None
+    if AWS_S3_ENDPOINT_URL and AWS_STORAGE_BUCKET_NAME:
+        domain = AWS_S3_ENDPOINT_URL.replace('https://', '').replace('http://', '').split('/')[0]
+        AWS_S3_CUSTOM_DOMAIN = f"{domain}/storage/v1/object/public/{AWS_STORAGE_BUCKET_NAME}"
+
     STORAGES = {
         "default": {
             "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
@@ -158,6 +164,8 @@ if USE_S3 and not DEBUG:
                 "bucket_name": AWS_STORAGE_BUCKET_NAME,
                 "endpoint_url": AWS_S3_ENDPOINT_URL,
                 "region_name": AWS_S3_REGION_NAME,
+                "addressing_style": "path",
+                "custom_domain": AWS_S3_CUSTOM_DOMAIN,
             },
         },
         "staticfiles": {
