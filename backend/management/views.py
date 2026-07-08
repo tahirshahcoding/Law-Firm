@@ -209,6 +209,18 @@ class AdminUserView(APIView):
             return _error(f"Invalid value: {e}")
 
 
+class AdvocatesView(APIView):
+    """Returns a list of users who can be assigned to cases as advocates."""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        users = User.objects.filter(
+            profile__role__in=['Admin', 'Staff', 'Associate']
+        ).select_related('profile')
+        serializer = UserSerializer(users, many=True, context={'request': request})
+        return Response(serializer.data)
+
+
 class AdminUserDetailView(APIView):
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser]

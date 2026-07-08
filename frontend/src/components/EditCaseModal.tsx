@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { X, FolderOpen, Scale, Gavel, UserX, Coins, Search, Check } from 'lucide-react';
+import { X, FolderOpen, Scale, Gavel, UserX, Coins, Search, Check, Users } from 'lucide-react';
 import { API_BASE, apiFetch, safeJson } from '@/lib/api';
 
 interface EditCaseModalProps {
@@ -15,6 +15,7 @@ interface EditCaseModalProps {
 export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: EditCaseModalProps) {
   const [formData, setFormData] = useState({
     client: '',
+    assigned_to: '',
     case_number: '',
     court: '',
     judge: '',
@@ -30,6 +31,7 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
   
   // Combobox specific state
   const [clients, setClients] = useState<any[]>([]);
+  const [advocates, setAdvocates] = useState<any[]>([]);
   const [isClientDropdownOpen, setIsClientDropdownOpen] = useState(false);
   const [clientSearchText, setClientSearchText] = useState('');
   const [selectedClientName, setSelectedClientName] = useState('');
@@ -48,6 +50,7 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
           if (caseData) {
             setFormData({
               client: caseData.client || '',
+              assigned_to: caseData.assigned_to || '',
               case_number: caseData.case_number || '',
               court: caseData.court || '',
               judge: caseData.judge || '',
@@ -66,6 +69,12 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
           }
         })
         .catch(err => console.error("Failed to load clients:", err));
+        
+      // Fetch advocates
+      apiFetch(`${API_BASE}/users/advocates/`)
+        .then(res => res.json())
+        .then(data => setAdvocates(Array.isArray(data) ? data : (data.results || [])))
+        .catch(err => console.error("Failed to load advocates:", err));
     }
   }, [isOpen, caseData]);
 
@@ -104,13 +113,19 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
     setLoading(true);
     setError(null);
 
+    const payload = { ...formData };
+    if (!payload.assigned_to) {
+      // @ts-ignore
+      payload.assigned_to = null;
+    }
+
     try {
       const res = await apiFetch(`${API_BASE}/cases/${caseData.id}/`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       const data = await safeJson(res);
@@ -191,6 +206,26 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
                 </div>
               </div>
             )}
+          </div>
+
+          {/* Advocate Selection */}
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Assigned Advocate</label>
+            <div className="relative">
+              <Users size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <select
+                value={formData.assigned_to}
+                onChange={(e) => setFormData({...formData, assigned_to: e.target.value})}
+                className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none"
+              >
+                <option value="">Senior Partner (Default)</option>
+                {advocates.map((adv: any) => (
+                  <option key={adv.id} value={adv.id}>
+                    {adv.first_name} {adv.last_name} {(!adv.first_name && !adv.last_name) ? adv.username : ''} ({adv.role})
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

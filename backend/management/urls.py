@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     ClientViewSet, CaseViewSet, HearingViewSet, HearingDocumentViewSet, TaskViewSet, InvoiceViewSet,
     AccountsLedgerView, DailyDiaryView, DashboardStatsView, AdminUserView, AdminUserDetailView, CurrentUserView,
-    CustomTokenObtainPairView, TokenRefreshCookieView, LogoutView,
+    CustomTokenObtainPairView, TokenRefreshCookieView, LogoutView, AdvocatesView,
     ClientPortalView, ClientResetPasswordView, ConsultationViewSet, AuditLogView, PaymentViewSet,
     PingView
 )
@@ -37,6 +37,7 @@ urlpatterns = [
     path('users/me/',    CurrentUserView.as_view(), name='users_me'),
     path('users/admin/', AdminUserView.as_view(),   name='users_admin'),
     path('users/admin/<int:pk>/', AdminUserDetailView.as_view(), name='users_admin_detail'),
+    path('users/advocates/', AdvocatesView.as_view(), name='users_advocates'),
 
     # ── Resource Endpoints ─────────────────────────────────────────────────────
     path('', include(router.urls)),
