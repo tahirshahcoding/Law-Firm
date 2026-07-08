@@ -569,6 +569,18 @@ class HearingDocumentViewSet(viewsets.ModelViewSet):
     permission_classes = [IsStaffUser]
     parser_classes = [MultiPartParser, FormParser]
 
+    def create(self, request, *args, **kwargs):
+        import traceback
+        try:
+            return super().create(request, *args, **kwargs)
+        except Exception as e:
+            error_details = traceback.format_exc()
+            print(error_details)
+            return Response(
+                {"error": str(e), "traceback": error_details},
+                status=500
+            )
+
     @action(detail=True, methods=['get'], url_path='presigned_url')
     def presigned_url(self, request, pk=None):
         """
