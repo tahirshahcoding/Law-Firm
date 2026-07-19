@@ -4,8 +4,8 @@ from .views import (
     ClientViewSet, CaseViewSet, HearingViewSet, HearingDocumentViewSet, TaskViewSet, InvoiceViewSet,
     AccountsLedgerView, DailyDiaryView, DashboardStatsView, AdminUserView, AdminUserDetailView, CurrentUserView,
     CustomTokenObtainPairView, TokenRefreshCookieView, LogoutView, AdvocatesView,
-    ClientPortalView, ClientResetPasswordView, ConsultationViewSet, AuditLogView, PaymentViewSet,
-    PingView
+    ClientPortalView, ClientResetPasswordView, ConsultationViewSet, AuditLogView, PaymentViewSet, ExpenseViewSet,
+    PingView, CaseTimelineViewSet, ConflictCheckView, CourtViewSet, JudgeViewSet, CalendarEventViewSet, NotificationViewSet, DeadlineViewSet
 )
 
 # Router handles the standard GET/POST/PUT/DELETE for all resource ViewSets
@@ -17,7 +17,14 @@ router.register(r'hearing-documents', HearingDocumentViewSet, basename='hearing-
 router.register(r'tasks',             TaskViewSet,            basename='task')
 router.register(r'invoices',          InvoiceViewSet,         basename='invoice')
 router.register(r'payments',          PaymentViewSet,         basename='payment')
+router.register(r'expenses',          ExpenseViewSet,         basename='expense')
 router.register(r'consultations',     ConsultationViewSet,    basename='consultation')
+router.register(r'case-timelines',    CaseTimelineViewSet,    basename='case-timeline')
+router.register(r'courts',            CourtViewSet,           basename='court')
+router.register(r'judges',            JudgeViewSet,           basename='judge')
+router.register(r'calendar-events',   CalendarEventViewSet,   basename='calendar-event')
+router.register(r'notifications',     NotificationViewSet,    basename='notification')
+router.register(r'deadlines',         DeadlineViewSet,        basename='deadline')
 
 urlpatterns = [
     # ── Staff Auth (cookie-based) ──────────────────────────────────────────────
@@ -40,6 +47,7 @@ urlpatterns = [
     path('users/advocates/', AdvocatesView.as_view(), name='users_advocates'),
 
     # ── Resource Endpoints ─────────────────────────────────────────────────────
+    path('cases/conflict-check/', ConflictCheckView.as_view(), name='conflict-check'),
     path('', include(router.urls)),
     path('accounts/ledger/',  AccountsLedgerView.as_view(),   name='accounts_ledger'),
     path('diary/today/',      DailyDiaryView.as_view(),        name='diary-today'),

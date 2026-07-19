@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import (
-    UserProfile, Client, Case, Hearing,
-    HearingDocument, Payment, Task, Invoice, ConsultationRequest
+    UserProfile, Client, Case, Hearing, Court,
+    HearingDocument, Payment, Task, Invoice, ConsultationRequest, Judge
 )
 
 
@@ -10,6 +10,19 @@ class UserProfileAdmin(admin.ModelAdmin):
     list_display = ('user', 'role')
     list_filter = ('role',)
     search_fields = ('user__username', 'user__email')
+
+
+@admin.register(Court)
+class CourtAdmin(admin.ModelAdmin):
+    list_display = ('name', 'type', 'district')
+    list_filter = ('type', 'district')
+    search_fields = ('name', 'district')
+
+@admin.register(Judge)
+class JudgeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'court', 'designation')
+    list_filter = ('court',)
+    search_fields = ('name', 'designation')
 
 
 @admin.register(Client)
@@ -22,7 +35,7 @@ class ClientAdmin(admin.ModelAdmin):
 @admin.register(Case)
 class CaseAdmin(admin.ModelAdmin):
     list_display = ('case_number', 'client', 'court', 'status', 'total_fee', 'created_at')
-    list_filter = ('status', 'district')
+    list_filter = ('status', 'court__district')
     search_fields = ('case_number', 'opponent_name', 'client__name')
     readonly_fields = ('created_at',)
 
@@ -42,8 +55,8 @@ class HearingDocumentAdmin(admin.ModelAdmin):
 
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
-    list_display = ('case', 'amount_received', 'payment_date')
-    search_fields = ('case__case_number', 'case__client__name')
+    list_display = ('invoice', 'amount_received', 'payment_date')
+    search_fields = ('invoice__invoice_number', 'invoice__case__case_number')
     readonly_fields = ('payment_date',)
 
 
@@ -56,10 +69,22 @@ class TaskAdmin(admin.ModelAdmin):
 
 @admin.register(Invoice)
 class InvoiceAdmin(admin.ModelAdmin):
-    list_display = ('invoice_number', 'case', 'amount', 'status', 'issue_date', 'due_date')
+    list_display = ('invoice_number', 'case', 'total_amount', 'status', 'issue_date', 'due_date')
     list_filter = ('status',)
     search_fields = ('invoice_number', 'case__case_number', 'case__client__name')
     readonly_fields = ('invoice_number', 'created_at')
+
+from .models import Expense, InvoiceItem
+
+@admin.register(Expense)
+class ExpenseAdmin(admin.ModelAdmin):
+    list_display = ('category', 'case', 'amount', 'date')
+    list_filter = ('category',)
+    search_fields = ('category', 'case__case_number')
+
+@admin.register(InvoiceItem)
+class InvoiceItemAdmin(admin.ModelAdmin):
+    list_display = ('invoice', 'description', 'amount')
 
 
 @admin.register(ConsultationRequest)

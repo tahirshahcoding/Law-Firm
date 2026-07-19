@@ -274,7 +274,7 @@ export default function EditHearingModal({ isOpen, onClose, onSuccess, hearingDa
             </button>
             <button
                type="submit"
-               className="px-6 py-2 rounded-lg font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-sm shadow-blue-600/20 flex items-center justify-center min-w-[100px]"
+               className="px-6 py-2 rounded-lg font-medium bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 duration-300 shadow-[0_4px_12px_rgba(37,99,235,0.25)] hover:shadow-[0_6px_16px_rgba(37,99,235,0.35)] hover:-translate-y-0.5 flex items-center justify-center min-w-[100px] text-white"
              >
                Save Changes
              </button>

@@ -9,7 +9,7 @@ import { useUI } from '@/context/UIContext';
 interface AddClientModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (client?: any) => void;
 }
 
 export default function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalProps) {
@@ -54,7 +54,7 @@ export default function AddClientModal({ isOpen, onClose, onSuccess }: AddClient
       const data = await safeJson(res);
       if (!res.ok) throw new Error(data.error || data.detail || 'Failed to create client');
       toast.success('Client profile created successfully.');
-      onSuccess();
+      onSuccess(data);
       // Show credentials instead of closing
       setCredentials({ portal_username: data.portal_username, portal_password: data.portal_password });
 
@@ -215,7 +215,7 @@ export default function AddClientModal({ isOpen, onClose, onSuccess }: AddClient
           <div className="pt-4 flex justify-end gap-3">
             <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg font-medium text-slate-600 hover:bg-slate-50 border border-slate-200 transition-colors">Cancel</button>
             <button type="submit"
-              className="px-6 py-2 rounded-lg font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-sm shadow-blue-600/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[100px]">
+              className="px-6 py-2 rounded-lg font-medium bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 duration-300 shadow-[0_4px_12px_rgba(37,99,235,0.25)] hover:shadow-[0_6px_16px_rgba(37,99,235,0.35)] hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[100px] text-white">
               Add Client
             </button>
           </div>

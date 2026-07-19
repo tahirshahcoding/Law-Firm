@@ -11,6 +11,7 @@ export default function Sidebar() {
     { name: 'Clients', href: '/clients' },
     { name: 'Cases', href: '/cases' },
     { name: 'Hearings', href: '/hearings' },
+    { name: 'Deadlines', href: '/deadlines' },
     { name: 'Daily Diary', href: '/diary' },
     { name: 'Accounts', href: '/accounts' },
   ];
@@ -18,7 +19,7 @@ export default function Sidebar() {
   return (
     <aside className="w-64 bg-white border-r border-slate-200 min-h-screen flex flex-col transition-all duration-300">
       <div className="p-6">
-        <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
+        <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
           Legal Office
         </h2>
       </div>

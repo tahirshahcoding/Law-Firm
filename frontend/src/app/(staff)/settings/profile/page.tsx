@@ -194,7 +194,7 @@ export default function ProfileSettingsPage() {
           <div className="pt-4 flex justify-end">
             <button
               type="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium shadow-sm transition-colors flex items-center gap-2 disabled:opacity-50"
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 duration-300 shadow-[0_4px_12px_rgba(37,99,235,0.25)] hover:shadow-[0_6px_16px_rgba(37,99,235,0.35)] hover:-translate-y-0.5 px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 disabled:opacity-50 text-white"
             >
               Save Changes
             </button>

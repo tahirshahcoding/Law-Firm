@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Plus, Search, FolderOpen, MoreVertical, Eye, Trash2, Edit2, Scale, UserX, Clock, Gavel, ChevronLeft, ChevronRight, Download } from 'lucide-react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { API_BASE, apiFetch } from '@/lib/api';
@@ -10,6 +11,8 @@ import EditCaseModal from '@/components/EditCaseModal';
 import { useAuth } from '@/context/AuthContext';
 import { useUI } from '@/context/UIContext';
 import { TableSkeleton } from '@/components/SkeletonLoaders';
+import { CASE_CATEGORIES, CASE_PRIORITIES, CASE_STATUSES } from '@/lib/constants';
+import StatusDropdown from '@/components/StatusDropdown';
 
 function CasesPageContent() {
   const searchParams = useSearchParams();
@@ -21,6 +24,10 @@ function CasesPageContent() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+
+  const [filterCategory, setFilterCategory] = useState('');
+  const [filterPriority, setFilterPriority] = useState('');
+  const [filterStatus, setFilterStatus] = useState('');
   
   // Modals state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -41,7 +48,10 @@ function CasesPageContent() {
     const query = new URLSearchParams({
       page: page.toString(),
       limit: '20',
-      ...(debouncedSearchTerm && { search: debouncedSearchTerm })
+      ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
+      ...(filterCategory && { category: filterCategory }),
+      ...(filterPriority && { priority: filterPriority }),
+      ...(filterStatus && { status: filterStatus }),
     });
 
     apiFetch(`${API_BASE}/cases/?${query.toString()}`)
@@ -61,18 +71,37 @@ function CasesPageContent() {
           setTotalCount(0);
           setTotalPages(1);
         }
-        setLoading(false);
       })
       .catch(err => {
-        console.error('Failed to fetch cases:', err);
-        setCases([]);
+        console.error(err);
+        toast.error('Could not load cases.');
+      })
+      .finally(() => {
         setLoading(false);
       });
   };
 
+  const handleInlineStatusUpdate = async (caseId: string, newStatus: string) => {
+    try {
+      const res = await apiFetch(`${API_BASE}/cases/${caseId}/`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+      });
+      if (res.ok) {
+        toast.success('Status updated');
+        fetchCases();
+      } else {
+        toast.error('Failed to update status');
+      }
+    } catch (err) {
+      toast.error('Could not update status');
+    }
+  };
+
   useEffect(() => {
     fetchCases();
-  }, [page, debouncedSearchTerm]);
+  }, [page, debouncedSearchTerm, filterCategory, filterPriority, filterStatus]);
 
 
   const handleDelete = async (id: string, caseNumber: string) => {
@@ -110,7 +139,7 @@ function CasesPageContent() {
   const exportToCSV = async () => {
     // Fetch all cases (no pagination) for export
     try {
-      const res = await apiFetch(`${API_BASE}/cases/?page_size=10000`);
+      const res = await apiFetch(`${API_BASE}/cases/?limit=10000`);
       const data = await res.json();
       const allCases = data.results || data;
       const headers = ['Case Number', 'Client', 'Opponent', 'Court', 'Judge', 'Status', 'Total Fee', 'Created'];
@@ -118,8 +147,8 @@ function CasesPageContent() {
         c.case_number,
         c.client_name || '',
         c.opponent_name,
-        c.court,
-        c.judge || '',
+        c.court_details?.name || '---',
+        c.court_details?.judge || '---',
         c.status || 'Active',
         c.total_fee,
         c.created_at ? new Date(c.created_at).toLocaleDateString('en-GB') : ''
@@ -159,30 +188,60 @@ function CasesPageContent() {
         {canAddCases && (
           <button
             onClick={() => setIsAddModalOpen(true)}
-            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-medium transition-all duration-200 shadow-sm shadow-blue-600/20 flex items-center justify-center gap-2"
+            className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 duration-300 shadow-[0_4px_12px_rgba(37,99,235,0.25)] hover:shadow-[0_6px_16px_rgba(37,99,235,0.35)] hover:-translate-y-0.5 px-5 py-2.5 rounded-xl font-medium flex items-center justify-center gap-2 text-white"
           >
             <Plus size={18} /> New Case
           </button>
         )}
       </div>
 
-      <div className="bg-white rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] border border-slate-100 overflow-hidden">
+      <div className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60 overflow-hidden">
         {/* Table Toolbar */}
-        <div className="p-4 border-b border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-slate-50/50">
-          <div className="relative w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-            <input 
-              type="text" 
-              placeholder="Search by Case No. or Opponent..." 
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setPage(1);
-              }}
-              className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
-            />
+        <div className="p-4 border-b border-slate-200/60 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-slate-50/50">
+          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto flex-1">
+            <div className="relative w-full sm:max-w-xs group">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={16} />
+              <input 
+                type="text" 
+                placeholder="Search by Case No. or Opponent..." 
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setPage(1);
+                }}
+                className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 shadow-sm hover:border-slate-300"
+              />
+            </div>
+            
+            <div className="flex gap-2 w-full sm:w-auto">
+              <select 
+                value={filterCategory} 
+                onChange={(e) => { setFilterCategory(e.target.value); setPage(1); }}
+                className="px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:border-blue-500 flex-1 sm:flex-none min-w-[120px]"
+              >
+                <option value="">All Categories</option>
+                {CASE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+              <select 
+                value={filterPriority} 
+                onChange={(e) => { setFilterPriority(e.target.value); setPage(1); }}
+                className="px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:border-blue-500 flex-1 sm:flex-none min-w-[110px]"
+              >
+                <option value="">All Priorities</option>
+                {CASE_PRIORITIES.map(p => <option key={p} value={p}>{p}</option>)}
+              </select>
+              <select 
+                value={filterStatus} 
+                onChange={(e) => { setFilterStatus(e.target.value); setPage(1); }}
+                className="px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:border-blue-500 flex-1 sm:flex-none min-w-[120px]"
+              >
+                <option value="">All Statuses</option>
+                {CASE_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
           </div>
-          <div className="flex items-center gap-3">
+
+          <div className="flex items-center gap-3 self-end md:self-auto">
             <button
               onClick={exportToCSV}
               className="inline-flex items-center gap-1.5 px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-sm font-medium rounded-lg border border-emerald-200 transition-colors whitespace-nowrap"
@@ -190,7 +249,7 @@ function CasesPageContent() {
               <Download size={14} /> Export Excel
             </button>
             <span className="text-sm text-slate-500 font-medium whitespace-nowrap">
-              {totalCount} Active
+              {totalCount} Results
             </span>
           </div>
         </div>
@@ -223,23 +282,38 @@ function CasesPageContent() {
                         <FolderOpen size={16} />
                       </div>
                       <div className="min-w-0">
-                        <p className="font-semibold text-slate-900">{caseItem.case_number}</p>
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <p className="font-semibold text-slate-900">{caseItem.case_number}</p>
+                          {caseItem.priority && (
+                            <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${
+                              caseItem.priority === 'Urgent' ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                              caseItem.priority === 'High' ? 'bg-orange-50 text-orange-700 border-orange-200' :
+                              'bg-slate-50 text-slate-500 border-slate-200'
+                            }`}>
+                              {caseItem.priority}
+                            </span>
+                          )}
+                        </div>
                         <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-0.5">
                           <UserX size={11} className="text-rose-400 shrink-0" />
                           <span className="truncate">vs. {caseItem.opponent_name}</span>
                         </div>
                         <div className="flex items-center gap-1.5 text-xs text-slate-600 mt-1 font-medium">
                           <Scale size={11} className="text-slate-400 shrink-0" />
-                          <span className="truncate">{caseItem.court}</span>
+                          <span className="truncate">{caseItem.court_details?.name || '---'}</span>
                         </div>
-                        <div className="mt-2">
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
-                            <Clock size={10} className="mr-1" /> {caseItem.status}
-                          </span>
+                      <div className="mt-2 flex items-center gap-2">
+                          <StatusDropdown 
+                            value={caseItem.status} 
+                            onChange={(newStatus) => handleInlineStatusUpdate(caseItem.id, newStatus)} 
+                          />
                         </div>
                       </div>
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
+                      <Link href={`/cases/${caseItem.id}`} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="View Case">
+                        <Eye size={17} />
+                      </Link>
                       <button 
                         onClick={() => handleEdit(caseItem)}
                         className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
@@ -263,25 +337,38 @@ function CasesPageContent() {
             {/* Desktop Table View */}
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left border-collapse min-w-[800px]">
-                <thead>
-                  <tr className="bg-white border-b border-slate-100">
-                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider w-1/3">Case Reference</th>
+                <thead className="bg-slate-50/80 backdrop-blur-md sticky top-0 z-10">
+                  <tr className="border-b border-slate-200/60">
+                    <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider w-1/3">Case Reference</th>
                     <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider w-1/3">Judiciary Details</th>
                     <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Status</th>
                     <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {cases.map((caseItem: any) => (
-                    <tr key={caseItem.id} className="hover:bg-slate-50/80 transition-colors duration-200 group">
+                <tbody className="divide-y divide-slate-100/80">
+                  {cases.map((caseItem: any, index: number) => (
+                    <tr 
+                      key={caseItem.id} 
+                      className="hover:bg-blue-50/40 transition-all duration-300 group border-l-4 border-transparent hover:border-blue-500 animate-in fade-in slide-in-from-bottom-2"
+                      style={{ animationFillMode: 'both', animationDelay: `${index * 40}ms` }}
+                    >
                       <td className="px-6 py-4">
                         <div className="flex items-start gap-3">
-                          <div className="w-10 h-10 shrink-0 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500">
+                          <div className="w-10 h-10 shrink-0 rounded-xl bg-gradient-to-br from-slate-100 to-slate-50 border border-slate-200 flex items-center justify-center text-slate-500 shadow-sm group-hover:shadow group-hover:border-blue-200 group-hover:text-blue-600 transition-all">
                             <FolderOpen size={18} />
                           </div>
                           <div>
                             <div className="flex items-center gap-2 mb-0.5">
                               <p className="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors cursor-pointer">{caseItem.case_number}</p>
+                              {caseItem.priority && (
+                                <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${
+                                  caseItem.priority === 'Urgent' ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                                  caseItem.priority === 'High' ? 'bg-orange-50 text-orange-700 border-orange-200' :
+                                  'bg-slate-50 text-slate-500 border-slate-200'
+                                }`}>
+                                  {caseItem.priority}
+                                </span>
+                              )}
                             </div>
                             <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-1 max-w-[200px]">
                               <UserX size={12} className="text-rose-400 shrink-0" />
@@ -294,27 +381,29 @@ function CasesPageContent() {
                         <div className="flex flex-col gap-1.5">
                           <div className="flex items-center gap-2 text-sm text-slate-700 font-medium">
                             <Scale size={14} className="text-slate-400 shrink-0" />
-                            <span className="truncate max-w-[250px]">{caseItem.court}</span>
+                            <span className="truncate max-w-[250px]">{caseItem.court_details?.name || '---'}</span>
                           </div>
                           <div className="flex items-center gap-2 text-xs text-slate-500">
                             <Gavel size={14} className="text-slate-400 shrink-0" />
-                            <span>{caseItem.judge}</span>
+                            <span>{caseItem.court_details?.judge || '---'}</span>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
-                          <Clock size={12} className="mr-1 mt-[1px]" /> {caseItem.status}
-                        </span>
+                        <StatusDropdown 
+                          value={caseItem.status} 
+                          onChange={(newStatus) => handleInlineStatusUpdate(caseItem.id, newStatus)} 
+                        />
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button 
+                          <Link 
+                            href={`/cases/${caseItem.id}`}
                             className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                             title="View Case"
                           >
                             <Eye size={18} />
-                          </button>
+                          </Link>
                           <button 
                             onClick={() => handleEdit(caseItem)}
                             className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"

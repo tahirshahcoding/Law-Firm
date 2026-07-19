@@ -124,24 +124,24 @@ export default function HearingsPage() {
         {canAddHearings && (
           <button
             onClick={() => setIsAddModalOpen(true)}
-            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-medium transition-all duration-200 shadow-sm shadow-blue-600/20 flex items-center justify-center gap-2"
+            className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 duration-300 shadow-[0_4px_12px_rgba(37,99,235,0.25)] hover:shadow-[0_6px_16px_rgba(37,99,235,0.35)] hover:-translate-y-0.5 px-5 py-2.5 rounded-xl font-medium flex items-center justify-center gap-2 text-white"
           >
             <Plus size={18} /> Schedule Hearing
           </button>
         )}
       </div>
 
-      <div className="bg-white rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] border border-slate-100 overflow-hidden">
+      <div className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60 overflow-hidden">
         {/* Toolbar */}
-        <div className="p-4 border-b border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-slate-50/50">
-          <div className="relative w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+        <div className="p-4 border-b border-slate-200/60 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-slate-50/50">
+          <div className="relative w-full group">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={16} />
             <input 
               type="text" 
               placeholder="Search by date (DD/MM/YYYY), Case No, or notes..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
+              className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 shadow-sm hover:border-slate-300"
             />
           </div>
           <div className="text-sm text-slate-500 font-medium whitespace-nowrap">
@@ -237,23 +237,27 @@ export default function HearingsPage() {
             {/* Desktop Table View */}
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left border-collapse min-w-[800px]">
-                <thead>
-                  <tr className="bg-white border-b border-slate-100">
-                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider w-1/5">Date</th>
+                <thead className="bg-slate-50/80 backdrop-blur-md sticky top-0 z-10">
+                  <tr className="border-b border-slate-200/60">
+                    <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider w-1/5">Date</th>
                     <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider w-1/5">Target Case</th>
                     <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider w-1/5">Advocate</th>
                     <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider w-1/4">Notes & Next Date</th>
                     <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {filteredHearings.map((h: any) => {
+                <tbody className="divide-y divide-slate-100/80">
+                  {filteredHearings.map((h: any, index: number) => {
                     const isToday = h.hearing_date === new Date().toISOString().split('T')[0];
                     return (
-                      <tr key={h.id} className={`hover:bg-slate-50/80 transition-colors duration-200 group ${isToday ? 'bg-rose-50/30' : ''}`}>
+                      <tr 
+                        key={h.id} 
+                        className={`hover:bg-blue-50/40 transition-all duration-300 group border-l-4 border-transparent hover:border-blue-500 animate-in fade-in slide-in-from-bottom-2 ${isToday ? 'bg-rose-50/30' : ''}`}
+                        style={{ animationFillMode: 'both', animationDelay: `${index * 40}ms` }}
+                      >
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
-                            <div className={`p-2.5 rounded-xl border ${isToday ? 'bg-rose-100 border-rose-200 text-rose-600' : 'bg-slate-100 border-slate-200 text-slate-500'}`}>
+                            <div className={`p-2.5 rounded-xl border shadow-sm group-hover:shadow group-hover:-translate-y-0.5 transition-all ${isToday ? 'bg-gradient-to-br from-rose-100 to-rose-50 border-rose-200 text-rose-600 ring-4 ring-rose-500/10' : 'bg-gradient-to-br from-slate-100 to-slate-50 border-slate-200 text-slate-500 group-hover:border-blue-200 group-hover:text-blue-600'}`}>
                               <Calendar size={18} />
                             </div>
                             <div>

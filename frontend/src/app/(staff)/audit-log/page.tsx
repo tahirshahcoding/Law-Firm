@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Activity, Clock, User, ShieldAlert, FileText, FileDown, Eye, FileSignature } from 'lucide-react';
+import { Activity, Clock, User, ShieldAlert, FileText, FileDown, Eye, FileSignature, DollarSign, Calendar as CalendarIcon, CheckSquare, MessageSquare } from 'lucide-react';
 import { API_BASE, apiFetch } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { TableSkeleton } from '@/components/SkeletonLoaders';
@@ -9,6 +9,7 @@ import { TableSkeleton } from '@/components/SkeletonLoaders';
 export default function AuditLogPage() {
   const [logs, setLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [period, setPeriod] = useState('all');
   const { user } = useAuth();
 
   useEffect(() => {
@@ -18,7 +19,7 @@ export default function AuditLogPage() {
     }
 
     setLoading(true);
-    apiFetch(`${API_BASE}/audit-log/`)
+    apiFetch(`${API_BASE}/audit-log/?period=${period}`)
       .then(res => res.json())
       .then(data => {
         setLogs(Array.isArray(data) ? data : []);
@@ -28,7 +29,7 @@ export default function AuditLogPage() {
         console.error('Failed to fetch audit logs:', err);
         setLoading(false);
       });
-  }, [user]);
+  }, [user, period]);
 
   const getActionColor = (action: string) => {
     switch (action.toLowerCase()) {
@@ -44,6 +45,13 @@ export default function AuditLogPage() {
       case 'case': return <FileText size={16} className="text-blue-500" />;
       case 'hearing': return <Eye size={16} className="text-purple-500" />;
       case 'invoice': return <FileSignature size={16} className="text-emerald-500" />;
+      case 'deadline': return <Clock size={16} className="text-amber-500" />;
+      case 'payment': return <DollarSign size={16} className="text-emerald-500" />;
+      case 'expense': return <DollarSign size={16} className="text-rose-500" />;
+      case 'task': return <CheckSquare size={16} className="text-blue-500" />;
+      case 'consultationrequest': return <MessageSquare size={16} className="text-purple-500" />;
+      case 'calendarevent': return <CalendarIcon size={16} className="text-amber-500" />;
+      case 'casetimeline': return <Activity size={16} className="text-slate-500" />;
       default: return <FileDown size={16} className="text-slate-500" />;
     }
   };
@@ -57,6 +65,18 @@ export default function AuditLogPage() {
             System Audit Log
           </h2>
           <p className="text-slate-500 mt-1 text-sm sm:text-base">Record of all system activities. Visible only to Admins.</p>
+        </div>
+        <div className="w-full sm:w-auto">
+          <select
+            value={period}
+            onChange={(e) => setPeriod(e.target.value)}
+            className="w-full sm:w-auto px-4 py-2 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none text-sm font-medium text-slate-700"
+          >
+            <option value="all">All Time</option>
+            <option value="daily">Last 24 Hours</option>
+            <option value="weekly">Last 7 Days</option>
+            <option value="monthly">Last 30 Days</option>
+          </select>
         </div>
       </div>
 

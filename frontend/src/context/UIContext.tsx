@@ -99,7 +99,7 @@ const variantConfig: Record<Variant, {
   default: {
     icon: <AlertCircle size={22} className="text-blue-500" />,
     iconBg: 'bg-blue-50 border border-blue-100',
-    confirmBtn: 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500/30 text-white',
+    confirmBtn: 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-[0_4px_12px_rgba(37,99,235,0.25)] hover:shadow-[0_6px_16px_rgba(37,99,235,0.35)] hover:-translate-y-0.5 focus:ring-blue-500/30',
   },
 };
 
@@ -136,6 +136,80 @@ const toastConfig: Record<ToastType, {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Sound Engine
+// ─────────────────────────────────────────────────────────────────────────────
+
+class SoundEngine {
+  private ctx: AudioContext | null = null;
+
+  private init() {
+    if (!this.ctx && typeof window !== 'undefined') {
+      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      if (AudioCtx) this.ctx = new AudioCtx();
+    }
+  }
+
+  private beep(freq1: number, freq2: number, type: OscillatorType, duration: number, vol: number) {
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+    
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    const filter = this.ctx.createBiquadFilter();
+
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq1, now);
+    if (freq2 !== freq1) {
+      osc.frequency.exponentialRampToValueAtTime(freq2, now + duration * 0.8);
+    }
+
+    // Low-pass filter for a softer, warmer tone
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(1500, now);
+    filter.frequency.exponentialRampToValueAtTime(300, now + duration);
+
+    // Smooth ADSR envelope
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(vol, now + duration * 0.1);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + duration);
+  }
+
+  play(type: string) {
+    this.init();
+    if (!this.ctx) return;
+    
+    if (this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+
+    if (type === 'success') {
+      // Gentle, uplifting double chime (A4 -> C#5)
+      this.beep(440, 440, 'sine', 0.2, 0.1);
+      setTimeout(() => this.beep(554.37, 554.37, 'sine', 0.4, 0.1), 120);
+    } else if (type === 'error' || type === 'danger') {
+      // Soft, deep bass thud
+      this.beep(200, 100, 'triangle', 0.35, 0.2);
+    } else if (type === 'warning') {
+      // Subtle double tap
+      this.beep(350, 350, 'triangle', 0.15, 0.1);
+      setTimeout(() => this.beep(350, 300, 'triangle', 0.3, 0.1), 150);
+    } else {
+      // Clean, single info chime (C5)
+      this.beep(523.25, 523.25, 'sine', 0.4, 0.1);
+    }
+  }
+}
+
+const sounds = new SoundEngine();
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Provider
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -148,6 +222,7 @@ export function UIProvider({ children }: { children: ReactNode }) {
     return new Promise((resolve) => {
       resolveRef.current = resolve;
       setDialog({ ...opts, visible: true });
+      sounds.play(opts.variant || 'default');
     });
   }, []);
 
@@ -167,6 +242,7 @@ export function UIProvider({ children }: { children: ReactNode }) {
   const addToast = useCallback((type: ToastType, message: string) => {
     const id = Math.random().toString(36).slice(2);
     setToasts(prev => [...prev, { id, type, message }]);
+    sounds.play(type);
     setTimeout(() => {
       setToasts(prev => prev.filter(t => t.id !== id));
     }, 4000);

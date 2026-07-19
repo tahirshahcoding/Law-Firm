@@ -173,7 +173,7 @@ export default function DailyDiaryPage() {
           <button 
             type="submit"
             disabled={!newTaskTitle.trim()}
-            className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-sm shadow-blue-600/20 flex items-center justify-center gap-2 shrink-0"
+            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 duration-300 shadow-[0_4px_12px_rgba(37,99,235,0.25)] hover:shadow-[0_6px_16px_rgba(37,99,235,0.35)] hover:-translate-y-0.5 disabled:bg-blue-400 disabled:cursor-not-allowed px-6 py-3 rounded-xl font-medium flex items-center justify-center gap-2 shrink-0 text-white"
           >
             <Plus size={20} /> Add Task
           </button>

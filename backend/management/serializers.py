@@ -1,7 +1,23 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Client, Case, Hearing, HearingDocument, Task, Payment, Invoice, UserProfile, ConsultationRequest
+from .models import Client, Case, Hearing, HearingDocument, Task, Payment, Invoice, UserProfile, ConsultationRequest, CaseTimeline, Court, Judge, CalendarEvent, Notification, Expense, InvoiceItem, Deadline
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+class CourtSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Court
+        fields = '__all__'
+
+class JudgeSerializer(serializers.ModelSerializer):
+    court_name = serializers.CharField(source='court.name', read_only=True)
+    class Meta:
+        model = Judge
+        fields = '__all__'
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = '__all__'
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
@@ -55,6 +71,12 @@ class UserSerializer(serializers.ModelSerializer):
                 return None
         return None
 
+class InvoiceItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InvoiceItem
+        fields = '__all__'
+        read_only_fields = ['invoice']
+
 class InvoiceSerializer(serializers.ModelSerializer):
     case_number   = serializers.CharField(source='case.case_number', read_only=True)
     opponent_name = serializers.CharField(source='case.opponent_name', read_only=True)
@@ -62,41 +84,48 @@ class InvoiceSerializer(serializers.ModelSerializer):
     client_name   = serializers.CharField(source='case.client.name', read_only=True)
     client_number = serializers.CharField(source='case.client.client_number', read_only=True)
     client_mobile = serializers.CharField(source='case.client.mobile_number', read_only=True)
-    court         = serializers.CharField(source='case.court', read_only=True)
-    amount_paid   = serializers.SerializerMethodField()
-    balance_due   = serializers.SerializerMethodField()
+    court         = serializers.CharField(source='case.court.name', read_only=True)
+    
+    amount        = serializers.DecimalField(source='total_amount', max_digits=10, decimal_places=2, read_only=True)
+    amount_paid   = serializers.DecimalField(source='paid_amount', max_digits=10, decimal_places=2, read_only=True)
+    balance_due   = serializers.DecimalField(source='balance', max_digits=10, decimal_places=2, read_only=True)
+    status        = serializers.CharField(source='dynamic_status', read_only=True)
+    last_payment_date = serializers.DateField(read_only=True)
+    days_overdue  = serializers.IntegerField(read_only=True)
+    items         = InvoiceItemSerializer(many=True, required=False)
 
     class Meta:
         model = Invoice
         fields = '__all__'
 
-    def _get_allocations_for_case(self, case_id):
-        # Cache results in the serializer instance to prevent N+1 queries during list serialization
-        if not hasattr(self, '_context_allocations_cache'):
-            self._context_allocations_cache = {}
-            
-        if case_id not in self._context_allocations_cache:
-            from django.db.models import Sum
-            invoices = list(Invoice.objects.filter(case_id=case_id).order_by('issue_date', 'created_at', 'id'))
-            total_paid = Payment.objects.filter(case_id=case_id).aggregate(total=Sum('amount_received'))['total'] or 0
-            
-            allocations = {}
-            for inv in invoices:
-                amt = min(inv.amount, total_paid)
-                total_paid -= amt
-                allocations[inv.id] = amt
-            self._context_allocations_cache[case_id] = allocations
-            
-        return self._context_allocations_cache[case_id]
+    def validate(self, data):
+        issue_date = data.get('issue_date')
+        due_date = data.get('due_date')
+        if issue_date and due_date and due_date < issue_date:
+            raise serializers.ValidationError({"due_date": "Due date cannot be before the issue date."})
+        return data
 
-    def get_amount_paid(self, obj):
-        allocations = self._get_allocations_for_case(obj.case_id)
-        return float(allocations.get(obj.id, 0))
+    def create(self, validated_data):
+        validated_data.pop('items', None)
+        items_data = self.initial_data.get('items', [])
+        invoice = Invoice.objects.create(**validated_data)
+        for item_data in items_data:
+            InvoiceItem.objects.create(invoice=invoice, **item_data)
+        return invoice
 
-    def get_balance_due(self, obj):
-        allocations = self._get_allocations_for_case(obj.case_id)
-        allocated = allocations.get(obj.id, 0)
-        return float(max(obj.amount - allocated, 0))
+    def update(self, instance, validated_data):
+        items_data = self.initial_data.get('items', [])
+        instance.issue_date = validated_data.get('issue_date', instance.issue_date)
+        instance.due_date = validated_data.get('due_date', instance.due_date)
+        instance.save()
+        
+        # Only update items if items array is explicitly provided
+        if hasattr(self, 'initial_data') and 'items' in getattr(self, 'initial_data', {}): # type: ignore
+            instance.items.all().delete()
+            for item_data in items_data:
+                InvoiceItem.objects.create(invoice=instance, **item_data)
+                
+        return instance
 
 
 class ClientSerializer(serializers.ModelSerializer):
@@ -107,6 +136,8 @@ class ClientSerializer(serializers.ModelSerializer):
 class CaseSerializer(serializers.ModelSerializer):
     client_name = serializers.CharField(source='client.name', read_only=True)
     client_mobile = serializers.CharField(source='client.mobile_number', read_only=True)
+    court_details = CourtSerializer(source='court', read_only=True)
+    judge_details = JudgeSerializer(source='judge', read_only=True)
 
     class Meta:
         model = Case
@@ -121,10 +152,10 @@ class HearingSerializer(serializers.ModelSerializer):
     case_number = serializers.CharField(source='case.case_number', read_only=True)
     opponent_name = serializers.CharField(source='case.opponent_name', read_only=True)
     documents = HearingDocumentSerializer(many=True, read_only=True)
-    district = serializers.CharField(source='case.district', read_only=True)
-    tehsil = serializers.CharField(source='case.tehsil', read_only=True)
-    court = serializers.CharField(source='case.court', read_only=True)
-    judge = serializers.CharField(source='case.judge', read_only=True)
+    district = serializers.CharField(source='case.court.district', read_only=True)
+    tehsil = serializers.CharField(source='case.court.tehsil', read_only=True)
+    court = serializers.CharField(source='case.court.name', read_only=True)
+    judge = serializers.CharField(source='case.court.judge', read_only=True)
     client_name = serializers.CharField(source='case.client.name', read_only=True)
     client_number = serializers.CharField(source='case.client.client_number', read_only=True)
     advocate_name = serializers.SerializerMethodField()
@@ -140,6 +171,8 @@ class HearingSerializer(serializers.ModelSerializer):
         return "Senior Partner"
 
     def get_previous_date(self, obj):
+        if hasattr(obj, 'annotated_previous_date'):
+            return obj.annotated_previous_date
         from .models import Hearing
         prev_hearing = Hearing.objects.filter(
             case=obj.case,
@@ -153,14 +186,62 @@ class TaskSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class PaymentSerializer(serializers.ModelSerializer):
-    case_number = serializers.CharField(source='case.case_number', read_only=True)
-    client_name = serializers.CharField(source='case.client.name', read_only=True)
+    invoice_number = serializers.CharField(source='invoice.invoice_number', read_only=True)
+    case_number = serializers.CharField(source='invoice.case.case_number', read_only=True)
+    client_name = serializers.CharField(source='invoice.case.client.name', read_only=True)
+    case = serializers.UUIDField(source='invoice.case.id', read_only=True)
 
     class Meta:
         model = Payment
         fields = '__all__'
 
+class ExpenseSerializer(serializers.ModelSerializer):
+    case_number = serializers.CharField(source='case.case_number', read_only=True, required=False)
+
+    class Meta:
+        model = Expense
+        fields = '__all__'
+
 class ConsultationRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = ConsultationRequest
+        fields = '__all__'
+
+class CaseTimelineSerializer(serializers.ModelSerializer):
+    actor_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = CaseTimeline
+        fields = '__all__'
+
+    def get_actor_name(self, obj):
+        if obj.actor:
+            return f"{obj.actor.first_name} {obj.actor.last_name}".strip() or obj.actor.username
+        return "System"
+
+class CalendarEventSerializer(serializers.ModelSerializer):
+    case_number = serializers.CharField(source='case.case_number', read_only=True)
+    client_name = serializers.CharField(source='client.name', read_only=True)
+    advocate_name = serializers.SerializerMethodField()
+    court_name = serializers.CharField(source='case.court.name', read_only=True)
+    judge_name = serializers.CharField(source='case.judge.name', read_only=True)
+
+    class Meta:
+        model = CalendarEvent
+        fields = '__all__'
+
+    def get_advocate_name(self, obj):
+        if obj.assigned_to:
+            return f"{obj.assigned_to.first_name} {obj.assigned_to.last_name}".strip() or obj.assigned_to.username
+        if obj.case and obj.case.assigned_to:
+            return f"{obj.case.assigned_to.first_name} {obj.case.assigned_to.last_name}".strip() or obj.case.assigned_to.username
+        return None
+
+class DeadlineSerializer(serializers.ModelSerializer):
+    case_number = serializers.CharField(source='case.case_number', read_only=True)
+    client_name = serializers.CharField(source='case.client.name', read_only=True)
+    assigned_user_name = serializers.CharField(source='assigned_to.username', read_only=True)
+
+    class Meta:
+        model = Deadline
         fields = '__all__'

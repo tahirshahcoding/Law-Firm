@@ -120,3 +120,34 @@ export async function safeJson(res: Response): Promise<any> {
   }
   return res.json();
 }
+
+/**
+ * Format DRF validation errors or other error payloads into a clean, human-readable string.
+ */
+export function parseApiError(data: any): string {
+  if (!data) return 'An unexpected error occurred.';
+  if (typeof data === 'string') return data;
+  if (data.detail) return data.detail;
+  if (data.error) return data.error;
+
+  if (typeof data === 'object') {
+    const messages: string[] = [];
+    for (const key in data) {
+      if (key === 'status_code') continue;
+      const val = data[key];
+      const cleanKey = key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+      
+      if (Array.isArray(val)) {
+        messages.push(`${cleanKey}: ${val.join(', ')}`);
+      } else if (typeof val === 'object' && val !== null) {
+        messages.push(`${cleanKey}: ${JSON.stringify(val)}`);
+      } else {
+        messages.push(`${cleanKey}: ${val}`);
+      }
+    }
+    if (messages.length > 0) {
+      return messages.join(' | ');
+    }
+  }
+  return JSON.stringify(data);
+}

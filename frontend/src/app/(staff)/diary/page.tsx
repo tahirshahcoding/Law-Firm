@@ -175,7 +175,7 @@ export default function DailyDiaryPage() {
             <button 
               type="submit"
               disabled={!newTaskTitle.trim()}
-              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-sm shadow-blue-600/20 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 duration-300 shadow-[0_4px_12px_rgba(37,99,235,0.25)] hover:shadow-[0_6px_16px_rgba(37,99,235,0.35)] hover:-translate-y-0.5 px-6 py-3 rounded-xl font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-white"
             >
               <Plus size={18} /> Add
             </button>
@@ -195,13 +195,13 @@ export default function DailyDiaryPage() {
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="font-bold text-lg text-slate-900">{h.case?.case_number}</span>
-                          <span className="text-sm font-medium text-slate-500">vs {h.case?.opponent_name}</span>
+                          <span className="font-bold text-lg text-slate-900">{h.case_number}</span>
+                          <span className="text-sm font-medium text-slate-500">vs {h.opponent_name}</span>
                         </div>
                         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-slate-600">
-                          <span className="flex items-center gap-1.5"><Scale size={14} className="text-slate-400" /> {h.case?.court}</span>
+                          <span className="flex items-center gap-1.5"><Scale size={14} className="text-slate-400" /> {h.court}</span>
                           <span className="hidden sm:inline text-slate-300">•</span>
-                          <span className="flex items-center gap-1.5"><FolderOpen size={14} className="text-slate-400" /> {h.case?.judge}</span>
+                          <span className="flex items-center gap-1.5"><FolderOpen size={14} className="text-slate-400" /> {h.judge}</span>
                         </div>
                       </div>
                       {h.notes && (

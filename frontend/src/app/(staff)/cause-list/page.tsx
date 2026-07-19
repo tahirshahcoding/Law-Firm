@@ -248,7 +248,7 @@ export default function CauseListPage() {
               </button>
               <button
                 type="submit"
-                className="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl text-sm font-medium transition-all shadow-sm shadow-blue-600/10 flex items-center justify-center gap-1.5"
+                className="flex-1 sm:flex-none bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 duration-300 shadow-[0_4px_12px_rgba(37,99,235,0.25)] hover:shadow-[0_6px_16px_rgba(37,99,235,0.35)] hover:-translate-y-0.5 px-5 py-2 rounded-xl text-sm font-medium flex items-center justify-center gap-1.5 text-white"
               >
                 <Search size={14} /> Search
               </button>

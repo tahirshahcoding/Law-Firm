@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, FolderOpen, Scale, Gavel, UserX, Coins, Search, Check, Users } from 'lucide-react';
 import { API_BASE, apiFetch, safeJson } from '@/lib/api';
+import { useDebounce } from '@/hooks/useDebounce';
+import { CASE_CATEGORIES, CASE_PRIORITIES, CASE_STATUSES } from '@/lib/constants';
 
 interface EditCaseModalProps {
   isOpen: boolean;
@@ -18,12 +20,11 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
     assigned_to: '',
     case_number: '',
     court: '',
-    judge: '',
     opponent_name: '',
     total_fee: '',
-    status: 'Active',
-    district: '',
-    tehsil: ''
+    status: 'Case Accepted',
+    category: 'Civil',
+    priority: 'Medium'
   });
   
   const [loading, setLoading] = useState(false);
@@ -32,10 +33,46 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
   // Combobox specific state
   const [clients, setClients] = useState<any[]>([]);
   const [advocates, setAdvocates] = useState<any[]>([]);
+  const [courts, setCourts] = useState<any[]>([]);
   const [isClientDropdownOpen, setIsClientDropdownOpen] = useState(false);
   const [clientSearchText, setClientSearchText] = useState('');
   const [selectedClientName, setSelectedClientName] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
+  
+  const [conflictWarning, setConflictWarning] = useState<any>(null);
+  const debouncedOpponentName = useDebounce(formData.opponent_name, 500);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const checkConflict = async () => {
+      const q = debouncedOpponentName;
+      if (!q || q.length < 3) {
+        setConflictWarning(null);
+        return;
+      }
+      try {
+        const res = await apiFetch(`${API_BASE}/cases/conflict-check/?q=${encodeURIComponent(q)}`, {
+          signal: controller.signal
+        });
+        const data = await res.json();
+        // Ignore the case being edited itself in the opponents list
+        if (data.opponents) {
+          data.opponents = data.opponents.filter((o: any) => o.id !== caseData?.id);
+        }
+        if ((data.clients && data.clients.length > 0) || (data.opponents && data.opponents.length > 0)) {
+          setConflictWarning(data);
+        } else {
+          setConflictWarning(null);
+        }
+      } catch (err: any) {
+        if (err.name !== 'AbortError') {
+          console.error(err);
+        }
+      }
+    };
+    checkConflict();
+    return () => controller.abort();
+  }, [debouncedOpponentName, caseData?.id]);
 
   useEffect(() => {
     if (isOpen) {
@@ -53,12 +90,11 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
               assigned_to: caseData.assigned_to || '',
               case_number: caseData.case_number || '',
               court: caseData.court || '',
-              judge: caseData.judge || '',
               opponent_name: caseData.opponent_name || '',
               total_fee: caseData.total_fee || '',
-              status: caseData.status || 'Active',
-              district: caseData.district || '',
-              tehsil: caseData.tehsil || ''
+              status: caseData.status || 'Case Accepted',
+              category: caseData.category || 'Civil',
+              priority: caseData.priority || 'Medium'
             });
             
             // Sync client display name
@@ -70,11 +106,15 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
         })
         .catch(err => console.error("Failed to load clients:", err));
         
-      // Fetch advocates
       apiFetch(`${API_BASE}/users/advocates/`)
         .then(res => res.json())
         .then(data => setAdvocates(Array.isArray(data) ? data : (data.results || [])))
         .catch(err => console.error("Failed to load advocates:", err));
+        
+      apiFetch(`${API_BASE}/courts/?limit=1000`)
+        .then(res => res.json())
+        .then(data => setCourts(Array.isArray(data) ? data : (data.results || [])))
+        .catch(err => console.error("Failed to load courts:", err));
     }
   }, [isOpen, caseData]);
 
@@ -228,6 +268,39 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
             </div>
           </div>
 
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Category</label>
+              <select
+                value={formData.category}
+                onChange={(e) => setFormData({...formData, category: e.target.value})}
+                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+              >
+                {CASE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Priority</label>
+              <select
+                value={formData.priority}
+                onChange={(e) => setFormData({...formData, priority: e.target.value})}
+                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+              >
+                {CASE_PRIORITIES.map(p => <option key={p} value={p}>{p}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Status</label>
+              <select
+                value={formData.status}
+                onChange={(e) => setFormData({...formData, status: e.target.value})}
+                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+              >
+                {CASE_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Case Number / FIR</label>
@@ -251,6 +324,7 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
                 <input
                   type="number"
                   step="0.01"
+                  min="0.01"
                   required
                   value={formData.total_fee}
                   onChange={(e) => setFormData({...formData, total_fee: e.target.value})}
@@ -261,56 +335,23 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">District (Optional)</label>
-              <input
-                type="text"
-                value={formData.district}
-                onChange={(e) => setFormData({...formData, district: e.target.value})}
-                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
-                placeholder="e.g. Swat"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Tehsil (Optional)</label>
-              <input
-                type="text"
-                value={formData.tehsil}
-                onChange={(e) => setFormData({...formData, tehsil: e.target.value})}
-                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
-                placeholder="e.g. Kabal"
-              />
-            </div>
-          </div>
-
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">Court Name / Location</label>
             <div className="relative">
               <Scale size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
+              <select
                 required
                 value={formData.court}
                 onChange={(e) => setFormData({...formData, court: e.target.value})}
-                className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
-                placeholder="High Court of Justice"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Presiding Judge</label>
-            <div className="relative">
-              <Gavel size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                required
-                value={formData.judge}
-                onChange={(e) => setFormData({...formData, judge: e.target.value})}
-                className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
-                placeholder="Honourable Justice Smith"
-              />
+                className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none"
+              >
+                <option value="">Select Court...</option>
+                {courts.map(c => (
+                  <option key={c.id} value={c.id}>
+                    {c.name} ({c.type}) - {c.judge} {c.district ? `[${c.district}]` : ''}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
@@ -327,6 +368,47 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
                 placeholder="Defendant / Respondent Name"
               />
             </div>
+            
+            {conflictWarning && (
+              <div className="mt-3 p-4 bg-orange-50 border border-orange-200 rounded-xl">
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5"><Scale size={18} className="text-orange-500" /></div>
+                  <div>
+                    <h4 className="text-sm font-bold text-orange-800">Potential Conflict of Interest Detected</h4>
+                    <p className="text-xs text-orange-700 mt-1 mb-2">This opponent name closely matches existing records in the firm's database:</p>
+                    
+                    {conflictWarning.clients?.length > 0 && (
+                      <div className="mb-2">
+                        <span className="text-xs font-semibold text-orange-800 uppercase tracking-wider block mb-1">Matching Clients</span>
+                        <ul className="space-y-1">
+                          {conflictWarning.clients.map((c: any) => (
+                            <li key={c.id} className="text-xs text-orange-700 flex items-center gap-1.5 before:content-['•'] before:text-orange-400">
+                              <span className="font-semibold">{c.name}</span>
+                              <span className="opacity-75">({c.client_number || 'No ID'}, CNIC: {c.cnic})</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    
+                    {conflictWarning.opponents?.length > 0 && (
+                      <div>
+                        <span className="text-xs font-semibold text-orange-800 uppercase tracking-wider block mb-1">Matching Opponents</span>
+                        <ul className="space-y-1">
+                          {conflictWarning.opponents.map((o: any) => (
+                            <li key={o.id} className="text-xs text-orange-700 flex items-center gap-1.5 before:content-['•'] before:text-orange-400">
+                              <span className="font-semibold">{o.opponent_name}</span>
+                              <span className="opacity-75">(in case {o.case_number})</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+            
           </div>
 
           <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 mt-6">
@@ -340,7 +422,7 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2 rounded-lg font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-sm shadow-blue-600/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[100px]"
+              className="px-6 py-2 rounded-lg font-medium bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 duration-300 shadow-[0_4px_12px_rgba(37,99,235,0.25)] hover:shadow-[0_6px_16px_rgba(37,99,235,0.35)] hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[100px] text-white"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>

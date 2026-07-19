@@ -5,6 +5,9 @@ import { X, FolderOpen, Scale, Gavel, UserX, Coins, Search, Check, Users } from 
 import { API_BASE, apiFetch, safeJson } from '@/lib/api';
 import { sendWhatsApp, caseRegisteredMessage } from '@/lib/whatsapp';
 import { useUI } from '@/context/UIContext';
+import { useDebounce } from '@/hooks/useDebounce';
+import { CASE_CATEGORIES, CASE_PRIORITIES, CASE_STATUSES } from '@/lib/constants';
+import AddClientModal from './AddClientModal';
 
 interface AddCaseModalProps {
   isOpen: boolean;
@@ -18,11 +21,12 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
     assigned_to: '',
     case_number: '',
     court: '',
-    judge: '',
     opponent_name: '',
     total_fee: '',
-    district: '',
-    tehsil: ''
+    category: 'Civil',
+    priority: 'Medium',
+    status: 'Case Accepted',
+    judge: ''
   });
   
   const [loading, setLoading] = useState(false);
@@ -31,23 +35,66 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
   // Combobox specific state
   const [clients, setClients] = useState<any[]>([]);
   const [advocates, setAdvocates] = useState<any[]>([]);
+  const [courts, setCourts] = useState<any[]>([]);
+  const [judges, setJudges] = useState<any[]>([]);
   const [isClientDropdownOpen, setIsClientDropdownOpen] = useState(false);
   const [clientSearchText, setClientSearchText] = useState('');
   const [selectedClientName, setSelectedClientName] = useState('');
+  const [isAddClientOpen, setIsAddClientOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  
+  const [conflictWarning, setConflictWarning] = useState<any>(null);
+  const debouncedOpponentName = useDebounce(formData.opponent_name, 500);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const checkConflict = async () => {
+      const q = debouncedOpponentName;
+      if (!q || q.length < 3) {
+        setConflictWarning(null);
+        return;
+      }
+      try {
+        const res = await apiFetch(`${API_BASE}/cases/conflict-check/?q=${encodeURIComponent(q)}`, {
+          signal: controller.signal
+        });
+        const data = await res.json();
+        if ((data.clients && data.clients.length > 0) || (data.opponents && data.opponents.length > 0)) {
+          setConflictWarning(data);
+        } else {
+          setConflictWarning(null);
+        }
+      } catch (err: any) {
+        if (err.name !== 'AbortError') {
+          console.error(err);
+        }
+      }
+    };
+    checkConflict();
+    return () => controller.abort();
+  }, [debouncedOpponentName]);
 
   useEffect(() => {
     if (isOpen) {
-      apiFetch(`${API_BASE}/clients/?page_size=1000`)
+      apiFetch(`${API_BASE}/clients/?limit=1000`)
         .then(res => res.json())
         .then(data => setClients(Array.isArray(data) ? data : (data.results || [])))
         .catch(err => console.error("Failed to load clients:", err));
         
-      // Fetch advocates
       apiFetch(`${API_BASE}/users/advocates/`)
         .then(res => res.json())
         .then(data => setAdvocates(Array.isArray(data) ? data : (data.results || [])))
         .catch(err => console.error("Failed to load advocates:", err));
+        
+      apiFetch(`${API_BASE}/courts/?limit=1000`)
+        .then(res => res.json())
+        .then(data => setCourts(Array.isArray(data) ? data : (data.results || [])))
+        .catch(err => console.error("Failed to load courts:", err));
+        
+      apiFetch(`${API_BASE}/judges/?limit=1000`)
+        .then(res => res.json())
+        .then(data => setJudges(Array.isArray(data) ? data : (data.results || [])))
+        .catch(err => console.error("Failed to load judges:", err));
     }
   }, [isOpen]);
 
@@ -74,6 +121,26 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
     setSelectedClientName(`${client.client_number ? client.client_number + ' - ' : ''}${client.name}`);
     setIsClientDropdownOpen(false);
     setClientSearchText('');
+  };
+
+  const handleClientSuccess = (newClient?: any) => {
+    // Refresh clients list
+    apiFetch(`${API_BASE}/clients/?limit=1000`)
+      .then(res => res.json())
+      .then(data => {
+        const results = Array.isArray(data) ? data : (data.results || []);
+        setClients(results);
+        
+        // Try to automatically select the newly created client
+        if (newClient && newClient.id) {
+            selectClient(newClient);
+        } else if (clientSearchText) {
+            // Fallback: see if we can find one matching the search
+            const match = results.find(c => c.name.toLowerCase().includes(clientSearchText.toLowerCase()));
+            if (match) selectClient(match);
+        }
+      })
+      .catch(err => console.error("Failed to refresh clients:", err));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -111,20 +178,22 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
 
       // Auto-send WhatsApp notification to the client
       const selectedClient = clients.find((c: any) => c.id === formData.client);
+      const selectedCourtObj = courts.find((c: any) => c.id === formData.court);
+      
       if (selectedClient?.mobile_number) {
         const message = caseRegisteredMessage(
           selectedClient.name,
           formData.case_number,
           formData.opponent_name,
-          formData.court,
-          formData.judge,
+          selectedCourtObj?.name || formData.court,
+          selectedCourtObj?.judge || 'Presiding Judge',
         );
         sendWhatsApp(selectedClient.mobile_number, message);
         toast.success('📱 WhatsApp notification opened — press Send to deliver.');
       }
 
       onSuccess();
-      setFormData({ client: '', assigned_to: '', case_number: '', court: '', judge: '', opponent_name: '', total_fee: '', district: '', tehsil: '' });
+      setFormData({ client: '', assigned_to: '', case_number: '', court: '', judge: '', opponent_name: '', total_fee: '', category: 'Civil', priority: 'Medium', status: 'Case Accepted' });
       setSelectedClientName('');
       onClose();
     } catch (err: any) {
@@ -174,7 +243,19 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
                 </div>
                 <div className="max-h-48 overflow-y-auto">
                   {filteredClients.length === 0 ? (
-                    <div className="p-3 text-sm text-slate-500 text-center">No clients found matching '{clientSearchText}'</div>
+                    <div className="p-3 text-sm text-slate-500 text-center flex flex-col items-center gap-2">
+                      <p>No clients found matching '{clientSearchText}'</p>
+                      <button 
+                        type="button"
+                        onClick={() => {
+                          setIsClientDropdownOpen(false);
+                          setIsAddClientOpen(true);
+                        }}
+                        className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg font-medium text-xs transition-colors"
+                      >
+                        + Create New Client
+                      </button>
+                    </div>
                   ) : (
                     filteredClients.map(c => (
                       <div 
@@ -215,6 +296,39 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
             </div>
           </div>
 
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Category</label>
+              <select
+                value={formData.category}
+                onChange={(e) => setFormData({...formData, category: e.target.value})}
+                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+              >
+                {CASE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Priority</label>
+              <select
+                value={formData.priority}
+                onChange={(e) => setFormData({...formData, priority: e.target.value})}
+                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+              >
+                {CASE_PRIORITIES.map(p => <option key={p} value={p}>{p}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Initial Status</label>
+              <select
+                value={formData.status}
+                onChange={(e) => setFormData({...formData, status: e.target.value})}
+                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+              >
+                {CASE_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Case Number / FIR</label>
@@ -238,6 +352,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
                 <input
                   type="number"
                   step="0.01"
+                  min="0.01"
                   required
                   value={formData.total_fee}
                   onChange={(e) => setFormData({...formData, total_fee: e.target.value})}
@@ -250,54 +365,44 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">District (Optional)</label>
-              <input
-                type="text"
-                value={formData.district}
-                onChange={(e) => setFormData({...formData, district: e.target.value})}
-                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
-                placeholder="e.g. Swat"
-              />
+              <label className="block text-sm font-medium text-slate-700 mb-1">Court Name / Location</label>
+              <div className="relative">
+                <Scale size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <select
+                  required
+                  value={formData.court}
+                  onChange={(e) => setFormData({...formData, court: e.target.value, judge: ''})}
+                  className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none"
+                >
+                  <option value="">Select Court...</option>
+                  {courts.map(c => (
+                    <option key={c.id} value={c.id}>
+                      {c.name} ({c.type}) {c.district ? `[${c.district}]` : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Tehsil (Optional)</label>
-              <input
-                type="text"
-                value={formData.tehsil}
-                onChange={(e) => setFormData({...formData, tehsil: e.target.value})}
-                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
-                placeholder="e.g. Kabal"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Court Name / Location</label>
-            <div className="relative">
-              <Scale size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                required
-                value={formData.court}
-                onChange={(e) => setFormData({...formData, court: e.target.value})}
-                className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
-                placeholder="High Court of Justice"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Presiding Judge</label>
-            <div className="relative">
-              <Gavel size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                required
-                value={formData.judge}
-                onChange={(e) => setFormData({...formData, judge: e.target.value})}
-                className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
-                placeholder="Honourable Justice Jawad Ihsan Ullah"
-              />
+              <label className="block text-sm font-medium text-slate-700 mb-1">Presiding Judge</label>
+              <div className="relative">
+                <Gavel size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <select
+                  required
+                  value={formData.judge}
+                  onChange={(e) => setFormData({...formData, judge: e.target.value})}
+                  disabled={!formData.court}
+                  className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none disabled:opacity-50 disabled:bg-slate-50"
+                >
+                  <option value="">Select Judge...</option>
+                  {judges.filter((j: any) => j.court === formData.court).map((j: any) => (
+                    <option key={j.id} value={j.id}>
+                      {j.name} {j.designation ? `(${j.designation})` : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
 
@@ -316,6 +421,43 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
             </div>
           </div>
 
+          {conflictWarning && (
+            <div className="p-4 rounded-lg bg-amber-50 border border-amber-200 text-sm text-amber-800">
+              <p className="font-semibold mb-2">⚠️ Potential Conflict of Interest Detected</p>
+              {conflictWarning.clients?.length > 0 && (
+                <div className="mb-3">
+                  <span className="font-medium block mb-1 text-amber-900">Matching Clients:</span>
+                  <ul className="list-disc pl-5 space-y-1">
+                    {conflictWarning.clients.map((c: any) => (
+                      <li key={c.id}>
+                        <span className="font-semibold">{c.name}</span>
+                        <span className="text-amber-700/80 ml-2 text-xs">
+                          {c.cnic ? `(CNIC: ${c.cnic})` : ''} {c.client_number ? `[ID: ${c.client_number}]` : ''}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {conflictWarning.opponents?.length > 0 && (
+                <div>
+                  <span className="font-medium block mb-1 text-amber-900">Matching Cases (Opponents):</span>
+                  <ul className="list-disc pl-5 space-y-1">
+                    {conflictWarning.opponents.map((o: any) => (
+                      <li key={o.id}>
+                        <span className="font-semibold">{o.opponent_name}</span>
+                        <span className="text-amber-700/80 ml-2 text-xs">
+                          in Case: <span className="font-medium">{o.case_number}</span>
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              <p className="mt-2 text-xs opacity-80">You can override this warning and proceed if you have verified there is no conflict.</p>
+            </div>
+          )}
+
           <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 mt-6">
             <button
               type="button"
@@ -327,7 +469,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2 rounded-lg font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-sm shadow-blue-600/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[100px]"
+              className="px-6 py-2 rounded-lg font-medium bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 duration-300 shadow-[0_4px_12px_rgba(37,99,235,0.25)] hover:shadow-[0_6px_16px_rgba(37,99,235,0.35)] hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[100px] text-white"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -338,6 +480,13 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
           </div>
         </form>
       </div>
+
+      {/* Inline Client Modal */}
+      <AddClientModal 
+        isOpen={isAddClientOpen} 
+        onClose={() => setIsAddClientOpen(false)} 
+        onSuccess={handleClientSuccess} 
+      />
     </div>
   );
 }

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { X, Search, FileText, Calendar, Banknote, AlignLeft } from 'lucide-react';
 import { API_BASE, apiFetch, safeJson } from '@/lib/api';
+import { sendWhatsApp, challanMessage } from '@/lib/whatsapp';
 import { useUI } from '@/context/UIContext';
 
 interface GenerateChallanModalProps {
@@ -20,7 +21,11 @@ export default function GenerateChallanModal({ isOpen, onClose, onSuccess }: Gen
 
   const [selectedCase, setSelectedCase] = useState<any | null>(null);
   const [amount, setAmount] = useState('');
-  const [dueDate, setDueDate] = useState('');
+  const [dueDate, setDueDate] = useState(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 7);
+    return d.toISOString().split('T')[0];
+  });
   const [description, setDescription] = useState('Professional Legal Services');
   const [issueDate, setIssueDate] = useState(new Date().toISOString().split('T')[0]);
 
@@ -90,6 +95,23 @@ export default function GenerateChallanModal({ isOpen, onClose, onSuccess }: Gen
       toast.success('Challan generated successfully.');
       onSuccess();
       onClose();
+
+      // Auto-open WhatsApp with the challan
+      if (selectedCase.client_mobile) {
+        const msg = challanMessage(
+          selectedCase.client_name,
+          data.invoice_number || 'INV-NEW',
+          selectedCase.case_number,
+          parseFloat(amount),
+          0, // amountPaid
+          parseFloat(amount), // balanceDue
+          new Date(dueDate).toLocaleDateString(),
+          [], // No payments yet
+          description
+        );
+        sendWhatsApp(selectedCase.client_mobile, msg);
+      }
+
     } catch (err: any) {
       toast.error(err.message);
     } finally {
@@ -210,7 +232,7 @@ export default function GenerateChallanModal({ isOpen, onClose, onSuccess }: Gen
             <div className="pt-4 flex justify-end gap-3 border-t border-slate-100">
               <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg font-medium text-slate-600 hover:bg-slate-50 border border-slate-200 transition-colors">Cancel</button>
               <button type="submit" disabled={!selectedCase}
-                className="px-6 py-2 rounded-lg font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-sm shadow-blue-600/20 disabled:opacity-50 flex items-center justify-center min-w-[140px]">
+                className="px-6 py-2 rounded-lg font-medium bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 duration-300 shadow-[0_4px_12px_rgba(37,99,235,0.25)] hover:shadow-[0_6px_16px_rgba(37,99,235,0.35)] hover:-translate-y-0.5 disabled:opacity-50 flex items-center justify-center min-w-[140px] text-white">
                 Generate Challan
               </button>
             </div>

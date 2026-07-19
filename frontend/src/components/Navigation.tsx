@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Users, FolderOpen, Calendar, Gavel, Coins, Settings, X, MessageSquare, Activity, CalendarDays } from 'lucide-react';
+import { LayoutDashboard, Users, FolderOpen, Calendar, Gavel, Coins, Settings, X, MessageSquare, Activity, CalendarDays, Scale, BookOpen, Receipt, CreditCard, CircleDollarSign, Clock } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import Image from 'next/image';
 
@@ -28,31 +28,51 @@ export default function Navigation({ mobileOpen = false, onCloseMobile }: Naviga
   const pathname = usePathname();
   const { user } = useAuth();
 
-  const navItems = [
-    { name: 'Dashboard',     href: '/dashboard',    icon: LayoutDashboard, always: true },
-    { name: 'Clients',       href: '/clients',       icon: Users,           module: 'clients' },
-    { name: 'Cases',         href: '/cases',         icon: FolderOpen,      module: 'cases' },
-    { name: 'Hearings',      href: '/hearings',      icon: Gavel,           module: 'hearings' },
-    { name: 'Daily Diary',   href: '/diary',         icon: Calendar,        module: 'diary' },
-    { name: 'Cause List',    href: '/cause-list',    icon: CalendarDays,    module: 'cause_list' },
-    { name: 'Accounts',      href: '/accounts',      icon: Coins,module: 'accounts' },
-    { name: 'Consultations', href: '/consultations', icon: MessageSquare,   module: 'consultations' },
-    // Audit Log: strictly Admin only, never shown by permissions matrix
-    { name: 'Audit Log',     href: '/audit-log',     icon: Activity,        adminOnly: true },
+  const navGroups = [
+    {
+      title: 'OPERATIONS',
+      items: [
+        { name: 'Clients', href: '/clients', icon: Users, module: 'clients' },
+        { name: 'Cases', href: '/cases', icon: FolderOpen, module: 'cases' },
+        { name: 'Hearings', href: '/hearings', icon: Gavel, module: 'hearings' },
+        { name: 'Courts', href: '/courts', icon: Scale, adminOnly: true },
+        { name: 'Judges', href: '/judges', icon: BookOpen, adminOnly: true },
+        { name: 'Cause List', href: '/cause-list', icon: CalendarDays, module: 'cause_list' },
+        { name: 'Daily Diary', href: '/diary', icon: Calendar, module: 'diary' },
+      ]
+    },
+    {
+      title: 'FINANCE & BILLING',
+      items: [
+        { name: 'Accounts', href: '/accounts', icon: Coins, module: 'accounts' },
+        { name: 'Invoices', href: '/invoices', icon: Receipt, always: true },
+        { name: 'Expenses', href: '/expenses', icon: CreditCard, always: true },
+        { name: 'Revenue', href: '/revenue', icon: CircleDollarSign, always: true },
+      ]
+    },
+    {
+      title: 'SCHEDULING',
+      items: [
+        { name: 'Calendar', href: '/calendar', icon: CalendarDays, always: true },
+        { name: 'Consultations', href: '/consultations', icon: MessageSquare, module: 'consultations' },
+        { name: 'Deadlines', href: '/deadlines', icon: Clock, always: true },
+      ]
+    },
+    {
+      title: 'ADMINISTRATION',
+      items: [
+        { name: 'Users', href: '/settings/users', icon: Users, adminOnly: true },
+        { name: 'Audit Logs', href: '/audit-log', icon: Activity, adminOnly: true },
+        { name: 'Settings', href: '/settings', icon: Settings, adminOnly: true },
+      ]
+    }
   ];
-
-  const filteredNavItems = navItems.filter(item => {
-    if (item.always) return true;
-    if (item.adminOnly) return user?.role === 'Admin';
-    if (item.module) return canView(user, item.module);
-    return true;
-  });
 
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="w-64 bg-white border-r border-slate-200 flex-col hidden md:flex z-10 shadow-sm shrink-0">
-        <SidebarContent filteredNavItems={filteredNavItems} pathname={pathname} user={user} />
+      <aside className="w-[280px] bg-white border-r border-slate-200 flex-col hidden md:flex z-10 shadow-sm shrink-0">
+        <SidebarContent navGroups={navGroups} pathname={pathname} user={user} />
       </aside>
 
       {/* Mobile Backdrop */}
@@ -65,9 +85,8 @@ export default function Navigation({ mobileOpen = false, onCloseMobile }: Naviga
 
       {/* Mobile Sidebar Drawer */}
       <aside
-        className={`fixed top-0 left-0 h-full w-72 bg-white z-50 flex flex-col shadow-2xl transition-transform duration-300 ease-in-out md:hidden ${
-          mobileOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        className={`fixed top-0 left-0 h-full w-[280px] bg-white z-50 flex flex-col shadow-2xl transition-transform duration-300 ease-in-out md:hidden ${mobileOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
       >
         <button
           onClick={onCloseMobile}
@@ -76,7 +95,7 @@ export default function Navigation({ mobileOpen = false, onCloseMobile }: Naviga
         >
           <X size={20} />
         </button>
-        <SidebarContent onLinkClick={onCloseMobile} filteredNavItems={filteredNavItems} pathname={pathname} user={user} />
+        <SidebarContent onLinkClick={onCloseMobile} navGroups={navGroups} pathname={pathname} user={user} />
       </aside>
     </>
   );
@@ -84,58 +103,99 @@ export default function Navigation({ mobileOpen = false, onCloseMobile }: Naviga
 
 interface SidebarContentProps {
   onLinkClick?: () => void;
-  filteredNavItems: any[];
+  navGroups: any[];
   pathname: string;
   user: any;
 }
 
-function SidebarContent({ onLinkClick, filteredNavItems, pathname, user }: SidebarContentProps) {
+function SidebarContent({ onLinkClick, navGroups, pathname, user }: SidebarContentProps) {
+  const filterItems = (items: any[]) => items.filter(item => {
+    if (item.always) return true;
+    if (item.adminOnly) return user?.role === 'Admin';
+    if (item.module) return canView(user, item.module);
+    return true;
+  });
+
   return (
-    <>
-      <div className="h-16 flex items-center px-6 border-b border-slate-100 shrink-0 gap-2.5">
-        <div className="relative w-8 h-8 rounded-lg overflow-hidden flex-shrink-0 border border-slate-200 shadow-sm">
-          <Image src="/logo.png" alt="Rahimullah Advocate Logo" fill className="object-cover scale-[1.15]" sizes="32px" />
+    <div className="flex flex-col h-full bg-white border-r border-slate-200">
+      {/* Brand / Logo Area */}
+      <div className="h-[76px] flex items-center px-6 border-b border-slate-200 shrink-0 gap-3">
+        <div className="relative w-8 h-8 flex-shrink-0">
+          <Image src="/logo.png" alt="Rahimullah Advocate Logo" fill className="object-contain" sizes="32px" />
         </div>
-        <h1 className="text-blue-600 font-bold text-base tracking-wider leading-none">
-          Rahimullah Advocate
-        </h1>
+        <div className="flex flex-col">
+          <h1 className="text-slate-900 font-extrabold text-[15px] tracking-wide leading-tight uppercase">
+            RAHIMULLAH
+          </h1>
+          <span className="text-[10px] uppercase font-bold tracking-widest text-slate-500 mt-0.5">Advocate</span>
+        </div>
       </div>
-      <nav className="flex-1 py-6 flex flex-col gap-1 px-4 overflow-y-auto">
-        {filteredNavItems.map((item) => {
-          const isActive = pathname === item.href;
-          const Icon = item.icon;
+
+      {/* Main Navigation Items */}
+      <nav className="flex-1 py-6 flex flex-col px-4 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
+        <Link
+          href="/dashboard"
+          onClick={onLinkClick}
+          className={`flex items-center gap-3.5 px-3.5 py-2.5 mb-6 rounded-lg font-medium transition-colors ${pathname === '/dashboard'
+            ? 'bg-blue-600 text-white shadow-sm'
+            : 'text-slate-600 hover:bg-slate-50 hover:text-blue-600'
+            }`}
+        >
+          <LayoutDashboard size={20} />
+          <span className="text-sm font-semibold">Dashboard</span>
+        </Link>
+
+        {navGroups.map((group, idx) => {
+          const items = filterItems(group.items);
+          if (items.length === 0) return null;
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={onLinkClick}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-all duration-200 ${
-                isActive
-                  ? 'bg-blue-600 text-white shadow-sm shadow-blue-600/20'
-                  : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
-              }`}
-            >
-              <Icon size={20} /> {item.name}
-            </Link>
+            <div key={group.title} className="mb-6 last:mb-0">
+              <h3 className="px-3.5 mb-2 text-xs font-bold uppercase tracking-wider text-slate-400">
+                {group.title}
+              </h3>
+              <div className="flex flex-col gap-1">
+                {items.map((item) => {
+                  const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={onLinkClick}
+                      className={`flex items-center gap-3.5 px-3.5 py-2 rounded-lg font-medium transition-colors ${isActive
+                        ? 'bg-blue-50 text-blue-700'
+                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                        }`}
+                    >
+                      <Icon size={18} className={isActive ? 'text-blue-600' : 'text-slate-400'} strokeWidth={2} />
+                      <span className="text-sm">{item.name}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
           );
         })}
       </nav>
 
-      {user?.role === 'Admin' && (
-        <div className="px-4 pb-4 shrink-0">
-          <Link
-            href="/settings/users"
-            onClick={onLinkClick}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-all duration-200 ${
-              pathname === '/settings/users'
-                ? 'bg-blue-600 text-white shadow-sm shadow-blue-600/20'
-                : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
-            }`}
-          >
-            <Settings size={20} /> Admin Settings
-          </Link>
+      {/* Bottom User Area */}
+      {user && (
+        <div className="p-4 shrink-0 border-t border-slate-200 bg-slate-50/50">
+          <div className="flex items-center gap-3 px-2 py-1">
+            <div className="w-10 h-10 rounded-full bg-blue-700 flex items-center justify-center text-white font-bold text-lg shrink-0">
+              {user.username?.[0]?.toUpperCase() || 'A'}
+            </div>
+            <div className="flex flex-col overflow-hidden">
+              <span className="text-sm font-bold text-slate-900 truncate">
+                {user.username ? user.username.charAt(0).toUpperCase() + user.username.slice(1) : 'Admin'} {user.last_name || 'Admin'}
+              </span>
+              <span className="text-xs text-slate-500 truncate">
+                {user.role === 'Admin' ? 'Super Administrator' : user.role}
+              </span>
+            </div>
+          </div>
         </div>
       )}
-    </>
+    </div>
   );
 }
