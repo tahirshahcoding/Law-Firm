@@ -13,7 +13,8 @@ import random
 
 from management.models import (
     UserProfile, Client, Case, Hearing,
-    Payment, Task, Invoice, ConsultationRequest
+    Payment, Task, Invoice, ConsultationRequest,
+    Court, Judge
 )
 
 
@@ -270,15 +271,16 @@ class Command(BaseCommand):
         for cd in cases_data:
             ci, cnum, court_i, judge_i, opp_i, dist, tehsil, fee, status = cd
             client = clients[ci]
+            court_instance, _ = Court.objects.get_or_create(name=COURTS[court_i])
+            judge_instance, _ = Judge.objects.get_or_create(name=JUDGES[judge_i], defaults={"court": court_instance})
+            
             case, created = Case.objects.get_or_create(
                 case_number=cnum,
                 defaults={
                     "client":        client,
                     "assigned_to":   random.choice(all_users),
-                    "court":         COURTS[court_i],
-                    "judge":         JUDGES[judge_i],
-                    "district":      dist,
-                    "tehsil":        tehsil,
+                    "court":         court_instance,
+                    "judge":         judge_instance,
                     "opponent_name": OPPONENT_NAMES[opp_i],
                     "total_fee":     fee,
                     "status":        status,
