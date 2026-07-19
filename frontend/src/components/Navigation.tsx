@@ -61,7 +61,7 @@ export default function Navigation({ mobileOpen = false, onCloseMobile }: Naviga
     {
       title: 'ADMINISTRATION',
       items: [
-        { name: 'Users', href: '/settings/users', icon: Users, adminOnly: true },
+        { name: 'Permissions', href: '/settings/permissions', icon: Users, adminOnly: true },
         { name: 'Audit Logs', href: '/audit-log', icon: Activity, adminOnly: true },
         { name: 'Settings', href: '/settings', icon: Settings, adminOnly: true },
       ]
