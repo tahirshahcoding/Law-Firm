@@ -136,7 +136,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
             selectClient(newClient);
         } else if (clientSearchText) {
             // Fallback: see if we can find one matching the search
-            const match = results.find(c => c.name.toLowerCase().includes(clientSearchText.toLowerCase()));
+            const match = results.find((c: any) => c.name.toLowerCase().includes(clientSearchText.toLowerCase()));
             if (match) selectClient(match);
         }
       })

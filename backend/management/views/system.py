@@ -5,6 +5,9 @@ import string
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.http import HttpResponse
+import io
+from django.core.management import call_command
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny, BasePermission
 from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -254,6 +257,30 @@ class AuditLogView(APIView):
                     'details': f"{action_label} {model.__name__} {ident}",
                 })
 
+        # Append backup logs if they exist
+        import os, json
+        backup_log_path = os.path.join(settings.MEDIA_ROOT, 'backups', 'backup_logs.json')
+        if os.path.exists(backup_log_path):
+            try:
+                with open(backup_log_path, 'r') as f:
+                    backup_logs = json.load(f)
+                    
+                for entry in backup_logs:
+                    entry_date = timezone.datetime.fromisoformat(entry['date'])
+                    if date_filter and entry_date < date_filter:
+                        continue
+                        
+                    logs.append({
+                        'id': f"sys_{entry['id']}",
+                        'model': 'System',
+                        'action': entry['action'],
+                        'user': entry['user'],
+                        'date': entry_date,
+                        'details': entry['details']
+                    })
+            except Exception:
+                pass
+
         logs.sort(key=lambda x: x['date'], reverse=True)
         limit = 500 if date_filter else 100
         return Response(logs[:limit], status=status.HTTP_200_OK)
@@ -270,6 +297,128 @@ class PingView(APIView):
             "status": "active",
             "system": "Legal Office Backend Awake"
         }, status=status.HTTP_200_OK)
+
+
+# ── Database Backup ───────────────────────────────────────────────────────────
+
+import os
+import io
+import json
+import uuid
+from django.core.management import call_command
+from django.utils import timezone
+from rest_framework.parsers import MultiPartParser, JSONParser
+
+def log_backup_action(action, user, details):
+    import os, json, uuid
+    from django.utils import timezone
+    from django.conf import settings
+    
+    backup_dir = os.path.join(settings.MEDIA_ROOT, 'backups')
+    os.makedirs(backup_dir, exist_ok=True)
+    log_path = os.path.join(backup_dir, 'backup_logs.json')
+    
+    logs = []
+    if os.path.exists(log_path):
+        try:
+            with open(log_path, 'r') as f:
+                logs = json.load(f)
+        except Exception:
+            pass
+            
+    logs.append({
+        'id': str(uuid.uuid4()),
+        'date': timezone.now().isoformat(),
+        'user': user.username if user else 'System',
+        'action': action,
+        'details': details
+    })
+    
+    with open(log_path, 'w') as f:
+        json.dump(logs, f)
+
+class BackupDatabaseView(APIView):
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, JSONParser]
+
+    def get_backup_dir(self):
+        backup_dir = os.path.join(settings.MEDIA_ROOT, 'backups')
+        os.makedirs(backup_dir, exist_ok=True)
+        return backup_dir
+
+    def get(self, request):
+        if getattr(request.user.profile, 'role', '') != 'Admin':
+            return _error("Forbidden", status.HTTP_403_FORBIDDEN)
+            
+        if request.query_params.get('download') == 'true':
+            try:
+                out = io.StringIO()
+                # Exclude auth and contenttypes which can cause restore conflicts
+                call_command('dumpdata', exclude=['auth.permission', 'contenttypes'], indent=2, stdout=out)
+                
+                filename = f"backup_{timezone.now().strftime('%Y-%m-%d_%H-%M')}.json"
+                response = HttpResponse(out.getvalue(), content_type='application/json')
+                response['Content-Disposition'] = f'attachment; filename="{filename}"'
+                
+                log_backup_action('Created Backup', request.user, f"Downloaded Backup {filename}")
+                return response
+            except Exception as e:
+                return _error(str(e), status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        # If not downloading, return the last backup info from the audit logs
+        last_backup_date = None
+        backup_dir = self.get_backup_dir()
+        log_path = os.path.join(backup_dir, 'backup_logs.json')
+        if os.path.exists(log_path):
+            try:
+                with open(log_path, 'r') as f:
+                    logs = json.load(f)
+                    created_logs = [log for log in logs if log['action'] == 'Created Backup']
+                    if created_logs:
+                        created_logs.sort(key=lambda x: x['date'], reverse=True)
+                        last_backup_date = created_logs[0]['date']
+            except Exception:
+                pass
+                
+        return Response({
+            'last_backup': {'created_at': last_backup_date} if last_backup_date else None
+        }, status=status.HTTP_200_OK)
+
+    def put(self, request):
+        if getattr(request.user.profile, 'role', '') != 'Admin':
+            return _error("Forbidden", status.HTTP_403_FORBIDDEN)
+            
+        password = request.data.get('password')
+        upload_file = request.FILES.get('file')
+        
+        if not password:
+            return _error("Admin password is required to restore backup", status.HTTP_400_BAD_REQUEST)
+            
+        if not upload_file:
+            return _error("Backup file is required", status.HTTP_400_BAD_REQUEST)
+            
+        if not request.user.check_password(password):
+            return _error("Incorrect admin password", status.HTTP_403_FORBIDDEN)
+            
+        try:
+            backup_dir = self.get_backup_dir()
+            filename = f"temp_restore_{uuid.uuid4()}.json"
+            filepath = os.path.join(backup_dir, filename)
+            
+            with open(filepath, 'wb+') as destination:
+                for chunk in upload_file.chunks():
+                    destination.write(chunk)
+            
+            # We use loaddata to restore the database
+            call_command('loaddata', filepath)
+            
+            # Clean up
+            os.remove(filepath)
+            
+            log_backup_action('Restored Backup', request.user, f"Restored Backup from uploaded file")
+            return Response({'status': 'success', 'message': 'Database restored successfully'})
+        except Exception as e:
+            return _error(f"Restore failed: {str(e)}", status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 # ── Calendar Event ViewSet ────────────────────────────────────────────────────

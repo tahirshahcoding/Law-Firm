@@ -80,7 +80,7 @@ export default function ProfileSettingsPage() {
   if (!user) return null;
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500 w-full max-w-3xl">
+    <div className="space-y-8 animate-in fade-in duration-500 w-full">
       <div>
         <h2 className="text-2xl font-bold text-slate-900 tracking-tight">My Profile</h2>
         <p className="text-slate-500 mt-1">Update your account credentials and personal information.</p>
@@ -154,42 +154,7 @@ export default function ProfileSettingsPage() {
             </div>
           </div>
 
-          <div className="pt-6 border-t border-slate-100">
-            <h4 className="font-semibold text-slate-900 mb-4">Change Password</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">New Password</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Lock className="h-5 w-5 text-slate-400" />
-                  </div>
-                  <input
-                    type="password"
-                    value={formData.password}
-                    onChange={(e) => setFormData({...formData, password: e.target.value})}
-                    className="pl-10 block w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
-                    placeholder="Leave blank to keep current"
-                  />
-                </div>
-              </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Confirm New Password</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Lock className="h-5 w-5 text-slate-400" />
-                  </div>
-                  <input
-                    type="password"
-                    value={formData.confirmPassword}
-                    onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
-                    className="pl-10 block w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
-                    placeholder="Confirm new password"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
 
           <div className="pt-4 flex justify-end">
             <button
