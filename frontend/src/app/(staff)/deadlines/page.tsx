@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { Plus, Search, Filter, Calendar, CheckCircle, AlertTriangle, Clock, ChevronRight } from 'lucide-react';
-import { API_BASE, apiFetch } from '@/lib/api';
+import { API_BASE, apiFetch, safeJson } from '@/lib/api';
+import { TableRowSkeleton } from '@/components/SkeletonLoaders';
 import { useUI } from '@/context/UIContext';
 import CreateDeadlineModal from '@/components/deadlines/CreateDeadlineModal';
 import DeadlineDrawer from '@/components/deadlines/DeadlineDrawer';
@@ -211,9 +212,7 @@ export default function DeadlinesPage() {
             </thead>
             <tbody className="divide-y divide-slate-100 bg-white">
               {loading ? (
-                <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-slate-400">Loading deadlines...</td>
-                </tr>
+                <TableRowSkeleton columns={6} />
               ) : filteredDeadlines.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="px-6 py-12 text-center text-slate-400">

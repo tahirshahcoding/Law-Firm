@@ -5,6 +5,7 @@ import { Plus, Search, Trash2 } from 'lucide-react';
 import { API_BASE, apiFetch, safeJson } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { useUI } from '@/context/UIContext';
+import { TableRowSkeleton } from '@/components/SkeletonLoaders';
 import AddExpenseModal from '@/components/finance/AddExpenseModal';
 
 const CATEGORIES = ['All', 'Court Fee', 'Stamp Paper', 'Printing', 'Fuel', 'Courier', 'Staff Salary', 'Office Rent', 'Internet', 'Electricity', 'Other'];
@@ -139,7 +140,7 @@ export default function ExpensesPage() {
             </thead>
             <tbody className="divide-y divide-slate-50">
               {loading ? (
-                <tr><td colSpan={7} className="py-12 text-center"><div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-rose-600 border-t-transparent" /></td></tr>
+                <TableRowSkeleton columns={7} />
               ) : filtered.length === 0 ? (
                 <tr><td colSpan={7} className="py-12 text-center text-sm text-slate-400">No expenses found.</td></tr>
               ) : filtered.map(exp => (

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Bell, CheckCircle2, Circle, Clock, MessageSquare, Briefcase, Users, FileText, Check, Activity } from 'lucide-react';
 import Link from 'next/link';
 import { API_BASE, apiFetch } from '@/lib/api';
+import { ListSkeleton, TableRowSkeleton } from '@/components/SkeletonLoaders';
 
 export function DailyTasks() {
   const [tasks, setTasks] = useState<any[]>([]);
@@ -55,7 +56,7 @@ export function DailyTasks() {
       </div>
       <div className="flex flex-col gap-4 overflow-y-auto pr-2 custom-scrollbar">
         {loading ? (
-          <div className="text-sm text-slate-500">Loading tasks...</div>
+          <ListSkeleton />
         ) : tasks.length === 0 ? (
           <div className="text-sm text-slate-500 italic">No pending tasks!</div>
         ) : (
@@ -131,7 +132,7 @@ export function RecentActivity() {
     <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm h-full flex flex-col">
       <h3 className="font-bold text-slate-900 mb-6">Recent Activity</h3>
       {loading ? (
-        <div className="text-sm text-slate-500">Loading activity...</div>
+        <ListSkeleton />
       ) : activities.length === 0 ? (
         <div className="text-sm text-slate-500 italic">No recent activity</div>
       ) : (
@@ -189,7 +190,7 @@ export function TodaysHearingsList() {
       </div>
       
       {loading ? (
-        <div className="text-sm text-slate-500">Loading hearings...</div>
+        <ListSkeleton />
       ) : hearings.length === 0 ? (
         <div className="text-sm text-slate-500 italic">No hearings scheduled for today.</div>
       ) : (
@@ -269,7 +270,7 @@ export function RecentCasesTable() {
           </thead>
           <tbody className="text-xs font-medium text-slate-700">
             {loading ? (
-              <tr><td colSpan={6} className="py-4 text-center text-slate-500">Loading cases...</td></tr>
+              <TableRowSkeleton columns={6} />
             ) : cases.length === 0 ? (
               <tr><td colSpan={6} className="py-4 text-center text-slate-500">No recent cases</td></tr>
             ) : (

@@ -209,6 +209,7 @@ export default function LoginPage() {
                   <input
                     type="text"
                     required
+                    suppressHydrationWarning
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     className="block w-full pl-12 pr-4 py-4 border border-slate-200 rounded-2xl text-[15px] text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#0d6efd]/15 focus:border-[#0d6efd] transition-all bg-slate-50 hover:bg-slate-50/50 focus:bg-white shadow-[0_2px_10px_rgba(0,0,0,0.01)]"
@@ -226,6 +227,7 @@ export default function LoginPage() {
                   <input
                     type={showPassword ? "text" : "password"}
                     required
+                    suppressHydrationWarning
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="block w-full pl-12 pr-12 py-4 border border-slate-200 rounded-2xl text-[15px] text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#0d6efd]/15 focus:border-[#0d6efd] transition-all bg-slate-50 hover:bg-slate-50/50 focus:bg-white shadow-[0_2px_10px_rgba(0,0,0,0.01)]"
@@ -269,6 +271,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={isLoading}
+                  suppressHydrationWarning
                   className="group w-full flex items-center justify-center gap-2 py-4 px-4 rounded-2xl text-[16px] font-bold text-white bg-gradient-to-r from-[#0d6efd] to-[#2563eb] hover:from-[#0b5ed7] hover:to-[#1d4ed8] focus:outline-none focus:ring-4 focus:ring-[#0d6efd]/30 transition-all duration-300 shadow-[0_8px_20px_-6px_rgba(13,110,253,0.5)] hover:shadow-[0_12px_25px_-8px_rgba(13,110,253,0.6)] hover:-translate-y-0.5 disabled:opacity-70 disabled:hover:translate-y-0 relative overflow-hidden"
                 >
                   <div className="absolute inset-0 bg-white/20 w-[150%] h-[150%] -skew-x-12 -translate-x-[150%] group-hover:translate-x-[150%] transition-transform duration-700 ease-in-out"></div>

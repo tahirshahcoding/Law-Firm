@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Search, Download, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import { API_BASE, apiFetch, safeJson } from '@/lib/api';
+import { TableRowSkeleton } from '@/components/SkeletonLoaders';
 
 const TYPE_FILTER = ['All', 'Payment', 'Expense'];
 
@@ -149,9 +150,7 @@ export default function AccountsPage() {
             </thead>
             <tbody className="divide-y divide-slate-50">
               {loading ? (
-                <tr><td colSpan={7} className="py-12 text-center">
-                  <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
-                </td></tr>
+                <TableRowSkeleton columns={7} />
               ) : withBalance.length === 0 ? (
                 <tr><td colSpan={7} className="py-12 text-center text-sm text-slate-400">
                   No transactions found.

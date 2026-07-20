@@ -6,6 +6,7 @@ import { API_BASE, apiFetch, safeJson } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import StatusBadge from '@/components/finance/StatusBadge';
 import InvoiceDrawer from '@/components/finance/InvoiceDrawer';
+import { TableRowSkeleton } from '@/components/SkeletonLoaders';
 import NewInvoiceModal from '@/components/finance/NewInvoiceModal';
 
 const STATUSES = ['All', 'Unpaid', 'Partial', 'Paid', 'Overdue'];
@@ -139,11 +140,7 @@ export default function InvoicesPage() {
             </thead>
             <tbody className="divide-y divide-slate-50">
               {loading ? (
-                <tr>
-                  <td colSpan={8} className="px-5 py-12 text-center">
-                    <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
-                  </td>
-                </tr>
+                <TableRowSkeleton columns={8} />
               ) : filtered.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="px-5 py-12 text-center text-sm text-slate-400">

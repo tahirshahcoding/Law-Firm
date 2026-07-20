@@ -54,6 +54,7 @@ function LiveClock() {
 }
 
 export default function Dashboard() {
+  const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<any>({
     active_cases: 0,
     closed_cases: 0,
@@ -69,6 +70,7 @@ export default function Dashboard() {
   });
 
   const fetchStats = () => {
+    setLoading(true);
     apiFetch(`${API_BASE}/dashboard/stats/`)
       .then(res => res.json())
       .then(data => {
@@ -78,6 +80,9 @@ export default function Dashboard() {
       })
       .catch(err => {
         console.error('Failed to fetch dashboard stats:', err);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -119,7 +124,9 @@ export default function Dashboard() {
             <span className="text-xs font-bold text-slate-500">Active Cases</span>
             <div className="bg-blue-600 text-white p-1.5 rounded-lg"><Briefcase size={16} /></div>
           </div>
-          <div className="text-2xl font-extrabold text-slate-900">{stats.active_cases}</div>
+          <div className="text-2xl font-extrabold text-slate-900">
+            {loading ? <div className="h-8 w-16 bg-slate-200 rounded animate-pulse"></div> : stats.active_cases}
+          </div>
         </div>
         
         {/* Today's Hearings */}
@@ -128,7 +135,9 @@ export default function Dashboard() {
             <span className="text-xs font-bold text-slate-500">Today's Hearings</span>
             <div className="bg-amber-500 text-white p-1.5 rounded-lg"><Calendar size={16} /></div>
           </div>
-          <div className="text-2xl font-extrabold text-slate-900">{stats.todays_hearings}</div>
+          <div className="text-2xl font-extrabold text-slate-900">
+            {loading ? <div className="h-8 w-16 bg-slate-200 rounded animate-pulse"></div> : stats.todays_hearings}
+          </div>
         </div>
 
         {/* Pending Tasks */}
@@ -137,7 +146,9 @@ export default function Dashboard() {
             <span className="text-xs font-bold text-slate-500">Pending Tasks</span>
             <div className="bg-rose-500 text-white p-1.5 rounded-lg"><CheckSquare size={16} /></div>
           </div>
-          <div className="text-2xl font-extrabold text-slate-900">{stats.pending_tasks}</div>
+          <div className="text-2xl font-extrabold text-slate-900">
+            {loading ? <div className="h-8 w-16 bg-slate-200 rounded animate-pulse"></div> : stats.pending_tasks}
+          </div>
         </div>
 
         {/* Clients */}
@@ -146,7 +157,9 @@ export default function Dashboard() {
             <span className="text-xs font-bold text-slate-500">Clients</span>
             <div className="bg-indigo-500 text-white p-1.5 rounded-lg"><Users size={16} /></div>
           </div>
-          <div className="text-2xl font-extrabold text-slate-900">{stats.total_clients}</div>
+          <div className="text-2xl font-extrabold text-slate-900">
+            {loading ? <div className="h-8 w-16 bg-slate-200 rounded animate-pulse"></div> : stats.total_clients}
+          </div>
         </div>
 
         {/* Revenue */}
@@ -156,7 +169,13 @@ export default function Dashboard() {
             <div className="bg-emerald-500 text-white p-1.5 rounded-lg"><TrendingUp size={16} /></div>
           </div>
           <div className="text-xl font-extrabold text-slate-900">
-            {hasAccountsAccess ? formatCurrency(stats.total_revenue) : <span className="text-sm text-slate-400">Restricted</span>}
+            {loading ? (
+              <div className="h-7 w-24 bg-slate-200 rounded animate-pulse"></div>
+            ) : hasAccountsAccess ? (
+              formatCurrency(stats.total_revenue)
+            ) : (
+              <span className="text-sm text-slate-400">Restricted</span>
+            )}
           </div>
         </div>
 
@@ -167,7 +186,13 @@ export default function Dashboard() {
             <div className="bg-amber-400 text-white p-1.5 rounded-lg"><Receipt size={16} /></div>
           </div>
           <div className="text-xl font-extrabold text-slate-900">
-            {hasAccountsAccess ? formatCurrency(stats.accounts_stats?.overall_remaining || 0) : <span className="text-sm text-slate-400">Restricted</span>}
+            {loading ? (
+              <div className="h-7 w-24 bg-slate-200 rounded animate-pulse"></div>
+            ) : hasAccountsAccess ? (
+              formatCurrency(stats.accounts_stats?.overall_remaining || 0)
+            ) : (
+              <span className="text-sm text-slate-400">Restricted</span>
+            )}
           </div>
         </div>
       </div>
@@ -179,7 +204,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <div className="lg:col-span-5">
             {hasAccountsAccess ? (
-              <MonthlyRevenueChart trendData={stats.accounts_stats?.collections_trend || []} />
+              <MonthlyRevenueChart trendData={stats.accounts_stats?.collections_trend || []} loading={loading} />
             ) : (
               <div className="h-full min-h-[300px] bg-white rounded-2xl border border-slate-200 flex flex-col items-center justify-center text-slate-400">
                 <TrendingUp size={32} className="mb-2 opacity-50" />
@@ -188,7 +213,7 @@ export default function Dashboard() {
             )}
           </div>
           <div className="lg:col-span-4">
-            <CaseStatusChart active={stats.active_cases} closed={stats.closed_cases} pending={stats.pending_cases} />
+            <CaseStatusChart active={stats.active_cases} closed={stats.closed_cases} pending={stats.pending_cases} loading={loading} />
           </div>
           <div className="lg:col-span-3">
             <CalendarWidget />

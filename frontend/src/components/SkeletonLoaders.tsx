@@ -172,3 +172,22 @@ export function ListSkeleton() {
     </div>
   );
 }
+
+export function TableRowSkeleton({ columns = 5 }: { columns?: number }) {
+  return (
+    <>
+      {[...Array(5)].map((_, i) => (
+        <tr key={i} className="animate-pulse">
+          <td colSpan={columns} className="px-6 py-4 border-b border-slate-100">
+            <div className="flex gap-4 w-full">
+              <div className="h-4 bg-slate-200 rounded w-1/4"></div>
+              <div className="h-4 bg-slate-200 rounded w-1/4"></div>
+              <div className="h-4 bg-slate-200 rounded w-1/4"></div>
+              <div className="h-4 bg-slate-200 rounded w-1/4"></div>
+            </div>
+          </td>
+        </tr>
+      ))}
+    </>
+  );
+}
