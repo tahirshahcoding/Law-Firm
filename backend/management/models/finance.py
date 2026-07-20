@@ -125,7 +125,7 @@ class Invoice(models.Model):
             invoice.save()
 
     def save(self, *args, **kwargs):
-        with transaction.atomic():
+        with transaction.atomic():  # type: ignore[attr-defined]
             self.full_clean()
             if not self.invoice_number:
                 import re
@@ -136,17 +136,17 @@ class Invoice(models.Model):
                     next_num = (int(match.group()) + 1) if match else 1
                 else:
                     next_num = 1
-                self.invoice_number = f"INV-{next_num:03d}"
+                self.invoice_number = f"INV-{next_num:03d}"  # type: ignore
                 
             if self.pk is not None:
                 total = self.total_amount
                 paid = self.paid_amount
                 if total == 0 or paid == 0:
-                    self.status = self.STATUS_UNPAID
+                    self.status = self.STATUS_UNPAID  # type: ignore
                 elif paid >= total:
-                    self.status = self.STATUS_PAID
+                    self.status = self.STATUS_PAID  # type: ignore
                 else:
-                    self.status = self.STATUS_PARTIAL
+                    self.status = self.STATUS_PARTIAL  # type: ignore
 
             super().save(*args, **kwargs)
 
@@ -187,7 +187,7 @@ class Payment(models.Model):
         return f"Rs {self.amount_received} for {self.invoice.invoice_number}"
 
     def save(self, *args, **kwargs):
-        with transaction.atomic():
+        with transaction.atomic():  # type: ignore[attr-defined]
             is_new = self.pk is None
             self.full_clean()
             super().save(*args, **kwargs)
@@ -200,7 +200,7 @@ class Payment(models.Model):
                 )
 
     def delete(self, *args, **kwargs):
-        with transaction.atomic():
+        with transaction.atomic():  # type: ignore[attr-defined]
             invoice = self.invoice
             super().delete(*args, **kwargs)
             try:

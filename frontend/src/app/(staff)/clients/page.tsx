@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { Plus, Search, Eye, Trash2, Edit2, CreditCard, Phone, Users, MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { API_BASE, apiFetch } from '@/lib/api';
+import { useClients } from '@/hooks/api/useClients';
 import AddClientModal from '@/components/AddClientModal';
 import EditClientModal from '@/components/EditClientModal';
 import { useAuth } from '@/context/AuthContext';
@@ -14,13 +15,9 @@ import { TableSkeleton } from '@/components/SkeletonLoaders';
 function ClientsPageContent() {
   const searchParams = useSearchParams();
   const initialSearch = searchParams.get('search') || '';
-  const [clients, setClients] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState(initialSearch);
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
   
   // Modals state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -35,43 +32,12 @@ function ClientsPageContent() {
   const canEditClients = user?.role === 'Admin' || user?.permissions?.clients?.edit === true;
   const canDeleteClients = user?.role === 'Admin' || user?.permissions?.clients?.delete === true;
 
-  const fetchClients = () => {
-    if (!canViewClients) return;
-    setLoading(true);
-    const query = new URLSearchParams({
-      page: page.toString(),
-      limit: '20',
-      ...(debouncedSearchTerm && { search: debouncedSearchTerm })
-    });
-
-    apiFetch(`${API_BASE}/clients/?${query.toString()}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data && Array.isArray(data.results)) {
-          setClients(data.results);
-          setTotalCount(data.count ?? data.results.length);
-          setTotalPages(Math.ceil((data.count ?? data.results.length) / 20));
-        } else if (Array.isArray(data)) {
-          setClients(data);
-          setTotalCount(data.length);
-          setTotalPages(1);
-        } else {
-          setClients([]);
-          setTotalCount(0);
-          setTotalPages(1);
-        }
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Failed to fetch clients:', err);
-        setClients([]);
-        setLoading(false);
-      });
-  };
-
-  useEffect(() => {
-    fetchClients();
-  }, [page, debouncedSearchTerm]);
+  const { clients, count: totalCount, totalPages, isLoading: loading, mutate } = useClients({
+    page,
+    limit: 20,
+    search: debouncedSearchTerm,
+    enabled: canViewClients,
+  });
 
 
   const handleDelete = async (id: string, name: string) => {
@@ -90,7 +56,7 @@ function ClientsPageContent() {
       });
       if (!res.ok) throw new Error('Failed to delete client');
       toast.success(`Client "${name}" has been deleted.`);
-      fetchClients();
+      mutate();
     } catch (err) {
       toast.error('Failed to delete client. Please try again.');
       console.error(err);
@@ -225,7 +191,7 @@ function ClientsPageContent() {
 
             {/* Desktop Table View */}
             <div className="hidden md:block overflow-x-auto">
-              <table className="w-full text-left border-collapse min-w-[800px]">
+              <table className="w-full text-left border-collapse table-fixed min-w-[800px]">
                 <thead className="bg-slate-50/80 dark:bg-slate-800/80 backdrop-blur-md sticky top-0 z-10 transition-colors">
                   <tr className="border-b border-slate-200/60 dark:border-slate-700/60">
                     <th className="px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-16">ID</th>
@@ -343,13 +309,13 @@ function ClientsPageContent() {
       <AddClientModal 
         isOpen={isAddModalOpen} 
         onClose={() => setIsAddModalOpen(false)} 
-        onSuccess={fetchClients} 
+        onSuccess={() => mutate()} 
       />
 
       <EditClientModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
-        onSuccess={fetchClients}
+        onSuccess={() => mutate()}
         clientData={selectedClient}
       />
     </div>

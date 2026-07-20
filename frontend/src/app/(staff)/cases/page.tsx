@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Plus, Search, FolderOpen, MoreVertical, Eye, Trash2, Edit2, Scale, UserX, Clock, Gavel, ChevronLeft, ChevronRight, Download } from 'lucide-react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { API_BASE, apiFetch } from '@/lib/api';
+import { useCases } from '@/hooks/api/useCases';
 import AddCaseModal from '@/components/AddCaseModal';
 import EditCaseModal from '@/components/EditCaseModal';
 import { useAuth } from '@/context/AuthContext';
@@ -17,13 +18,9 @@ import StatusDropdown from '@/components/StatusDropdown';
 function CasesPageContent() {
   const searchParams = useSearchParams();
   const initialSearch = searchParams.get('search') || '';
-  const [cases, setCases] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState(initialSearch);
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
 
   const [filterCategory, setFilterCategory] = useState('');
   const [filterPriority, setFilterPriority] = useState('');
@@ -42,44 +39,15 @@ function CasesPageContent() {
   const canEditCases   = user?.role === 'Admin' || user?.permissions?.cases?.edit === true;
   const canDeleteCases = user?.role === 'Admin' || user?.permissions?.cases?.delete === true;
 
-  const fetchCases = () => {
-    if (!canViewCases) return;
-    setLoading(true);
-    const query = new URLSearchParams({
-      page: page.toString(),
-      limit: '20',
-      ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
-      ...(filterCategory && { category: filterCategory }),
-      ...(filterPriority && { priority: filterPriority }),
-      ...(filterStatus && { status: filterStatus }),
-    });
-
-    apiFetch(`${API_BASE}/cases/?${query.toString()}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data && Array.isArray(data.results)) {
-          setCases(data.results);
-          setTotalCount(data.count ?? data.results.length);
-          setTotalPages(Math.ceil((data.count ?? data.results.length) / 20));
-        } else if (Array.isArray(data)) {
-          setCases(data);
-          setTotalCount(data.length);
-          setTotalPages(1);
-        } else {
-          // API returned an error object or unexpected shape — stay safe
-          setCases([]);
-          setTotalCount(0);
-          setTotalPages(1);
-        }
-      })
-      .catch(err => {
-        console.error(err);
-        toast.error('Could not load cases.');
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
+  const { cases, count: totalCount, totalPages, isLoading: loading, mutate } = useCases({
+    page,
+    limit: 20,
+    search: debouncedSearchTerm,
+    category: filterCategory,
+    priority: filterPriority,
+    status: filterStatus,
+    enabled: canViewCases,
+  });
 
   const handleInlineStatusUpdate = async (caseId: string, newStatus: string) => {
     try {
@@ -90,7 +58,7 @@ function CasesPageContent() {
       });
       if (res.ok) {
         toast.success('Status updated');
-        fetchCases();
+        mutate();
       } else {
         toast.error('Failed to update status');
       }
@@ -98,10 +66,6 @@ function CasesPageContent() {
       toast.error('Could not update status');
     }
   };
-
-  useEffect(() => {
-    fetchCases();
-  }, [page, debouncedSearchTerm, filterCategory, filterPriority, filterStatus]);
 
 
   const handleDelete = async (id: string, caseNumber: string) => {
@@ -120,7 +84,7 @@ function CasesPageContent() {
       });
       if (!res.ok) throw new Error('Failed to delete case');
       toast.success(`Case ${caseNumber} has been deleted.`);
-      fetchCases();
+      mutate();
     } catch (err) {
       toast.error('Failed to delete case. Please try again.');
       console.error(err);
@@ -336,7 +300,7 @@ function CasesPageContent() {
 
             {/* Desktop Table View */}
             <div className="hidden md:block overflow-x-auto">
-              <table className="w-full text-left border-collapse min-w-[800px]">
+              <table className="w-full text-left border-collapse table-fixed min-w-[800px]">
                 <thead className="bg-slate-50/80 dark:bg-slate-800/80 backdrop-blur-md sticky top-0 z-10 transition-colors">
                   <tr className="border-b border-slate-200/60 dark:border-slate-700/60">
                     <th className="px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-1/3">Case Reference</th>
@@ -456,19 +420,15 @@ function CasesPageContent() {
         )}
       </div>
 
-      <AddCaseModal 
-        isOpen={isAddModalOpen} 
-        onClose={() => setIsAddModalOpen(false)} 
-        onSuccess={fetchCases} 
-      />
-
-      <EditCaseModal
-        isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-        onSuccess={fetchCases}
-        caseData={selectedCase}
-      />
-    </div>
+        <AddCaseModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} onSuccess={() => mutate()} />
+        {selectedCase && (
+          <EditCaseModal 
+            isOpen={isEditModalOpen} 
+            onClose={() => { setIsEditModalOpen(false); setSelectedCase(null); }} 
+            caseData={selectedCase} 
+            onSuccess={() => mutate()} 
+          />
+        )}</div>
   );
 }
 

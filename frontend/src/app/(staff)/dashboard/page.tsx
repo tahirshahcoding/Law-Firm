@@ -19,6 +19,7 @@ import {
   RecentCasesTable,
   CalendarWidget
 } from '@/components/dashboard/DashboardWidgets';
+import { useDashboard } from '@/hooks/api/useDashboard';
 
 function formatCurrency(amount: number) {
   if (amount == null) return 'Rs 0';
@@ -54,8 +55,10 @@ function LiveClock() {
 }
 
 export default function Dashboard() {
-  const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState<any>({
+  const { stats: fetchedStats, isLoading: loading } = useDashboard({ enabled: true });
+
+  // Fallback defaults if stats are not yet loaded or fail
+  const stats = fetchedStats || {
     active_cases: 0,
     closed_cases: 0,
     pending_cases: 0,
@@ -67,28 +70,7 @@ export default function Dashboard() {
       collections_trend: [],
       overall_remaining: 0
     }
-  });
-
-  const fetchStats = () => {
-    setLoading(true);
-    apiFetch(`${API_BASE}/dashboard/stats/`)
-      .then(res => res.json())
-      .then(data => {
-        if (data && typeof data === 'object' && 'active_cases' in data) {
-          setStats((prev: any) => ({ ...prev, ...data }));
-        }
-      })
-      .catch(err => {
-        console.error('Failed to fetch dashboard stats:', err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
   };
-
-  useEffect(() => {
-    fetchStats();
-  }, []);
 
   const { user } = useAuth();
   const hasAccountsAccess = user?.role === 'Admin' || user?.permissions?.accounts?.view;

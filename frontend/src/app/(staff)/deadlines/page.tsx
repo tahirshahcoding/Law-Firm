@@ -7,6 +7,7 @@ import { TableRowSkeleton } from '@/components/SkeletonLoaders';
 import { useUI } from '@/context/UIContext';
 import CreateDeadlineModal from '@/components/deadlines/CreateDeadlineModal';
 import DeadlineDrawer from '@/components/deadlines/DeadlineDrawer';
+import { useDeadlines } from '@/hooks/api/useDeadlines';
 
 function fmtDate(d: string | null) {
   if (!d) return '—';
@@ -15,8 +16,6 @@ function fmtDate(d: string | null) {
 
 export default function DeadlinesPage() {
   const { toast } = useUI();
-  const [deadlines, setDeadlines] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedDeadline, setSelectedDeadline] = useState<any>(null);
@@ -28,33 +27,11 @@ export default function DeadlinesPage() {
   const [typeFilter, setTypeFilter] = useState('');
   const [search, setSearch] = useState('');
 
-  const fetchDeadlines = async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams();
-      if (statusFilter) params.append('status', statusFilter);
-      if (priorityFilter) params.append('priority', priorityFilter);
-      if (typeFilter) params.append('deadline_type', typeFilter);
-      params.append('limit', '1000');
-
-      const res = await apiFetch(`${API_BASE}/deadlines/?${params.toString()}`);
-      if (res.ok) {
-        const data = await res.json();
-        setDeadlines(data.results || data);
-      } else {
-        toast.error("Failed to load deadlines");
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error("Error loading deadlines");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchDeadlines();
-  }, [statusFilter, priorityFilter, typeFilter]);
+  const { deadlines, isLoading: loading, mutate } = useDeadlines({
+    limit: 1000,
+    search: '', // We handle client-side search below, but could pass here if needed
+    enabled: true,
+  });
 
   const handleRowClick = (deadline: any) => {
     setSelectedDeadline(deadline);
@@ -68,33 +45,41 @@ export default function DeadlinesPage() {
   const weekFromNow = new Date(today);
   weekFromNow.setDate(weekFromNow.getDate() + 7);
 
-  const statToday = deadlines.filter(d => {
+  const statToday = deadlines.filter((d: any) => {
     const due = new Date(d.due_date);
     return due.getTime() === today.getTime() && d.status !== 'Completed';
   }).length;
 
-  const statWeek = deadlines.filter(d => {
+  const statWeek = deadlines.filter((d: any) => {
     const due = new Date(d.due_date);
     return due >= today && due <= weekFromNow && d.status !== 'Completed';
   }).length;
 
-  const statOverdue = deadlines.filter(d => {
+  const statOverdue = deadlines.filter((d: any) => {
     const due = new Date(d.due_date);
     return due < today && d.status !== 'Completed';
   }).length;
 
-  const statCompleted = deadlines.filter(d => d.status === 'Completed').length;
+  const statCompleted = deadlines.filter((d: any) => d.status === 'Completed').length;
 
   // Search Filter
-  const filteredDeadlines = deadlines.filter(d => {
-    if (!search) return true;
-    const term = search.toLowerCase();
-    return (
-      d.title.toLowerCase().includes(term) ||
-      d.case_number?.toLowerCase().includes(term) ||
-      d.client_name?.toLowerCase().includes(term) ||
-      d.assigned_user_name?.toLowerCase().includes(term)
-    );
+  const filteredDeadlines = deadlines.filter((d: any) => {
+    let match = true;
+    if (statusFilter && d.status !== statusFilter) match = false;
+    if (priorityFilter && d.priority !== priorityFilter) match = false;
+    if (typeFilter && d.deadline_type !== typeFilter) match = false;
+    
+    if (search) {
+      const term = search.toLowerCase();
+      const searchMatch = (
+        d.title.toLowerCase().includes(term) ||
+        d.case_number?.toLowerCase().includes(term) ||
+        d.client_name?.toLowerCase().includes(term) ||
+        d.assigned_user_name?.toLowerCase().includes(term)
+      );
+      if (!searchMatch) match = false;
+    }
+    return match;
   });
 
   return (
@@ -222,7 +207,7 @@ export default function DeadlinesPage() {
                   </td>
                 </tr>
               ) : (
-                filteredDeadlines.map((deadline, index) => {
+                filteredDeadlines.map((deadline: any, index: number) => {
                   const dueDate = new Date(deadline.due_date);
                   const isOverdue = dueDate < today && deadline.status !== 'Completed';
                   const daysLeft = Math.ceil((dueDate.getTime() - today.getTime()) / (1000 * 3600 * 24));
@@ -297,23 +282,24 @@ export default function DeadlinesPage() {
         </div>
       </div>
 
-      <CreateDeadlineModal 
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onSuccess={fetchDeadlines}
-      />
+      {isCreateModalOpen && (
+        <CreateDeadlineModal
+          isOpen={true}
+          onClose={() => setIsCreateModalOpen(false)}
+          onSuccess={() => { mutate(); setIsCreateModalOpen(false); }}
+        />
+      )}
 
-      <DeadlineDrawer
-        deadline={selectedDeadline}
-        onClose={() => setSelectedDeadline(null)}
-        onUpdate={fetchDeadlines}
-        onEdit={(d) => {
-          setSelectedDeadline(null);
-          // For simplicity, we just use CreateDeadlineModal for both,
-          // but we haven't built full edit form support into CreateDeadlineModal yet.
-          // Leaving Edit functionality minimal for this iteration as requested.
-        }}
-      />
+      {isDrawerOpen && selectedDeadline && (
+        <DeadlineDrawer
+          deadline={selectedDeadline}
+          onClose={() => { setIsDrawerOpen(false); setSelectedDeadline(null); }}
+          onUpdate={() => mutate()}
+          onEdit={(d) => {
+            setSelectedDeadline(null);
+          }}
+        />
+      )}
     </div>
   );
 }

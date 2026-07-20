@@ -30,7 +30,7 @@ class Client(models.Model):
                 next_num = (int(match.group()) + 1) if match else 1
             else:
                 next_num = 1
-            self.client_number = f"C-{next_num:03d}"
+            self.client_number = f"C-{next_num:03d}"  # type: ignore
         super().save(*args, **kwargs)
 
     def __str__(self):

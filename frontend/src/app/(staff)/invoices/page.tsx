@@ -8,6 +8,7 @@ import StatusBadge from '@/components/finance/StatusBadge';
 import InvoiceDrawer from '@/components/finance/InvoiceDrawer';
 import { TableRowSkeleton } from '@/components/SkeletonLoaders';
 import NewInvoiceModal from '@/components/finance/NewInvoiceModal';
+import { useInvoices } from '@/hooks/api/useInvoices';
 
 const STATUSES = ['All', 'Unpaid', 'Partial', 'Paid', 'Overdue'];
 
@@ -18,8 +19,6 @@ function fmtDate(d: string | null) {
 }
 
 export default function InvoicesPage() {
-  const [invoices, setInvoices] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
@@ -28,18 +27,13 @@ export default function InvoicesPage() {
 
   const canManage = user?.role === 'Admin' || user?.permissions?.accounts?.edit;
 
-  const fetchInvoices = async () => {
-    setLoading(true);
-    try {
-      const res = await apiFetch(`${API_BASE}/invoices/?limit=1000`);
-      const d = await safeJson(res);
-      setInvoices(Array.isArray(d.results ?? d) ? (d.results ?? d) : []);
-    } catch { /* silent */ } finally { setLoading(false); }
-  };
+  const { invoices, isLoading: loading, mutate } = useInvoices({
+    limit: 1000,
+    search,
+    enabled: canManage || true, // Allow viewing for all authorized if API permits, or check permissions
+  });
 
-  useEffect(() => { fetchInvoices(); }, []);
-
-  const filtered = invoices.filter(inv => {
+  const filtered = invoices.filter((inv: any) => {
     const q = search.toLowerCase();
     const matchSearch = !q ||
       (inv.invoice_number && inv.invoice_number.toLowerCase().includes(q)) ||
@@ -52,10 +46,10 @@ export default function InvoicesPage() {
   // Summary counts
   const counts = {
     total: invoices.length,
-    paid: invoices.filter(i => i.status === 'Paid').length,
-    partial: invoices.filter(i => i.status === 'Partial').length,
-    unpaid: invoices.filter(i => i.status === 'Unpaid').length,
-    overdue: invoices.filter(i => i.status === 'Overdue').length,
+    paid: invoices.filter((i: any) => i.status === 'Paid').length,
+    partial: invoices.filter((i: any) => i.status === 'Partial').length,
+    unpaid: invoices.filter((i: any) => i.status === 'Unpaid').length,
+    overdue: invoices.filter((i: any) => i.status === 'Overdue').length,
   };
 
   return (
@@ -147,7 +141,7 @@ export default function InvoicesPage() {
                     No invoices found.
                   </td>
                 </tr>
-              ) : filtered.map(inv => (
+              ) : filtered.map((inv: any) => (
                 <tr
                   key={inv.id}
                   onClick={() => setSelectedInvoice(inv)}
@@ -173,18 +167,20 @@ export default function InvoicesPage() {
         )}
       </div>
 
+      {/* Slide-out Panel */}
       {selectedInvoice && (
         <InvoiceDrawer
           invoice={selectedInvoice}
           onClose={() => setSelectedInvoice(null)}
-          onUpdate={() => { fetchInvoices(); setSelectedInvoice(null); }}
+          onUpdate={() => mutate()}
         />
       )}
 
+      {/* New Invoice Modal */}
       {showNewModal && (
         <NewInvoiceModal
           onClose={() => setShowNewModal(false)}
-          onSuccess={() => { fetchInvoices(); setShowNewModal(false); }}
+          onSuccess={() => mutate()}
         />
       )}
     </div>
