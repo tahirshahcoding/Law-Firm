@@ -25,7 +25,9 @@ import {
   Hourglass,
   Ban,
   TrendingUp,
-  CreditCard
+  CreditCard,
+  Clock,
+  Scale
 } from 'lucide-react';
 import Image from 'next/image';
 

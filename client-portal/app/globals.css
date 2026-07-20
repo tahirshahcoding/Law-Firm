@@ -14,9 +14,17 @@ body {
   background-color: #f8fafc; /* slate-50 */
 }
 
-/* Jameel Noori Nastaleeq for Urdu */
+@font-face {
+  font-family: 'Jameel Noori Nastaleeq';
+  src: url('/fonts/JameelNooriNastaleeq.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Jameel Noori Nastaleeq Font Class */
 .font-urdu {
-  font-family: 'Jameel Noori Nastaleeq', 'Nafees Nastaleeq', 'Noto Naskh Arabic', sans-serif;
-  font-size: 110%; /* Nastaleeq usually needs a slightly larger base size */
-  line-height: 1.8;
+  font-family: 'Jameel Noori Nastaleeq', var(--font-geist-sans), sans-serif !important;
+  line-height: 1.8 !important;
+  font-size: 110%; /* bump size slightly for nastaleeq */
 }
