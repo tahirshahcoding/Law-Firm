@@ -90,7 +90,7 @@ class CaseViewSet(viewsets.ModelViewSet):
     search_fields = ['case_number', 'opponent_name', 'court__name']
 
     def get_queryset(self):
-        qs = Case.objects.all().select_related('client', 'assigned_to').order_by('-created_at')
+        qs = Case.objects.all().select_related('client', 'assigned_to', 'court', 'judge').order_by('-created_at')
         user = self.request.user
         role = getattr(user.profile, 'role', '')
         if role == 'Associate':
@@ -215,7 +215,7 @@ class HearingViewSet(viewsets.ModelViewSet):
 
         qs = (
             Hearing.objects
-            .select_related('case', 'case__client', 'case__assigned_to')
+            .select_related('case', 'case__client', 'case__assigned_to', 'case__court', 'case__judge')
             .prefetch_related('documents')
             .annotate(annotated_previous_date=Subquery(previous_hearing))
             .order_by('hearing_date')

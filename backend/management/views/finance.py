@@ -137,7 +137,7 @@ class InvoiceViewSet(viewsets.ModelViewSet):
         role = getattr(profile, 'role', '')
         perms = getattr(profile, 'permissions', {})
         if role == 'Admin' or role == 'Accountant' or perms.get('accounts', {}).get('view', False):
-            return Invoice.objects.select_related('case', 'case__client').prefetch_related('items', 'payments').order_by('-created_at')
+            return Invoice.objects.select_related('case', 'case__client', 'case__court').prefetch_related('items', 'payments').order_by('-created_at')
         return Invoice.objects.none()
 
     def check_permissions(self, request):

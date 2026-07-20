@@ -18,7 +18,7 @@ export default function DailyDiaryPage() {
   const fetchTasksAndHearings = () => {
     setLoading(true);
     Promise.all([
-      apiFetch(`${API_BASE}/tasks/`).then(res => res.json()),
+      apiFetch(`${API_BASE}/tasks/?limit=1000`).then(res => res.json()),
       apiFetch(`${API_BASE}/diary/today/`).then(res => res.json())
     ])
       .then(([tasksData, hearingsData]) => {

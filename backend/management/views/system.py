@@ -98,7 +98,7 @@ class DailyDiaryView(APIView):
         hearings = (
             Hearing.objects
             .filter(hearing_date=today)
-            .select_related('case', 'case__client')
+            .select_related('case', 'case__client', 'case__court', 'case__judge', 'case__assigned_to')
             .prefetch_related('documents')
         )
         if role == 'Associate':

@@ -16,9 +16,11 @@ export default function DailyDiaryPage() {
   const fetchTasks = async () => {
     setLoading(true);
     try {
-      const res = await apiFetch(`${API_BASE}/tasks/`);
-      const data = await res.json();
-      setTasks(data);
+      const res = await apiFetch(`${API_BASE}/tasks/?limit=1000`);
+      if (res.ok) {
+        const data = await res.json();
+        setTasks(data.results || data);
+      }
     } catch (err) {
       console.error('Failed to fetch tasks:', err);
     } finally {

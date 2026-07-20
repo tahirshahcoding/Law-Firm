@@ -35,6 +35,7 @@ export default function DeadlinesPage() {
       if (statusFilter) params.append('status', statusFilter);
       if (priorityFilter) params.append('priority', priorityFilter);
       if (typeFilter) params.append('deadline_type', typeFilter);
+      params.append('limit', '1000');
 
       const res = await apiFetch(`${API_BASE}/deadlines/?${params.toString()}`);
       if (res.ok) {

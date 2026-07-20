@@ -30,7 +30,7 @@ export default function CauseListPage() {
   const fetchCauseList = () => {
     if (!canView) return;
     setLoading(true);
-    let url = `${API_BASE}/hearings/?date=${selectedDate}`;
+    let url = `${API_BASE}/hearings/?date=${selectedDate}&limit=1000`;
     if (district.trim()) url += `&district=${encodeURIComponent(district.trim())}`;
     if (tehsil.trim()) url += `&tehsil=${encodeURIComponent(tehsil.trim())}`;
     if (court.trim()) url += `&court=${encodeURIComponent(court.trim())}`;
@@ -68,7 +68,7 @@ export default function CauseListPage() {
     setTimeout(() => {
       if (!canView) return;
       setLoading(true);
-      apiFetch(`${API_BASE}/hearings/?date=${selectedDate}`)
+      apiFetch(`${API_BASE}/hearings/?date=${selectedDate}&limit=1000`)
         .then(res => res.json())
         .then(data => {
           setHearings(Array.isArray(data) ? data : (data.results || []));

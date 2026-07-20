@@ -31,7 +31,7 @@ export default function InvoicesPage() {
   const fetchInvoices = async () => {
     setLoading(true);
     try {
-      const res = await apiFetch(`${API_BASE}/invoices/`);
+      const res = await apiFetch(`${API_BASE}/invoices/?limit=1000`);
       const d = await safeJson(res);
       setInvoices(Array.isArray(d.results ?? d) ? (d.results ?? d) : []);
     } catch { /* silent */ } finally { setLoading(false); }
