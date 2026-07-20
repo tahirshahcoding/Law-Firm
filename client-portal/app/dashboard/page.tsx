@@ -164,6 +164,28 @@ export default function DashboardPage() {
   const [sendingMessage, setSendingMessage] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const formatMsgTime = (dateStr: string) =>
+    new Date(dateStr).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  const formatMsgDate = (dateStr: string) => {
+    const d = new Date(dateStr);
+    const today = new Date();
+    if (d.toDateString() === today.toDateString()) return 'Today';
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+    if (d.toDateString() === yesterday.toDateString()) return 'Yesterday';
+    return d.toLocaleDateString([], { month: 'long', day: 'numeric' });
+  };
+
+  // Group messages by date
+  const groupedClientMessages: { date: string; msgs: any[] }[] = [];
+  messages.forEach(msg => {
+    const label = formatMsgDate(msg.created_at);
+    const last = groupedClientMessages[groupedClientMessages.length - 1];
+    if (last && last.date === label) last.msgs.push(msg);
+    else groupedClientMessages.push({ date: label, msgs: [msg] });
+  });
+
   useEffect(() => {
     fetch(`${API_BASE}/portal/data/`, { credentials: 'include' })
       .then(r => { if (!r.ok) throw new Error(); return r.json(); })
@@ -930,77 +952,113 @@ export default function DashboardPage() {
           )}
 
           {activeTab === 'messages' && (
-            <div className="w-full h-full max-w-4xl mx-auto flex flex-col bg-white rounded-3xl border border-slate-200/60 shadow-sm overflow-hidden animate-in fade-in duration-500" style={{ height: 'calc(100vh - 180px)' }}>
-              {/* Chat Header */}
-              <div className="bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between z-10 shrink-0">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-slate-200 overflow-hidden relative border-2 border-white shadow-sm">
-                    <div className="absolute inset-0 bg-gradient-to-tr from-slate-300 to-slate-200 flex items-center justify-center">
-                      <User size={24} className="text-white" />
-                    </div>
+            <div className="w-full max-w-3xl mx-auto flex flex-col rounded-3xl overflow-hidden border border-slate-200/60 shadow-xl bg-white animate-in fade-in duration-300" style={{ height: 'calc(100vh - 200px)' }}>
+
+              {/* ── Chat Header ── */}
+              <div className="bg-white border-b border-slate-100 px-5 py-3.5 flex items-center gap-4 shrink-0">
+                <div className="relative">
+                  <div className="w-11 h-11 rounded-full bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center shadow-md shadow-blue-500/30">
+                    <span className="text-white font-black text-sm">RA</span>
                   </div>
-                  <div>
-                    <h2 className="text-lg font-black text-slate-900 leading-tight">Your Advocate</h2>
-                    <p className="text-xs font-bold text-emerald-500 flex items-center gap-1.5 mt-0.5">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500"></span> Online
-                    </p>
-                  </div>
+                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white" />
+                </div>
+                <div className="flex-1">
+                  <h2 className="font-black text-slate-900 text-base leading-tight">Rahimullah Advocate</h2>
+                  <p className="text-xs font-semibold text-emerald-500 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    Available
+                  </p>
+                </div>
+                <div className="text-xs text-slate-400 font-medium bg-slate-50 px-3 py-1.5 rounded-full border border-slate-200">
+                  Secure &amp; Confidential
                 </div>
               </div>
 
-              {/* Chat Messages */}
-              <div className="flex-1 overflow-y-auto p-6 bg-slate-50/50 space-y-6 custom-scrollbar">
-                {messages.length === 0 ? (
-                  <div className="h-full flex flex-col items-center justify-center text-slate-400 space-y-3">
-                    <MessageSquare size={48} className="opacity-20" />
-                    <p className="font-medium text-sm">Send a message to start the conversation.</p>
+              {/* ── Messages ── */}
+              <div className="flex-1 overflow-y-auto px-5 py-5 space-y-1 bg-gradient-to-b from-slate-50/80 to-white custom-scrollbar">
+                {groupedClientMessages.length === 0 ? (
+                  <div className="h-full flex flex-col items-center justify-center gap-5">
+                    <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+                      <MessageSquare size={36} className="text-blue-300" />
+                    </div>
+                    <div className="text-center">
+                      <p className="font-bold text-slate-700 text-sm">Start the conversation</p>
+                      <p className="text-xs text-slate-400 mt-1">Your advocate will respond as soon as possible.</p>
+                    </div>
                   </div>
                 ) : (
-                  messages.map((msg, i) => {
-                    const isClient = msg.sender_type === 'Client';
-                    return (
-                      <div key={msg.id || i} className={`flex ${isClient ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[75%] rounded-2xl px-5 py-3 shadow-sm ${
-                          isClient 
-                            ? 'bg-blue-600 text-white rounded-tr-sm' 
-                            : 'bg-white border border-slate-200/60 text-slate-700 rounded-tl-sm'
-                        }`}>
-                          <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.content}</p>
-                          <div className={`text-[10px] font-bold mt-2 ${isClient ? 'text-blue-200' : 'text-slate-400'} flex items-center gap-1 justify-end`}>
-                            {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            {isClient && (msg.is_read ? <CheckCheck size={14} className="text-cyan-300" /> : <Check size={14} className="text-blue-300/80" />)}
-                          </div>
-                        </div>
+                  groupedClientMessages.map(({ date, msgs }) => (
+                    <div key={date}>
+                      {/* Date divider */}
+                      <div className="flex items-center gap-3 my-5">
+                        <div className="flex-1 h-px bg-slate-200" />
+                        <span className="text-[11px] font-semibold text-slate-400 px-2 bg-white">{date}</span>
+                        <div className="flex-1 h-px bg-slate-200" />
                       </div>
-                    );
-                  })
+                      <div className="space-y-1.5">
+                        {msgs.map((msg: any, i: number) => {
+                          const isClient = msg.sender_type === 'Client';
+                          const prevMsg = i > 0 ? msgs[i - 1] : null;
+                          const isGrouped = prevMsg && prevMsg.sender_type === msg.sender_type;
+                          return (
+                            <div key={msg.id || i} className={`flex items-end gap-2.5 ${isClient ? 'justify-end' : 'justify-start'} ${isGrouped ? 'mt-0.5' : 'mt-4'}`}>
+                              {/* Advocate avatar */}
+                              {!isClient && (
+                                <div className={`w-7 h-7 rounded-full shrink-0 bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-[10px] font-black text-white shadow-sm ${isGrouped ? 'invisible' : ''}`}>
+                                  RA
+                                </div>
+                              )}
+                              <div className="max-w-[72%]">
+                                <div className={`px-4 py-2.5 text-sm leading-relaxed shadow-sm ${
+                                  isClient
+                                    ? `bg-blue-600 text-white ${isGrouped ? 'rounded-2xl rounded-br-md' : 'rounded-2xl rounded-br-sm'}`
+                                    : `bg-white border border-slate-100 text-slate-800 ${isGrouped ? 'rounded-2xl rounded-bl-md' : 'rounded-2xl rounded-bl-sm'}`
+                                }`}>
+                                  <p className="whitespace-pre-wrap">{msg.content}</p>
+                                  <div className="flex items-center gap-1 mt-1.5 justify-end">
+                                    <span className={`text-[10px] font-medium ${isClient ? 'text-blue-200' : 'text-slate-400'}`}>
+                                      {formatMsgTime(msg.created_at)}
+                                    </span>
+                                    {isClient && (msg.is_read
+                                      ? <CheckCheck size={13} className="text-cyan-300" />
+                                      : <Check size={13} className="text-blue-300/70" />
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))
                 )}
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* Chat Input */}
-              <div className="p-4 bg-white border-t border-slate-100 shrink-0">
-                <form onSubmit={sendMessage} className="flex items-center gap-3 relative">
+              {/* ── Input ── */}
+              <div className="px-4 py-3 bg-white border-t border-slate-100 shrink-0">
+                <form onSubmit={sendMessage} className="flex items-end gap-2">
                   <input
                     type="text"
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder="Type your message..."
-                    className="flex-1 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-full focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 block w-full ps-6 pe-16 py-3.5 transition-all outline-none"
+                    placeholder="Type your message…"
+                    className="flex-1 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-2xl px-5 py-3.5 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all outline-none placeholder-slate-400"
                     disabled={sendingMessage}
+                    onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(e as any); } }}
                   />
-                  <button 
-                    type="submit" 
+                  <button
+                    type="submit"
                     disabled={!newMessage.trim() || sendingMessage}
-                    className="absolute end-2 w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 disabled:opacity-50 disabled:hover:bg-blue-600 transition-colors shadow-sm shadow-blue-600/20"
+                    className="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 active:scale-95 disabled:opacity-40 transition-all shadow-lg shadow-blue-600/30 shrink-0"
                   >
-                    {sendingMessage ? (
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    ) : (
-                      <Send size={16} className="-ms-0.5" />
-                    )}
+                    {sendingMessage
+                      ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      : <Send size={16} className="-ml-0.5" />}
                   </button>
                 </form>
+                <p className="text-[11px] text-slate-400 dark:text-slate-600 text-center mt-2">Enter to send · All messages are confidential</p>
               </div>
             </div>
           )}
