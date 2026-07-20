@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:is(.dark *));
 @layer base {
   body {
     @apply bg-slate-50 text-slate-900 antialiased selection:bg-blue-100 selection:text-blue-900;

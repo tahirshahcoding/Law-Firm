@@ -18,10 +18,10 @@ type Consultation = {
 };
 
 const STATUS_STYLES: Record<string, string> = {
-  New: 'bg-blue-50 text-blue-700 border-blue-200',
-  Contacted: 'bg-amber-50 text-amber-700 border-amber-200',
-  Converted: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  Closed: 'bg-slate-100 text-slate-500 border-slate-200',
+  New: 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800',
+  Contacted: 'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800',
+  Converted: 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800',
+  Closed: 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700',
 };
 
 export default function ConsultationsPage() {
@@ -107,12 +107,12 @@ export default function ConsultationsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Consultation Inquiries</h2>
-          <p className="text-slate-500 mt-1 text-sm">Incoming client requests from the firm website.</p>
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Consultation Inquiries</h2>
+          <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm">Incoming client requests from the firm website.</p>
         </div>
         <button
           onClick={fetchConsultations}
-          className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-blue-600 transition-all shadow-sm"
+          className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-blue-600 dark:hover:text-blue-400 transition-all shadow-sm dark:shadow-none"
         >
           <RefreshCw size={16} /> Refresh
         </button>
@@ -126,8 +126,8 @@ export default function ConsultationsPage() {
             onClick={() => setFilterStatus(s)}
             className={`px-4 py-1.5 rounded-full text-sm font-semibold border transition-all ${
               filterStatus === s
-                ? 'bg-blue-600 text-white border-blue-600 shadow-sm shadow-blue-600/20'
-                : 'bg-white text-slate-500 border-slate-200 hover:border-blue-300 hover:text-blue-600'
+                ? 'bg-blue-600 text-white border-blue-600 dark:border-blue-500 shadow-sm shadow-blue-600/20'
+                : 'bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700 hover:text-blue-600 dark:hover:text-blue-400'
             }`}
           >
             {s} <span className="ml-1 opacity-70 text-xs">{counts[s]}</span>
@@ -137,13 +137,13 @@ export default function ConsultationsPage() {
 
       {/* Search Bar */}
       <div className="relative">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" size={16} />
         <input
           type="text"
           placeholder="Search by name, phone, or practice area..."
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
+          className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500 text-slate-900 dark:text-white"
         />
       </div>
 
@@ -153,9 +153,9 @@ export default function ConsultationsPage() {
           <ListSkeleton />
         </div>
       ) : filtered.length === 0 ? (
-        <div className="py-24 text-center text-slate-400 bg-white rounded-2xl border border-slate-100 shadow-sm">
-          <MessageSquare size={40} className="mx-auto mb-4 text-slate-200" />
-          <p className="font-medium text-slate-600">No consultation requests found.</p>
+        <div className="py-24 text-center text-slate-400 dark:text-slate-500 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm dark:shadow-none transition-colors">
+          <MessageSquare size={40} className="mx-auto mb-4 text-slate-200 dark:text-slate-700" />
+          <p className="font-medium text-slate-600 dark:text-slate-400">No consultation requests found.</p>
           <p className="text-sm mt-1">New requests from the website will appear here automatically.</p>
         </div>
       ) : (
@@ -163,7 +163,7 @@ export default function ConsultationsPage() {
           {filtered.map(c => (
             <div
               key={c.id}
-              className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden hover:border-blue-200 transition-colors"
+              className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm dark:shadow-none overflow-hidden hover:border-blue-200 dark:hover:border-blue-800 transition-colors"
             >
               {/* Card Header */}
               <div
@@ -172,20 +172,20 @@ export default function ConsultationsPage() {
               >
                 <div className="flex items-center gap-4 flex-1 min-w-0">
                   {/* Avatar */}
-                  <div className="w-11 h-11 shrink-0 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 border border-blue-200 flex items-center justify-center text-blue-700 font-bold uppercase text-sm">
+                  <div className="w-11 h-11 shrink-0 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 border border-blue-200 dark:border-blue-800 flex items-center justify-center text-blue-700 font-bold uppercase text-sm">
                     {c.name.charAt(0)}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <p className="font-semibold text-slate-900">{c.name}</p>
+                      <p className="font-semibold text-slate-900 dark:text-white">{c.name}</p>
                       <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${STATUS_STYLES[c.status] || STATUS_STYLES['New']}`}>
                         {c.status}
                       </span>
-                      <span className="text-xs font-medium text-slate-400 bg-slate-50 px-2 py-0.5 rounded-full border border-slate-100">
+                      <span className="text-xs font-medium text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-800/50 px-2 py-0.5 rounded-full border border-slate-100 dark:border-slate-800">
                         {c.inquiry_type}
                       </span>
                     </div>
-                    <div className="flex items-center gap-4 mt-1 text-xs text-slate-400">
+                    <div className="flex items-center gap-4 mt-1 text-xs text-slate-400 dark:text-slate-500">
                       <span className="flex items-center gap-1"><Phone size={11} />{c.phone}</span>
                       {c.email && <span className="flex items-center gap-1"><Mail size={11} />{c.email}</span>}
                       <span className="flex items-center gap-1"><Clock size={11} />{new Date(c.created_at).toLocaleDateString('en-PK', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
@@ -193,17 +193,17 @@ export default function ConsultationsPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
-                  <ChevronDown size={18} className={`text-slate-400 transition-transform duration-300 ${expanded === c.id ? 'rotate-180' : ''}`} />
+                  <ChevronDown size={18} className={`text-slate-400 dark:text-slate-500 transition-transform duration-300 ${expanded === c.id ? 'rotate-180' : ''}`} />
                 </div>
               </div>
 
               {/* Expanded Detail */}
               {expanded === c.id && (
-                <div className="px-5 pb-5 border-t border-slate-100 pt-4 space-y-4 animate-in slide-in-from-top-2 duration-200">
+                <div className="px-5 pb-5 border-t border-slate-100 dark:border-slate-800 pt-4 space-y-4 animate-in slide-in-from-top-2 duration-200">
                   {/* Message */}
                   <div>
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Legal Matter Description</p>
-                    <p className="text-slate-700 text-sm leading-relaxed bg-slate-50 p-4 rounded-xl border border-slate-100">
+                    <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">Legal Matter Description</p>
+                    <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-800 transition-colors">
                       {c.message}
                     </p>
                   </div>
@@ -212,15 +212,15 @@ export default function ConsultationsPage() {
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-2">
                     {/* Status changer */}
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Update Status:</span>
+                      <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Update Status:</span>
                       {(['New', 'Contacted', 'Converted', 'Closed'] as const).map(s => (
                         <button
                           key={s}
                           onClick={() => handleStatusChange(c.id, s)}
                           className={`flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all ${
                             c.status === s
-                              ? STATUS_STYLES[s] + ' shadow-sm'
-                              : 'bg-white text-slate-500 border-slate-200 hover:border-blue-300 hover:text-blue-600'
+                              ? STATUS_STYLES[s] + ' shadow-sm dark:shadow-none'
+                              : 'bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700 hover:text-blue-600 dark:hover:text-blue-400'
                           }`}
                         >
                           {c.status === s && <CheckCircle2 size={12} />}
@@ -231,7 +231,7 @@ export default function ConsultationsPage() {
                     {/* Delete */}
                     <button
                       onClick={() => handleDelete(c.id, c.name)}
-                      className="flex items-center gap-2 text-xs font-semibold px-3 py-1.5 text-rose-500 bg-rose-50 border border-rose-200 hover:bg-rose-600 hover:text-white rounded-lg transition-colors"
+                      className="flex items-center gap-2 text-xs font-semibold px-3 py-1.5 text-rose-500 dark:text-rose-400 bg-rose-50 dark:bg-rose-900/30 border border-rose-200 dark:border-rose-800 hover:bg-rose-600 dark:hover:bg-rose-700 hover:text-white rounded-lg transition-colors"
                     >
                       <Trash2 size={13} /> Delete
                     </button>

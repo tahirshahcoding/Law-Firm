@@ -58,10 +58,10 @@ export default function RevenuePage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Revenue Analytics</h1>
-          <p className="text-sm text-slate-500 mt-0.5">Visualize firm income, cash flow, and financial trends</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Revenue Analytics</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Visualize firm income, cash flow, and financial trends</p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 border border-slate-200 text-sm font-semibold text-slate-700 rounded-xl hover:bg-slate-50 transition-colors bg-white shadow-sm">
+        <button className="flex items-center gap-2 px-4 py-2 border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors bg-white dark:bg-slate-900 shadow-sm dark:shadow-none">
           <Download size={15} />
           Export Report
         </button>
@@ -69,39 +69,39 @@ export default function RevenuePage() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Today's Revenue</p>
-          <p className="text-2xl font-bold text-slate-900 mt-2">{fmt(ledger?.todays_revenue)}</p>
-          <p className="text-xs text-emerald-600 font-medium mt-1">Payments cleared today</p>
+        <div className="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm dark:shadow-none transition-colors">
+          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Today's Revenue</p>
+          <p className="text-2xl font-bold text-slate-900 dark:text-white mt-2">{fmt(ledger?.todays_revenue)}</p>
+          <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium mt-1">Payments cleared today</p>
         </div>
-        <div className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">This Month</p>
-          <p className="text-2xl font-bold text-emerald-600 mt-2">{fmt(ledger?.this_month_revenue)}</p>
-          <p className="text-xs text-slate-400 mt-1">Current calendar month</p>
+        <div className="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm dark:shadow-none transition-colors">
+          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">This Month</p>
+          <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">{fmt(ledger?.this_month_revenue)}</p>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">Current calendar month</p>
         </div>
-        <div className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">This Year</p>
-          <p className="text-2xl font-bold text-blue-600 mt-2">{fmt(ledger?.this_year_revenue)}</p>
-          <p className="text-xs text-slate-400 mt-1">Year to date collections</p>
+        <div className="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm dark:shadow-none transition-colors">
+          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">This Year</p>
+          <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-2">{fmt(ledger?.this_year_revenue)}</p>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">Year to date collections</p>
         </div>
-        <div className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Outstanding</p>
-          <p className="text-2xl font-bold text-rose-600 mt-2">{fmt(ledger?.outstanding_balance)}</p>
-          <p className="text-xs text-slate-400 mt-1">Unpaid invoice balances</p>
+        <div className="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm dark:shadow-none transition-colors">
+          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Outstanding</p>
+          <p className="text-2xl font-bold text-rose-600 dark:text-rose-400 mt-2">{fmt(ledger?.outstanding_balance)}</p>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">Unpaid invoice balances</p>
         </div>
       </div>
 
       {/* Charts section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Income vs Expenses Bar Chart */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-none flex flex-col justify-between transition-colors">
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-2.5 bg-blue-50 rounded-xl text-blue-600">
+            <div className="p-2.5 bg-blue-50 dark:bg-blue-900/30 rounded-xl text-blue-600 dark:text-blue-400">
               <DollarSign size={20} />
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-900">Income vs Expenses</h2>
-              <p className="text-xs text-slate-500">Monthly breakdowns</p>
+              <h2 className="text-base font-bold text-slate-900 dark:text-white">Income vs Expenses</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Monthly breakdowns</p>
             </div>
           </div>
           
@@ -124,14 +124,14 @@ export default function RevenuePage() {
         </div>
 
         {/* Cumulative Profit Area Chart */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-none flex flex-col justify-between transition-colors">
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-2.5 bg-emerald-50 rounded-xl text-emerald-600">
+            <div className="p-2.5 bg-emerald-50 dark:bg-emerald-900/30 rounded-xl text-emerald-600 dark:text-emerald-400">
               <TrendingUp size={20} />
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-900">Cumulative Net Profit</h2>
-              <p className="text-xs text-slate-500">Growth trajectory</p>
+              <h2 className="text-base font-bold text-slate-900 dark:text-white">Cumulative Net Profit</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Growth trajectory</p>
             </div>
           </div>
           
@@ -160,10 +160,10 @@ export default function RevenuePage() {
       {/* Two column: Top Clients & Revenue by Practice Area */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Top Clients */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-          <h2 className="text-sm font-bold text-slate-900 mb-5 uppercase tracking-wider">Top Paying Clients</h2>
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-none transition-colors">
+          <h2 className="text-sm font-bold text-slate-900 dark:text-white mb-5 uppercase tracking-wider">Top Paying Clients</h2>
           {topClients.length === 0 ? (
-            <p className="text-sm text-slate-400 text-center py-12">No client payment data available.</p>
+            <p className="text-sm text-slate-400 dark:text-slate-500 text-center py-12">No client payment data available.</p>
           ) : (
             <div className="space-y-4">
               {topClients.map((client: any, i: number) => {
@@ -171,10 +171,10 @@ export default function RevenuePage() {
                 return (
                   <div key={i} className="space-y-1.5">
                     <div className="flex justify-between items-center text-sm font-medium">
-                      <span className="text-slate-800">{client.name}</span>
-                      <span className="text-slate-900 font-semibold">{fmt(client.amount)}</span>
+                      <span className="text-slate-800 dark:text-slate-200">{client.name}</span>
+                      <span className="text-slate-900 dark:text-white font-semibold">{fmt(client.amount)}</span>
                     </div>
-                    <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                    <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
                       <div className="bg-blue-600 h-full rounded-full" style={{ width: `${pct}%` }} />
                     </div>
                   </div>
@@ -185,10 +185,10 @@ export default function RevenuePage() {
         </div>
 
         {/* Revenue by Practice Area */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-          <h2 className="text-sm font-bold text-slate-900 mb-5 uppercase tracking-wider">Revenue by Practice Area</h2>
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-none transition-colors">
+          <h2 className="text-sm font-bold text-slate-900 dark:text-white mb-5 uppercase tracking-wider">Revenue by Practice Area</h2>
           {practiceAreas.length === 0 ? (
-            <p className="text-sm text-slate-400 text-center py-12">No practice area data available.</p>
+            <p className="text-sm text-slate-400 dark:text-slate-500 text-center py-12">No practice area data available.</p>
           ) : (
             <div className="space-y-4">
               {practiceAreas.map((area: any, i: number) => {
@@ -196,13 +196,13 @@ export default function RevenuePage() {
                 return (
                   <div key={i} className="space-y-1.5">
                     <div className="flex justify-between items-center text-sm font-medium">
-                      <span className="text-slate-800">{area.category}</span>
+                      <span className="text-slate-800 dark:text-slate-200">{area.category}</span>
                       <div className="flex items-center gap-2">
-                        <span className="text-slate-500 text-xs">({pct}%)</span>
-                        <span className="text-slate-900 font-semibold">{fmt(area.amount)}</span>
+                        <span className="text-slate-500 dark:text-slate-400 text-xs">({pct}%)</span>
+                        <span className="text-slate-900 dark:text-white font-semibold">{fmt(area.amount)}</span>
                       </div>
                     </div>
-                    <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                    <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
                       <div className="bg-emerald-500 h-full rounded-full" style={{ width: `${pct}%` }} />
                     </div>
                   </div>

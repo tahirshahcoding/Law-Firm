@@ -145,8 +145,8 @@ function CalendarPageContent() {
     <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Calendar</h2>
-          <p className="text-slate-500 mt-1 text-sm sm:text-base">Centralized view of all hearings, deadlines, and meetings.</p>
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Calendar</h2>
+          <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm sm:text-base">Centralized view of all hearings, deadlines, and meetings.</p>
         </div>
         <button
           onClick={() => setIsAddModalOpen(true)}
@@ -156,22 +156,22 @@ function CalendarPageContent() {
         </button>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-[0_4px_24px_-8px_rgba(59,130,246,0.08)] border border-blue-100/50 p-4 flex flex-col xl:flex-row items-center justify-between gap-4">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-[0_4px_24px_-8px_rgba(59,130,246,0.08)] dark:shadow-none border border-blue-100/50 dark:border-slate-800 p-4 flex flex-col xl:flex-row items-center justify-between gap-4 transition-colors">
         
         {/* Navigation & Current Date */}
         <div className="flex items-center gap-4 w-full xl:w-auto">
           <div className="flex items-center gap-1">
-            <button onClick={handlePrev} className="p-2 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-lg transition-colors">
+            <button onClick={handlePrev} className="p-2 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors">
               <ChevronLeft size={18} />
             </button>
-            <button onClick={handleToday} className="px-4 py-2 border border-slate-200 text-slate-600 font-medium hover:bg-slate-50 rounded-lg transition-colors">
+            <button onClick={handleToday} className="px-4 py-2 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors">
               Today
             </button>
-            <button onClick={handleNext} className="p-2 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-lg transition-colors">
+            <button onClick={handleNext} className="p-2 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors">
               <ChevronRight size={18} />
             </button>
           </div>
-          <h3 className="text-lg font-bold text-slate-800 min-w-[160px]">
+          <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200 min-w-[160px]">
             {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
           </h3>
         </div>
@@ -179,20 +179,20 @@ function CalendarPageContent() {
         {/* Filters and View Toggles */}
         <div className="flex flex-col sm:flex-row items-center gap-3 w-full xl:w-auto">
           <div className="relative w-full sm:w-64">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" size={16} />
             <input 
               type="text" 
               placeholder="Search events..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+              className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
             />
           </div>
           
           <select 
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="w-full sm:w-auto px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-700"
+            className="w-full sm:w-auto px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-700 dark:text-slate-300"
           >
             <option value="">All Event Types</option>
             <option value="Court Hearing">Court Hearings</option>
@@ -205,28 +205,28 @@ function CalendarPageContent() {
             <option value="Public Holiday">Public Holidays</option>
           </select>
 
-          <div className="flex bg-slate-100 p-1 rounded-lg w-full sm:w-auto overflow-hidden">
+          <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg w-full sm:w-auto overflow-hidden transition-colors">
             <button 
               onClick={() => setViewMode('month')} 
-              className={`flex-1 sm:flex-none px-3 py-1.5 text-sm font-medium rounded-md transition-all ${viewMode === 'month' ? 'bg-white shadow-sm text-blue-700' : 'text-slate-500 hover:text-slate-700'}`}
+              className={`flex-1 sm:flex-none px-3 py-1.5 text-sm font-medium rounded-md transition-all ${viewMode === 'month' ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-700 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'}`}
             >
               Month
             </button>
             <button 
               onClick={() => setViewMode('week')} 
-              className={`flex-1 sm:flex-none px-3 py-1.5 text-sm font-medium rounded-md transition-all ${viewMode === 'week' ? 'bg-white shadow-sm text-blue-700' : 'text-slate-500 hover:text-slate-700'}`}
+              className={`flex-1 sm:flex-none px-3 py-1.5 text-sm font-medium rounded-md transition-all ${viewMode === 'week' ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-700 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'}`}
             >
               Week
             </button>
             <button 
               onClick={() => setViewMode('day')} 
-              className={`flex-1 sm:flex-none px-3 py-1.5 text-sm font-medium rounded-md transition-all ${viewMode === 'day' ? 'bg-white shadow-sm text-blue-700' : 'text-slate-500 hover:text-slate-700'}`}
+              className={`flex-1 sm:flex-none px-3 py-1.5 text-sm font-medium rounded-md transition-all ${viewMode === 'day' ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-700 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'}`}
             >
               Day
             </button>
             <button 
               onClick={() => setViewMode('agenda')} 
-              className={`flex-1 sm:flex-none px-3 py-1.5 text-sm font-medium rounded-md transition-all ${viewMode === 'agenda' ? 'bg-white shadow-sm text-blue-700' : 'text-slate-500 hover:text-slate-700'}`}
+              className={`flex-1 sm:flex-none px-3 py-1.5 text-sm font-medium rounded-md transition-all ${viewMode === 'agenda' ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-700 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'}`}
             >
               Agenda
             </button>
@@ -234,7 +234,7 @@ function CalendarPageContent() {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-[0_4px_24px_-8px_rgba(59,130,246,0.08)] border border-blue-100/50 p-4">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-[0_4px_24px_-8px_rgba(59,130,246,0.08)] dark:shadow-none border border-blue-100/50 dark:border-slate-800 p-4 transition-colors">
         {renderView()}
       </div>
 

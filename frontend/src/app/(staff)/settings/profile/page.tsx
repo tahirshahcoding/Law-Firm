@@ -82,15 +82,15 @@ export default function ProfileSettingsPage() {
   return (
     <div className="space-y-8 animate-in fade-in duration-500 w-full">
       <div>
-        <h2 className="text-2xl font-bold text-slate-900 tracking-tight">My Profile</h2>
-        <p className="text-slate-500 mt-1">Update your account credentials and personal information.</p>
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">My Profile</h2>
+        <p className="text-slate-500 dark:text-slate-400 mt-1">Update your account credentials and personal information.</p>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] border border-slate-100 overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] dark:shadow-none border border-slate-100 dark:border-slate-800 overflow-hidden transition-colors">
         
-        <div className="p-8 border-b border-slate-100 flex flex-col md:flex-row items-center gap-6 bg-slate-50/50">
+        <div className="p-8 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row items-center gap-6 bg-slate-50/50 dark:bg-slate-800/30">
           <div className="relative group cursor-pointer">
-            <div className="w-24 h-24 bg-blue-600 rounded-full overflow-hidden flex items-center justify-center text-3xl font-bold text-white shadow-lg border-4 border-white">
+            <div className="w-24 h-24 bg-blue-600 rounded-full overflow-hidden flex items-center justify-center text-3xl font-bold text-white shadow-lg border-4 border-white dark:border-slate-800 transition-colors">
               {avatarPreview ? (
                 <img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
               ) : (
@@ -103,8 +103,8 @@ export default function ProfileSettingsPage() {
             </label>
           </div>
           <div className="text-center md:text-left">
-            <h3 className="text-xl font-bold text-slate-900">{user.username}</h3>
-            <p className="text-slate-500 font-medium">{user.role}</p>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">{user.username}</h3>
+            <p className="text-slate-500 dark:text-slate-400 font-medium">{user.role}</p>
           </div>
         </div>
 
@@ -112,7 +112,9 @@ export default function ProfileSettingsPage() {
           
           {message && (
             <div className={`p-4 rounded-lg flex items-start gap-3 border ${
-              message.type === 'success' ? 'bg-emerald-50 border-emerald-100 text-emerald-800' : 'bg-rose-50 border-rose-100 text-rose-800'
+              message.type === 'success' 
+                ? 'bg-emerald-50 dark:bg-emerald-900/30 border-emerald-100 dark:border-emerald-800 text-emerald-800 dark:text-emerald-400' 
+                : 'bg-rose-50 dark:bg-rose-900/30 border-rose-100 dark:border-rose-800 text-rose-800 dark:text-rose-400'
             }`}>
               {message.type === 'success' ? <CheckCircle2 className="text-emerald-500 shrink-0" /> : <ShieldAlert className="text-rose-500 shrink-0" />}
               <p className="text-sm font-medium">{message.text}</p>
@@ -121,36 +123,36 @@ export default function ProfileSettingsPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Username</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Username</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="h-5 w-5 text-slate-400" />
+                  <User className="h-5 w-5 text-slate-400 dark:text-slate-500" />
                 </div>
                 <input
                   type="text"
                   required
                   value={formData.username}
                   onChange={(e) => setFormData({...formData, username: e.target.value})}
-                  className="pl-10 block w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
+                  className="pl-10 block w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 dark:text-white transition-colors"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email Address</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-slate-400" />
+                  <Mail className="h-5 w-5 text-slate-400 dark:text-slate-500" />
                 </div>
                 <input
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  className="pl-10 block w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
+                  className="pl-10 block w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-colors"
                   placeholder="name@example.com"
                 />
               </div>
-              <p className="text-xs text-slate-500 mt-1.5">You can use your email to log in.</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5">You can use your email to log in.</p>
             </div>
           </div>
 

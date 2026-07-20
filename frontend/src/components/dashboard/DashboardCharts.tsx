@@ -10,14 +10,14 @@ export function MonthlyRevenueChart({ trendData = [], loading = false }: { trend
   }));
 
   return (
-    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm h-full flex flex-col">
+    <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-none h-full flex flex-col transition-colors">
       <div className="flex justify-between items-center mb-6">
-        <h3 className="font-bold text-slate-900">Monthly Revenue</h3>
+        <h3 className="font-bold text-slate-900 dark:text-white">Monthly Revenue</h3>
       </div>
       <div className="flex-1 min-h-[220px]">
         {loading ? (
-          <div className="w-full h-full bg-slate-100 rounded-xl animate-pulse flex items-center justify-center">
-            <div className="w-8 h-8 rounded-full border-2 border-slate-300 border-t-transparent animate-spin"></div>
+          <div className="w-full h-full bg-slate-100 dark:bg-slate-800/50 rounded-xl animate-pulse flex items-center justify-center transition-colors">
+            <div className="w-8 h-8 rounded-full border-2 border-slate-300 dark:border-slate-600 border-t-transparent dark:border-t-transparent animate-spin"></div>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
@@ -62,12 +62,12 @@ export function CaseStatusChart({ active = 0, closed = 0, pending = 0, loading =
   ];
 
   return (
-    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm h-full flex flex-col">
-      <h3 className="font-bold text-slate-900 mb-6">Case Status Overview</h3>
+    <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-none h-full flex flex-col transition-colors">
+      <h3 className="font-bold text-slate-900 dark:text-white mb-6">Case Status Overview</h3>
       <div className="flex-1 flex items-center justify-between min-h-[220px]">
         {loading ? (
-          <div className="w-full h-full bg-slate-100 rounded-xl animate-pulse flex items-center justify-center">
-            <div className="w-8 h-8 rounded-full border-2 border-slate-300 border-t-transparent animate-spin"></div>
+          <div className="w-full h-full bg-slate-100 dark:bg-slate-800/50 rounded-xl animate-pulse flex items-center justify-center transition-colors">
+            <div className="w-8 h-8 rounded-full border-2 border-slate-300 dark:border-slate-600 border-t-transparent dark:border-t-transparent animate-spin"></div>
           </div>
         ) : (
           <>
@@ -100,8 +100,8 @@ export function CaseStatusChart({ active = 0, closed = 0, pending = 0, loading =
                 <div key={i} className="flex items-start gap-3">
                   <div className="w-2.5 h-2.5 rounded-full mt-1 shrink-0" style={{ backgroundColor: item.color }}></div>
                   <div>
-                    <p className="text-sm font-bold text-slate-900 leading-tight">{item.name}</p>
-                    <p className="text-xs text-slate-500 font-medium">{item.value}% ({item.count})</p>
+                    <p className="text-sm font-bold text-slate-900 dark:text-white leading-tight">{item.name}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">{item.value}% ({item.count})</p>
                   </div>
                 </div>
               ))}

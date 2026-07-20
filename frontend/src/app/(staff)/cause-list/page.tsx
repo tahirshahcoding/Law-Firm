@@ -80,11 +80,11 @@ export default function CauseListPage() {
   if (!canView) {
     return (
       <div className="flex flex-col items-center justify-center h-[60vh] text-center">
-        <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
-          <Shield size={32} className="text-slate-300" />
+        <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4 transition-colors">
+          <Shield size={32} className="text-slate-300 dark:text-slate-600" />
         </div>
-        <h2 className="text-xl font-bold text-slate-700">Access Denied</h2>
-        <p className="text-slate-500 mt-1">You don't have permission to view the Cause List.</p>
+        <h2 className="text-xl font-bold text-slate-700 dark:text-slate-300">Access Denied</h2>
+        <p className="text-slate-500 dark:text-slate-400 mt-1">You don't have permission to view the Cause List.</p>
       </div>
     );
   }
@@ -155,16 +155,16 @@ export default function CauseListPage() {
       {/* ── Page Header (Screen only) ── */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 no-print">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <Gavel className="text-blue-600" /> Court Cause List
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+            <Gavel className="text-blue-600 dark:text-blue-400" /> Court Cause List
           </h2>
-          <p className="text-slate-500 mt-1 text-sm sm:text-base">Search, filter, and print the firm's classified daily hearings list.</p>
+          <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm sm:text-base">Search, filter, and print the firm's classified daily hearings list.</p>
         </div>
         {canPrint && (
           <button
             onClick={handlePrint}
             disabled={hearings.length === 0}
-            className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 disabled:cursor-not-allowed text-white px-5 py-2.5 rounded-xl font-medium transition-all duration-200 shadow-sm flex items-center justify-center gap-2"
+            className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-700 disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed text-white px-5 py-2.5 rounded-xl font-medium transition-all duration-200 shadow-sm flex items-center justify-center gap-2"
           >
             <Printer size={18} /> Print Cause List
           </button>
@@ -172,13 +172,13 @@ export default function CauseListPage() {
       </div>
 
       {/* ── Filter Form (Screen only) ── */}
-      <div className="bg-white rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] border border-slate-100 p-5 no-print">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] dark:shadow-none border border-slate-100 dark:border-slate-800 p-5 no-print transition-colors">
         <form onSubmit={handleSearchSubmit} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             
             {/* Date Input */}
             <div>
-              <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+              <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5 flex items-center gap-1">
                 <Calendar size={13} /> Date
               </label>
               <input
@@ -186,13 +186,13 @@ export default function CauseListPage() {
                 required
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono text-slate-700"
+                className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono text-slate-700 dark:text-slate-300"
               />
             </div>
 
             {/* District Input */}
             <div>
-              <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+              <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5 flex items-center gap-1">
                 <MapPin size={13} /> District (Optional)
               </label>
               <input
@@ -200,13 +200,13 @@ export default function CauseListPage() {
                 value={district}
                 onChange={(e) => setDistrict(e.target.value)}
                 placeholder="e.g. Swat"
-                className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 font-medium"
+                className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500 font-medium text-slate-900 dark:text-white"
               />
             </div>
 
             {/* Tehsil Input */}
             <div>
-              <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+              <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5 flex items-center gap-1">
                 <MapPin size={13} /> Tehsil (Optional)
               </label>
               <input
@@ -214,13 +214,13 @@ export default function CauseListPage() {
                 value={tehsil}
                 onChange={(e) => setTehsil(e.target.value)}
                 placeholder="e.g. Kabal"
-                className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 font-medium"
+                className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500 font-medium text-slate-900 dark:text-white"
               />
             </div>
 
             {/* Court Input */}
             <div>
-              <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+              <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5 flex items-center gap-1">
                 <Scale size={13} /> Court Branch (Optional)
               </label>
               <input
@@ -228,21 +228,21 @@ export default function CauseListPage() {
                 value={court}
                 onChange={(e) => setCourt(e.target.value)}
                 placeholder="e.g. Civil Judge"
-                className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 font-medium"
+                className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500 font-medium text-slate-900 dark:text-white"
               />
             </div>
 
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-50">
-            <span className="text-xs text-slate-400 font-medium">
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-50 dark:border-slate-800">
+            <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">
               * Leave District, Tehsil, and Court empty to see all hearings for the selected date.
             </span>
             <div className="flex items-center gap-2 w-full sm:w-auto">
               <button
                 type="button"
                 onClick={handleClearFilters}
-                className="flex-1 sm:flex-none border border-slate-200 hover:bg-slate-50 text-slate-600 px-4 py-2 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-1.5"
+                className="flex-1 sm:flex-none border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 px-4 py-2 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-1.5"
               >
                 <RefreshCw size={14} /> Reset
               </button>
@@ -259,16 +259,16 @@ export default function CauseListPage() {
 
       {/* ── Cause List Content ── */}
       {loading ? (
-        <div className="bg-white rounded-2xl border border-slate-100 p-6 no-print">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-6 no-print transition-colors">
           <TableSkeleton />
         </div>
       ) : hearings.length === 0 ? (
-        <div className="bg-slate-50/50 rounded-2xl border border-dashed border-slate-200 px-6 py-16 text-center print:border-solid print:border print:bg-white print:py-8">
-          <div className="w-12 h-12 bg-white border border-slate-100 rounded-full flex items-center justify-center mb-3 mx-auto shadow-sm no-print">
-            <Layers className="text-slate-400" size={20} />
+        <div className="bg-slate-50/50 dark:bg-slate-900/50 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 px-6 py-16 text-center print:border-solid print:border print:bg-white print:py-8 transition-colors">
+          <div className="w-12 h-12 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-full flex items-center justify-center mb-3 mx-auto shadow-sm no-print">
+            <Layers className="text-slate-400 dark:text-slate-500" size={20} />
           </div>
-          <p className="text-slate-900 font-bold text-lg mb-1">No Hearings Scheduled</p>
-          <p className="text-slate-500 text-sm max-w-md mx-auto">
+          <p className="text-slate-900 dark:text-white font-bold text-lg mb-1">No Hearings Scheduled</p>
+          <p className="text-slate-500 dark:text-slate-400 text-sm max-w-md mx-auto">
             {selectedDate === new Date().toISOString().split('T')[0]
               ? "There are no hearings scheduled for today matching these filters."
               : `There are no hearings scheduled for ${formatDate(selectedDate)} matching these filters.`}
@@ -279,61 +279,61 @@ export default function CauseListPage() {
           {sortedGroupKeys.map((stageKey) => {
             const stageHearings = groupedHearings[stageKey];
             return (
-              <div key={stageKey} className="bg-white rounded-2xl shadow-[0_2px_8px_-3px_rgba(6,81,237,0.03)] border border-slate-100/80 overflow-hidden print:shadow-none print:border-none print:rounded-none print:table-container">
+              <div key={stageKey} className="bg-white dark:bg-slate-900 rounded-2xl shadow-[0_2px_8px_-3px_rgba(6,81,237,0.03)] dark:shadow-none border border-slate-100/80 dark:border-slate-800 overflow-hidden print:shadow-none print:border-none print:rounded-none print:table-container transition-colors">
                 
                 {/* Stage Section Header */}
-                <div className="px-5 py-3.5 bg-slate-50/80 border-b border-slate-100 flex items-center justify-between print:px-3 print:py-2.5 print:bg-white print:p-2.5 print:mb-0 print-group-header">
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2 print:text-black print:font-serif print:text-[13px] print:font-bold print:uppercase">
-                    <span className="h-2 w-2 rounded-full bg-blue-600 no-print" />
+                <div className="px-5 py-3.5 bg-slate-50/80 dark:bg-slate-800/80 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between print:px-3 print:py-2.5 print:bg-white print:p-2.5 print:mb-0 print-group-header transition-colors">
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 flex items-center gap-2 print:text-black print:font-serif print:text-[13px] print:font-bold print:uppercase">
+                    <span className="h-2 w-2 rounded-full bg-blue-600 dark:bg-blue-400 no-print" />
                     {stageKey} ({stageHearings.length})
                   </h3>
                 </div>
 
                 {/* Table list */}
                 <div className="overflow-x-auto">
-                  <table className="w-full border-collapse border border-slate-200 print:table">
+                  <table className="w-full border-collapse border border-slate-200 dark:border-slate-700 print:table">
                     <thead>
-                      <tr className="bg-slate-50 text-slate-700 border-b border-slate-200 text-xs font-bold uppercase tracking-wider print:bg-slate-100 print:text-black print:border-black">
-                        <th className="px-4 py-3.5 text-center border border-slate-200 print:border-black w-[5%] font-bold">S.No</th>
-                        <th className="px-4 py-3.5 text-center border border-slate-200 print:border-black w-[12%] whitespace-nowrap font-bold">Case ID</th>
-                        <th className="px-4 py-3.5 text-center border-slate-200 print:border-black w-[15%] whitespace-nowrap font-bold">Case No</th>
-                        <th className="px-4 py-3.5 text-center border border-slate-200 print:border-black w-[28%] font-bold">Title</th>
-                        <th className="px-4 py-3.5 text-center border border-slate-200 print:border-black w-[15%] font-bold">Advocates</th>
-                        <th className="px-4 py-3.5 text-center border border-slate-200 print:border-black w-[13%] font-bold">Proceedings</th>
-                        <th className="px-4 py-3.5 text-center border border-slate-200 print:border-black w-[12%] whitespace-nowrap font-bold">Prev Date</th>
+                      <tr className="bg-slate-50 dark:bg-slate-900/50 text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 text-xs font-bold uppercase tracking-wider print:bg-slate-100 print:text-black print:border-black">
+                        <th className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 print:border-black w-[5%] font-bold">S.No</th>
+                        <th className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 print:border-black w-[12%] whitespace-nowrap font-bold">Case ID</th>
+                        <th className="px-4 py-3.5 text-center border-slate-200 dark:border-slate-700 print:border-black w-[15%] whitespace-nowrap font-bold">Case No</th>
+                        <th className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 print:border-black w-[28%] font-bold">Title</th>
+                        <th className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 print:border-black w-[15%] font-bold">Advocates</th>
+                        <th className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 print:border-black w-[13%] font-bold">Proceedings</th>
+                        <th className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 print:border-black w-[12%] whitespace-nowrap font-bold">Prev Date</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-200 print:divide-y print:divide-black">
+                    <tbody className="divide-y divide-slate-200 dark:divide-slate-800/50 print:divide-y print:divide-black">
                       {stageHearings.map((h: any, index: number) => (
-                        <tr key={h.id} className="hover:bg-slate-50/40 transition-colors text-sm print:hover:bg-transparent print:border-black">
+                        <tr key={h.id} className="hover:bg-slate-50/40 dark:hover:bg-slate-800/50 transition-colors text-sm print:hover:bg-transparent print:border-black">
                           {/* S.No */}
-                          <td className="px-4 py-3.5 text-center text-slate-500 font-medium border border-slate-200 print:text-black print:border-black">
+                          <td className="px-4 py-3.5 text-center text-slate-500 dark:text-slate-400 font-medium border border-slate-200 dark:border-slate-700 print:text-black print:border-black">
                             {index + 1}
                           </td>
                           {/* Case ID */}
-                          <td className="px-4 py-3.5 text-center font-bold text-slate-700 border border-slate-200 print:text-black print:border-black font-mono whitespace-nowrap">
+                          <td className="px-4 py-3.5 text-center font-bold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 print:text-black print:border-black font-mono whitespace-nowrap">
                             {h.client_number || '—'}
                           </td>
                           {/* Case No */}
-                          <td className="px-4 py-3.5 text-center font-bold text-slate-900 border border-slate-200 print:text-black print:border-black whitespace-nowrap">
+                          <td className="px-4 py-3.5 text-center font-bold text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 print:text-black print:border-black whitespace-nowrap">
                             {h.case_number}
                           </td>
                           {/* Title */}
-                          <td className="px-4 py-3.5 text-center border border-slate-200 print:text-black print:border-black leading-relaxed">
-                            <div className="font-semibold text-slate-800 print:text-black">{h.client_name || 'Client'}</div>
-                            <div className="text-[10px] text-slate-400 font-bold uppercase print:text-slate-600 my-0.5">vs</div>
-                            <div className="font-semibold text-slate-800 print:text-black">{h.opponent_name}</div>
+                          <td className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 print:text-black print:border-black leading-relaxed">
+                            <div className="font-semibold text-slate-800 dark:text-slate-200 print:text-black">{h.client_name || 'Client'}</div>
+                            <div className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase print:text-slate-600 my-0.5">vs</div>
+                            <div className="font-semibold text-slate-800 dark:text-slate-200 print:text-black">{h.opponent_name}</div>
                           </td>
                           {/* Advocates */}
-                          <td className="px-4 py-3.5 text-center border border-slate-200 print:text-black print:border-black font-semibold text-slate-700">
+                          <td className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 print:text-black print:border-black font-semibold text-slate-700 dark:text-slate-300">
                             {h.advocate_name || 'Senior Partner'}
                           </td>
                           {/* Proceedings */}
-                          <td className="px-4 py-3.5 text-center border border-slate-200 print:text-black print:border-black text-blue-600 print:text-blue-800 font-semibold">
+                          <td className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 print:text-black print:border-black text-blue-600 dark:text-blue-400 font-semibold">
                             {h.hearing_stage}
                           </td>
                           {/* Prev Date */}
-                          <td className="px-4 py-3.5 text-center border border-slate-200 print:text-black print:border-black font-semibold text-slate-600 whitespace-nowrap">
+                          <td className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 print:text-black print:border-black font-semibold text-slate-600 dark:text-slate-400 whitespace-nowrap">
                             {h.previous_date ? formatDate(h.previous_date) : '—'}
                           </td>
                         </tr>

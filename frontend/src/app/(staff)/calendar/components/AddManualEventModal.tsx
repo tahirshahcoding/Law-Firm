@@ -68,36 +68,36 @@ export function AddManualEventModal({ isOpen, onClose, onSuccess }: AddManualEve
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200">
-        <div className="flex items-center justify-between p-6 border-b border-slate-100 bg-slate-50">
-          <h2 className="text-xl font-bold text-slate-900">Add Manual Event</h2>
-          <button onClick={onClose} className="p-2 text-slate-400 hover:bg-slate-200 rounded-full transition-colors">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl dark:shadow-none border border-transparent dark:border-slate-800 w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 transition-colors">
+        <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 transition-colors">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white">Add Manual Event</h2>
+          <button onClick={onClose} className="p-2 text-slate-400 dark:text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors">
             <X size={20} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {error && <div className="p-3 bg-rose-50 text-rose-600 text-sm font-medium rounded-lg border border-rose-200">{error}</div>}
+          {error && <div className="p-3 bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 text-sm font-medium rounded-lg border border-rose-200 dark:border-rose-800">{error}</div>}
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Event Title</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Event Title</label>
             <input 
               required
               type="text" 
               value={formData.title}
               onChange={e => setFormData({...formData, title: e.target.value})}
-              className="w-full px-4 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+              className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-colors"
               placeholder="e.g. Annual Office Party"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Event Type</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Event Type</label>
             <select 
               value={formData.event_type}
               onChange={e => setFormData({...formData, event_type: e.target.value})}
-              className="w-full px-4 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+              className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 dark:text-white transition-colors"
             >
               <option value="Office Event">Office Event</option>
               <option value="Staff Leave">Staff Leave</option>
@@ -108,29 +108,29 @@ export function AddManualEventModal({ isOpen, onClose, onSuccess }: AddManualEve
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Date</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Date</label>
               <div className="relative">
-                <Calendar size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <Calendar size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
                 <input 
                   required
                   type="date" 
                   value={formData.date}
                   onChange={e => setFormData({...formData, date: e.target.value})}
-                  className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 dark:text-white transition-colors"
                 />
               </div>
             </div>
             {!formData.all_day && (
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Time</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Time</label>
                 <div className="relative">
-                  <Clock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <Clock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
                   <input 
                     required
                     type="time" 
                     value={formData.time}
                     onChange={e => setFormData({...formData, time: e.target.value})}
-                    className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                    className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 dark:text-white transition-colors"
                   />
                 </div>
               </div>
@@ -143,43 +143,43 @@ export function AddManualEventModal({ isOpen, onClose, onSuccess }: AddManualEve
               id="all_day" 
               checked={formData.all_day}
               onChange={e => setFormData({...formData, all_day: e.target.checked})}
-              className="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500"
+              className="w-4 h-4 text-blue-600 rounded border-slate-300 dark:border-slate-600 focus:ring-blue-500 bg-white dark:bg-slate-900"
             />
-            <label htmlFor="all_day" className="text-sm font-medium text-slate-700">All day event</label>
+            <label htmlFor="all_day" className="text-sm font-medium text-slate-700 dark:text-slate-300">All day event</label>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Location (Optional)</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Location (Optional)</label>
             <div className="relative">
-              <MapPin size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <MapPin size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
               <input 
                 type="text" 
                 value={formData.location}
                 onChange={e => setFormData({...formData, location: e.target.value})}
-                className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-colors"
                 placeholder="e.g. Conference Room A"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Notes (Optional)</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Notes (Optional)</label>
             <div className="relative">
-              <AlignLeft size={16} className="absolute left-3 top-3 text-slate-400" />
+              <AlignLeft size={16} className="absolute left-3 top-3 text-slate-400 dark:text-slate-500" />
               <textarea 
                 value={formData.description}
                 onChange={e => setFormData({...formData, description: e.target.value})}
-                className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 min-h-[80px]"
+                className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 min-h-[80px] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-colors"
                 placeholder="Add any extra details..."
               />
             </div>
           </div>
 
-          <div className="pt-4 border-t border-slate-100 flex justify-end gap-3">
+          <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-3 transition-colors">
             <button 
               type="button" 
               onClick={onClose}
-              className="px-4 py-2 text-slate-600 font-medium hover:bg-slate-50 rounded-lg transition-colors border border-slate-200"
+              className="px-4 py-2 text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors border border-slate-200 dark:border-slate-700"
             >
               Cancel
             </button>

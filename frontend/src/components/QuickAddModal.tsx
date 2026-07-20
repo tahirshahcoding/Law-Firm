@@ -68,15 +68,15 @@ export default function QuickAddModal() {
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 sm:p-0 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setIsOpen(false)}>
           <div 
-            className="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in slide-in-from-bottom-8 sm:zoom-in-95 duration-200"
+            className="bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in slide-in-from-bottom-8 sm:zoom-in-95 duration-200 transition-colors"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between p-5 border-b border-slate-100 bg-slate-50/50">
+            <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 transition-colors">
               <div>
-                <h2 className="text-lg font-bold text-slate-900">Quick Add</h2>
-                <p className="text-xs text-slate-500 mt-0.5">Press <kbd className="bg-white border border-slate-200 px-1.5 py-0.5 rounded shadow-sm font-mono font-medium text-slate-600 mx-1">Ctrl+N</kbd> to open anytime</p>
+                <h2 className="text-lg font-bold text-slate-900 dark:text-white transition-colors">Quick Add</h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 transition-colors">Press <kbd className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-1.5 py-0.5 rounded shadow-sm font-mono font-medium text-slate-600 dark:text-slate-300 mx-1 transition-colors">Ctrl+N</kbd> to open anytime</p>
               </div>
-              <button onClick={() => setIsOpen(false)} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
+              <button onClick={() => setIsOpen(false)} className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
                 <X size={20} />
               </button>
             </div>
@@ -117,14 +117,14 @@ export default function QuickAddModal() {
               {/* Consultation Full Width */}
               <button 
                 onClick={() => handleNavigate('/consultations')}
-                className="w-full flex items-center gap-4 p-4 rounded-xl border border-slate-100 bg-white hover:border-purple-200 hover:bg-purple-50 transition-colors group"
+                className="w-full flex items-center gap-4 p-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-purple-200 dark:hover:border-purple-800/50 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors group"
               >
-                <div className="w-10 h-10 shrink-0 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <div className="w-10 h-10 shrink-0 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <MessageSquare size={18} />
                 </div>
                 <div className="text-left flex-1">
-                  <p className="text-sm font-semibold text-slate-700 group-hover:text-purple-700">Log Consultation</p>
-                  <p className="text-xs text-slate-500">Record a new lead or general query</p>
+                  <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 group-hover:text-purple-700 dark:group-hover:text-purple-400 transition-colors">Log Consultation</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 transition-colors">Record a new lead or general query</p>
                 </div>
               </button>
             </div>
@@ -151,17 +151,17 @@ export default function QuickAddModal() {
 // Helper component for uniform buttons
 function QuickAddButton({ icon, label, color, onClick }: { icon: React.ReactNode, label: string, color: string, onClick: () => void }) {
   const colorMap: Record<string, { bg: string, text: string, hoverBorder: string, hoverBg: string, hoverText: string }> = {
-    blue: { bg: 'bg-blue-100', text: 'text-blue-600', hoverBorder: 'hover:border-blue-200', hoverBg: 'hover:bg-blue-50', hoverText: 'group-hover:text-blue-700' },
-    emerald: { bg: 'bg-emerald-100', text: 'text-emerald-600', hoverBorder: 'hover:border-emerald-200', hoverBg: 'hover:bg-emerald-50', hoverText: 'group-hover:text-emerald-700' },
-    indigo: { bg: 'bg-indigo-100', text: 'text-indigo-600', hoverBorder: 'hover:border-indigo-200', hoverBg: 'hover:bg-indigo-50', hoverText: 'group-hover:text-indigo-700' },
-    rose: { bg: 'bg-rose-100', text: 'text-rose-600', hoverBorder: 'hover:border-rose-200', hoverBg: 'hover:bg-rose-50', hoverText: 'group-hover:text-rose-700' },
-    amber: { bg: 'bg-amber-100', text: 'text-amber-600', hoverBorder: 'hover:border-amber-200', hoverBg: 'hover:bg-amber-50', hoverText: 'group-hover:text-amber-700' },
-    teal: { bg: 'bg-teal-100', text: 'text-teal-600', hoverBorder: 'hover:border-teal-200', hoverBg: 'hover:bg-teal-50', hoverText: 'group-hover:text-teal-700' },
-    green: { bg: 'bg-green-100', text: 'text-green-600', hoverBorder: 'hover:border-green-200', hoverBg: 'hover:bg-green-50', hoverText: 'group-hover:text-green-700' },
-    orange: { bg: 'bg-orange-100', text: 'text-orange-600', hoverBorder: 'hover:border-orange-200', hoverBg: 'hover:bg-orange-50', hoverText: 'group-hover:text-orange-700' },
-    red: { bg: 'bg-red-100', text: 'text-red-600', hoverBorder: 'hover:border-red-200', hoverBg: 'hover:bg-red-50', hoverText: 'group-hover:text-red-700' },
-    slate: { bg: 'bg-slate-200', text: 'text-slate-600', hoverBorder: 'hover:border-slate-300', hoverBg: 'hover:bg-slate-100', hoverText: 'group-hover:text-slate-800' },
-    stone: { bg: 'bg-stone-200', text: 'text-stone-600', hoverBorder: 'hover:border-stone-300', hoverBg: 'hover:bg-stone-100', hoverText: 'group-hover:text-stone-800' },
+    blue: { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-600 dark:text-blue-400', hoverBorder: 'hover:border-blue-200 dark:hover:border-blue-800/50', hoverBg: 'hover:bg-blue-50 dark:hover:bg-blue-900/20', hoverText: 'group-hover:text-blue-700 dark:group-hover:text-blue-400' },
+    emerald: { bg: 'bg-emerald-100 dark:bg-emerald-900/30', text: 'text-emerald-600 dark:text-emerald-400', hoverBorder: 'hover:border-emerald-200 dark:hover:border-emerald-800/50', hoverBg: 'hover:bg-emerald-50 dark:hover:bg-emerald-900/20', hoverText: 'group-hover:text-emerald-700 dark:group-hover:text-emerald-400' },
+    indigo: { bg: 'bg-indigo-100 dark:bg-indigo-900/30', text: 'text-indigo-600 dark:text-indigo-400', hoverBorder: 'hover:border-indigo-200 dark:hover:border-indigo-800/50', hoverBg: 'hover:bg-indigo-50 dark:hover:bg-indigo-900/20', hoverText: 'group-hover:text-indigo-700 dark:group-hover:text-indigo-400' },
+    rose: { bg: 'bg-rose-100 dark:bg-rose-900/30', text: 'text-rose-600 dark:text-rose-400', hoverBorder: 'hover:border-rose-200 dark:hover:border-rose-800/50', hoverBg: 'hover:bg-rose-50 dark:hover:bg-rose-900/20', hoverText: 'group-hover:text-rose-700 dark:group-hover:text-rose-400' },
+    amber: { bg: 'bg-amber-100 dark:bg-amber-900/30', text: 'text-amber-600 dark:text-amber-400', hoverBorder: 'hover:border-amber-200 dark:hover:border-amber-800/50', hoverBg: 'hover:bg-amber-50 dark:hover:bg-amber-900/20', hoverText: 'group-hover:text-amber-700 dark:group-hover:text-amber-400' },
+    teal: { bg: 'bg-teal-100 dark:bg-teal-900/30', text: 'text-teal-600 dark:text-teal-400', hoverBorder: 'hover:border-teal-200 dark:hover:border-teal-800/50', hoverBg: 'hover:bg-teal-50 dark:hover:bg-teal-900/20', hoverText: 'group-hover:text-teal-700 dark:group-hover:text-teal-400' },
+    green: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-600 dark:text-green-400', hoverBorder: 'hover:border-green-200 dark:hover:border-green-800/50', hoverBg: 'hover:bg-green-50 dark:hover:bg-green-900/20', hoverText: 'group-hover:text-green-700 dark:group-hover:text-green-400' },
+    orange: { bg: 'bg-orange-100 dark:bg-orange-900/30', text: 'text-orange-600 dark:text-orange-400', hoverBorder: 'hover:border-orange-200 dark:hover:border-orange-800/50', hoverBg: 'hover:bg-orange-50 dark:hover:bg-orange-900/20', hoverText: 'group-hover:text-orange-700 dark:group-hover:text-orange-400' },
+    red: { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-600 dark:text-red-400', hoverBorder: 'hover:border-red-200 dark:hover:border-red-800/50', hoverBg: 'hover:bg-red-50 dark:hover:bg-red-900/20', hoverText: 'group-hover:text-red-700 dark:group-hover:text-red-400' },
+    slate: { bg: 'bg-slate-200 dark:bg-slate-800', text: 'text-slate-600 dark:text-slate-400', hoverBorder: 'hover:border-slate-300 dark:hover:border-slate-700', hoverBg: 'hover:bg-slate-100 dark:hover:bg-slate-800/50', hoverText: 'group-hover:text-slate-800 dark:group-hover:text-slate-300' },
+    stone: { bg: 'bg-stone-200 dark:bg-stone-800', text: 'text-stone-600 dark:text-stone-400', hoverBorder: 'hover:border-stone-300 dark:hover:border-stone-700', hoverBg: 'hover:bg-stone-100 dark:hover:bg-stone-800/50', hoverText: 'group-hover:text-stone-800 dark:group-hover:text-stone-300' },
   };
 
   const theme = colorMap[color] || colorMap.blue;
@@ -169,12 +169,12 @@ function QuickAddButton({ icon, label, color, onClick }: { icon: React.ReactNode
   return (
     <button 
       onClick={onClick}
-      className={`flex flex-col items-center justify-center gap-3 p-4 sm:p-5 rounded-xl border border-slate-100 bg-white transition-colors group ${theme.hoverBorder} ${theme.hoverBg}`}
+      className={`flex flex-col items-center justify-center gap-3 p-4 sm:p-5 rounded-xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 transition-colors group ${theme.hoverBorder} ${theme.hoverBg}`}
     >
       <div className={`w-12 h-12 rounded-full ${theme.bg} ${theme.text} flex items-center justify-center group-hover:scale-110 transition-transform`}>
         {icon}
       </div>
-      <span className={`text-sm font-semibold text-slate-700 ${theme.hoverText}`}>{label}</span>
+      <span className={`text-sm font-semibold text-slate-700 dark:text-slate-300 transition-colors ${theme.hoverText}`}>{label}</span>
     </button>
   );
 }

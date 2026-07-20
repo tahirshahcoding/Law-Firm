@@ -61,17 +61,19 @@ export default function SecuritySettingsPage() {
   return (
     <div className="space-y-8 animate-in fade-in duration-500 w-full">
       <div>
-        <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Security</h2>
-        <p className="text-slate-500 mt-1">Manage your password and account security.</p>
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Security</h2>
+        <p className="text-slate-500 dark:text-slate-400 mt-1">Manage your password and account security.</p>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] border border-slate-100 overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] dark:shadow-none border border-slate-100 dark:border-slate-800 overflow-hidden transition-colors">
         
         <form onSubmit={handleSubmit} className="p-8 space-y-6">
           
           {message && (
             <div className={`p-4 rounded-lg flex items-start gap-3 border ${
-              message.type === 'success' ? 'bg-emerald-50 border-emerald-100 text-emerald-800' : 'bg-rose-50 border-rose-100 text-rose-800'
+              message.type === 'success' 
+                ? 'bg-emerald-50 dark:bg-emerald-900/30 border-emerald-100 dark:border-emerald-800 text-emerald-800 dark:text-emerald-400' 
+                : 'bg-rose-50 dark:bg-rose-900/30 border-rose-100 dark:border-rose-800 text-rose-800 dark:text-rose-400'
             }`}>
               {message.type === 'success' ? <CheckCircle2 className="text-emerald-500 shrink-0" /> : <ShieldAlert className="text-rose-500 shrink-0" />}
               <p className="text-sm font-medium">{message.text}</p>
@@ -80,34 +82,34 @@ export default function SecuritySettingsPage() {
 
           <div className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">New Password</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">New Password</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-slate-400" />
+                  <Lock className="h-5 w-5 text-slate-400 dark:text-slate-500" />
                 </div>
                 <input
                   type="password"
                   required
                   value={formData.password}
                   onChange={(e) => setFormData({...formData, password: e.target.value})}
-                  className="pl-10 block w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
+                  className="pl-10 block w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-colors"
                   placeholder="Enter new password"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Confirm New Password</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Confirm New Password</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-slate-400" />
+                  <Lock className="h-5 w-5 text-slate-400 dark:text-slate-500" />
                 </div>
                 <input
                   type="password"
                   required
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
-                  className="pl-10 block w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
+                  className="pl-10 block w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-colors"
                   placeholder="Confirm new password"
                 />
               </div>

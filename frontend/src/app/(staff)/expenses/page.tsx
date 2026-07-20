@@ -72,8 +72,8 @@ export default function ExpensesPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Expenses</h1>
-          <p className="text-sm text-slate-500 mt-0.5">Track firm costs, fees, and operational expenses</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Expenses</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Track firm costs, fees, and operational expenses</p>
         </div>
         {canManage && (
           <button
@@ -88,34 +88,34 @@ export default function ExpensesPage() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 gap-4">
-        <div className="p-5 bg-white border border-slate-200 rounded-2xl">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Today's Expenses</p>
-          <p className="text-3xl font-bold text-rose-600 mt-2">{fmt(todayTotal)}</p>
+        <div className="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl transition-colors">
+          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Today's Expenses</p>
+          <p className="text-3xl font-bold text-rose-600 dark:text-rose-400 mt-2">{fmt(todayTotal)}</p>
         </div>
-        <div className="p-5 bg-white border border-slate-200 rounded-2xl">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">This Month</p>
-          <p className="text-3xl font-bold text-slate-900 mt-2">{fmt(thisMonthTotal)}</p>
+        <div className="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl transition-colors">
+          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">This Month</p>
+          <p className="text-3xl font-bold text-slate-900 dark:text-white mt-2">{fmt(thisMonthTotal)}</p>
         </div>
       </div>
 
       {/* Toolbar */}
       <div className="flex items-center gap-3 flex-wrap">
         <div className="relative flex-1 min-w-[200px] max-w-sm">
-          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
           <input
             type="text"
             placeholder="Search expenses…"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            className="w-full pl-9 pr-3 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
           />
         </div>
-        <div className="flex gap-1 border border-slate-200 rounded-xl overflow-hidden bg-white flex-wrap">
+        <div className="flex gap-1 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden bg-white dark:bg-slate-900 flex-wrap p-1">
           {CATEGORIES.map(c => (
             <button
               key={c}
               onClick={() => setCategoryFilter(c)}
-              className={`px-3 py-2 text-xs font-semibold transition-colors ${categoryFilter === c ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-50'}`}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${categoryFilter === c ? 'bg-slate-900 dark:bg-blue-600 text-white' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
             >
               {c}
             </button>
@@ -124,44 +124,44 @@ export default function ExpensesPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden transition-colors">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50/70">
-                <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Date</th>
-                <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Description</th>
-                <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Category</th>
-                <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Case</th>
-                <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Vendor</th>
-                <th className="px-5 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wide">Amount</th>
+              <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/50">
+                <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Date</th>
+                <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Description</th>
+                <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Category</th>
+                <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Case</th>
+                <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Vendor</th>
+                <th className="px-5 py-3 text-right text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Amount</th>
                 {canManage && <th className="px-5 py-3 w-10" />}
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-50">
+            <tbody className="divide-y divide-slate-50 dark:divide-slate-800/50">
               {loading ? (
                 <TableRowSkeleton columns={7} />
               ) : filtered.length === 0 ? (
-                <tr><td colSpan={7} className="py-12 text-center text-sm text-slate-400">No expenses found.</td></tr>
+                <tr><td colSpan={7} className="py-12 text-center text-sm text-slate-400 dark:text-slate-500">No expenses found.</td></tr>
               ) : filtered.map(exp => (
-                <tr key={exp.id} className="hover:bg-slate-50 transition-colors group">
-                  <td className="px-5 py-3.5 text-slate-500 text-xs whitespace-nowrap">{fmtDate(exp.date)}</td>
-                  <td className="px-5 py-3.5 font-medium text-slate-800">{exp.description}</td>
+                <tr key={exp.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
+                  <td className="px-5 py-3.5 text-slate-500 dark:text-slate-400 text-xs whitespace-nowrap">{fmtDate(exp.date)}</td>
+                  <td className="px-5 py-3.5 font-medium text-slate-800 dark:text-white">{exp.description}</td>
                   <td className="px-5 py-3.5">
-                    <span className="text-xs font-semibold px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full">{exp.category}</span>
+                    <span className="text-xs font-semibold px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full border border-slate-200 dark:border-slate-700">{exp.category}</span>
                   </td>
-                  <td className="px-5 py-3.5 text-slate-500 text-xs">
+                  <td className="px-5 py-3.5 text-slate-500 dark:text-slate-400 text-xs">
                     {exp.case_number ? (
-                      <span className="text-blue-600 font-medium">{exp.case_number}</span>
-                    ) : <span className="text-slate-300">—</span>}
+                      <span className="text-blue-600 dark:text-blue-400 font-medium">{exp.case_number}</span>
+                    ) : <span className="text-slate-300 dark:text-slate-600">—</span>}
                   </td>
-                  <td className="px-5 py-3.5 text-slate-500">{exp.vendor || '—'}</td>
-                  <td className="px-5 py-3.5 text-right font-semibold text-rose-600">{fmt(exp.amount)}</td>
+                  <td className="px-5 py-3.5 text-slate-500 dark:text-slate-400">{exp.vendor || '—'}</td>
+                  <td className="px-5 py-3.5 text-right font-semibold text-rose-600 dark:text-rose-400">{fmt(exp.amount)}</td>
                   {canManage && (
                     <td className="px-5 py-3.5 text-right">
                       <button
                         onClick={() => handleDelete(exp.id)}
-                        className="opacity-0 group-hover:opacity-100 p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all"
+                        className="opacity-0 group-hover:opacity-100 p-1.5 text-slate-400 dark:text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-lg transition-all"
                       >
                         <Trash2 size={14} />
                       </button>
@@ -173,9 +173,9 @@ export default function ExpensesPage() {
           </table>
         </div>
         {filtered.length > 0 && (
-          <div className="px-5 py-3 border-t border-slate-100 bg-slate-50/50 flex justify-between text-xs text-slate-500">
+          <div className="px-5 py-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex justify-between text-xs text-slate-500 dark:text-slate-400 transition-colors">
             <span>{filtered.length} expenses</span>
-            <span className="font-semibold text-slate-700">
+            <span className="font-semibold text-slate-700 dark:text-slate-300">
               Total: {fmt(filtered.reduce((s, e) => s + parseFloat(e.amount ?? 0), 0))}
             </span>
           </div>

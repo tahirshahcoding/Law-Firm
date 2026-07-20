@@ -71,10 +71,10 @@ export default function AccountsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Accounts Ledger</h1>
-          <p className="text-sm text-slate-500 mt-0.5">Complete financial record of all transactions</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Accounts Ledger</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Complete financial record of all transactions</p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 border border-slate-200 text-sm font-semibold text-slate-700 rounded-xl hover:bg-slate-50 transition-colors bg-white shadow-sm">
+        <button className="flex items-center gap-2 px-4 py-2 border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors bg-white dark:bg-slate-900 shadow-sm dark:shadow-none">
           <Download size={15} />
           Export
         </button>
@@ -82,99 +82,100 @@ export default function AccountsPage() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-5 bg-white border border-slate-200 rounded-2xl">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Current Balance</p>
-          <p className={`text-2xl font-bold mt-2 ${currentBalance >= 0 ? 'text-slate-900' : 'text-rose-600'}`}>{fmt(currentBalance)}</p>
-          <p className="text-xs text-slate-400 mt-1">Income minus expenses</p>
+        <div className="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl transition-colors shadow-sm dark:shadow-none">
+          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Current Balance</p>
+          <p className={`text-2xl font-bold mt-2 ${currentBalance >= 0 ? 'text-slate-900 dark:text-white' : 'text-rose-600 dark:text-rose-400'}`}>{fmt(currentBalance)}</p>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">Income minus expenses</p>
         </div>
-        <div className="p-5 bg-white border border-slate-200 rounded-2xl">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Total Income</p>
-          <p className="text-2xl font-bold text-emerald-600 mt-2">{fmt(totalIncome)}</p>
-          <p className="text-xs text-slate-400 mt-1">All payments received</p>
+        <div className="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl transition-colors shadow-sm dark:shadow-none">
+          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Total Income</p>
+          <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">{fmt(totalIncome)}</p>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">All payments received</p>
         </div>
-        <div className="p-5 bg-white border border-slate-200 rounded-2xl">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Total Expenses</p>
-          <p className="text-2xl font-bold text-rose-600 mt-2">{fmt(totalExpenses)}</p>
-          <p className="text-xs text-slate-400 mt-1">All recorded costs</p>
+        <div className="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl transition-colors shadow-sm dark:shadow-none">
+          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Total Expenses</p>
+          <p className="text-2xl font-bold text-rose-600 dark:text-rose-400 mt-2">{fmt(totalExpenses)}</p>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">All recorded costs</p>
         </div>
-        <div className="p-5 bg-white border border-slate-200 rounded-2xl">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Net Profit</p>
-          <p className={`text-2xl font-bold mt-2 ${netProfit >= 0 ? 'text-blue-600' : 'text-rose-600'}`}>{fmt(netProfit)}</p>
-          <p className="text-xs text-slate-400 mt-1">Income minus expenses</p>
+        <div className="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl transition-colors shadow-sm dark:shadow-none">
+          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Net Profit</p>
+          <p className={`text-2xl font-bold mt-2 ${netProfit >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-rose-600 dark:text-rose-400'}`}>{fmt(netProfit)}</p>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">Income minus expenses</p>
         </div>
       </div>
 
       {/* Toolbar */}
       <div className="flex items-center gap-3 flex-wrap">
         <div className="relative flex-1 min-w-[180px] max-w-sm">
-          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
           <input type="text" placeholder="Search transactions…"
             value={search} onChange={e => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white" />
+            className="w-full pl-9 pr-3 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500" />
         </div>
-        <div className="flex gap-1 border border-slate-200 rounded-xl overflow-hidden bg-white">
+        <div className="flex gap-1 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden bg-white dark:bg-slate-900 p-1">
           {TYPE_FILTER.map(t => (
             <button key={t} onClick={() => setTypeFilter(t)}
-              className={`px-3 py-2 text-xs font-semibold transition-colors ${typeFilter === t ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-50'}`}>
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${typeFilter === t ? 'bg-slate-900 dark:bg-blue-600 text-white' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>
               {t}
             </button>
           ))}
         </div>
         <div className="flex items-center gap-2">
           <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)}
-            className="px-3 py-2 border border-slate-200 rounded-xl text-xs bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          <span className="text-slate-400 text-xs">to</span>
+            className="px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-xs bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <span className="text-slate-400 dark:text-slate-500 text-xs">to</span>
           <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)}
-            className="px-3 py-2 border border-slate-200 rounded-xl text-xs bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            className="px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-xs bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
       </div>
 
       {/* Table */}
-      <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+      {/* Table */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden transition-colors">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50/70">
-                <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Date</th>
-                <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Description</th>
-                <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Client</th>
-                <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Case</th>
-                <th className="px-5 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                  <span className="text-rose-500">Debit</span>
+              <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/50">
+                <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Date</th>
+                <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Description</th>
+                <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Client</th>
+                <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Case</th>
+                <th className="px-5 py-3 text-right text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+                  <span className="text-rose-500 dark:text-rose-400">Debit</span>
                 </th>
-                <th className="px-5 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                  <span className="text-emerald-600">Credit</span>
+                <th className="px-5 py-3 text-right text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+                  <span className="text-emerald-600 dark:text-emerald-400">Credit</span>
                 </th>
-                <th className="px-5 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wide">Balance</th>
+                <th className="px-5 py-3 text-right text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Balance</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-50">
+            <tbody className="divide-y divide-slate-50 dark:divide-slate-800/50">
               {loading ? (
                 <TableRowSkeleton columns={7} />
               ) : withBalance.length === 0 ? (
-                <tr><td colSpan={7} className="py-12 text-center text-sm text-slate-400">
+                <tr><td colSpan={7} className="py-12 text-center text-sm text-slate-400 dark:text-slate-500">
                   No transactions found.
                 </td></tr>
               ) : withBalance.map((txn, i) => (
-                <tr key={i} className="hover:bg-slate-50 transition-colors">
-                  <td className="px-5 py-3.5 text-xs text-slate-500 whitespace-nowrap">{fmtDate(txn.date)}</td>
+                <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                  <td className="px-5 py-3.5 text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">{fmtDate(txn.date)}</td>
                   <td className="px-5 py-3.5">
                     <div>
-                      <p className="font-medium text-slate-800">{txn.description}</p>
-                      <p className="text-xs text-slate-400 mt-0.5">{txn.type}</p>
+                      <p className="font-medium text-slate-800 dark:text-white">{txn.description}</p>
+                      <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{txn.type}</p>
                     </div>
                   </td>
-                  <td className="px-5 py-3.5 text-slate-600 text-sm">{txn.client_name || '—'}</td>
+                  <td className="px-5 py-3.5 text-slate-600 dark:text-slate-300 text-sm">{txn.client_name || '—'}</td>
                   <td className="px-5 py-3.5 text-xs">
-                    {txn.case_number ? <span className="text-blue-600 font-medium">{txn.case_number}</span> : <span className="text-slate-300">—</span>}
+                    {txn.case_number ? <span className="text-blue-600 dark:text-blue-400 font-medium">{txn.case_number}</span> : <span className="text-slate-300 dark:text-slate-600">—</span>}
                   </td>
-                  <td className="px-5 py-3.5 text-right font-semibold text-rose-600">
-                    {txn.debit ? fmt(txn.debit) : <span className="text-slate-200">—</span>}
+                  <td className="px-5 py-3.5 text-right font-semibold text-rose-600 dark:text-rose-400">
+                    {txn.debit ? fmt(txn.debit) : <span className="text-slate-200 dark:text-slate-700">—</span>}
                   </td>
-                  <td className="px-5 py-3.5 text-right font-semibold text-emerald-600">
-                    {txn.credit ? fmt(txn.credit) : <span className="text-slate-200">—</span>}
+                  <td className="px-5 py-3.5 text-right font-semibold text-emerald-600 dark:text-emerald-400">
+                    {txn.credit ? fmt(txn.credit) : <span className="text-slate-200 dark:text-slate-700">—</span>}
                   </td>
-                  <td className={`px-5 py-3.5 text-right font-bold text-xs ${txn.running >= 0 ? 'text-slate-700' : 'text-rose-600'}`}>
+                  <td className={`px-5 py-3.5 text-right font-bold text-xs ${txn.running >= 0 ? 'text-slate-700 dark:text-slate-300' : 'text-rose-600 dark:text-rose-400'}`}>
                     {fmt(txn.running)}
                   </td>
                 </tr>
@@ -183,9 +184,9 @@ export default function AccountsPage() {
           </table>
         </div>
         {withBalance.length > 0 && (
-          <div className="px-5 py-3 border-t border-slate-100 bg-slate-50/50 flex justify-between text-xs text-slate-500">
+          <div className="px-5 py-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex justify-between text-xs text-slate-500 dark:text-slate-400 transition-colors">
             <span>{withBalance.length} transactions</span>
-            <span className="font-semibold text-slate-700">Closing Balance: {fmt(withBalance[0]?.running ?? 0)}</span>
+            <span className="font-semibold text-slate-700 dark:text-slate-300">Closing Balance: {fmt(withBalance[0]?.running ?? 0)}</span>
           </div>
         )}
       </div>

@@ -71,7 +71,7 @@ export default function Navigation({ mobileOpen = false, onCloseMobile }: Naviga
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="w-[280px] bg-white border-r border-slate-200 flex-col hidden md:flex z-10 shadow-sm shrink-0">
+      <aside className="w-[280px] bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex-col hidden md:flex z-10 shadow-sm dark:shadow-none shrink-0 transition-colors duration-300">
         <SidebarContent navGroups={navGroups} pathname={pathname} user={user} />
       </aside>
 
@@ -85,7 +85,7 @@ export default function Navigation({ mobileOpen = false, onCloseMobile }: Naviga
 
       {/* Mobile Sidebar Drawer */}
       <aside
-        className={`fixed top-0 left-0 h-full w-[280px] bg-white z-50 flex flex-col shadow-2xl transition-transform duration-300 ease-in-out md:hidden ${mobileOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed top-0 left-0 h-full w-[280px] bg-white dark:bg-slate-900 z-50 flex flex-col shadow-2xl transition-transform duration-300 ease-in-out md:hidden ${mobileOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
       >
         <button
@@ -117,17 +117,17 @@ function SidebarContent({ onLinkClick, navGroups, pathname, user }: SidebarConte
   });
 
   return (
-    <div className="flex flex-col h-full bg-white border-r border-slate-200">
+    <div className="flex flex-col h-full bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transition-colors duration-300">
       {/* Brand / Logo Area */}
-      <div className="h-[76px] flex items-center px-6 border-b border-slate-200 shrink-0 gap-3">
+      <div className="h-[76px] flex items-center px-6 border-b border-slate-200 dark:border-slate-800 shrink-0 gap-3">
         <div className="relative w-8 h-8 flex-shrink-0">
           <Image src="/logo.png" alt="Rahimullah Advocate Logo" fill className="object-contain" sizes="32px" />
         </div>
         <div className="flex flex-col">
-          <h1 className="text-slate-900 font-extrabold text-[15px] tracking-wide leading-tight uppercase">
+          <h1 className="text-slate-900 dark:text-white font-extrabold text-[15px] tracking-wide leading-tight uppercase">
             RAHIMULLAH
           </h1>
-          <span className="text-[10px] uppercase font-bold tracking-widest text-slate-500 mt-0.5">Advocate</span>
+          <span className="text-[10px] uppercase font-bold tracking-widest text-slate-500 dark:text-slate-400 mt-0.5">Advocate</span>
         </div>
       </div>
 
@@ -138,7 +138,7 @@ function SidebarContent({ onLinkClick, navGroups, pathname, user }: SidebarConte
           onClick={onLinkClick}
           className={`flex items-center gap-3.5 px-3.5 py-2.5 mb-6 rounded-lg font-medium transition-colors ${pathname === '/dashboard'
             ? 'bg-blue-600 text-white shadow-sm'
-            : 'text-slate-600 hover:bg-slate-50 hover:text-blue-600'
+            : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-blue-600 dark:hover:text-blue-400'
             }`}
         >
           <LayoutDashboard size={20} />
@@ -150,7 +150,7 @@ function SidebarContent({ onLinkClick, navGroups, pathname, user }: SidebarConte
           if (items.length === 0) return null;
           return (
             <div key={group.title} className="mb-6 last:mb-0">
-              <h3 className="px-3.5 mb-2 text-xs font-bold uppercase tracking-wider text-slate-400">
+              <h3 className="px-3.5 mb-2 text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                 {group.title}
               </h3>
               <div className="flex flex-col gap-1">
@@ -163,11 +163,11 @@ function SidebarContent({ onLinkClick, navGroups, pathname, user }: SidebarConte
                       href={item.href}
                       onClick={onLinkClick}
                       className={`flex items-center gap-3.5 px-3.5 py-2 rounded-lg font-medium transition-colors ${isActive
-                        ? 'bg-blue-50 text-blue-700'
-                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                        ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400'
+                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'
                         }`}
                     >
-                      <Icon size={18} className={isActive ? 'text-blue-600' : 'text-slate-400'} strokeWidth={2} />
+                      <Icon size={18} className={isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500'} strokeWidth={2} />
                       <span className="text-sm">{item.name}</span>
                     </Link>
                   );
@@ -180,16 +180,16 @@ function SidebarContent({ onLinkClick, navGroups, pathname, user }: SidebarConte
 
       {/* Bottom User Area */}
       {user && (
-        <div className="p-4 shrink-0 border-t border-slate-200 bg-slate-50/50">
+        <div className="p-4 shrink-0 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
           <div className="flex items-center gap-3 px-2 py-1">
             <div className="w-10 h-10 rounded-full bg-blue-700 flex items-center justify-center text-white font-bold text-lg shrink-0">
               {user.username?.[0]?.toUpperCase() || 'A'}
             </div>
             <div className="flex flex-col overflow-hidden">
-              <span className="text-sm font-bold text-slate-900 truncate">
+              <span className="text-sm font-bold text-slate-900 dark:text-white truncate">
                 {user.username ? user.username.charAt(0).toUpperCase() + user.username.slice(1) : 'Admin'} {user.last_name || 'Admin'}
               </span>
-              <span className="text-xs text-slate-500 truncate">
+              <span className="text-xs text-slate-500 dark:text-slate-400 truncate">
                 {user.role === 'Admin' ? 'Super Administrator' : user.role}
               </span>
             </div>

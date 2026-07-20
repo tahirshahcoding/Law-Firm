@@ -122,8 +122,8 @@ function ClientsPageContent() {
     <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Client Directory</h2>
-          <p className="text-slate-500 mt-1 text-sm sm:text-base">Manage and view all registered firm clients.</p>
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Client Directory</h2>
+          <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm sm:text-base">Manage and view all registered firm clients.</p>
         </div>
         {canAddClients && (
           <button
@@ -135,9 +135,9 @@ function ClientsPageContent() {
         )}
       </div>
 
-      <div className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60 overflow-hidden">
+      <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none border border-white/60 dark:border-slate-800 overflow-hidden transition-colors">
         {/* Table Toolbar */}
-        <div className="p-4 border-b border-slate-200/60 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-slate-50/50">
+        <div className="p-4 border-b border-slate-200/60 dark:border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-slate-50/50 dark:bg-slate-800/50 transition-colors">
           <div className="relative w-full group">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={16} />
             <input 
@@ -148,10 +148,10 @@ function ClientsPageContent() {
                 setSearchTerm(e.target.value);
                 setPage(1);
               }}
-              className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 shadow-sm hover:border-slate-300"
+              className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500 shadow-sm hover:border-slate-300 dark:hover:border-slate-600"
             />
           </div>
-          <div className="text-sm text-slate-500 font-medium whitespace-nowrap">
+          <div className="text-sm text-slate-500 dark:text-slate-400 font-medium whitespace-nowrap">
             {totalCount} Total
           </div>
         </div>
@@ -159,12 +159,12 @@ function ClientsPageContent() {
         {loading ? (
           <TableSkeleton />
         ) : clients.length === 0 ? (
-          <div className="px-6 py-12 text-center text-slate-500 bg-slate-50/50">
+          <div className="px-6 py-12 text-center text-slate-500 dark:text-slate-400 bg-slate-50/50 dark:bg-slate-800/30 transition-colors">
             <div className="flex flex-col items-center justify-center max-w-sm mx-auto">
-              <div className="w-12 h-12 bg-white border border-slate-200 rounded-full flex items-center justify-center mb-3">
-                <Users className="text-slate-400" size={24} />
+              <div className="w-12 h-12 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full flex items-center justify-center mb-3">
+                <Users className="text-slate-400 dark:text-slate-500" size={24} />
               </div>
-              <p className="text-slate-900 font-medium mb-1">
+              <p className="text-slate-900 dark:text-white font-medium mb-1">
                 {searchTerm ? 'No search results found' : 'No clients found'}
               </p>
               <p className="text-sm">
@@ -175,29 +175,29 @@ function ClientsPageContent() {
         ) : (
           <>
             {/* Mobile Card View */}
-            <div className="md:hidden divide-y divide-slate-100">
+            <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-800">
               {clients.map((client: any) => (
-                <div key={client.id} className="p-4 hover:bg-slate-50/80 transition-colors">
+                <div key={client.id} className="p-4 hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <div className="w-10 h-10 shrink-0 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 border border-blue-200 flex items-center justify-center text-blue-700 font-bold uppercase text-sm">
+                      <div className="w-10 h-10 shrink-0 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/40 dark:to-indigo-900/40 border border-blue-200 dark:border-blue-800/50 flex items-center justify-center text-blue-700 dark:text-blue-400 font-bold uppercase text-sm">
                         {(client.name || 'U').charAt(0)}
                       </div>
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <p className="font-semibold text-slate-900">{client.name}</p>
+                          <p className="font-semibold text-slate-900 dark:text-white">{client.name}</p>
                           {client.client_number && (
-                            <span className="font-mono text-xs font-semibold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
+                            <span className="font-mono text-xs font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700">
                               {client.client_number}
                             </span>
                           )}
                         </div>
-                        <div className="flex items-center gap-1.5 text-xs text-slate-400 font-mono mt-0.5">
-                          <CreditCard size={11} className="text-slate-300" />
+                        <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500 font-mono mt-0.5">
+                          <CreditCard size={11} className="text-slate-300 dark:text-slate-600" />
                           {client.cnic}
                         </div>
-                        <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-1">
-                          <Phone size={11} className="text-slate-400" />
+                        <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mt-1">
+                          <Phone size={11} className="text-slate-400 dark:text-slate-500" />
                           {client.mobile_number}
                         </div>
                       </div>
@@ -226,38 +226,38 @@ function ClientsPageContent() {
             {/* Desktop Table View */}
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left border-collapse min-w-[800px]">
-                <thead className="bg-slate-50/80 backdrop-blur-md sticky top-0 z-10">
-                  <tr className="border-b border-slate-200/60">
-                    <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider w-16">ID</th>
-                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider w-1/3">Client Details</th>
-                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider w-1/3">Contact Info</th>
-                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">Actions</th>
+                <thead className="bg-slate-50/80 dark:bg-slate-800/80 backdrop-blur-md sticky top-0 z-10 transition-colors">
+                  <tr className="border-b border-slate-200/60 dark:border-slate-700/60">
+                    <th className="px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-16">ID</th>
+                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider w-1/3">Client Details</th>
+                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider w-1/3">Contact Info</th>
+                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100/80">
+                <tbody className="divide-y divide-slate-100/80 dark:divide-slate-800/80">
                   {clients.map((client: any, index: number) => (
                     <tr 
                       key={client.id} 
-                      className="hover:bg-blue-50/40 transition-all duration-300 group border-l-4 border-transparent hover:border-blue-500 animate-in fade-in slide-in-from-bottom-2"
+                      className="hover:bg-blue-50/40 dark:hover:bg-blue-900/10 transition-all duration-300 group border-l-4 border-transparent hover:border-blue-500 animate-in fade-in slide-in-from-bottom-2"
                       style={{ animationFillMode: 'both', animationDelay: `${index * 40}ms` }}
                     >
                       <td className="px-6 py-4">
-                        <span className="font-mono text-sm font-semibold text-slate-600 bg-slate-100 px-2 py-1 rounded-md border border-slate-200 whitespace-nowrap">
+                        <span className="font-mono text-sm font-semibold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md border border-slate-200 dark:border-slate-700 whitespace-nowrap">
                           {client.client_number || '---'}
                         </span>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 shrink-0 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 border border-blue-200 flex items-center justify-center text-blue-700 font-bold uppercase text-sm shadow-sm group-hover:shadow group-hover:scale-105 group-hover:border-blue-300 transition-all">
+                          <div className="w-10 h-10 shrink-0 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/40 dark:to-indigo-900/40 border border-blue-200 dark:border-blue-800/50 flex items-center justify-center text-blue-700 dark:text-blue-400 font-bold uppercase text-sm shadow-sm group-hover:shadow group-hover:scale-105 group-hover:border-blue-300 dark:group-hover:border-blue-700 transition-all">
                             {(client.name || 'U').charAt(0)}
                           </div>
                           <div>
                             <div className="flex items-center gap-2 mb-0.5">
-                              <p className="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">{client.name}</p>
+                              <p className="font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{client.name}</p>
                             </div>
-                            <div className="flex items-center gap-1.5 text-xs text-slate-400 font-mono">
-                              <CreditCard size={12} className="text-slate-300" />
+                            <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500 font-mono">
+                              <CreditCard size={12} className="text-slate-300 dark:text-slate-600" />
                               {client.cnic}
                             </div>
                           </div>
@@ -265,12 +265,12 @@ function ClientsPageContent() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex flex-col gap-1.5">
-                          <div className="flex items-center gap-2 text-sm text-slate-600 font-mono">
-                            <Phone size={14} className="text-slate-400 shrink-0" />
+                          <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300 font-mono">
+                            <Phone size={14} className="text-slate-400 dark:text-slate-500 shrink-0" />
                             {client.mobile_number}
                           </div>
-                          <div className="flex items-center gap-2 text-xs text-slate-500 truncate max-w-[200px]" title={client.address}>
-                            <MapPin size={14} className="text-slate-400 shrink-0" />
+                          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 truncate max-w-[200px]" title={client.address}>
+                            <MapPin size={14} className="text-slate-400 dark:text-slate-500 shrink-0" />
                             <span className="truncate">{client.address}</span>
                           </div>
                         </div>
@@ -311,25 +311,25 @@ function ClientsPageContent() {
             </div>
             {/* Pagination Controls */}
             {totalPages > 1 && (
-              <div className="p-4 border-t border-slate-100 flex items-center justify-between bg-slate-50/30">
-                <p className="text-sm text-slate-500">
-                  Showing <span className="font-medium text-slate-900">{(page - 1) * 20 + 1}</span> to <span className="font-medium text-slate-900">{Math.min(page * 20, totalCount)}</span> of <span className="font-medium text-slate-900">{totalCount}</span> results
+              <div className="p-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/30 dark:bg-slate-800/30 transition-colors">
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  Showing <span className="font-medium text-slate-900 dark:text-white">{(page - 1) * 20 + 1}</span> to <span className="font-medium text-slate-900 dark:text-white">{Math.min(page * 20, totalCount)}</span> of <span className="font-medium text-slate-900 dark:text-white">{totalCount}</span> results
                 </p>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setPage(p => Math.max(1, p - 1))}
                     disabled={page === 1}
-                    className="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     <ChevronLeft size={16} />
                   </button>
-                  <span className="text-sm font-medium text-slate-700 px-2">
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300 px-2">
                     Page {page} of {totalPages}
                   </span>
                   <button
                     onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                     disabled={page === totalPages}
-                    className="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     <ChevronRight size={16} />
                   </button>

@@ -96,10 +96,10 @@ export default function Dashboard() {
   return (
     <div className="w-full max-w-[1600px] mx-auto space-y-6 animate-fade-in pb-20">
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-blue-50 via-white to-blue-50/50 rounded-2xl p-6 md:p-8 border border-blue-100 flex justify-between items-center relative overflow-hidden shadow-sm">
+      <div className="bg-gradient-to-r from-blue-50 via-white to-blue-50/50 dark:from-slate-800 dark:via-slate-900 dark:to-slate-800 rounded-2xl p-6 md:p-8 border border-blue-100 dark:border-slate-800 flex justify-between items-center relative overflow-hidden shadow-sm dark:shadow-none transition-colors">
         <div className="z-10 flex flex-col gap-1">
-          <p className="text-slate-500 text-sm md:text-base font-semibold uppercase tracking-wider">Welcome back</p>
-          <p className="text-slate-800 text-xl md:text-2xl font-bold">Here's what's happening at the firm today.</p>
+          <p className="text-slate-500 dark:text-slate-400 text-sm md:text-base font-semibold uppercase tracking-wider transition-colors">Welcome back</p>
+          <p className="text-slate-800 dark:text-white text-xl md:text-2xl font-bold transition-colors">Here's what's happening at the firm today.</p>
           <LiveClock />
         </div>
         
@@ -119,79 +119,79 @@ export default function Dashboard() {
       {/* Stats Row */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {/* Active Cases */}
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+        <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-none flex flex-col justify-between hover:shadow-md dark:hover:border-slate-700 transition-all">
           <div className="flex justify-between items-start mb-2">
-            <span className="text-xs font-bold text-slate-500">Active Cases</span>
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Active Cases</span>
             <div className="bg-blue-600 text-white p-1.5 rounded-lg"><Briefcase size={16} /></div>
           </div>
-          <div className="text-2xl font-extrabold text-slate-900">
-            {loading ? <div className="h-8 w-16 bg-slate-200 rounded animate-pulse"></div> : stats.active_cases}
+          <div className="text-2xl font-extrabold text-slate-900 dark:text-white">
+            {loading ? <div className="h-8 w-16 bg-slate-200 dark:bg-slate-800 rounded animate-pulse"></div> : stats.active_cases}
           </div>
         </div>
         
         {/* Today's Hearings */}
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+        <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-none flex flex-col justify-between hover:shadow-md dark:hover:border-slate-700 transition-all">
           <div className="flex justify-between items-start mb-2">
-            <span className="text-xs font-bold text-slate-500">Today's Hearings</span>
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Today's Hearings</span>
             <div className="bg-amber-500 text-white p-1.5 rounded-lg"><Calendar size={16} /></div>
           </div>
-          <div className="text-2xl font-extrabold text-slate-900">
-            {loading ? <div className="h-8 w-16 bg-slate-200 rounded animate-pulse"></div> : stats.todays_hearings}
+          <div className="text-2xl font-extrabold text-slate-900 dark:text-white">
+            {loading ? <div className="h-8 w-16 bg-slate-200 dark:bg-slate-800 rounded animate-pulse"></div> : stats.todays_hearings}
           </div>
         </div>
 
         {/* Pending Tasks */}
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+        <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-none flex flex-col justify-between hover:shadow-md dark:hover:border-slate-700 transition-all">
           <div className="flex justify-between items-start mb-2">
-            <span className="text-xs font-bold text-slate-500">Pending Tasks</span>
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Pending Tasks</span>
             <div className="bg-rose-500 text-white p-1.5 rounded-lg"><CheckSquare size={16} /></div>
           </div>
-          <div className="text-2xl font-extrabold text-slate-900">
-            {loading ? <div className="h-8 w-16 bg-slate-200 rounded animate-pulse"></div> : stats.pending_tasks}
+          <div className="text-2xl font-extrabold text-slate-900 dark:text-white">
+            {loading ? <div className="h-8 w-16 bg-slate-200 dark:bg-slate-800 rounded animate-pulse"></div> : stats.pending_tasks}
           </div>
         </div>
 
         {/* Clients */}
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+        <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-none flex flex-col justify-between hover:shadow-md dark:hover:border-slate-700 transition-all">
           <div className="flex justify-between items-start mb-2">
-            <span className="text-xs font-bold text-slate-500">Clients</span>
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Clients</span>
             <div className="bg-indigo-500 text-white p-1.5 rounded-lg"><Users size={16} /></div>
           </div>
-          <div className="text-2xl font-extrabold text-slate-900">
-            {loading ? <div className="h-8 w-16 bg-slate-200 rounded animate-pulse"></div> : stats.total_clients}
+          <div className="text-2xl font-extrabold text-slate-900 dark:text-white">
+            {loading ? <div className="h-8 w-16 bg-slate-200 dark:bg-slate-800 rounded animate-pulse"></div> : stats.total_clients}
           </div>
         </div>
 
         {/* Revenue */}
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+        <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-none flex flex-col justify-between hover:shadow-md dark:hover:border-slate-700 transition-all">
           <div className="flex justify-between items-start mb-2">
-            <span className="text-xs font-bold text-slate-500">Revenue</span>
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Revenue</span>
             <div className="bg-emerald-500 text-white p-1.5 rounded-lg"><TrendingUp size={16} /></div>
           </div>
-          <div className="text-xl font-extrabold text-slate-900">
+          <div className="text-xl font-extrabold text-slate-900 dark:text-white">
             {loading ? (
-              <div className="h-7 w-24 bg-slate-200 rounded animate-pulse"></div>
+              <div className="h-7 w-24 bg-slate-200 dark:bg-slate-800 rounded animate-pulse"></div>
             ) : hasAccountsAccess ? (
               formatCurrency(stats.total_revenue)
             ) : (
-              <span className="text-sm text-slate-400">Restricted</span>
+              <span className="text-sm text-slate-400 dark:text-slate-500">Restricted</span>
             )}
           </div>
         </div>
 
         {/* Outstanding */}
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+        <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-none flex flex-col justify-between hover:shadow-md dark:hover:border-slate-700 transition-all">
           <div className="flex justify-between items-start mb-2">
-            <span className="text-xs font-bold text-slate-500">Outstanding Payments</span>
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Outstanding Payments</span>
             <div className="bg-amber-400 text-white p-1.5 rounded-lg"><Receipt size={16} /></div>
           </div>
-          <div className="text-xl font-extrabold text-slate-900">
+          <div className="text-xl font-extrabold text-slate-900 dark:text-white">
             {loading ? (
-              <div className="h-7 w-24 bg-slate-200 rounded animate-pulse"></div>
+              <div className="h-7 w-24 bg-slate-200 dark:bg-slate-800 rounded animate-pulse"></div>
             ) : hasAccountsAccess ? (
               formatCurrency(stats.accounts_stats?.overall_remaining || 0)
             ) : (
-              <span className="text-sm text-slate-400">Restricted</span>
+              <span className="text-sm text-slate-400 dark:text-slate-500">Restricted</span>
             )}
           </div>
         </div>
@@ -206,7 +206,7 @@ export default function Dashboard() {
             {hasAccountsAccess ? (
               <MonthlyRevenueChart trendData={stats.accounts_stats?.collections_trend || []} loading={loading} />
             ) : (
-              <div className="h-full min-h-[300px] bg-white rounded-2xl border border-slate-200 flex flex-col items-center justify-center text-slate-400">
+              <div className="h-full min-h-[300px] bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center text-slate-400 dark:text-slate-500">
                 <TrendingUp size={32} className="mb-2 opacity-50" />
                 <p className="text-sm font-medium">Financial data restricted</p>
               </div>

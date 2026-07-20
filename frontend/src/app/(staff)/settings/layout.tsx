@@ -25,13 +25,13 @@ export default function SettingsLayout({ children }: { children: ReactNode }) {
   return (
     <div className="w-full space-y-6 animate-in fade-in duration-300">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Settings</h1>
-        <p className="text-sm text-slate-500 mt-1">Manage your account preferences, firm settings, and system configurations.</p>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Settings</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Manage your account preferences, firm settings, and system configurations.</p>
       </div>
 
       <div className="flex flex-col md:flex-row gap-8 items-start">
         {/* Navigation Sidebar */}
-        <nav className="w-full md:w-64 shrink-0 bg-white border border-slate-200 rounded-2xl p-3 shadow-sm sticky top-24">
+        <nav className="w-full md:w-64 shrink-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 shadow-sm dark:shadow-none sticky top-24 transition-colors">
           <ul className="space-y-1">
             {visibleItems.map((item) => {
               const Icon = item.icon;
@@ -43,11 +43,11 @@ export default function SettingsLayout({ children }: { children: ReactNode }) {
                     href={item.href}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                       isActive 
-                        ? 'bg-blue-50 text-blue-700 shadow-sm shadow-blue-100' 
-                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                        ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 shadow-sm shadow-blue-100 dark:shadow-none' 
+                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200'
                     }`}
                   >
-                    <Icon size={18} className={isActive ? 'text-blue-600' : 'text-slate-400'} />
+                    <Icon size={18} className={isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500'} />
                     {item.label}
                   </Link>
                 </li>
@@ -58,7 +58,7 @@ export default function SettingsLayout({ children }: { children: ReactNode }) {
 
         {/* Content Area */}
         <div className="flex-1 w-full min-w-0">
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm dark:shadow-none transition-colors">
             {children}
           </div>
         </div>
