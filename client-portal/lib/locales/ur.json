@@ -1,0 +1,49 @@
+{
+  "sidebar": {
+    "overview": "جائزہ",
+    "myCases": "میرے کیسز",
+    "hearings": "سماعتیں",
+    "financials": "مالیات",
+    "documents": "دستاویزات",
+    "messages": "پیغامات",
+    "profile": "پروفائل",
+    "settings": "ترتیبات",
+    "needHelp": "مدد چاہیے؟",
+    "helpText": "اگر آپ کو کوئی سوال ہے یا مدد کی ضرورت ہے تو ہماری ٹیم آپ کی مدد کے لیے حاضر ہے۔",
+    "contactOffice": "دفتر سے رابطہ کریں",
+    "allRightsReserved": "جملہ حقوق محفوظ ہیں۔"
+  },
+  "topbar": {
+    "clientPortal": "کلائنٹ پورٹل",
+    "searchPlaceholder": "کچھ بھی تلاش کریں..."
+  },
+  "dashboard": {
+    "welcomeBack": "خوش آمدید،",
+    "latestUpdate": "یہ آپ کے قانونی معاملات پر تازہ ترین اپ ڈیٹ ہے۔",
+    "activeCases": "فعال کیسز",
+    "upcomingHearings": "آئندہ سماعتیں",
+    "outstandingDue": "واجب الادا رقم",
+    "paymentsMade": "ادائیگیاں",
+    "viewAllCases": "تمام کیسز دیکھیں",
+    "viewAllHearings": "تمام سماعتیں دیکھیں",
+    "viewInvoice": "انوائس دیکھیں",
+    "viewHistory": "ہسٹری دیکھیں",
+    "viewAll": "سب دیکھیں",
+    "caseProgressOverview": "کیس کی پیشرفت کا جائزہ",
+    "seeAllCasesDetails": "تمام کیسز اور تفصیلات دیکھیں",
+    "recentActivity": "حالیہ سرگرمی",
+    "viewAllActivity": "تمام سرگرمی دیکھیں",
+    "nextHearing": "اگلی سماعت",
+    "dayRemaining": "دن باقی",
+    "daysRemaining": "دن باقی",
+    "latestInvoice": "تازہ ترین انوائس",
+    "issuedOn": "جاری کردہ تاریخ",
+    "dueDate": "آخری تاریخ",
+    "outstanding": "بقایا",
+    "recentDocuments": "حالیہ دستاویزات",
+    "uploadedOn": "اپ لوڈ کی تاریخ",
+    "yourAdvocate": "آپ کے وکیل",
+    "message": "پیغام بھیجیں",
+    "callOffice": "دفتر کال کریں"
+  }
+}

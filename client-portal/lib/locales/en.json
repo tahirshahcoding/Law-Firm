@@ -1,0 +1,49 @@
+{
+  "sidebar": {
+    "overview": "Overview",
+    "myCases": "My Cases",
+    "hearings": "Hearings",
+    "financials": "Financials",
+    "documents": "Documents",
+    "messages": "Messages",
+    "profile": "Profile",
+    "settings": "Settings",
+    "needHelp": "Need Help?",
+    "helpText": "If you have any questions or need assistance, our team is here to help.",
+    "contactOffice": "Contact Office",
+    "allRightsReserved": "All rights reserved."
+  },
+  "topbar": {
+    "clientPortal": "CLIENT PORTAL",
+    "searchPlaceholder": "Search anything..."
+  },
+  "dashboard": {
+    "welcomeBack": "Welcome back,",
+    "latestUpdate": "Here's the latest update on your legal matters.",
+    "activeCases": "Active Cases",
+    "upcomingHearings": "Upcoming Hearings",
+    "outstandingDue": "Outstanding Due",
+    "paymentsMade": "Payments Made",
+    "viewAllCases": "View all cases",
+    "viewAllHearings": "View all hearings",
+    "viewInvoice": "View invoice",
+    "viewHistory": "View history",
+    "viewAll": "View all",
+    "caseProgressOverview": "Case Progress Overview",
+    "seeAllCasesDetails": "See all cases and details",
+    "recentActivity": "Recent Activity",
+    "viewAllActivity": "View all activity",
+    "nextHearing": "Next Hearing",
+    "dayRemaining": "Day Remaining",
+    "daysRemaining": "Days Remaining",
+    "latestInvoice": "Latest Invoice",
+    "issuedOn": "Issued on",
+    "dueDate": "Due Date",
+    "outstanding": "Outstanding",
+    "recentDocuments": "Recent Documents",
+    "uploadedOn": "Uploaded on",
+    "yourAdvocate": "Your Advocate",
+    "message": "Message",
+    "callOffice": "Call Office"
+  }
+}

@@ -11,4 +11,12 @@ body {
   font-family: var(--font-geist-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #f8fafc; /* slate-50 */
+}
+
+/* Jameel Noori Nastaleeq for Urdu */
+.font-urdu {
+  font-family: 'Jameel Noori Nastaleeq', 'Nafees Nastaleeq', 'Noto Naskh Arabic', sans-serif;
+  font-size: 110%; /* Nastaleeq usually needs a slightly larger base size */
+  line-height: 1.8;
 }
