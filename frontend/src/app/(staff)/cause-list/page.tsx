@@ -388,6 +388,10 @@ export default function CauseListPage() {
             margin-top: 0px !important;
             margin-bottom: 25px !important;
           }
+          tr {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+          }
           th, td {
             border: 1.5px solid #000000 !important;
             padding: 10px 8px !important;
