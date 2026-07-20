@@ -275,7 +275,7 @@ export default function DashboardPage() {
 
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden font-sans">
-      
+
       {/* ── Sidebar ── */}
       <aside className="w-64 bg-white border-e border-slate-200/60 hidden md:flex flex-col flex-shrink-0 relative z-20">
         <div className="p-6 flex items-center gap-3">
@@ -333,19 +333,24 @@ export default function DashboardPage() {
         
         {/* Topbar */}
         <header className="bg-white border-b border-slate-200/60 sticky top-0 z-30">
-          <div className="w-full px-4 sm:px-8 py-4 flex items-center justify-between">
-            <div className="flex-1 max-w-xl">
-              <div className="relative">
+          <div className="w-full px-4 sm:px-8 py-3 sm:py-4 flex items-center justify-between gap-3">
+            {/* Mobile: show logo + title */}
+            <div className="flex md:hidden items-center gap-2 shrink-0">
+              <div className="relative w-8 h-8 rounded-lg overflow-hidden flex-shrink-0">
+                <Image src="/logo.png" alt="Logo" fill className="object-cover" sizes="32px" />
+              </div>
+              <p className="text-slate-900 font-bold text-sm leading-none">Rahimullah</p>
+            </div>
+
+            {/* Desktop: search bar */}
+            <div className="hidden sm:flex flex-1 max-w-xl">
+              <div className="relative w-full">
                 <Search className="absolute start-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                 <input 
                   type="text" 
                   placeholder={t.topbar.searchPlaceholder}
                   className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-full ps-11 pe-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 font-medium"
                 />
-                <div className="absolute end-4 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                  <span className="text-[10px] font-bold text-slate-400 border border-slate-200 px-1.5 py-0.5 rounded bg-white">Ctrl</span>
-                  <span className="text-[10px] font-bold text-slate-400 border border-slate-200 px-1.5 py-0.5 rounded bg-white">/</span>
-                </div>
               </div>
             </div>
 
@@ -394,16 +399,16 @@ export default function DashboardPage() {
         </header>
 
         {/* Dashboard Content */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar relative">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-8 pb-24 md:pb-8 custom-scrollbar relative">
           {activeTab === 'overview' && (
             <div className="w-full space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
               
               {/* Welcome Section */}
-              <div className="bg-white rounded-3xl p-8 relative overflow-hidden border border-slate-200/60 shadow-sm flex items-center justify-between">
+              <div className="bg-white rounded-3xl p-5 sm:p-8 relative overflow-hidden border border-slate-200/60 shadow-sm flex items-center justify-between">
                 <div className="relative z-10 max-w-lg">
-                  <p className="text-slate-500 font-medium mb-1">{t.dashboard.welcomeBack}</p>
-                  <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">{data?.client?.name}</h1>
-                  <p className="text-slate-500 text-sm">{t.dashboard.latestUpdate}</p>
+                  <p className="text-slate-500 font-medium mb-1 text-sm sm:text-base">{t.dashboard.welcomeBack}</p>
+                  <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mb-2">{data?.client?.name}</h1>
+                  <p className="text-slate-500 text-xs sm:text-sm">{t.dashboard.latestUpdate}</p>
                 </div>
                 <div className="hidden md:block absolute end-0 bottom-0 w-80 h-40 opacity-80 mix-blend-multiply origin-bottom-right scale-110">
                   <Image src="/images/courthouse-header.png" alt="Courthouse" fill className="object-contain object-right-bottom" />
@@ -952,7 +957,7 @@ export default function DashboardPage() {
           )}
 
           {activeTab === 'messages' && (
-            <div className="w-full max-w-3xl mx-auto flex flex-col rounded-3xl overflow-hidden border border-slate-200/60 shadow-xl bg-white animate-in fade-in duration-300" style={{ height: 'calc(100vh - 200px)' }}>
+            <div className="w-full max-w-3xl mx-auto flex flex-col rounded-none sm:rounded-3xl overflow-hidden border-0 sm:border border-slate-200/60 shadow-none sm:shadow-xl bg-white animate-in fade-in duration-300" style={{ height: 'calc(100vh - 136px)' }}>
 
               {/* ── Chat Header ── */}
               <div className="bg-white border-b border-slate-100 px-5 py-3.5 flex items-center gap-4 shrink-0">
@@ -1075,6 +1080,34 @@ export default function DashboardPage() {
           )}
         </main>
       </div>
+
+      {/* ── Mobile Bottom Navigation ── */}
+      <nav className="fixed bottom-0 inset-x-0 z-50 md:hidden bg-white border-t border-slate-200 shadow-lg safe-area-pb">
+        <div className="grid grid-cols-5 h-16">
+          {[
+            { id: 'overview',   icon: <LayoutDashboard size={20} />,  label: t.sidebar.overview },
+            { id: 'cases',      icon: <Briefcase size={20} />,        label: t.sidebar.myCases },
+            { id: 'hearings',   icon: <Calendar size={20} />,         label: t.sidebar.hearings },
+            { id: 'messages',   icon: <MessageSquare size={20} />,    label: t.sidebar.messages },
+            { id: 'financials', icon: <Wallet size={20} />,           label: t.sidebar.financials },
+          ].map(item => (
+            <button
+              key={item.id}
+              onClick={() => setActiveTab(item.id as any)}
+              className={`flex flex-col items-center justify-center gap-1 text-[10px] font-bold transition-colors ${
+                activeTab === item.id
+                  ? 'text-blue-600'
+                  : 'text-slate-400 hover:text-slate-600'
+              }`}
+            >
+              <span className={`transition-transform ${activeTab === item.id ? 'scale-110' : ''}`}>
+                {item.icon}
+              </span>
+              <span className="leading-none truncate max-w-[56px] text-center">{item.label}</span>
+            </button>
+          ))}
+        </div>
+      </nav>
     </div>
   );
 }
