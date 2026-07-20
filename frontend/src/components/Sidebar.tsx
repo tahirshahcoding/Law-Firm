@@ -14,6 +14,7 @@ export default function Sidebar() {
     { name: 'Deadlines', href: '/deadlines' },
     { name: 'Daily Diary', href: '/diary' },
     { name: 'Accounts', href: '/accounts' },
+    { name: 'Messages', href: '/messages' },
   ];
 
   return (

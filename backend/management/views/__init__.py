@@ -3,3 +3,4 @@ from .cases import *
 from .finance import *
 from .calendar import *
 from .system import *
+from .messages import *

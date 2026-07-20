@@ -25,3 +25,9 @@ if (apiBase.endsWith('/')) apiBase = apiBase.slice(0, -1);
 if (!apiBase.endsWith('/api')) apiBase += '/api';
 
 export const API_BASE = apiBase;
+
+export function getCsrfToken(): string {
+  if (typeof document === 'undefined') return '';
+  const match = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/);
+  return match ? match[1] : '';
+}

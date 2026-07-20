@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   LayoutDashboard,
@@ -27,11 +27,15 @@ import {
   TrendingUp,
   CreditCard,
   Clock,
-  Scale
+  Scale,
+  Eye,
+  Send,
+  Check,
+  CheckCheck
 } from 'lucide-react';
 import Image from 'next/image';
 
-import { API_BASE } from '@/lib/api';
+import { API_BASE, getCsrfToken } from '@/lib/api';
 import { useLanguage } from '@/lib/LanguageContext';
 
 /* ─── helpers ─────────────────────────────────────────────────────────────── */
@@ -80,6 +84,34 @@ function invoiceStatusIcon(s: string) {
   return                      <Ban        size={12} />;
 }
 
+function getCaseProgress(status: string) {
+  switch (status) {
+    case 'Consultation': return 5;
+    case 'Case Accepted': return 10;
+    case 'Documentation Pending': return 15;
+    case 'Filing in Progress': return 25;
+    case 'Filed': return 30;
+    case 'Under Trial': return 40;
+    case 'Evidence Stage': return 60;
+    case 'Arguments Stage': return 75;
+    case 'Judgment Reserved': return 90;
+    case 'Appeal': return 95;
+    case 'Decided':
+    case 'Closed - Won':
+    case 'Closed - Lost':
+    case 'Closed - Settled':
+    case 'Closed - Withdrawn':
+    case 'Closed - Dismissed':
+    case 'Archived':
+    case 'Closed':
+      return 100;
+    case 'Active':
+      return 50; // Generic active state
+    default:
+      return 0;
+  }
+}
+
 function StatCard({ icon, label, value, sub, color }: { icon: React.ReactNode; label: string; value: string | number; sub?: string; color: string }) {
   return (
     <div className={`relative rounded-2xl p-5 overflow-hidden ${color} shadow-sm`}>
@@ -121,8 +153,16 @@ export default function DashboardPage() {
   const { t, language, setLanguage, isRtl } = useLanguage();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'cases' | 'hearings' | 'financials'>('overview');
+  const [activeTab, setActiveTab] = useState<string>('overview');
   const [expandedCase, setExpandedCase] = useState<string | null>(null);
+  const [profileOpen, setProfileOpen] = useState(false);
+
+  // Messages State
+  const [messages, setMessages] = useState<any[]>([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [loadingMessages, setLoadingMessages] = useState(false);
+  const [sendingMessage, setSendingMessage] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetch(`${API_BASE}/portal/data/`, { credentials: 'include' })
@@ -130,6 +170,63 @@ export default function DashboardPage() {
       .then(d  => { setData(d); setLoading(false); })
       .catch(() => router.replace('/'));
   }, [router]);
+
+  const fetchMessages = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/portal/messages/`, { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        setMessages(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch messages', error);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'messages') {
+      fetchMessages();
+      const interval = setInterval(fetchMessages, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (activeTab === 'messages' && messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, activeTab]);
+
+  const sendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newMessage.trim()) return;
+    
+    setSendingMessage(true);
+    try {
+      const res = await fetch(`${API_BASE}/portal/messages/`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCsrfToken()
+        },
+        credentials: 'include',
+        body: JSON.stringify({ content: newMessage })
+      });
+      if (res.ok) {
+        setNewMessage('');
+        fetchMessages();
+      } else {
+        const errorData = await res.json().catch(() => ({}));
+        console.error('Server returned error:', errorData);
+        alert('Server Error: ' + (errorData.error || errorData.detail || res.statusText));
+      }
+    } catch (error: any) {
+      console.error('Failed to send message', error);
+      alert('Failed to send message: ' + error.message);
+    } finally {
+      setSendingMessage(false);
+    }
+  };
 
   const handleLogout = async () => {
     try { await fetch(`${API_BASE}/auth/logout/`, { method: 'POST', credentials: 'include' }); }
@@ -213,21 +310,22 @@ export default function DashboardPage() {
       <div className="flex-1 flex flex-col overflow-hidden relative">
         
         {/* Topbar */}
-        <header className="bg-white px-6 py-4 flex items-center justify-between border-b border-slate-200/60 sticky top-0 z-30">
-          <div className="flex-1 max-w-xl">
-            <div className="relative">
-              <Search className="absolute start-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-              <input 
-                type="text" 
-                placeholder={t.topbar.searchPlaceholder}
-                className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-full ps-11 pe-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 font-medium"
-              />
-              <div className="absolute end-4 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                <span className="text-[10px] font-bold text-slate-400 border border-slate-200 px-1.5 py-0.5 rounded bg-white">Ctrl</span>
-                <span className="text-[10px] font-bold text-slate-400 border border-slate-200 px-1.5 py-0.5 rounded bg-white">/</span>
+        <header className="bg-white border-b border-slate-200/60 sticky top-0 z-30">
+          <div className="w-full px-4 sm:px-8 py-4 flex items-center justify-between">
+            <div className="flex-1 max-w-xl">
+              <div className="relative">
+                <Search className="absolute start-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                <input 
+                  type="text" 
+                  placeholder={t.topbar.searchPlaceholder}
+                  className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-full ps-11 pe-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 font-medium"
+                />
+                <div className="absolute end-4 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                  <span className="text-[10px] font-bold text-slate-400 border border-slate-200 px-1.5 py-0.5 rounded bg-white">Ctrl</span>
+                  <span className="text-[10px] font-bold text-slate-400 border border-slate-200 px-1.5 py-0.5 rounded bg-white">/</span>
+                </div>
               </div>
             </div>
-          </div>
 
           <div className="flex items-center gap-5 ms-4">
             <button 
@@ -240,22 +338,43 @@ export default function DashboardPage() {
               <Bell size={20} />
               <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-white">3</span>
             </button>
-            <div className="flex items-center gap-3 border-s border-slate-200 ps-5 cursor-pointer hover:bg-slate-50 p-1.5 rounded-xl transition-colors" onClick={handleLogout}>
-              <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-sm">
-                {data?.client?.name?.[0]?.toUpperCase() ?? 'U'}
+            <div className="relative">
+              <div className="flex items-center gap-3 border-s border-slate-200 ps-5 cursor-pointer hover:bg-slate-50 p-1.5 rounded-xl transition-colors" onClick={() => setProfileOpen(!profileOpen)}>
+                <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-sm">
+                  {data?.client?.name?.[0]?.toUpperCase() ?? 'U'}
+                </div>
+                <div className="hidden sm:block text-start">
+                  <p className="text-sm font-bold text-slate-800 leading-none">{data?.client?.name}</p>
+                </div>
+                <ChevronDown size={14} className="text-slate-400" />
               </div>
-              <div className="hidden sm:block text-start">
-                <p className="text-sm font-bold text-slate-800 leading-none">{data?.client?.name}</p>
-              </div>
-              <ChevronDown size={14} className="text-slate-400" />
+
+              {/* Profile Dropdown */}
+              {profileOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setProfileOpen(false)}></div>
+                  <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg z-50 py-1 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="px-4 py-2 border-b border-slate-100 mb-1">
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Account</p>
+                    </div>
+                    <button 
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 text-sm font-medium text-rose-600 hover:bg-rose-50 flex items-center gap-2 transition-colors"
+                    >
+                      <LogOut size={16} /> Logout
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
+          </div>
           </div>
         </header>
 
         {/* Dashboard Content */}
         <main className="flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar relative">
           {activeTab === 'overview' && (
-            <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="w-full space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
               
               {/* Welcome Section */}
               <div className="bg-white rounded-3xl p-8 relative overflow-hidden border border-slate-200/60 shadow-sm flex items-center justify-between">
@@ -280,7 +399,10 @@ export default function DashboardPage() {
                   </div>
                   <div>
                     <h3 className="text-3xl font-black text-slate-900">{activeCases}</h3>
-                    <button className="text-[11px] font-bold text-blue-600 hover:text-blue-800 mt-2 flex items-center gap-1 transition-colors">
+                    <button 
+                      onClick={() => setActiveTab('cases')}
+                      className="text-[11px] font-bold text-blue-600 hover:text-blue-800 mt-2 flex items-center gap-1 transition-colors"
+                    >
                       {t.dashboard.viewAllCases} &rarr;
                     </button>
                   </div>
@@ -295,7 +417,10 @@ export default function DashboardPage() {
                   </div>
                   <div>
                     <h3 className="text-3xl font-black text-slate-900">{upcoming.length}</h3>
-                    <button className="text-[11px] font-bold text-blue-600 hover:text-blue-800 mt-2 flex items-center gap-1 transition-colors">
+                    <button 
+                      onClick={() => setActiveTab('hearings')}
+                      className="text-[11px] font-bold text-blue-600 hover:text-blue-800 mt-2 flex items-center gap-1 transition-colors"
+                    >
                       {t.dashboard.viewAllHearings} &rarr;
                     </button>
                   </div>
@@ -310,7 +435,10 @@ export default function DashboardPage() {
                   </div>
                   <div>
                     <h3 className="text-2xl font-black text-amber-600 whitespace-nowrap">Rs. {outstanding.toLocaleString()}</h3>
-                    <button className="text-[11px] font-bold text-blue-600 hover:text-blue-800 mt-2 flex items-center gap-1 transition-colors">
+                    <button 
+                      onClick={() => setActiveTab('financials')}
+                      className="text-[11px] font-bold text-blue-600 hover:text-blue-800 mt-2 flex items-center gap-1 transition-colors"
+                    >
                       {t.dashboard.viewInvoice} &rarr;
                     </button>
                   </div>
@@ -325,7 +453,10 @@ export default function DashboardPage() {
                   </div>
                   <div>
                     <h3 className="text-2xl font-black text-emerald-600 whitespace-nowrap">Rs. {totalPaid.toLocaleString()}</h3>
-                    <button className="text-[11px] font-bold text-blue-600 hover:text-blue-800 mt-2 flex items-center gap-1 transition-colors">
+                    <button 
+                      onClick={() => setActiveTab('financials')}
+                      className="text-[11px] font-bold text-blue-600 hover:text-blue-800 mt-2 flex items-center gap-1 transition-colors"
+                    >
                       {t.dashboard.viewHistory} &rarr;
                     </button>
                   </div>
@@ -333,15 +464,15 @@ export default function DashboardPage() {
               </div>
 
               {/* Main Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 {/* Left Column - Large lists */}
-                <div className="lg:col-span-2 space-y-6">
+                <div className="lg:col-span-3 space-y-6">
                   
                   {/* Upcoming Hearings */}
                   <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
                     <div className="flex items-center justify-between mb-6">
                       <h3 className="text-sm font-bold text-slate-900">{t.dashboard.upcomingHearings}</h3>
-                      <button className="text-xs font-bold text-blue-600 hover:text-blue-800">{t.dashboard.viewAll}</button>
+                      <button onClick={() => setActiveTab('hearings')} className="text-xs font-bold text-blue-600 hover:text-blue-800">{t.dashboard.viewAll}</button>
                     </div>
                     
                     <div className="space-y-4">
@@ -377,12 +508,12 @@ export default function DashboardPage() {
                   <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
                     <div className="flex items-center justify-between mb-6">
                       <h3 className="text-sm font-bold text-slate-900">{t.dashboard.caseProgressOverview}</h3>
-                      <button className="text-xs font-bold text-blue-600 hover:text-blue-800">{t.dashboard.viewAll}</button>
+                      <button onClick={() => setActiveTab('cases')} className="text-xs font-bold text-blue-600 hover:text-blue-800">{t.dashboard.viewAll}</button>
                     </div>
                     
                     <div className="space-y-6">
-                      {cases.slice(0, 3).map((c: any, index: number) => {
-                        const progress = index === 0 ? 80 : index === 1 ? 45 : 30; // Mocked progress
+                      {cases.slice(0, 3).map((c: any) => {
+                        const progress = getCaseProgress(c.status);
                         return (
                           <div key={c.id}>
                             <div className="flex items-center justify-between mb-2">
@@ -396,7 +527,10 @@ export default function DashboardPage() {
                         );
                       })}
                     </div>
-                    <button className="text-xs font-bold text-blue-600 hover:text-blue-800 mt-6 flex items-center gap-1 transition-colors">
+                    <button 
+                      onClick={() => setActiveTab('cases')}
+                      className="text-xs font-bold text-blue-600 hover:text-blue-800 mt-6 flex items-center gap-1 transition-colors"
+                    >
                       {t.dashboard.seeAllCasesDetails} &rarr;
                     </button>
                   </div>
@@ -472,10 +606,16 @@ export default function DashboardPage() {
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
-                      <button className="flex items-center justify-center gap-1.5 bg-white border border-slate-200 text-slate-700 px-2 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition-colors shadow-sm">
+                      <button 
+                        onClick={() => setActiveTab('messages')}
+                        className="flex items-center justify-center gap-1.5 bg-white border border-slate-200 text-slate-700 px-2 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition-colors shadow-sm"
+                      >
                         <MessageSquare size={14} /> {t.dashboard.message}
                       </button>
-                      <button className="flex items-center justify-center gap-1.5 bg-blue-600 text-white px-2 py-2.5 rounded-xl text-xs font-bold hover:bg-blue-700 transition-colors shadow-sm shadow-blue-600/20">
+                      <button 
+                        onClick={() => window.location.href = 'tel:+923331234567'}
+                        className="flex items-center justify-center gap-1.5 bg-blue-600 text-white px-2 py-2.5 rounded-xl text-xs font-bold hover:bg-blue-700 transition-colors shadow-sm shadow-blue-600/20"
+                      >
                         <PhoneCall size={14} /> {t.dashboard.callOffice}
                       </button>
                     </div>
@@ -488,7 +628,7 @@ export default function DashboardPage() {
           )}
           
           {activeTab === 'cases' && (
-            <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-500">
+            <div className="w-full space-y-6 animate-in fade-in duration-500">
               {/* My Cases (accordion) */}
               <section>
                 <SectionHeader icon={<Briefcase size={14} />} title={t.sidebar.myCases} count={cases.length} />
@@ -613,7 +753,7 @@ export default function DashboardPage() {
           )}
 
           {activeTab === 'hearings' && (
-            <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-500">
+            <div className="w-full space-y-6 animate-in fade-in duration-500">
               <section>
                 <SectionHeader icon={<Calendar size={14} />} title={t.dashboard.upcomingHearings} count={upcoming.length} />
                 {upcoming.length === 0 ? (
@@ -685,7 +825,7 @@ export default function DashboardPage() {
           )}
 
           {activeTab === 'financials' && (
-            <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-500">
+            <div className="w-full space-y-6 animate-in fade-in duration-500">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <StatCard
                   icon={<FileText />}
@@ -789,9 +929,85 @@ export default function DashboardPage() {
             </div>
           )}
 
+          {activeTab === 'messages' && (
+            <div className="w-full h-full max-w-4xl mx-auto flex flex-col bg-white rounded-3xl border border-slate-200/60 shadow-sm overflow-hidden animate-in fade-in duration-500" style={{ height: 'calc(100vh - 180px)' }}>
+              {/* Chat Header */}
+              <div className="bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between z-10 shrink-0">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-slate-200 overflow-hidden relative border-2 border-white shadow-sm">
+                    <div className="absolute inset-0 bg-gradient-to-tr from-slate-300 to-slate-200 flex items-center justify-center">
+                      <User size={24} className="text-white" />
+                    </div>
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-black text-slate-900 leading-tight">Your Advocate</h2>
+                    <p className="text-xs font-bold text-emerald-500 flex items-center gap-1.5 mt-0.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500"></span> Online
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Chat Messages */}
+              <div className="flex-1 overflow-y-auto p-6 bg-slate-50/50 space-y-6 custom-scrollbar">
+                {messages.length === 0 ? (
+                  <div className="h-full flex flex-col items-center justify-center text-slate-400 space-y-3">
+                    <MessageSquare size={48} className="opacity-20" />
+                    <p className="font-medium text-sm">Send a message to start the conversation.</p>
+                  </div>
+                ) : (
+                  messages.map((msg, i) => {
+                    const isClient = msg.sender_type === 'Client';
+                    return (
+                      <div key={msg.id || i} className={`flex ${isClient ? 'justify-end' : 'justify-start'}`}>
+                        <div className={`max-w-[75%] rounded-2xl px-5 py-3 shadow-sm ${
+                          isClient 
+                            ? 'bg-blue-600 text-white rounded-tr-sm' 
+                            : 'bg-white border border-slate-200/60 text-slate-700 rounded-tl-sm'
+                        }`}>
+                          <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+                          <div className={`text-[10px] font-bold mt-2 ${isClient ? 'text-blue-200' : 'text-slate-400'} flex items-center gap-1 justify-end`}>
+                            {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            {isClient && (msg.is_read ? <CheckCheck size={14} className="text-cyan-300" /> : <Check size={14} className="text-blue-300/80" />)}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+                <div ref={messagesEndRef} />
+              </div>
+
+              {/* Chat Input */}
+              <div className="p-4 bg-white border-t border-slate-100 shrink-0">
+                <form onSubmit={sendMessage} className="flex items-center gap-3 relative">
+                  <input
+                    type="text"
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    placeholder="Type your message..."
+                    className="flex-1 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-full focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 block w-full ps-6 pe-16 py-3.5 transition-all outline-none"
+                    disabled={sendingMessage}
+                  />
+                  <button 
+                    type="submit" 
+                    disabled={!newMessage.trim() || sendingMessage}
+                    className="absolute end-2 w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 disabled:opacity-50 disabled:hover:bg-blue-600 transition-colors shadow-sm shadow-blue-600/20"
+                  >
+                    {sendingMessage ? (
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    ) : (
+                      <Send size={16} className="-ms-0.5" />
+                    )}
+                  </button>
+                </form>
+              </div>
+            </div>
+          )}
+
           {/* Unimplemented Fallbacks */}
-          {activeTab !== 'overview' && activeTab !== 'cases' && activeTab !== 'hearings' && activeTab !== 'financials' && (
-            <div className="max-w-6xl mx-auto flex items-center justify-center h-[50vh] text-slate-500 animate-in fade-in">
+          {activeTab !== 'overview' && activeTab !== 'cases' && activeTab !== 'hearings' && activeTab !== 'financials' && activeTab !== 'messages' && (
+            <div className="max-w-7xl mx-auto flex items-center justify-center h-[50vh] text-slate-500 animate-in fade-in">
               <div className="text-center">
                 <Briefcase size={48} className="mx-auto mb-4 text-slate-300" />
                 <h2 className="text-xl font-bold text-slate-700 mb-2">{t.sidebar[activeTab as keyof typeof t.sidebar]}</h2>

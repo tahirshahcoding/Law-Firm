@@ -33,6 +33,7 @@ export default function Navigation({ mobileOpen = false, onCloseMobile }: Naviga
       title: 'OPERATIONS',
       items: [
         { name: 'Clients', href: '/clients', icon: Users, module: 'clients' },
+        { name: 'Messages', href: '/messages', icon: MessageSquare, always: true },
         { name: 'Cases', href: '/cases', icon: FolderOpen, module: 'cases' },
         { name: 'Hearings', href: '/hearings', icon: Gavel, module: 'hearings' },
         { name: 'Courts', href: '/courts', icon: Scale, adminOnly: true },

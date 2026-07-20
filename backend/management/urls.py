@@ -5,7 +5,8 @@ from .views import (
     AccountsLedgerView, DailyDiaryView, DashboardStatsView, AdminUserView, AdminUserDetailView, CurrentUserView,
     CustomTokenObtainPairView, TokenRefreshCookieView, LogoutView, AdvocatesView,
     ClientPortalView, ClientResetPasswordView, ConsultationViewSet, AuditLogView, PaymentViewSet, ExpenseViewSet,
-    PingView, CaseTimelineViewSet, ConflictCheckView, CourtViewSet, JudgeViewSet, CalendarEventViewSet, NotificationViewSet, DeadlineViewSet, BackupDatabaseView
+    PingView, CaseTimelineViewSet, ConflictCheckView, CourtViewSet, JudgeViewSet, CalendarEventViewSet, NotificationViewSet, DeadlineViewSet, BackupDatabaseView,
+    MessageViewSet, ClientPortalMessagesView
 )
 
 # Router handles the standard GET/POST/PUT/DELETE for all resource ViewSets
@@ -25,6 +26,7 @@ router.register(r'judges',            JudgeViewSet,           basename='judge')
 router.register(r'calendar-events',   CalendarEventViewSet,   basename='calendar-event')
 router.register(r'notifications',     NotificationViewSet,    basename='notification')
 router.register(r'deadlines',         DeadlineViewSet,        basename='deadline')
+router.register(r'messages',          MessageViewSet,         basename='message')
 
 urlpatterns = [
     # ── Staff Auth (cookie-based) ──────────────────────────────────────────────
@@ -38,6 +40,7 @@ urlpatterns = [
     # ── Client Portal ──────────────────────────────────────────────────────────
     path('portal/token/',                          CustomTokenObtainPairView.as_view(), name='portal_token'),
     path('portal/data/',                           ClientPortalView.as_view(),           name='client_portal'),
+    path('portal/messages/',                       ClientPortalMessagesView.as_view(),   name='client_portal_messages'),
     path('portal/reset-password/<uuid:pk>/',       ClientResetPasswordView.as_view(),    name='client_reset_password'),
 
     # ── User Management (staff only) ───────────────────────────────────────────
