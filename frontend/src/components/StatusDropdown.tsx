@@ -62,7 +62,7 @@ export default function StatusDropdown({ value, onChange, disabled }: StatusDrop
       setDropdownStyles({
         position: 'fixed',
         top: rect.bottom + 4,
-        left: rect.left,
+        left: Math.min(rect.left, typeof window !== 'undefined' ? window.innerWidth - 244 : rect.left), // Ensure 240px width fits on mobile
         width: 240, // Slightly wider for groups
         zIndex: 9999
       });
@@ -74,13 +74,13 @@ export default function StatusDropdown({ value, onChange, disabled }: StatusDrop
     <div 
       ref={portalRef}
       style={dropdownStyles}
-      className="bg-white rounded-xl shadow-2xl border border-slate-200 py-2 focus:outline-none overflow-hidden flex flex-col"
+      className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 py-2 focus:outline-none overflow-hidden flex flex-col"
       onClick={(e) => e.stopPropagation()}
     >
       <div className="max-h-[300px] overflow-y-auto custom-scrollbar">
         {Object.entries(STATUS_GROUPS).map(([groupName, statuses]) => (
           <div key={groupName} className="mb-2 last:mb-0">
-            <div className="px-4 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider bg-slate-50/50">
+            <div className="px-4 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider bg-slate-50/50 dark:bg-slate-800/50">
               {groupName}
             </div>
             {statuses.map((status) => (
@@ -91,7 +91,7 @@ export default function StatusDropdown({ value, onChange, disabled }: StatusDrop
                   onChange(status);
                   setIsOpen(false);
                 }}
-                className={`w-full text-left px-4 py-2 text-sm hover:bg-blue-50 flex items-center justify-between transition-colors ${value === status ? 'text-blue-700 font-semibold bg-blue-50/50' : 'text-slate-700'}`}
+                className={`w-full text-left px-4 py-2 text-sm flex items-center justify-between transition-colors ${value === status ? 'text-blue-700 dark:text-blue-400 font-semibold bg-blue-50/50 dark:bg-blue-900/30' : 'text-slate-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700/50'}`}
               >
                 {status}
                 {value === status && <Check size={14} className="text-blue-600 shrink-0" />}

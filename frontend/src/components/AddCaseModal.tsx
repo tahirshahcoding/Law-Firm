@@ -230,20 +230,20 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
             </div>
 
             {isClientDropdownOpen && (
-              <div className="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                <div className="p-2 border-b border-slate-100 bg-slate-50/50">
+              <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="p-2 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50">
                   <input
                     type="text"
                     autoFocus
                     placeholder="Type to search clients..."
                     value={clientSearchText}
                     onChange={(e) => setClientSearchText(e.target.value)}
-                    className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded text-sm focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded text-sm focus:outline-none focus:border-blue-500 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                   />
                 </div>
                 <div className="max-h-48 overflow-y-auto">
                   {filteredClients.length === 0 ? (
-                    <div className="p-3 text-sm text-slate-500 text-center flex flex-col items-center gap-2">
+                    <div className="p-3 text-sm text-slate-500 dark:text-slate-400 text-center flex flex-col items-center gap-2">
                       <p>No clients found matching '{clientSearchText}'</p>
                       <button 
                         type="button"
@@ -251,7 +251,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
                           setIsClientDropdownOpen(false);
                           setIsAddClientOpen(true);
                         }}
-                        className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg font-medium text-xs transition-colors"
+                        className="px-3 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-lg font-medium text-xs transition-colors"
                       >
                         + Create New Client
                       </button>
@@ -261,11 +261,11 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
                       <div 
                         key={c.id} 
                         onClick={() => selectClient(c)}
-                        className="px-3 py-2 cursor-pointer hover:bg-slate-50 flex items-center justify-between group"
+                        className="px-3 py-2 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 flex items-center justify-between group"
                       >
                         <div>
-                          <p className="text-sm font-medium text-slate-900 group-hover:text-blue-600">{c.name}</p>
-                          <p className="text-xs text-slate-500 font-mono">{c.client_number || '---'} | {c.cnic}</p>
+                          <p className="text-sm font-medium text-slate-900 dark:text-slate-100 group-hover:text-blue-600">{c.name}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 font-mono">{c.client_number || '---'} | {c.cnic}</p>
                         </div>
                         {formData.client === c.id && <Check size={16} className="text-blue-600" />}
                       </div>
