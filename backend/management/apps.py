@@ -6,6 +6,7 @@ class ManagementConfig(AppConfig):
     name = 'management'
 
     def ready(self):
+        import management.models.signals
         import os
         # Prevent scheduler from running multiple times in dev/autoreload or celery
         if os.environ.get('RUN_MAIN', None) != 'true':
