@@ -37,10 +37,12 @@ export default function CreateDeadlineModal({ isOpen, onClose, onSuccess, initia
   const [users, setUsers] = useState<any[]>([]);
   const [caseSearch, setCaseSearch] = useState('');
   const [caseMenuOpen, setCaseMenuOpen] = useState(false);
+  const [isCasesLoading, setIsCasesLoading] = useState(true);
   const caseMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isOpen) return;
+    setIsCasesLoading(true);
     const fetchCases = async () => {
       try {
         const res = await apiFetch(`${API_BASE}/cases/`);
@@ -50,6 +52,8 @@ export default function CreateDeadlineModal({ isOpen, onClose, onSuccess, initia
         }
       } catch (err) {
         console.error("Failed to fetch cases", err);
+      } finally {
+        setIsCasesLoading(false);
       }
     };
     const fetchUsers = async () => {
@@ -213,18 +217,21 @@ export default function CreateDeadlineModal({ isOpen, onClose, onSuccess, initia
                       <span className="text-slate-500 dark:text-slate-400 italic">No Case</span>
                       {formData.case === '' && <Check size={14} className="dark:text-blue-400" />}
                     </div>
-                    {filteredCases.map((c) => (
-                      <div 
-                        key={c.id}
-                        className={`px-3 py-2 text-sm rounded-lg cursor-pointer flex items-center justify-between ${formData.case === c.id ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400' : 'hover:bg-slate-50 dark:hover:bg-slate-700/50 text-slate-700 dark:text-slate-300'}`}
-                        onClick={() => { setFormData({...formData, case: c.id}); setCaseMenuOpen(false); }}
-                      >
-                        <span className="truncate pr-2">{c.case_number} - {c.client_name}</span>
-                        {formData.case === c.id && <Check size={14} className="shrink-0 dark:text-blue-400" />}
-                      </div>
-                    ))}
-                    {filteredCases.length === 0 && (
+                    {isCasesLoading ? (
+                      <div className="px-3 py-4 text-center text-sm text-slate-500 dark:text-slate-400 animate-pulse">Loading cases...</div>
+                    ) : filteredCases.length === 0 ? (
                       <div className="px-3 py-4 text-center text-sm text-slate-500 dark:text-slate-400">No cases found</div>
+                    ) : (
+                      filteredCases.map((c) => (
+                        <div 
+                          key={c.id}
+                          className={`px-3 py-2 text-sm rounded-lg cursor-pointer flex items-center justify-between ${formData.case === c.id ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400' : 'hover:bg-slate-50 dark:hover:bg-slate-700/50 text-slate-700 dark:text-slate-300'}`}
+                          onClick={() => { setFormData({...formData, case: c.id}); setCaseMenuOpen(false); }}
+                        >
+                          <span className="truncate pr-2">{c.case_number} - {c.client_name}</span>
+                          {formData.case === c.id && <Check size={14} className="shrink-0 dark:text-blue-400" />}
+                        </div>
+                      ))
                     )}
                   </div>
                 </div>

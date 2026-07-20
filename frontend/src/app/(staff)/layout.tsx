@@ -122,7 +122,7 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="flex h-screen overflow-hidden w-full">
+    <div className="flex h-screen overflow-hidden w-full print:h-auto print:overflow-visible">
       <UIProvider>
       <CommandPalette />
       <QuickAddModal />
@@ -130,7 +130,7 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
         mobileOpen={mobileNavOpen}
         onCloseMobile={() => setMobileNavOpen(false)}
       />
-      <main className="flex-1 flex flex-col overflow-y-auto relative bg-[#F8FAFC] dark:bg-slate-950 min-w-0 transition-colors duration-300">
+      <main className="flex-1 flex flex-col overflow-y-auto relative bg-[#F8FAFC] dark:bg-slate-950 min-w-0 transition-colors duration-300 print:overflow-visible print:h-auto print:block">
         {/* ── Top Bar ──────────────────────────────────────────── */}
         <div className="min-h-[88px] bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-blue-100/50 dark:border-slate-800/80 flex items-center px-4 md:px-8 pt-4 pb-2 sticky top-0 z-20 gap-3 shadow-[0_4px_24px_-12px_rgba(37,99,235,0.08)] dark:shadow-none transition-colors duration-300">
           {/* Hamburger - mobile only */}
