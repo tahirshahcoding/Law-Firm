@@ -212,7 +212,8 @@ export default function DashboardPage() {
       });
   }, [router]);
 
-  const fetchMessages = async () => {
+  const fetchMessages = async (isInitial = false) => {
+    if (isInitial) setLoadingMessages(true);
     try {
       const res = await fetch(`${API_BASE}/portal/messages/`, { credentials: 'include' });
       if (res.ok) {
@@ -222,19 +223,26 @@ export default function DashboardPage() {
       }
     } catch (error) {
       console.error('Failed to fetch messages', error);
+    } finally {
+      if (isInitial) setLoadingMessages(false);
     }
   };
 
   useEffect(() => {
     if (activeTab === 'messages') {
       // Instantly load cached messages if available
+      let hasCache = false;
       try {
         const cachedMsgs = localStorage.getItem('clientPortalMessages');
-        if (cachedMsgs) setMessages(JSON.parse(cachedMsgs));
+        if (cachedMsgs) {
+          const parsed = JSON.parse(cachedMsgs);
+          setMessages(parsed);
+          if (parsed.length > 0) hasCache = true;
+        }
       } catch (e) {}
 
-      fetchMessages();
-      const interval = setInterval(fetchMessages, 5000);
+      fetchMessages(!hasCache);
+      const interval = setInterval(() => fetchMessages(false), 5000);
       return () => clearInterval(interval);
     }
   }, [activeTab]);
@@ -1040,7 +1048,21 @@ export default function DashboardPage() {
 
               {/* ── Messages ── */}
               <div className="flex-1 overflow-y-auto px-5 py-5 space-y-1 bg-gradient-to-b from-slate-50/80 to-white custom-scrollbar">
-                {groupedClientMessages.length === 0 ? (
+                {loadingMessages ? (
+                  <div className="space-y-4 animate-pulse pt-2">
+                    <div className="flex items-end gap-2.5 justify-start">
+                      <div className="w-7 h-7 rounded-full bg-slate-200 shrink-0"></div>
+                      <div className="w-2/3 max-w-[250px] h-16 bg-slate-200 rounded-2xl rounded-bl-sm"></div>
+                    </div>
+                    <div className="flex items-end gap-2.5 justify-end">
+                      <div className="w-1/2 max-w-[200px] h-12 bg-blue-100 rounded-2xl rounded-br-sm"></div>
+                    </div>
+                    <div className="flex items-end gap-2.5 justify-start">
+                      <div className="w-7 h-7 rounded-full bg-slate-200 shrink-0"></div>
+                      <div className="w-1/3 max-w-[150px] h-12 bg-slate-200 rounded-2xl rounded-bl-sm"></div>
+                    </div>
+                  </div>
+                ) : groupedClientMessages.length === 0 ? (
                   <div className="h-full flex flex-col items-center justify-center gap-5">
                     <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
                       <MessageSquare size={36} className="text-blue-300" />
