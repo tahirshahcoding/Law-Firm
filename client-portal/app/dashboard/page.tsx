@@ -187,10 +187,29 @@ export default function DashboardPage() {
   });
 
   useEffect(() => {
+    // 1. Instantly load from cache if available (Stale-While-Revalidate)
+    try {
+      const cached = localStorage.getItem('clientPortalData');
+      if (cached) {
+        setData(JSON.parse(cached));
+        setLoading(false);
+      }
+    } catch (e) { /* ignore parse errors */ }
+
+    // 2. Fetch fresh data in background
     fetch(`${API_BASE}/portal/data/`, { credentials: 'include' })
       .then(r => { if (!r.ok) throw new Error(); return r.json(); })
-      .then(d  => { setData(d); setLoading(false); })
-      .catch(() => router.replace('/'));
+      .then(d  => { 
+        setData(d); 
+        setLoading(false); 
+        try { localStorage.setItem('clientPortalData', JSON.stringify(d)); } catch (e) {}
+      })
+      .catch(() => {
+        // Only redirect to login if we have no cached data at all
+        if (!localStorage.getItem('clientPortalData')) {
+          router.replace('/');
+        }
+      });
   }, [router]);
 
   const fetchMessages = async () => {
@@ -199,6 +218,7 @@ export default function DashboardPage() {
       if (res.ok) {
         const data = await res.json();
         setMessages(data);
+        try { localStorage.setItem('clientPortalMessages', JSON.stringify(data)); } catch (e) {}
       }
     } catch (error) {
       console.error('Failed to fetch messages', error);
@@ -207,6 +227,12 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (activeTab === 'messages') {
+      // Instantly load cached messages if available
+      try {
+        const cachedMsgs = localStorage.getItem('clientPortalMessages');
+        if (cachedMsgs) setMessages(JSON.parse(cachedMsgs));
+      } catch (e) {}
+
       fetchMessages();
       const interval = setInterval(fetchMessages, 5000);
       return () => clearInterval(interval);
