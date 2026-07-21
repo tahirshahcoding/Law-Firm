@@ -7,34 +7,26 @@
 // It should already include /api, e.g. https://example.com/api
 // This prevents silent double-appending when the env var is already correct.
 function buildApiBase(): string {
-  // 1. Explicit env var always wins — used as-is.
-  const envUrl = process.env.NEXT_PUBLIC_API_URL;
-  if (envUrl) {
-    // If the configured URL is hugging face, we MUST use our internal proxy to avoid CORS stripping
-    if (envUrl.includes('hf.space')) {
-      return '/api-proxy';
-    }
-    let url = envUrl.replace(/\/$/, ''); // strip trailing slash only
-    if (!url.endsWith('/api')) {
-      url += '/api';
-    }
-    return url;
-  }
-
-  // 2. Client-side: use hostname to decide local vs production.
+  // Always use the internal Next.js proxy — this is critical for cookie-based auth.
+  // Cookies set by Django (SameSite=Lax) only get sent back by the browser on
+  // same-origin requests. If we call 127.0.0.1:8000 directly from localhost:3000,
+  // the browser treats it as cross-origin and drops the cookie on follow-up requests.
+  // By always routing through /api-proxy (same origin as the frontend), cookies work
+  // in both local dev and production.
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      return 'http://127.0.0.1:8000/api';
-    }
-    if (hostname.startsWith('192.168.') || hostname.startsWith('10.')) {
-      return `http://${hostname}:8000/api`;
+    // Only bypass proxy for non-local production where NEXT_PUBLIC_API_URL is set
+    const envUrl = process.env.NEXT_PUBLIC_API_URL;
+    if (envUrl && !envUrl.includes('hf.space')) {
+      let url = envUrl.replace(/\/$/, '');
+      if (!url.endsWith('/api')) url += '/api';
+      return url;
     }
     return '/api-proxy';
   }
 
-  // 3. SSR fallback — always local during build/server render.
-  return 'http://localhost:8000/api';
+  // SSR fallback — used during server-side render/build only, not in browser.
+  return 'http://127.0.0.1:8000/api';
 }
 
 export const API_BASE = buildApiBase();

@@ -3,8 +3,14 @@ import { NextRequest } from 'next/server';
 // 1. CRITICAL: Prevent Next.js from caching these proxy requests
 export const dynamic = 'force-dynamic';
 
-// Replace with your actual Hugging Face Space direct URL
+// In production, forward to HF Space. In local dev, forward to local Django.
+// This is critical: the browser must always talk to localhost:3000 (same-origin via this proxy)
+// so that SameSite=Lax cookies set by Django are correctly sent on follow-up requests.
+// Direct cross-origin calls (localhost:3000 → 127.0.0.1:8000) break cookie auth.
+const IS_LOCAL_DEV = process.env.NODE_ENV === 'development';
+const LOCAL_BASE_URL = process.env.LOCAL_API_URL || 'http://127.0.0.1:8000/api';
 const HF_BASE_URL = 'https://tahirshahcoding-law-firm.hf.space/api';
+const UPSTREAM_BASE = IS_LOCAL_DEV ? LOCAL_BASE_URL : HF_BASE_URL;
 
 async function handleProxy(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
     // Reconstruct path, ensuring we handle root proxy calls safely
@@ -14,7 +20,7 @@ async function handleProxy(request: NextRequest, { params }: { params: Promise<{
     
     // Ensure Django's strict trailing slash requirement is met if targeting an API endpoint
     const formattedPath = path.endsWith('/') ? path : (path ? `${path}/` : '');
-    const targetUrl = `${HF_BASE_URL}/${formattedPath}${url.search}`;
+    const targetUrl = `${UPSTREAM_BASE}/${formattedPath}${url.search}`;
 
     const headers = new Headers(request.headers);
     
