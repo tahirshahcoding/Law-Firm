@@ -74,6 +74,11 @@ const nextConfig: NextConfig = {
   reactCompiler: false,
   turbopack: {},
   allowedDevOrigins: ['127.0.0.1', 'localhost', '10.93.38.3'],
+  images: {
+    // Skip image optimization in development — avoids "not a valid image" null errors
+    // that occur when the optimizer can't process local static files via the dev server.
+    unoptimized: process.env.NODE_ENV === 'development',
+  },
   async headers() {
     return [
       {
