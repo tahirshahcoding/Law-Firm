@@ -73,7 +73,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className={`min-h-screen w-full flex flex-col ${inter.className}`}>
+    <div className={`min-h-screen w-full flex flex-col ${inter.className} dark:bg-slate-950`}>
       
       {/* Autofill CSS Override */}
       <style dangerouslySetInnerHTML={{__html: `
@@ -85,13 +85,22 @@ export default function LoginPage() {
             -webkit-text-fill-color: #1e293b !important;
             transition: background-color 5000s ease-in-out 0s;
         }
+        @media (prefers-color-scheme: dark) {
+          input:-webkit-autofill,
+          input:-webkit-autofill:hover, 
+          input:-webkit-autofill:focus, 
+          input:-webkit-autofill:active {
+              -webkit-box-shadow: 0 0 0 30px #0f172a inset !important;
+              -webkit-text-fill-color: #f1f5f9 !important;
+          }
+        }
       `}} />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col md:flex-row relative">
         
         {/* Left Panel - Information */}
-        <div className="hidden lg:flex flex-col w-[50%] relative overflow-hidden bg-white">
+        <div className="hidden lg:flex flex-col w-[50%] relative overflow-hidden bg-white dark:bg-slate-950">
           {/* Background Image Illustration */}
           <div className="absolute right-0 bottom-0 w-[120%] h-[120%] z-0 pointer-events-none opacity-[0.22] transition-transform duration-[10s] hover:scale-105 ease-out origin-bottom-right">
             <Image 
@@ -105,12 +114,12 @@ export default function LoginPage() {
           </div>
 
           {/* Smooth Gradients */}
-          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-transparent z-0 pointer-events-none"></div>
-          <div className="absolute inset-0 bg-gradient-to-t from-[#EEF4FF]/70 via-transparent to-white/40 z-0 pointer-events-none"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-white dark:from-slate-950 via-white/85 dark:via-slate-950/85 to-transparent z-0 pointer-events-none"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-[#EEF4FF]/70 dark:from-[#0f172a]/70 via-transparent to-white/40 dark:to-slate-950/40 z-0 pointer-events-none"></div>
 
           {/* Soft floating orbs */}
-          <div className="absolute -top-32 -left-32 w-96 h-96 bg-blue-100 rounded-full mix-blend-multiply filter blur-[100px] opacity-60 animate-pulse" style={{ animationDuration: '8s' }}></div>
-          <div className="absolute top-1/2 left-1/4 w-64 h-64 bg-indigo-50 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-pulse" style={{ animationDuration: '12s' }}></div>
+          <div className="absolute -top-32 -left-32 w-96 h-96 bg-blue-100 dark:bg-blue-900 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] opacity-60 dark:opacity-20 animate-pulse" style={{ animationDuration: '8s' }}></div>
+          <div className="absolute top-1/2 left-1/4 w-64 h-64 bg-indigo-50 dark:bg-indigo-900 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[80px] opacity-70 dark:opacity-20 animate-pulse" style={{ animationDuration: '12s' }}></div>
 
           {/* Content */}
           <div className="relative z-10 flex flex-col h-full pl-16 pr-8 pt-12 pb-16">
@@ -123,47 +132,47 @@ export default function LoginPage() {
             </div>
 
             <div className="max-w-[480px]">
-              <h2 className={`${playfair.className} text-[48px] text-[#0f172a] mb-2 leading-[1.1] font-semibold tracking-tight`}>
+              <h2 className={`${playfair.className} text-[48px] text-[#0f172a] dark:text-white mb-2 leading-[1.1] font-semibold tracking-tight`}>
                 Rahimullah <br/><span className="text-[#0d6efd] bg-clip-text text-transparent bg-gradient-to-r from-[#0d6efd] to-[#4f46e5]">Advocate</span>
               </h2>
-              <h3 className="text-[18px] text-[#475569] mb-8 font-medium tracking-wide uppercase letter-spacing-[0.1em]">
+              <h3 className="text-[18px] text-[#475569] dark:text-slate-400 mb-8 font-medium tracking-wide uppercase letter-spacing-[0.1em]">
                 Legal Practice Management System
               </h3>
               
               <div className="h-1 w-20 bg-gradient-to-r from-[#d4af37] to-[#f9d976] rounded-full mb-8 shadow-[0_2px_10px_rgba(212,175,55,0.4)]"></div>
               
-              <p className="text-[#64748b] mb-12 text-[16px] leading-relaxed pr-4 font-light">
+              <p className="text-[#64748b] dark:text-slate-400 mb-12 text-[16px] leading-relaxed pr-4 font-light">
                 A complete, state-of-the-art solution to manage your cases, hearings, clients, documents, and finances securely and efficiently.
               </p>
 
               <div className="space-y-6">
                 <div className="flex items-start gap-5 group cursor-default">
-                  <div className="p-3.5 bg-white rounded-2xl text-[#0d6efd] shadow-[0_4px_20px_rgba(13,110,253,0.08)] border border-blue-50 transition-all duration-300 group-hover:shadow-[0_8px_30px_rgba(13,110,253,0.15)] group-hover:-translate-y-1 group-hover:bg-[#f8faff]">
+                  <div className="p-3.5 bg-white dark:bg-slate-900 rounded-2xl text-[#0d6efd] shadow-[0_4px_20px_rgba(13,110,253,0.08)] border border-blue-50 dark:border-slate-800 transition-all duration-300 group-hover:shadow-[0_8px_30px_rgba(13,110,253,0.15)] group-hover:-translate-y-1 group-hover:bg-[#f8faff] dark:group-hover:bg-slate-800/50">
                     <Briefcase strokeWidth={1.5} size={22} className="transition-transform duration-300 group-hover:scale-110" />
                   </div>
                   <div className="pt-1.5">
-                    <h4 className="font-semibold text-slate-800 text-[15px] group-hover:text-[#0d6efd] transition-colors">Case Management</h4>
-                    <p className="text-[14px] text-slate-500 mt-1">Organize and track all your cases in one place.</p>
+                    <h4 className="font-semibold text-slate-800 dark:text-slate-200 text-[15px] group-hover:text-[#0d6efd] transition-colors">Case Management</h4>
+                    <p className="text-[14px] text-slate-500 dark:text-slate-400 mt-1">Organize and track all your cases in one place.</p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-5 group cursor-default">
-                  <div className="p-3.5 bg-white rounded-2xl text-[#0d6efd] shadow-[0_4px_20px_rgba(13,110,253,0.08)] border border-blue-50 transition-all duration-300 group-hover:shadow-[0_8px_30px_rgba(13,110,253,0.15)] group-hover:-translate-y-1 group-hover:bg-[#f8faff]">
+                  <div className="p-3.5 bg-white dark:bg-slate-900 rounded-2xl text-[#0d6efd] shadow-[0_4px_20px_rgba(13,110,253,0.08)] border border-blue-50 dark:border-slate-800 transition-all duration-300 group-hover:shadow-[0_8px_30px_rgba(13,110,253,0.15)] group-hover:-translate-y-1 group-hover:bg-[#f8faff] dark:group-hover:bg-slate-800/50">
                     <Calendar strokeWidth={1.5} size={22} className="transition-transform duration-300 group-hover:scale-110" />
                   </div>
                   <div className="pt-1.5">
-                    <h4 className="font-semibold text-slate-800 text-[15px] group-hover:text-[#0d6efd] transition-colors">Hearing Scheduler</h4>
-                    <p className="text-[14px] text-slate-500 mt-1">Never miss a hearing with smart reminders.</p>
+                    <h4 className="font-semibold text-slate-800 dark:text-slate-200 text-[15px] group-hover:text-[#0d6efd] transition-colors">Hearing Scheduler</h4>
+                    <p className="text-[14px] text-slate-500 dark:text-slate-400 mt-1">Never miss a hearing with smart reminders.</p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-5 group cursor-default">
-                  <div className="p-3.5 bg-white rounded-2xl text-[#0d6efd] shadow-[0_4px_20px_rgba(13,110,253,0.08)] border border-blue-50 transition-all duration-300 group-hover:shadow-[0_8px_30px_rgba(13,110,253,0.15)] group-hover:-translate-y-1 group-hover:bg-[#f8faff]">
+                  <div className="p-3.5 bg-white dark:bg-slate-900 rounded-2xl text-[#0d6efd] shadow-[0_4px_20px_rgba(13,110,253,0.08)] border border-blue-50 dark:border-slate-800 transition-all duration-300 group-hover:shadow-[0_8px_30px_rgba(13,110,253,0.15)] group-hover:-translate-y-1 group-hover:bg-[#f8faff] dark:group-hover:bg-slate-800/50">
                     <FileText strokeWidth={1.5} size={22} className="transition-transform duration-300 group-hover:scale-110" />
                   </div>
                   <div className="pt-1.5">
-                    <h4 className="font-semibold text-slate-800 text-[15px] group-hover:text-[#0d6efd] transition-colors">Secure Documents</h4>
-                    <p className="text-[14px] text-slate-500 mt-1">Store and access documents securely.</p>
+                    <h4 className="font-semibold text-slate-800 dark:text-slate-200 text-[15px] group-hover:text-[#0d6efd] transition-colors">Secure Documents</h4>
+                    <p className="text-[14px] text-slate-500 dark:text-slate-400 mt-1">Store and access documents securely.</p>
                   </div>
                 </div>
               </div>
@@ -172,20 +181,20 @@ export default function LoginPage() {
         </div>
 
         {/* Right Panel - Login */}
-        <div className="flex-1 flex flex-col justify-center items-center bg-[#F8FAFC] p-6 py-12 relative overflow-hidden">
+        <div className="flex-1 flex flex-col justify-center items-center bg-[#F8FAFC] dark:bg-slate-900 p-6 py-12 relative overflow-hidden">
           
           {/* Subtle Right Background Orbs */}
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-blue-100/40 to-transparent rounded-full blur-[80px] pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
-          <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-indigo-50/60 to-transparent rounded-full blur-[100px] pointer-events-none translate-y-1/3 -translate-x-1/4"></div>
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-blue-100/40 dark:from-blue-900/20 to-transparent rounded-full blur-[80px] pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
+          <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-indigo-50/60 dark:from-indigo-900/20 to-transparent rounded-full blur-[100px] pointer-events-none translate-y-1/3 -translate-x-1/4"></div>
 
-          <div className="w-full max-w-[480px] bg-white/90 backdrop-blur-xl rounded-[28px] shadow-[0_20px_60px_-15px_rgba(15,23,42,0.08)] px-10 py-12 border border-white/60 relative z-10 transition-transform hover:shadow-[0_25px_70px_-15px_rgba(13,110,253,0.12)] duration-500">
+          <div className="w-full max-w-[480px] bg-white/90 dark:bg-slate-950/90 backdrop-blur-xl rounded-[28px] shadow-[0_20px_60px_-15px_rgba(15,23,42,0.08)] dark:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] px-10 py-12 border border-white/60 dark:border-slate-800 relative z-10 transition-transform hover:shadow-[0_25px_70px_-15px_rgba(13,110,253,0.12)] duration-500">
             
             <div className="flex flex-col items-center mb-10">
               <div className="relative w-[180px] h-[70px] mb-8 group">
                 <Image src="/logo.png" alt="Logo" fill sizes="180px" priority className="object-contain transition-transform duration-500 group-hover:scale-105" />
               </div>
-              <h2 className="text-[30px] font-bold text-[#0f172a] mb-2 tracking-tight">Welcome Back</h2>
-              <p className="text-[15px] text-[#64748b] text-center font-light">
+              <h2 className="text-[30px] font-bold text-[#0f172a] dark:text-white mb-2 tracking-tight">Welcome Back</h2>
+              <p className="text-[15px] text-[#64748b] dark:text-slate-400 text-center font-light">
                 Sign in to continue to your secure workspace
               </p>
             </div>
@@ -202,7 +211,7 @@ export default function LoginPage() {
               )}
 
               <div className="space-y-2.5">
-                <label className="block text-[14px] font-semibold text-slate-700 ml-1">Username</label>
+                <label className="block text-[14px] font-semibold text-slate-700 dark:text-slate-300 ml-1">Username</label>
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors duration-300 group-focus-within:text-[#0d6efd]">
                     <User className="h-[18px] w-[18px] text-slate-400 group-focus-within:text-[#0d6efd] transition-colors" strokeWidth={2} />
@@ -213,14 +222,14 @@ export default function LoginPage() {
                     suppressHydrationWarning
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    className="block w-full pl-12 pr-4 py-4 border border-slate-200 dark:border-slate-700 rounded-2xl text-[15px] text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#0d6efd]/15 focus:border-[#0d6efd] transition-all bg-slate-50 hover:bg-slate-50/50 focus:bg-white dark:bg-slate-900 shadow-[0_2px_10px_rgba(0,0,0,0.01)]"
+                    className="block w-full pl-12 pr-4 py-4 border border-slate-200 dark:border-slate-700 rounded-2xl text-[15px] text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#0d6efd]/15 focus:border-[#0d6efd] transition-all bg-slate-50 hover:bg-slate-50/50 focus:bg-white dark:bg-slate-900 dark:hover:bg-slate-800 shadow-[0_2px_10px_rgba(0,0,0,0.01)]"
                     placeholder="Enter your username"
                   />
                 </div>
               </div>
 
               <div className="space-y-2.5">
-                <label className="block text-[14px] font-semibold text-slate-700 ml-1">Password</label>
+                <label className="block text-[14px] font-semibold text-slate-700 dark:text-slate-300 ml-1">Password</label>
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors duration-300 group-focus-within:text-[#0d6efd]">
                     <Lock className="h-[18px] w-[18px] text-slate-400 group-focus-within:text-[#0d6efd] transition-colors" strokeWidth={2} />
@@ -231,14 +240,14 @@ export default function LoginPage() {
                     suppressHydrationWarning
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="block w-full pl-12 pr-12 py-4 border border-slate-200 dark:border-slate-700 rounded-2xl text-[15px] text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#0d6efd]/15 focus:border-[#0d6efd] transition-all bg-slate-50 hover:bg-slate-50/50 focus:bg-white dark:bg-slate-900 shadow-[0_2px_10px_rgba(0,0,0,0.01)]"
+                    className="block w-full pl-12 pr-12 py-4 border border-slate-200 dark:border-slate-700 rounded-2xl text-[15px] text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#0d6efd]/15 focus:border-[#0d6efd] transition-all bg-slate-50 hover:bg-slate-50/50 focus:bg-white dark:bg-slate-900 dark:hover:bg-slate-800 shadow-[0_2px_10px_rgba(0,0,0,0.01)]"
                     placeholder="••••••••"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     suppressHydrationWarning
-                    className="absolute inset-y-0 right-2 px-3 flex items-center text-slate-400 hover:text-[#0d6efd] hover:bg-blue-50 transition-colors rounded-xl my-2"
+                    className="absolute inset-y-0 right-2 px-3 flex items-center text-slate-400 hover:text-[#0d6efd] hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors rounded-xl my-2"
                   >
                     {showPassword ? <EyeOff className="h-[18px] w-[18px]" strokeWidth={2} /> : <Eye className="h-[18px] w-[18px]" strokeWidth={2} />}
                   </button>
@@ -254,10 +263,10 @@ export default function LoginPage() {
                       type="checkbox"
                       checked={rememberMe}
                       onChange={(e) => setRememberMe(e.target.checked)}
-                      className="peer h-5 w-5 text-[#0d6efd] focus:ring-[#0d6efd] focus:ring-offset-1 border-slate-300 rounded-md cursor-pointer transition-colors"
+                      className="peer h-5 w-5 text-[#0d6efd] focus:ring-[#0d6efd] focus:ring-offset-1 dark:focus:ring-offset-slate-900 border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-md cursor-pointer transition-colors"
                     />
                   </div>
-                  <label htmlFor="remember-me" className="ml-3 block text-[14px] font-medium text-slate-600 cursor-pointer group-hover:text-slate-800 transition-colors">
+                  <label htmlFor="remember-me" className="ml-3 block text-[14px] font-medium text-slate-600 dark:text-slate-400 cursor-pointer group-hover:text-slate-800 dark:group-hover:text-slate-200 transition-colors">
                     Remember me
                   </label>
                 </div>
@@ -291,12 +300,12 @@ export default function LoginPage() {
               
               <div className="mt-10 relative pt-6 text-center">
                 <div className="absolute inset-0 flex items-center pt-6">
-                  <div className="w-full border-t border-slate-100"></div>
+                  <div className="w-full border-t border-slate-100 dark:border-slate-800"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-white text-[#0d6efd] bg-blue-50/50 rounded-full py-1.5 ring-[12px] ring-white shadow-sm border border-blue-100 flex items-center gap-2">
+                  <span className="px-4 bg-white dark:bg-slate-900 text-[#0d6efd] bg-blue-50/50 dark:bg-blue-900/20 rounded-full py-1.5 ring-[12px] ring-white dark:ring-slate-950 shadow-sm border border-blue-100 dark:border-blue-900/50 flex items-center gap-2">
                     <Shield size={14} strokeWidth={2.5} />
-                    <span className="font-semibold text-[12px] tracking-wide uppercase text-blue-700">SSL Secured</span>
+                    <span className="font-semibold text-[12px] tracking-wide uppercase text-blue-700 dark:text-blue-400">SSL Secured</span>
                   </span>
                 </div>
               </div>
@@ -306,13 +315,13 @@ export default function LoginPage() {
       </div>
       
       {/* Footer across entire bottom */}
-      <footer className="w-full bg-white border-t border-slate-200 py-5 px-8 flex flex-col sm:flex-row items-center justify-between text-[13px] text-slate-500 z-50">
-        <div className="font-medium text-slate-600">&copy; {new Date().getFullYear()} Rahimullah Advocate Associates. All rights reserved.</div>
-        <div className="hidden sm:flex items-center gap-2 text-slate-400">
+      <footer className="w-full bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 py-5 px-8 flex flex-col sm:flex-row items-center justify-between text-[13px] text-slate-500 dark:text-slate-400 z-50">
+        <div className="font-medium text-slate-600 dark:text-slate-500">&copy; {new Date().getFullYear()} Rahimullah Advocate Associates. All rights reserved.</div>
+        <div className="hidden sm:flex items-center gap-2 text-slate-400 dark:text-slate-500">
            <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span> System Online &nbsp;|&nbsp; Version 1.0.0
         </div>
         <div className="flex items-center gap-2">
-          Powered by <span className="font-bold text-[#0f172a] tracking-tight">EagleNest<span className="text-[#0d6efd]">Creations</span></span>
+          Powered by <span className="font-bold text-[#0f172a] dark:text-white tracking-tight">EagleNest<span className="text-[#0d6efd]">Creations</span></span>
         </div>
       </footer>
     </div>
