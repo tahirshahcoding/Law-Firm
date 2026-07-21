@@ -98,6 +98,7 @@ export default function LoginPage() {
               src="/courthouse-bg.png" 
               alt="Courthouse Illustration" 
               fill 
+              sizes="50vw"
               className="object-cover object-bottom"
               priority
             />
@@ -117,7 +118,7 @@ export default function LoginPage() {
             {/* Logo Top Left */}
             <div className="mb-16 transform transition-transform hover:scale-105 duration-300 origin-left">
               <div className="relative w-[180px] h-[50px]">
-                <Image src="/logo.png" alt="Logo" fill className="object-contain object-left" />
+                <Image src="/logo.png" alt="Logo" fill sizes="180px" priority className="object-contain object-left" />
               </div>
             </div>
 
@@ -181,7 +182,7 @@ export default function LoginPage() {
             
             <div className="flex flex-col items-center mb-10">
               <div className="relative w-[180px] h-[70px] mb-8 group">
-                <Image src="/logo.png" alt="Logo" fill className="object-contain transition-transform duration-500 group-hover:scale-105" />
+                <Image src="/logo.png" alt="Logo" fill sizes="180px" priority className="object-contain transition-transform duration-500 group-hover:scale-105" />
               </div>
               <h2 className="text-[30px] font-bold text-[#0f172a] mb-2 tracking-tight">Welcome Back</h2>
               <p className="text-[15px] text-[#64748b] text-center font-light">
