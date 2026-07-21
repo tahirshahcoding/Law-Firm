@@ -76,37 +76,37 @@ export default function ReceivePaymentModal({ invoice, onClose, onSuccess }: Rec
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border dark:border-slate-800">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 dark:border-slate-800">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-emerald-50 rounded-xl">
-              <DollarSign size={18} className="text-emerald-600" />
+            <div className="p-2 bg-emerald-50 dark:bg-emerald-900/30 rounded-xl">
+              <DollarSign size={18} className="text-emerald-600 dark:text-emerald-400" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-900">Receive Payment</h2>
-              <p className="text-xs text-slate-500">{invoice?.invoice_number}</p>
+              <h2 className="text-base font-bold text-slate-900 dark:text-white">Receive Payment</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{invoice?.invoice_number}</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">
+          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
             <X size={18} />
           </button>
         </div>
 
         {/* Invoice Summary */}
-        <div className="px-6 py-4 bg-slate-50/60 border-b border-slate-100">
+        <div className="px-6 py-4 bg-slate-50/60 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800">
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <p className="text-xs text-slate-500 font-medium">Total</p>
-              <p className="text-sm font-bold text-slate-800 mt-0.5">PKR {total.toLocaleString()}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Total</p>
+              <p className="text-sm font-bold text-slate-800 dark:text-slate-200 mt-0.5">PKR {total.toLocaleString()}</p>
             </div>
             <div>
-              <p className="text-xs text-slate-500 font-medium">Already Paid</p>
-              <p className="text-sm font-bold text-emerald-600 mt-0.5">PKR {alreadyPaid.toLocaleString()}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Already Paid</p>
+              <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">PKR {alreadyPaid.toLocaleString()}</p>
             </div>
             <div>
-              <p className="text-xs text-slate-500 font-medium">Remaining</p>
-              <p className="text-sm font-bold text-rose-600 mt-0.5">PKR {remaining.toLocaleString()}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Remaining</p>
+              <p className="text-sm font-bold text-rose-600 dark:text-rose-400 mt-0.5">PKR {remaining.toLocaleString()}</p>
             </div>
           </div>
         </div>
@@ -119,7 +119,7 @@ export default function ReceivePaymentModal({ invoice, onClose, onSuccess }: Rec
           )}
 
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1.5">Amount Received (PKR)*</label>
+            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Amount Received (PKR)*</label>
             <input
               type="number"
               min="1"
@@ -135,7 +135,7 @@ export default function ReceivePaymentModal({ invoice, onClose, onSuccess }: Rec
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1.5">Payment Method*</label>
+              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Payment Method*</label>
               <select
                 value={form.payment_method}
                 onChange={e => setForm(p => ({ ...p, payment_method: e.target.value }))}
@@ -145,7 +145,7 @@ export default function ReceivePaymentModal({ invoice, onClose, onSuccess }: Rec
               </select>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1.5">Date*</label>
+              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Date*</label>
               <input
                 type="date"
                 value={form.payment_date}
@@ -157,7 +157,7 @@ export default function ReceivePaymentModal({ invoice, onClose, onSuccess }: Rec
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1.5">Reference No</label>
+            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Reference No</label>
             <input
               type="text"
               placeholder="Cheque no., transaction ID, etc."
@@ -168,7 +168,7 @@ export default function ReceivePaymentModal({ invoice, onClose, onSuccess }: Rec
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1.5">Notes</label>
+            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Notes</label>
             <textarea
               placeholder="Optional notes…"
               rows={2}
@@ -182,7 +182,7 @@ export default function ReceivePaymentModal({ invoice, onClose, onSuccess }: Rec
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2.5 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+              className="flex-1 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
             >
               Cancel
             </button>

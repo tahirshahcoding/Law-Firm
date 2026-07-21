@@ -51,43 +51,43 @@ export default function AddPaymentModal({ isOpen, onClose, onSuccess, challan }:
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col">
-        <div className="flex items-center justify-between p-6 border-b border-slate-100 shrink-0 bg-slate-50/50">
-          <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-            <CreditCard size={20} className="text-emerald-600" />
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col border dark:border-slate-800">
+        <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800 shrink-0 bg-slate-50/50 dark:bg-slate-800/50">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <CreditCard size={20} className="text-emerald-600 dark:text-emerald-400" />
             Record Payment
           </h2>
-          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"><X size={20} /></button>
+          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors"><X size={20} /></button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           {/* Context Info */}
-          <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-2">
+          <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-700 space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-slate-500">Challan No:</span>
-              <span className="font-semibold text-slate-900">{challan.invoice_number}</span>
+              <span className="text-slate-500 dark:text-slate-400">Challan No:</span>
+              <span className="font-semibold text-slate-900 dark:text-white">{challan.invoice_number}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-slate-500">Client:</span>
-              <span className="font-semibold text-slate-900">{challan.client_name}</span>
+              <span className="text-slate-500 dark:text-slate-400">Client:</span>
+              <span className="font-semibold text-slate-900 dark:text-white">{challan.client_name}</span>
             </div>
-            <div className="flex justify-between text-sm pt-2 border-t border-slate-200">
-              <span className="text-slate-500">Total Amount:</span>
-              <span className="font-mono text-slate-900">Rs. {Number(challan.amount).toLocaleString()}</span>
+            <div className="flex justify-between text-sm pt-2 border-t border-slate-200 dark:border-slate-700">
+              <span className="text-slate-500 dark:text-slate-400">Total Amount:</span>
+              <span className="font-mono text-slate-900 dark:text-white">Rs. {Number(challan.amount).toLocaleString()}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-slate-500">Amount Paid:</span>
-              <span className="font-mono text-emerald-600">Rs. {Number(challan.amount_paid || 0).toLocaleString()}</span>
+              <span className="text-slate-500 dark:text-slate-400">Amount Paid:</span>
+              <span className="font-mono text-emerald-600 dark:text-emerald-400">Rs. {Number(challan.amount_paid || 0).toLocaleString()}</span>
             </div>
             <div className="flex justify-between text-sm font-bold">
-              <span className="text-slate-700">Remaining Balance:</span>
-              <span className="font-mono text-rose-600">Rs. {remainingAmount.toLocaleString()}</span>
+              <span className="text-slate-700 dark:text-slate-300">Remaining Balance:</span>
+              <span className="font-mono text-rose-600 dark:text-rose-400">Rs. {remainingAmount.toLocaleString()}</span>
             </div>
           </div>
 
           {/* Amount */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Amount Received (Rs.) *</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Amount Received (Rs.) *</label>
             <div className="relative">
               <Banknote size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input 
@@ -111,8 +111,8 @@ export default function AddPaymentModal({ isOpen, onClose, onSuccess, challan }:
             </div>
           </div>
 
-          <div className="pt-4 flex justify-end gap-3 border-t border-slate-100">
-            <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg font-medium text-slate-600 hover:bg-slate-50 border border-slate-200 transition-colors">Cancel</button>
+          <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 dark:border-slate-800">
+            <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors">Cancel</button>
             <button type="submit" disabled={!amountReceived}
               className="px-6 py-2 rounded-lg font-medium text-white bg-emerald-600 hover:bg-emerald-700 transition-colors shadow-sm shadow-emerald-600/20 disabled:opacity-50 flex items-center justify-center min-w-[140px]">
               Record Payment
