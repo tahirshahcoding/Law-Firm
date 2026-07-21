@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { apiFetch, API_BASE } from '@/lib/api';
-import { MessageSquare, Send, CheckCheck, Check, Search, MoreVertical, CornerUpLeft, Clock, X } from 'lucide-react';
+import { MessageSquare, Send, CheckCheck, Check, Search, MoreVertical, CornerUpLeft, Clock, X, ChevronLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import useSWR from 'swr';
 import { swrFetcher } from '@/lib/fetcher';
@@ -153,7 +153,7 @@ export default function MessagesPage() {
     return (
       <div className="flex h-[calc(100vh-100px)] rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-lg bg-white dark:bg-slate-950 animate-pulse">
         {/* Skeleton Sidebar */}
-        <div className="w-[320px] shrink-0 flex flex-col border-r border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
+        <div className="flex w-full md:w-[320px] shrink-0 flex-col border-r border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
           <div className="px-5 pt-5 pb-4 shrink-0 space-y-4">
             <div className="flex justify-between items-center">
               <div className="h-6 w-24 bg-slate-200 dark:bg-slate-800 rounded"></div>
@@ -174,7 +174,7 @@ export default function MessagesPage() {
           </div>
         </div>
         {/* Skeleton Main Chat */}
-        <div className="flex-1 flex flex-col bg-white dark:bg-slate-950">
+        <div className="hidden md:flex flex-1 flex-col bg-white dark:bg-slate-950">
           <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center gap-3.5">
             <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 shrink-0"></div>
             <div className="space-y-2">
@@ -210,7 +210,7 @@ export default function MessagesPage() {
     <div className="flex h-[calc(100vh-100px)] rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-lg bg-white dark:bg-slate-950">
 
       {/* ── Left Sidebar ── */}
-      <div className="w-[320px] shrink-0 flex flex-col border-r border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
+      <div className={`${activeClient ? 'hidden md:flex' : 'flex'} w-full md:w-[320px] shrink-0 flex-col border-r border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900`}>
 
         <div className="px-5 pt-5 pb-4 shrink-0">
           <div className="flex items-center justify-between mb-4">
@@ -282,12 +282,18 @@ export default function MessagesPage() {
       </div>
 
       {/* ── Main Chat Area ── */}
-      <div className="flex-1 flex flex-col bg-white dark:bg-slate-950 min-w-0">
+      <div className={`${!activeClient ? 'hidden md:flex' : 'flex'} flex-1 flex-col bg-white dark:bg-slate-950 min-w-0`}>
         {activeClient ? (
           <>
             {/* Chat Header */}
             <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-white dark:bg-slate-950 shrink-0">
               <div className="flex items-center gap-3.5">
+                <button
+                  onClick={() => setActiveClient(null)}
+                  className="md:hidden w-8 h-8 -ml-2 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+                >
+                  <ChevronLeft size={22} />
+                </button>
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-sm font-black text-white shadow-md shadow-blue-500/30">
                   {initials(activeClient.client_name)}
                 </div>
