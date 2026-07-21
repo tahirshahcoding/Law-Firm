@@ -160,7 +160,7 @@ export default function DailyDiaryPage() {
               placeholder="What needs to be done?" 
               value={newTaskTitle}
               onChange={(e) => setNewTaskTitle(e.target.value)}
-              className="w-full pl-4 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
+              className="w-full pl-4 pr-4 py-3 bg-slate-50 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 bg-white dark:bg-slate-900"
             />
           </div>
           <div className="relative w-full sm:w-48 shrink-0">
@@ -169,7 +169,7 @@ export default function DailyDiaryPage() {
               type="date" 
               value={newTaskDueDate}
               onChange={(e) => setNewTaskDueDate(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all cursor-pointer"
+              className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all cursor-pointer bg-white dark:bg-slate-900"
             />
           </div>
           <button 

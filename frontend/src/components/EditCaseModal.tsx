@@ -204,7 +204,7 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
           <div className="relative" ref={dropdownRef}>
             <label className="block text-sm font-medium text-slate-700 mb-1">Assigned Client</label>
             <div 
-              className={`w-full px-4 py-2.5 bg-white border ${isClientDropdownOpen ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-slate-200'} rounded-lg text-sm transition-all cursor-pointer flex items-center justify-between`}
+              className={`w-full px-4 py-2.5 bg-white dark:bg-slate-900 border ${isClientDropdownOpen ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-slate-200 dark:border-slate-700'} rounded-lg text-sm transition-all cursor-pointer flex items-center justify-between text-slate-900 dark:text-white`}
               onClick={() => setIsClientDropdownOpen(!isClientDropdownOpen)}
             >
               <span className={selectedClientName ? 'text-slate-900 font-medium' : 'text-slate-400'}>
@@ -214,7 +214,7 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
             </div>
 
             {isClientDropdownOpen && (
-              <div className="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+              <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 text-slate-900 dark:text-white">
                 <div className="p-2 border-b border-slate-100 bg-slate-50/50">
                   <input
                     type="text"
@@ -222,7 +222,7 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
                     placeholder="Type to search clients..."
                     value={clientSearchText}
                     onChange={(e) => setClientSearchText(e.target.value)}
-                    className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded text-sm focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded text-sm focus:outline-none focus:border-blue-500 text-slate-900 dark:text-white"
                   />
                 </div>
                 <div className="max-h-48 overflow-y-auto">
@@ -256,7 +256,7 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
               <select
                 value={formData.assigned_to}
                 onChange={(e) => setFormData({...formData, assigned_to: e.target.value})}
-                className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none"
+                className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none text-slate-900 dark:text-white"
               >
                 <option value="">Senior Partner (Default)</option>
                 {advocates.map((adv: any) => (
@@ -274,7 +274,7 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
               <select
                 value={formData.category}
                 onChange={(e) => setFormData({...formData, category: e.target.value})}
-                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                className="w-full px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 dark:text-white"
               >
                 {CASE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
@@ -284,7 +284,7 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
               <select
                 value={formData.priority}
                 onChange={(e) => setFormData({...formData, priority: e.target.value})}
-                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                className="w-full px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 dark:text-white"
               >
                 {CASE_PRIORITIES.map(p => <option key={p} value={p}>{p}</option>)}
               </select>
@@ -294,7 +294,7 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
               <select
                 value={formData.status}
                 onChange={(e) => setFormData({...formData, status: e.target.value})}
-                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                className="w-full px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 dark:text-white"
               >
                 {CASE_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
@@ -311,7 +311,7 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
                   required
                   value={formData.case_number}
                   onChange={(e) => setFormData({...formData, case_number: e.target.value})}
-                  className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
+                  className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
                   placeholder="e.g. 543/2026"
                 />
               </div>
@@ -328,7 +328,7 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
                   required
                   value={formData.total_fee}
                   onChange={(e) => setFormData({...formData, total_fee: e.target.value})}
-                  className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
+                  className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
                   placeholder="e.g. 150000.00"
                 />
               </div>
@@ -343,7 +343,7 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
                 required
                 value={formData.court}
                 onChange={(e) => setFormData({...formData, court: e.target.value})}
-                className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none"
+                className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none text-slate-900 dark:text-white"
               >
                 <option value="">Select Court...</option>
                 {courts.map(c => (
@@ -364,7 +364,7 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
                 required
                 value={formData.opponent_name}
                 onChange={(e) => setFormData({...formData, opponent_name: e.target.value})}
-                className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
+                className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
                 placeholder="Defendant / Respondent Name"
               />
             </div>

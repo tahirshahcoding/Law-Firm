@@ -99,7 +99,7 @@ export default function AddJudgeModal({ isOpen, onClose, onSuccess }: AddJudgeMo
                 required
                 value={formData.name}
                 onChange={(e) => setFormData({...formData, name: e.target.value})}
-                className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 dark:text-white"
                 placeholder="Honourable Justice Name"
               />
             </div>
@@ -114,7 +114,7 @@ export default function AddJudgeModal({ isOpen, onClose, onSuccess }: AddJudgeMo
                 value={formData.court}
                 onChange={(e) => setFormData({...formData, court: e.target.value})}
                 disabled={fetchingCourts}
-                className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 disabled:opacity-50"
+                className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 disabled:opacity-50 text-slate-900 dark:text-white"
               >
                 <option value="">Select a court...</option>
                 {courts.map(court => (
@@ -132,7 +132,7 @@ export default function AddJudgeModal({ isOpen, onClose, onSuccess }: AddJudgeMo
                 type="text"
                 value={formData.designation}
                 onChange={(e) => setFormData({...formData, designation: e.target.value})}
-                className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 dark:text-white"
                 placeholder="e.g. Senior Civil Judge"
               />
             </div>
@@ -145,7 +145,7 @@ export default function AddJudgeModal({ isOpen, onClose, onSuccess }: AddJudgeMo
               <textarea
                 value={formData.notes}
                 onChange={(e) => setFormData({...formData, notes: e.target.value})}
-                className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 min-h-[100px]"
+                className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 min-h-[100px] text-slate-900 dark:text-white"
                 placeholder="Any special notes or preferences for this judge..."
               />
             </div>

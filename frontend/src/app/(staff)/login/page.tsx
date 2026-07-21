@@ -212,7 +212,7 @@ export default function LoginPage() {
                     suppressHydrationWarning
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    className="block w-full pl-12 pr-4 py-4 border border-slate-200 rounded-2xl text-[15px] text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#0d6efd]/15 focus:border-[#0d6efd] transition-all bg-slate-50 hover:bg-slate-50/50 focus:bg-white shadow-[0_2px_10px_rgba(0,0,0,0.01)]"
+                    className="block w-full pl-12 pr-4 py-4 border border-slate-200 dark:border-slate-700 rounded-2xl text-[15px] text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#0d6efd]/15 focus:border-[#0d6efd] transition-all bg-slate-50 hover:bg-slate-50/50 focus:bg-white dark:bg-slate-900 shadow-[0_2px_10px_rgba(0,0,0,0.01)]"
                     placeholder="Enter your username"
                   />
                 </div>
@@ -230,7 +230,7 @@ export default function LoginPage() {
                     suppressHydrationWarning
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="block w-full pl-12 pr-12 py-4 border border-slate-200 rounded-2xl text-[15px] text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#0d6efd]/15 focus:border-[#0d6efd] transition-all bg-slate-50 hover:bg-slate-50/50 focus:bg-white shadow-[0_2px_10px_rgba(0,0,0,0.01)]"
+                    className="block w-full pl-12 pr-12 py-4 border border-slate-200 dark:border-slate-700 rounded-2xl text-[15px] text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#0d6efd]/15 focus:border-[#0d6efd] transition-all bg-slate-50 hover:bg-slate-50/50 focus:bg-white dark:bg-slate-900 shadow-[0_2px_10px_rgba(0,0,0,0.01)]"
                     placeholder="••••••••"
                   />
                   <button

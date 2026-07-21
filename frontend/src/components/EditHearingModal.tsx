@@ -153,7 +153,7 @@ export default function EditHearingModal({ isOpen, onClose, onSuccess, hearingDa
           <div className="relative" ref={dropdownRef}>
             <label className="block text-sm font-medium text-slate-700 mb-1">Target Case</label>
             <div 
-              className={`w-full px-4 py-2.5 bg-white border ${isCaseDropdownOpen ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-slate-200'} rounded-lg text-sm transition-all cursor-pointer flex items-center justify-between`}
+              className={`w-full px-4 py-2.5 bg-white dark:bg-slate-900 border ${isCaseDropdownOpen ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-slate-200 dark:border-slate-700'} rounded-lg text-sm transition-all cursor-pointer flex items-center justify-between text-slate-900 dark:text-white`}
               onClick={() => setIsCaseDropdownOpen(!isCaseDropdownOpen)}
             >
               <span className={selectedCaseName ? 'text-slate-900 font-medium' : 'text-slate-400'}>
@@ -163,7 +163,7 @@ export default function EditHearingModal({ isOpen, onClose, onSuccess, hearingDa
             </div>
 
             {isCaseDropdownOpen && (
-              <div className="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+              <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 text-slate-900 dark:text-white">
                 <div className="p-2 border-b border-slate-100 bg-slate-50/50">
                   <input
                     type="text"
@@ -171,7 +171,7 @@ export default function EditHearingModal({ isOpen, onClose, onSuccess, hearingDa
                     placeholder="Type to search cases..."
                     value={caseSearchText}
                     onChange={(e) => setCaseSearchText(e.target.value)}
-                    className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded text-sm focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded text-sm focus:outline-none focus:border-blue-500 text-slate-900 dark:text-white"
                   />
                 </div>
                 <div className="max-h-48 overflow-y-auto">
@@ -209,7 +209,7 @@ export default function EditHearingModal({ isOpen, onClose, onSuccess, hearingDa
                   required
                   value={formData.hearing_date}
                   onChange={(e) => setFormData({...formData, hearing_date: e.target.value})}
-                  className="w-full px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono text-slate-700"
+                  className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono text-slate-700"
                 />
               </div>
             </div>
@@ -221,7 +221,7 @@ export default function EditHearingModal({ isOpen, onClose, onSuccess, hearingDa
                   type="date"
                   value={formData.next_date}
                   onChange={(e) => setFormData({...formData, next_date: e.target.value})}
-                  className="w-full px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono text-slate-700"
+                  className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono text-slate-700"
                 />
               </div>
             </div>
@@ -235,7 +235,7 @@ export default function EditHearingModal({ isOpen, onClose, onSuccess, hearingDa
               required
               value={formData.hearing_stage}
               onChange={(e) => setFormData({...formData, hearing_stage: e.target.value})}
-              className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 font-medium"
+              className="w-full px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 font-medium"
               placeholder="e.g. Attendance, Arguments, Evidence..."
             />
             <datalist id="edit-stages-list">
@@ -258,7 +258,7 @@ export default function EditHearingModal({ isOpen, onClose, onSuccess, hearingDa
                 rows={4}
                 value={formData.notes}
                 onChange={(e) => setFormData({...formData, notes: e.target.value})}
-                className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 resize-none"
+                className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 resize-none"
                 placeholder="Brief summary of expected proceedings..."
               ></textarea>
             </div>

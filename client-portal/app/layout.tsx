@@ -14,12 +14,14 @@ export const viewport: Viewport = {
 };
 
 import { LanguageProvider } from '@/lib/LanguageContext';
+import NetworkStatus from '@/components/NetworkStatus';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>
         <LanguageProvider>
+          <NetworkStatus />
           {children}
         </LanguageProvider>
       </body>

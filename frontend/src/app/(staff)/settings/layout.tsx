@@ -31,7 +31,7 @@ export default function SettingsLayout({ children }: { children: ReactNode }) {
 
       <div className="flex flex-col md:flex-row gap-8 items-start">
         {/* Navigation Sidebar */}
-        <nav className="w-full md:w-64 shrink-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 shadow-sm dark:shadow-none sticky top-24 transition-colors">
+        <nav className="w-full md:w-64 shrink-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 dark:border-slate-800 rounded-2xl p-3 shadow-sm dark:shadow-none sticky top-24 transition-colors text-slate-900 dark:text-white">
           <ul className="space-y-1">
             {visibleItems.map((item) => {
               const Icon = item.icon;

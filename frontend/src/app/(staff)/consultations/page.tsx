@@ -204,11 +204,7 @@ export default function ConsultationsPage() {
                         <button
                           key={s}
                           onClick={() => handleStatusChange(c.id, s)}
-                          className={`flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all ${
-                            c.status === s
-                              ? STATUS_STYLES[s] + ' shadow-sm dark:shadow-none'
-                              : 'bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700 hover:text-blue-600 dark:hover:text-blue-400'
-                          }`}
+                          className={`flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all ${ c.status === s ? STATUS_STYLES[s] + ' shadow-sm dark:shadow-none' : 'bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700 hover:text-blue-600 dark:hover:text-blue-400' }`}
                         >
                           {c.status === s && <CheckCircle2 size={12} />}
                           {s}

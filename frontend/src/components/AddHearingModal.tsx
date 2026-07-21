@@ -143,7 +143,7 @@ export default function AddHearingModal({ isOpen, onClose, onSuccess }: AddHeari
           <div className="relative" ref={dropdownRef}>
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 transition-colors">Target Case</label>
             <div 
-              className={`w-full px-4 py-2.5 bg-white dark:bg-slate-800 border ${isCaseDropdownOpen ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-slate-200 dark:border-slate-700'} rounded-lg text-sm transition-all cursor-pointer flex items-center justify-between`}
+              className={`w-full px-4 py-2.5 bg-white dark:bg-slate-800 border ${isCaseDropdownOpen ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-slate-200 dark:border-slate-700'} rounded-lg text-sm transition-all cursor-pointer flex items-center justify-between text-slate-900 dark:text-white`}
               onClick={() => setIsCaseDropdownOpen(!isCaseDropdownOpen)}
             >
               <span className={selectedCaseName ? 'text-slate-900 dark:text-white font-medium' : 'text-slate-400 dark:text-slate-500'}>
@@ -153,7 +153,7 @@ export default function AddHearingModal({ isOpen, onClose, onSuccess }: AddHeari
             </div>
 
             {isCaseDropdownOpen && (
-              <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+              <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 text-slate-900 dark:text-white">
                 <div className="p-2 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 transition-colors">
                   <input
                     type="text"

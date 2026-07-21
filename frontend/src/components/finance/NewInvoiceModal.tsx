@@ -145,7 +145,7 @@ export default function NewInvoiceModal({ onClose, onSuccess }: NewInvoiceModalP
                     className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
                   />
                   {showCaseDropdown && (
-                    <div className="absolute z-10 w-full top-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg max-h-48 overflow-y-auto">
+                    <div className="absolute z-10 w-full top-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg max-h-48 overflow-y-auto text-slate-900 dark:text-white">
                       {loadingCases ? (
                         <div className="p-3 text-sm text-slate-500 dark:text-slate-400 text-center">Loading…</div>
                       ) : filteredCases.length > 0 ? (
@@ -181,12 +181,12 @@ export default function NewInvoiceModal({ onClose, onSuccess }: NewInvoiceModalP
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-1.5">Issue Date*</label>
                 <input type="date" value={form.issue_date} onChange={e => setForm(p => ({ ...p, issue_date: e.target.value }))}
-                  className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                  className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white" required />
               </div>
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-1.5">Due Date*</label>
                 <input type="date" value={form.due_date} onChange={e => setForm(p => ({ ...p, due_date: e.target.value }))}
-                  className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                  className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white" required />
               </div>
             </div>
 
@@ -196,7 +196,7 @@ export default function NewInvoiceModal({ onClose, onSuccess }: NewInvoiceModalP
                 <label className="text-xs font-semibold text-slate-600">Line Items*</label>
               </div>
               <div className="border border-slate-200 rounded-xl overflow-hidden">
-                <div className="grid grid-cols-[1fr_140px_40px] bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-500 border-b border-slate-200">
+                <div className="grid grid-cols-[1fr_140px_40px] bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-500 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
                   <span>Description</span>
                   <span className="text-right">Amount (PKR)</span>
                   <span />

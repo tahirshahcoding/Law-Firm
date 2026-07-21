@@ -128,7 +128,7 @@ export default function ReceivePaymentModal({ invoice, onClose, onSuccess }: Rec
               placeholder="0"
               value={form.amount_received}
               onChange={e => setForm(p => ({ ...p, amount_received: e.target.value }))}
-              className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
               required
             />
           </div>
@@ -139,7 +139,7 @@ export default function ReceivePaymentModal({ invoice, onClose, onSuccess }: Rec
               <select
                 value={form.payment_method}
                 onChange={e => setForm(p => ({ ...p, payment_method: e.target.value }))}
-                className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
               >
                 {PAYMENT_METHODS.map(m => <option key={m}>{m}</option>)}
               </select>
@@ -150,7 +150,7 @@ export default function ReceivePaymentModal({ invoice, onClose, onSuccess }: Rec
                 type="date"
                 value={form.payment_date}
                 onChange={e => setForm(p => ({ ...p, payment_date: e.target.value }))}
-                className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
                 required
               />
             </div>
@@ -163,7 +163,7 @@ export default function ReceivePaymentModal({ invoice, onClose, onSuccess }: Rec
               placeholder="Cheque no., transaction ID, etc."
               value={form.reference_number}
               onChange={e => setForm(p => ({ ...p, reference_number: e.target.value }))}
-              className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
             />
           </div>
 
@@ -174,7 +174,7 @@ export default function ReceivePaymentModal({ invoice, onClose, onSuccess }: Rec
               rows={2}
               value={form.notes}
               onChange={e => setForm(p => ({ ...p, notes: e.target.value }))}
-              className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
             />
           </div>
 

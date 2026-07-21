@@ -154,7 +154,7 @@ export default function DeadlinesPage() {
             />
           </div>
           <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl whitespace-nowrap">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl whitespace-nowrap text-slate-900 dark:text-white">
               <Filter size={16} className="text-slate-400 dark:text-slate-500" />
               <select 
                 value={statusFilter}
@@ -167,7 +167,7 @@ export default function DeadlinesPage() {
                 <option value="Cancelled">Cancelled</option>
               </select>
             </div>
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl whitespace-nowrap">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl whitespace-nowrap text-slate-900 dark:text-white">
               <select 
                 value={priorityFilter}
                 onChange={(e) => setPriorityFilter(e.target.value)}

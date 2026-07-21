@@ -92,7 +92,7 @@ export default function EditCourtModal({ isOpen, onClose, onSuccess, courtData }
                 required
                 value={formData.name}
                 onChange={(e) => setFormData({...formData, name: e.target.value})}
-                className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 dark:text-white"
               />
             </div>
           </div>
@@ -102,7 +102,7 @@ export default function EditCourtModal({ isOpen, onClose, onSuccess, courtData }
             <select
               value={formData.type}
               onChange={(e) => setFormData({...formData, type: e.target.value})}
-              className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+              className="w-full px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 dark:text-white"
             >
               {COURT_TYPES.map(type => <option key={type} value={type}>{type}</option>)}
             </select>
@@ -117,7 +117,7 @@ export default function EditCourtModal({ isOpen, onClose, onSuccess, courtData }
                   type="text"
                   value={formData.district}
                   onChange={(e) => setFormData({...formData, district: e.target.value})}
-                  className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 dark:text-white"
                 />
               </div>
             </div>
@@ -129,7 +129,7 @@ export default function EditCourtModal({ isOpen, onClose, onSuccess, courtData }
                   type="text"
                   value={formData.tehsil}
                   onChange={(e) => setFormData({...formData, tehsil: e.target.value})}
-                  className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 dark:text-white"
                 />
               </div>
             </div>
@@ -144,7 +144,7 @@ export default function EditCourtModal({ isOpen, onClose, onSuccess, courtData }
                 required
                 value={formData.judge}
                 onChange={(e) => setFormData({...formData, judge: e.target.value})}
-                className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 dark:text-white"
               />
             </div>
           </div>
@@ -157,7 +157,7 @@ export default function EditCourtModal({ isOpen, onClose, onSuccess, courtData }
                 type="text"
                 value={formData.court_room}
                 onChange={(e) => setFormData({...formData, court_room: e.target.value})}
-                className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 dark:text-white"
               />
             </div>
           </div>

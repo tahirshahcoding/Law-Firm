@@ -220,7 +220,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
           <div className="relative" ref={dropdownRef}>
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Assign to Client</label>
             <div 
-              className={`w-full px-4 py-2.5 bg-white dark:bg-slate-800 border ${isClientDropdownOpen ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-slate-200 dark:border-slate-700'} rounded-lg text-sm transition-all cursor-pointer flex items-center justify-between`}
+              className={`w-full px-4 py-2.5 bg-white dark:bg-slate-800 border ${isClientDropdownOpen ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-slate-200 dark:border-slate-700'} rounded-lg text-sm transition-all cursor-pointer flex items-center justify-between text-slate-900 dark:text-white`}
               onClick={() => setIsClientDropdownOpen(!isClientDropdownOpen)}
             >
               <span className={selectedClientName ? 'text-slate-900 dark:text-white font-medium' : 'text-slate-400 dark:text-slate-500'}>
@@ -230,7 +230,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
             </div>
 
             {isClientDropdownOpen && (
-              <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+              <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 text-slate-900 dark:text-white">
                 <div className="p-2 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50">
                   <input
                     type="text"
@@ -284,7 +284,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
               <select
                 value={formData.assigned_to}
                 onChange={(e) => setFormData({...formData, assigned_to: e.target.value})}
-                className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none"
+                className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none text-slate-900 dark:text-white"
               >
                 <option value="">Senior Partner (Default)</option>
                 {advocates.map((adv: any) => (
@@ -302,7 +302,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
               <select
                 value={formData.category}
                 onChange={(e) => setFormData({...formData, category: e.target.value})}
-                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                className="w-full px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 dark:text-white"
               >
                 {CASE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
@@ -312,7 +312,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
               <select
                 value={formData.priority}
                 onChange={(e) => setFormData({...formData, priority: e.target.value})}
-                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                className="w-full px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 dark:text-white"
               >
                 {CASE_PRIORITIES.map(p => <option key={p} value={p}>{p}</option>)}
               </select>
@@ -322,7 +322,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
               <select
                 value={formData.status}
                 onChange={(e) => setFormData({...formData, status: e.target.value})}
-                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                className="w-full px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 dark:text-white"
               >
                 {CASE_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
@@ -339,7 +339,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
                   required
                   value={formData.case_number}
                   onChange={(e) => setFormData({...formData, case_number: e.target.value})}
-                  className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
+                  className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
                   placeholder="e.g. 543/2026"
                 />
               </div>
@@ -356,7 +356,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
                   required
                   value={formData.total_fee}
                   onChange={(e) => setFormData({...formData, total_fee: e.target.value})}
-                  className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
+                  className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
                   placeholder="e.g. 150000.00"
                 />
               </div>
@@ -372,7 +372,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
                   required
                   value={formData.court}
                   onChange={(e) => setFormData({...formData, court: e.target.value, judge: ''})}
-                  className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none"
+                  className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none text-slate-900 dark:text-white"
                 >
                   <option value="">Select Court...</option>
                   {courts.map(c => (
@@ -393,7 +393,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
                   value={formData.judge}
                   onChange={(e) => setFormData({...formData, judge: e.target.value})}
                   disabled={!formData.court}
-                  className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none disabled:opacity-50 disabled:bg-slate-50"
+                  className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none disabled:opacity-50 disabled:bg-slate-50 text-slate-900 dark:text-white"
                 >
                   <option value="">Select Judge...</option>
                   {judges.filter((j: any) => j.court === formData.court).map((j: any) => (
@@ -415,7 +415,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
                 required
                 value={formData.opponent_name}
                 onChange={(e) => setFormData({...formData, opponent_name: e.target.value})}
-                className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
+                className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
                 placeholder="Defendant / Respondent Name"
               />
             </div>

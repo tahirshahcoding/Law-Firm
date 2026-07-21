@@ -149,13 +149,13 @@ export default function GenerateChallanModal({ isOpen, onClose, onSuccess }: Gen
                     if (selectedCase) setSelectedCase(null); // Clear selection if user types
                   }}
                   onFocus={() => setShowDropdown(true)}
-                  className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 dark:text-white"
                   required
                 />
               </div>
 
               {showDropdown && (
-                <div className="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg max-h-60 overflow-auto text-slate-900 dark:text-white">
                   {loadingCases ? (
                     <div className="p-3 text-sm text-slate-500 text-center">Loading cases...</div>
                   ) : filteredCases.length > 0 ? (
@@ -187,7 +187,7 @@ export default function GenerateChallanModal({ isOpen, onClose, onSuccess }: Gen
                   required 
                   value={amount} 
                   onChange={(e) => setAmount(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono" 
+                  className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono text-slate-900 dark:text-white" 
                   placeholder="50000" 
                 />
               </div>
@@ -209,7 +209,7 @@ export default function GenerateChallanModal({ isOpen, onClose, onSuccess }: Gen
                   min={issueDate}
                   value={dueDate} 
                   onChange={(e) => setDueDate(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" 
+                  className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 dark:text-white" 
                 />
               </div>
             </div>
@@ -223,7 +223,7 @@ export default function GenerateChallanModal({ isOpen, onClose, onSuccess }: Gen
                   rows={3} 
                   value={description} 
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none" 
+                  className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none text-slate-900 dark:text-white" 
                   placeholder="Professional Legal Services..." 
                 />
               </div>

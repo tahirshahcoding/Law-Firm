@@ -96,7 +96,7 @@ export default function AddPaymentModal({ isOpen, onClose, onSuccess, challan }:
                 required 
                 value={amountReceived} 
                 onChange={(e) => setAmountReceived(e.target.value)}
-                className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-mono text-lg" 
+                className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-mono text-lg text-slate-900 dark:text-white" 
                 placeholder={remainingAmount.toString()} 
               />
             </div>

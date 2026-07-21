@@ -73,7 +73,7 @@ export default function AccountsDashboardWidget() {
             <p className="text-slate-400 text-xs mt-0.5">Real-time ledger analytics & month-wise collections tracking</p>
           </div>
         </div>
-        <div className="flex items-center gap-1.5 bg-slate-50 text-slate-600 text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-xl border border-slate-200/50">
+        <div className="flex items-center gap-1.5 bg-slate-50 text-slate-600 text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700/50 bg-white dark:bg-slate-900">
           <BarChart3 size={14} className="text-slate-400" />
           Analytics Dashboard
         </div>

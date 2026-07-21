@@ -12,6 +12,7 @@ import { AppShellSkeleton } from '@/components/SkeletonLoaders';
 import { UIProvider } from '@/context/UIContext';
 import Image from 'next/image';
 import { API_BASE, apiFetch } from '@/lib/api';
+import NetworkStatus from '@/components/NetworkStatus';
 
 export default function StaffLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -124,6 +125,7 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
   return (
     <div className="flex h-screen overflow-hidden w-full print:h-auto print:overflow-visible">
       <UIProvider>
+      <NetworkStatus />
       <CommandPalette />
       <QuickAddModal />
       <Navigation

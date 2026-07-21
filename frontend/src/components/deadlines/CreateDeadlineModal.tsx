@@ -186,7 +186,7 @@ export default function CreateDeadlineModal({ isOpen, onClose, onSuccess, initia
             <div className="relative" ref={caseMenuRef}>
               <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 transition-colors">Related Case</label>
               <div 
-                className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer flex justify-between items-center transition-colors"
+                className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer flex justify-between items-center transition-colors text-slate-900 dark:text-white"
                 onClick={() => setCaseMenuOpen(!caseMenuOpen)}
               >
                 <span className={`truncate ${selectedCaseObj ? 'text-slate-900 dark:text-white' : 'text-slate-400 dark:text-slate-500'}`}>
@@ -195,7 +195,7 @@ export default function CreateDeadlineModal({ isOpen, onClose, onSuccess, initia
               </div>
               
               {caseMenuOpen && (
-                <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+                <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg max-h-60 overflow-y-auto text-slate-900 dark:text-white">
                   <div className="sticky top-0 bg-white dark:bg-slate-800 p-2 border-b border-slate-100 dark:border-slate-700">
                     <div className="relative">
                       <Search size={14} className="absolute left-3 top-2.5 text-slate-400 dark:text-slate-500" />
