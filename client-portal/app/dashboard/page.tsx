@@ -494,7 +494,91 @@ export default function DashboardPage() {
               <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 {/* Right Column - Widgets (shown first on mobile) */}
                 <div className="space-y-4 lg:order-last">
+                  {/* Next Hearing Widget */}
+                  {upcoming.length > 0 && (
+                    <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-5">
+                      <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">{t.dashboard.nextHearing}</h3>
+                      <div className="flex items-center gap-4">
+                        <div className="flex flex-col items-center justify-center bg-blue-50 border border-blue-100 rounded-xl w-14 h-14 shrink-0 text-blue-700">
+                          <span className="text-lg font-black leading-none">{new Date(upcoming[0].hearing_date).getDate()}</span>
+                          <span className="text-[10px] font-bold uppercase mt-0.5">{new Date(upcoming[0].hearing_date).toLocaleString('default', { month: 'short' })}</span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-bold text-slate-900 truncate text-sm mb-1">{upcoming[0].case_number}</h4>
+                          <p className="text-[11px] text-slate-500 flex items-center gap-1.5 font-medium mb-0.5"><Building2 size={10} /> {upcoming[0].court}</p>
+                          <p className="text-[11px] text-slate-500 flex items-center gap-1.5 font-medium"><Clock size={10} /> 09:30 AM</p>
+                        </div>
+                        <div className="bg-orange-50 border border-orange-100 rounded-lg px-2 py-1.5 text-center shrink-0">
+                          <p className="text-lg font-black text-orange-600 leading-none">1</p>
+                          <p className="text-[9px] font-bold text-orange-600 uppercase tracking-wider">{t.dashboard.dayRemaining}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
+                  {/* Latest Invoice Widget */}
+                  {invoices.length > 0 && (
+                    <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-5">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">{t.dashboard.latestInvoice}</h3>
+                        <button className="text-[10px] font-bold text-blue-600 hover:text-blue-800">{t.dashboard.viewAll}</button>
+                      </div>
+                      <div className="mb-4">
+                        <h4 className="font-bold text-slate-900 mb-1">{invoices[0].invoice_number}</h4>
+                        <div className="flex items-center justify-between text-[11px] text-slate-500 font-medium mb-1">
+                          <span>{t.dashboard.issuedOn}</span>
+                          <span>{fmt(invoices[0].created_at)}</span>
+                        </div>
+                        <div className="flex items-center justify-between text-[11px] text-slate-500 font-medium">
+                          <span>{t.dashboard.dueDate}</span>
+                          <span>{fmt(invoices[0].due_date)}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between border-t border-slate-100 pt-4 mb-4">
+                        <span className="text-[11px] font-bold text-rose-500 uppercase tracking-widest">{t.dashboard.outstanding}</span>
+                        <span className="text-lg font-black text-rose-600">PKR {Number(invoices[0].amount).toLocaleString()}</span>
+                      </div>
+                      <button className="w-full flex items-center justify-center gap-1.5 bg-white border border-blue-200 text-blue-700 px-3 py-2.5 rounded-xl text-xs font-bold hover:bg-blue-50 transition-colors shadow-sm">
+                        <Eye size={14} /> {t.dashboard.viewInvoice}
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Your Advocate */}
+                  <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-5">
+                    <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">{t.dashboard.yourAdvocate}</h3>
+                    <div className="flex items-center gap-3 mb-5">
+                      <div className="w-12 h-12 rounded-full bg-slate-200 overflow-hidden relative">
+                         <div className="absolute inset-0 bg-gradient-to-tr from-slate-300 to-slate-200 flex items-center justify-center">
+                           <User size={24} className="text-white" />
+                         </div>
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-slate-900 text-sm">Muhammad Rahimullah</h4>
+                        <p className="text-[11px] font-medium text-slate-500 mt-0.5">Senior Advocate</p>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button 
+                        onClick={() => setActiveTab('messages')}
+                        className="flex items-center justify-center gap-1.5 bg-white border border-slate-200 text-slate-700 px-2 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition-colors shadow-sm"
+                      >
+                        <MessageSquare size={14} /> {t.dashboard.message}
+                      </button>
+                      <button 
+                        onClick={() => window.location.href = 'tel:+923331234567'}
+                        className="flex items-center justify-center gap-1.5 bg-blue-600 text-white px-2 py-2.5 rounded-xl text-xs font-bold hover:bg-blue-700 transition-colors shadow-sm shadow-blue-600/20"
+                      >
+                        <PhoneCall size={14} /> {t.dashboard.callOffice}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Left Column - Large lists */}
+                <div className="lg:col-span-3 space-y-4 lg:order-first">
+                  {/* Upcoming Hearings */}
+                  <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-4 sm:p-6">
                     <div className="flex items-center justify-between mb-6">
                       <h3 className="text-sm font-bold text-slate-900">{t.dashboard.upcomingHearings}</h3>
                       <button onClick={() => setActiveTab('hearings')} className="text-xs font-bold text-blue-600 hover:text-blue-800">{t.dashboard.viewAll}</button>
@@ -559,93 +643,10 @@ export default function DashboardPage() {
                       {t.dashboard.seeAllCasesDetails} &rarr;
                     </button>
                   </div>
-
                 </div>
               </div>
-                  
-                  {/* Next Hearing Widget */}
-                  {upcoming.length > 0 && (
-                    <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-5">
-                      <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">{t.dashboard.nextHearing}</h3>
-                      <div className="flex items-center gap-4">
-                        <div className="flex flex-col items-center justify-center bg-blue-50 border border-blue-100 rounded-xl w-14 h-14 shrink-0 text-blue-700">
-                          <span className="text-lg font-black leading-none">{new Date(upcoming[0].hearing_date).getDate()}</span>
-                          <span className="text-[10px] font-bold uppercase mt-0.5">{new Date(upcoming[0].hearing_date).toLocaleString('default', { month: 'short' })}</span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-bold text-slate-900 truncate text-sm mb-1">{upcoming[0].case_number}</h4>
-                          <p className="text-[11px] text-slate-500 flex items-center gap-1.5 font-medium mb-0.5"><Building2 size={10} /> {upcoming[0].court}</p>
-                          <p className="text-[11px] text-slate-500 flex items-center gap-1.5 font-medium"><Clock size={10} /> 09:30 AM</p>
-                        </div>
-                        <div className="bg-orange-50 border border-orange-100 rounded-lg px-2 py-1.5 text-center shrink-0">
-                          <p className="text-lg font-black text-orange-600 leading-none">1</p>
-                          <p className="text-[9px] font-bold text-orange-600 uppercase tracking-wider">{t.dashboard.dayRemaining}</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
 
-                  {/* Latest Invoice Widget */}
-                  {invoices.length > 0 && (
-                    <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-5">
-                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">{t.dashboard.latestInvoice}</h3>
-                        <button className="text-[10px] font-bold text-blue-600 hover:text-blue-800">{t.dashboard.viewAll}</button>
-                      </div>
-                      <div className="mb-4">
-                        <h4 className="font-bold text-slate-900 mb-1">{invoices[0].invoice_number}</h4>
-                        <div className="flex items-center justify-between text-[11px] text-slate-500 font-medium mb-1">
-                          <span>{t.dashboard.issuedOn}</span>
-                          <span>{fmt(invoices[0].created_at)}</span>
-                        </div>
-                        <div className="flex items-center justify-between text-[11px] text-slate-500 font-medium">
-                          <span>{t.dashboard.dueDate}</span>
-                          <span>{fmt(invoices[0].due_date)}</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between border-t border-slate-100 pt-4 mb-4">
-                        <span className="text-[11px] font-bold text-rose-500 uppercase tracking-widest">{t.dashboard.outstanding}</span>
-                        <span className="text-lg font-black text-rose-600">PKR {Number(invoices[0].amount).toLocaleString()}</span>
-                      </div>
-                      <button className="w-full flex items-center justify-center gap-1.5 bg-white border border-blue-200 text-blue-700 px-3 py-2.5 rounded-xl text-xs font-bold hover:bg-blue-50 transition-colors shadow-sm">
-                        <Eye size={14} /> {t.dashboard.viewInvoice}
-                      </button>
-                    </div>
-                  )}
 
-                  {/* Your Advocate */}
-                  <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-5">
-                    <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">{t.dashboard.yourAdvocate}</h3>
-                    <div className="flex items-center gap-3 mb-5">
-                      <div className="w-12 h-12 rounded-full bg-slate-200 overflow-hidden relative">
-                         {/* Placeholder for advocate photo */}
-                         <div className="absolute inset-0 bg-gradient-to-tr from-slate-300 to-slate-200 flex items-center justify-center">
-                           <User size={24} className="text-white" />
-                         </div>
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-slate-900 text-sm">Muhammad Rahimullah</h4>
-                        <p className="text-[11px] font-medium text-slate-500 mt-0.5">Senior Advocate</p>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <button 
-                        onClick={() => setActiveTab('messages')}
-                        className="flex items-center justify-center gap-1.5 bg-white border border-slate-200 text-slate-700 px-2 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition-colors shadow-sm"
-                      >
-                        <MessageSquare size={14} /> {t.dashboard.message}
-                      </button>
-                      <button 
-                        onClick={() => window.location.href = 'tel:+923331234567'}
-                        className="flex items-center justify-center gap-1.5 bg-blue-600 text-white px-2 py-2.5 rounded-xl text-xs font-bold hover:bg-blue-700 transition-colors shadow-sm shadow-blue-600/20"
-                      >
-                        <PhoneCall size={14} /> {t.dashboard.callOffice}
-                      </button>
-                    </div>
-                  </div>
-
-                </div>
-              </div>
 
             </div>
           )}
