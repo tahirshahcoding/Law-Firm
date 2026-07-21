@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny, BasePermission
 from rest_framework.decorators import action
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework import filters
 from datetime import date
 from django.db import transaction, IntegrityError
@@ -176,6 +176,7 @@ class LogoutView(APIView):
 
 class AdminUserView(APIView):
     permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def get(self, request):
         if not hasattr(request.user, 'profile') or request.user.profile.role != 'Admin':
@@ -198,6 +199,13 @@ class AdminUserView(APIView):
 
         # Both User + UserProfile must succeed or both must roll back.
         try:
+            perms = data.get('permissions', {})
+            if isinstance(perms, str):
+                try:
+                    perms = json.loads(perms)
+                except ValueError:
+                    perms = {}
+                    
             user = User.objects.create_user(
                 username=data['username'],
                 password=data['password'],
@@ -205,11 +213,16 @@ class AdminUserView(APIView):
                 last_name=data.get('last_name', ''),
                 email=data.get('email', '')
             )
-            UserProfile.objects.create(
+            profile = UserProfile.objects.create(
                 user=user,
                 role=data.get('role', 'Staff'),
-                permissions=data.get('permissions', {})
+                permissions=perms
             )
+            
+            if 'avatar' in request.FILES:
+                profile.avatar = request.FILES['avatar']
+                profile.save()
+                
             return Response(
                 UserSerializer(user, context={'request': request}).data,
                 status=status.HTTP_201_CREATED
@@ -277,9 +290,8 @@ class AdminUserDetailView(APIView):
                     try:
                         perms = json.loads(perms)
                     except ValueError:
-                        perms = None
-                if perms is not None:
-                    profile.permissions = perms
+                        perms = profile.permissions
+                profile.permissions = perms
             if 'avatar' in request.FILES:
                 profile.avatar = request.FILES['avatar']
             profile.save()

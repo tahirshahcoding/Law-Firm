@@ -401,7 +401,7 @@ export default function UserManagementPage() {
         toast.success(isEditMode ? 'Staff account updated.' : 'Staff account created.');
       } else {
         const error = await res.json();
-        toast.error(error.error || 'Failed to save user');
+        toast.error(error.error || error.detail || 'Failed to save user');
       }
     } catch (err) {
       console.error(err);
