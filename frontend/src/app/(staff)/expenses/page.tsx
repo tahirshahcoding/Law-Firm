@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { Plus, Search, Trash2 } from 'lucide-react';
-import { API_BASE, apiFetch, safeJson } from '@/lib/api';
+import { API_BASE, apiFetch } from '@/lib/api';
+import useSWR from 'swr';
+import { swrFetcher } from '@/lib/fetcher';
 import { useAuth } from '@/context/AuthContext';
 import { useUI } from '@/context/UIContext';
 import { TableRowSkeleton } from '@/components/SkeletonLoaders';
@@ -17,8 +19,6 @@ function fmtDate(d: string | null) {
 }
 
 export default function ExpensesPage() {
-  const [expenses, setExpenses] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [showModal, setShowModal] = useState(false);
@@ -26,16 +26,8 @@ export default function ExpensesPage() {
   const { confirm, toast, showLoading, hideLoading } = useUI();
   const canManage = user?.role === 'Admin' || user?.permissions?.accounts?.edit;
 
-  const fetchExpenses = async () => {
-    setLoading(true);
-    try {
-      const res = await apiFetch(`${API_BASE}/expenses/`);
-      const d = await safeJson(res);
-      setExpenses(Array.isArray(d.results ?? d) ? (d.results ?? d) : []);
-    } catch { /* silent */ } finally { setLoading(false); }
-  };
-
-  useEffect(() => { fetchExpenses(); }, []);
+  const { data, isLoading: loading, mutate: fetchExpenses } = useSWR(`${API_BASE}/expenses/`, swrFetcher);
+  const expenses: any[] = data?.results || (Array.isArray(data) ? data : []);
 
   const filtered = expenses.filter(e => {
     const q = search.toLowerCase();

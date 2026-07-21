@@ -10,17 +10,15 @@ import EditJudgeModal from '@/components/EditJudgeModal';
 import { useAuth } from '@/context/AuthContext';
 import { useUI } from '@/context/UIContext';
 import { TableSkeleton } from '@/components/SkeletonLoaders';
+import useSWR from 'swr';
+import { swrFetcher } from '@/lib/fetcher';
 
 function JudgesPageContent() {
   const searchParams = useSearchParams();
   const initialSearch = searchParams.get('search') || '';
-  const [judges, setJudges] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState(initialSearch);
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
   
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -32,42 +30,17 @@ function JudgesPageContent() {
   // Restrict to Admin for master data.
   const canManageJudges = user?.role === 'Admin';
 
-  const fetchJudges = () => {
-    setLoading(true);
-    const query = new URLSearchParams({
-      page: page.toString(),
-      limit: '20',
-      ...(debouncedSearchTerm && { search: debouncedSearchTerm })
-    });
+  const query = new URLSearchParams({
+    page: page.toString(),
+    limit: '20',
+    ...(debouncedSearchTerm && { search: debouncedSearchTerm })
+  });
 
-    apiFetch(`${API_BASE}/judges/?${query.toString()}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data && Array.isArray(data.results)) {
-          setJudges(data.results);
-          setTotalCount(data.count ?? data.results.length);
-          setTotalPages(Math.ceil((data.count ?? data.results.length) / 20));
-        } else if (Array.isArray(data)) {
-          setJudges(data);
-          setTotalCount(data.length);
-          setTotalPages(1);
-        } else {
-          setJudges([]);
-          setTotalCount(0);
-          setTotalPages(1);
-        }
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Failed to fetch judges:', err);
-        setJudges([]);
-        setLoading(false);
-      });
-  };
+  const { data, isLoading: loading, mutate: fetchJudges } = useSWR(`${API_BASE}/judges/?${query.toString()}`, swrFetcher);
 
-  useEffect(() => {
-    fetchJudges();
-  }, [page, debouncedSearchTerm]);
+  const judges = data?.results || (Array.isArray(data) ? data : []);
+  const totalCount = data?.count ?? judges.length;
+  const totalPages = Math.ceil((data?.count ?? judges.length) / 20);
 
 
   const handleDelete = async (id: string, name: string) => {

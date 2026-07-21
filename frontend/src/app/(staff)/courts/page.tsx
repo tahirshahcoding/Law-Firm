@@ -10,17 +10,15 @@ import EditCourtModal from '@/components/EditCourtModal';
 import { useAuth } from '@/context/AuthContext';
 import { useUI } from '@/context/UIContext';
 import { TableSkeleton } from '@/components/SkeletonLoaders';
+import useSWR from 'swr';
+import { swrFetcher } from '@/lib/fetcher';
 
 function CourtsPageContent() {
   const searchParams = useSearchParams();
   const initialSearch = searchParams.get('search') || '';
-  const [courts, setCourts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState(initialSearch);
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
   
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -33,42 +31,17 @@ function CourtsPageContent() {
   // or restrict to Admin. Let's restrict to Admin for master data.
   const canManageCourts = user?.role === 'Admin';
 
-  const fetchCourts = () => {
-    setLoading(true);
-    const query = new URLSearchParams({
-      page: page.toString(),
-      limit: '20',
-      ...(debouncedSearchTerm && { search: debouncedSearchTerm })
-    });
+  const query = new URLSearchParams({
+    page: page.toString(),
+    limit: '20',
+    ...(debouncedSearchTerm && { search: debouncedSearchTerm })
+  });
 
-    apiFetch(`${API_BASE}/courts/?${query.toString()}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data && Array.isArray(data.results)) {
-          setCourts(data.results);
-          setTotalCount(data.count ?? data.results.length);
-          setTotalPages(Math.ceil((data.count ?? data.results.length) / 20));
-        } else if (Array.isArray(data)) {
-          setCourts(data);
-          setTotalCount(data.length);
-          setTotalPages(1);
-        } else {
-          setCourts([]);
-          setTotalCount(0);
-          setTotalPages(1);
-        }
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Failed to fetch courts:', err);
-        setCourts([]);
-        setLoading(false);
-      });
-  };
+  const { data, isLoading: loading, mutate: fetchCourts } = useSWR(`${API_BASE}/courts/?${query.toString()}`, swrFetcher);
 
-  useEffect(() => {
-    fetchCourts();
-  }, [page, debouncedSearchTerm]);
+  const courts = data?.results || (Array.isArray(data) ? data : []);
+  const totalCount = data?.count ?? courts.length;
+  const totalPages = Math.ceil((data?.count ?? courts.length) / 20);
 
 
   const handleDelete = async (id: string, name: string) => {

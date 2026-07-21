@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import { apiFetch, API_BASE } from '@/lib/api';
 import { MessageSquare, Send, CheckCheck, Check, Search, MoreVertical, CornerUpLeft, Clock, X } from 'lucide-react';
 import { toast } from 'sonner';
+import useSWR from 'swr';
+import { swrFetcher } from '@/lib/fetcher';
 
 // Helper: get up to 2 uppercase initials from a name
 const initials = (name: string) =>
@@ -23,15 +25,18 @@ const formatDate = (dateStr: string) => {
 };
 
 export default function MessagesPage() {
-  const [conversations, setConversations] = useState<any[]>([]);
   const [activeClient, setActiveClient] = useState<any>(null);
-  const [messages, setMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState('');
-  const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [search, setSearch] = useState('');
   const [replyingTo, setReplyingTo] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const { data: convData, isLoading: loading, mutate: mutateConversations } = useSWR(`${API_BASE}/messages/conversations/`, swrFetcher, { refreshInterval: 5000 });
+  const conversations: any[] = Array.isArray(convData) ? convData : (convData?.results || []);
+
+  const { data: msgData, mutate: mutateMessages } = useSWR(activeClient ? `${API_BASE}/messages/?client_id=${activeClient.client_id}` : null, swrFetcher, { refreshInterval: 5000 });
+  const messages: any[] = Array.isArray(msgData) ? msgData : (msgData?.results || []);
 
   // Swipe to reply logic
   const touchStartX = useRef<{ id: string; x: number } | null>(null);
@@ -59,52 +64,21 @@ export default function MessagesPage() {
     setSwipeOffset(null);
   };
 
-  const fetchConversations = async () => {
-    try {
-      const res = await apiFetch(`${API_BASE}/messages/conversations/`);
-      const data = await res.json();
-      setConversations(Array.isArray(data) ? data : (data.results || []));
-      setLoading(false);
-    } catch {
-      toast.error('Failed to load conversations');
-      setLoading(false);
-    }
-  };
-
-  const fetchMessages = async (clientId: string) => {
-    try {
-      const res = await apiFetch(`${API_BASE}/messages/?client_id=${clientId}`);
-      const rawData = await res.json();
-      const data = Array.isArray(rawData) ? rawData : (rawData.results || []);
-      setMessages(prev => {
-        const optimistic = prev.filter((m: any) => m.is_optimistic);
-        return [...data, ...optimistic];
-      });
-      await apiFetch(`${API_BASE}/messages/mark_read/`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ client_id: clientId }),
-      });
-      setConversations(prev =>
-        prev.map(c => (c.client_id === clientId ? { ...c, unread_count: 0 } : c))
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   useEffect(() => {
-    fetchConversations();
-    const interval = setInterval(() => {
-      fetchConversations();
-      if (activeClient) fetchMessages(activeClient.client_id);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [activeClient]);
-
-  useEffect(() => {
-    if (activeClient) fetchMessages(activeClient.client_id);
-  }, [activeClient]);
+    if (activeClient && msgData) {
+      // Mark read in background if there are unread messages from this client
+      const hasUnread = conversations.find(c => c.client_id === activeClient.client_id)?.unread_count > 0;
+      if (hasUnread) {
+        apiFetch(`${API_BASE}/messages/mark_read/`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ client_id: activeClient.client_id }),
+        }).then(() => {
+          mutateConversations();
+        });
+      }
+    }
+  }, [activeClient, msgData, conversations, mutateConversations]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -130,7 +104,11 @@ export default function MessagesPage() {
       reply_to_details: replyDetails
     };
     
-    setMessages(prev => [...prev, tempMsg]);
+    mutateMessages((prev: any) => {
+      const prevArray = Array.isArray(prev) ? prev : (prev?.results || []);
+      return [...prevArray, tempMsg];
+    }, false);
+    
     setNewMessage('');
     setReplyingTo(null);
     
@@ -145,13 +123,16 @@ export default function MessagesPage() {
         throw new Error(err.error || err.detail || res.statusText);
       }
       
-      const finalMsg = await res.json();
-      setMessages(prev => prev.map(m => m.id === tempId ? finalMsg : m));
-      // fetchMessages(activeClient.client_id); // Optional, since we have optimistic UI
-      fetchConversations(); // update latest message snippet in sidebar
+      if (res.ok) {
+        mutateMessages();
+        mutateConversations();
+      }
     } catch (error: any) {
       toast.error('Failed to send: ' + error.message);
-      setMessages(prev => prev.filter(m => m.id !== tempId));
+      mutateMessages((prev: any) => {
+        const prevArray = Array.isArray(prev) ? prev : (prev?.results || []);
+        return prevArray.filter((m: any) => m.id !== tempId);
+      }, false);
     }
   };
 

@@ -4,47 +4,42 @@ import { useState, useEffect } from 'react';
 import { Calendar as CalendarIcon, Plus, CheckCircle2, Circle, Clock, Trash2, Gavel, Scale, FolderOpen } from 'lucide-react';
 import { API_BASE, apiFetch } from '@/lib/api';
 import { ListSkeleton } from '@/components/SkeletonLoaders';
+import useSWR from 'swr';
+import { swrFetcher } from '@/lib/fetcher';
 import { toast } from 'sonner';
 import { useUI } from '@/context/UIContext';
 
 export default function DailyDiaryPage() {
-  const [tasks, setTasks] = useState<any[]>([]);
-  const [hearings, setHearings] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [newTaskDueDate, setNewTaskDueDate] = useState('');
   const { confirm, showLoading, hideLoading } = useUI();
 
+  const { data: tasksData, isLoading: tasksLoading, mutate: mutateTasks } = useSWR(`${API_BASE}/tasks/?limit=1000`, swrFetcher);
+  const { data: hearingsData, isLoading: hearingsLoading, mutate: mutateHearings } = useSWR(`${API_BASE}/diary/today/`, swrFetcher);
+
+  const loading = tasksLoading || hearingsLoading;
+  
+  const rawTasks = Array.isArray(tasksData) ? tasksData : (tasksData?.results || []);
+  const rawHearings = Array.isArray(hearingsData) ? hearingsData : (hearingsData?.results || []);
+  const hearings = [...rawHearings].sort((a: any, b: any) => a.case_title?.localeCompare(b.case_title));
+  // optimistic state for tasks
+  const [optimisticTasks, setOptimisticTasks] = useState<any[] | null>(null);
+  
+  // Update optimistic tasks when rawTasks change
+  useEffect(() => {
+    setOptimisticTasks(rawTasks);
+  }, [rawTasks]);
+
+  const tasks = optimisticTasks || rawTasks;
+
   const fetchTasksAndHearings = () => {
-    setLoading(true);
-    Promise.all([
-      apiFetch(`${API_BASE}/tasks/?limit=1000`).then(res => res.json()),
-      apiFetch(`${API_BASE}/diary/today/`).then(res => res.json())
-    ])
-      .then(([tasksData, hearingsData]) => {
-        setTasks(Array.isArray(tasksData) ? tasksData : tasksData.results || []);
-        // Handle nested results for hearings array if paginated
-        const parsedHearings = Array.isArray(hearingsData) ? hearingsData : hearingsData.results || [];
-        // Sort hearings by case title naturally
-        parsedHearings.sort((a: any, b: any) => a.case_title?.localeCompare(b.case_title));
-        setHearings(parsedHearings);
-      })
-      .catch(err => {
-        console.error('Failed to fetch data:', err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    mutateTasks();
+    mutateHearings();
   };
 
-  useEffect(() => {
-    fetchTasksAndHearings();
-  }, []);
-
   const handleToggleTask = async (task: any) => {
-    // Fully Optimistic UI: update immediately
-    setTasks((prevTasks: any) => 
-      prevTasks.map((t: any) => t.id === task.id ? { ...t, is_completed: !task.is_completed } : t)
+    setOptimisticTasks((prevTasks: any) => 
+      (prevTasks || tasks).map((t: any) => t.id === task.id ? { ...t, is_completed: !task.is_completed } : t)
     );
 
     try {
@@ -57,9 +52,11 @@ export default function DailyDiaryPage() {
     } catch (err) {
       console.error(err);
       // Revert optimism on failure
-      setTasks((prevTasks: any) => 
-        prevTasks.map((t: any) => t.id === task.id ? { ...t, is_completed: task.is_completed } : t)
+      setOptimisticTasks((prevTasks: any) => 
+        (prevTasks || tasks).map((t: any) => t.id === task.id ? { ...t, is_completed: task.is_completed } : t)
       );
+    } finally {
+      mutateTasks();
     }
   };
 
@@ -78,7 +75,8 @@ export default function DailyDiaryPage() {
       });
       if (!res.ok) throw new Error('Failed to delete task');
       toast.success("Task deleted");
-      setTasks((prevTasks: any) => prevTasks.filter((t: any) => t.id !== id));
+      setOptimisticTasks((prevTasks: any) => (prevTasks || tasks).filter((t: any) => t.id !== id));
+      mutateTasks();
     } catch (err) {
       console.error(err);
     } finally {

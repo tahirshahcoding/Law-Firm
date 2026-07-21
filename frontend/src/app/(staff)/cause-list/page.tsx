@@ -5,12 +5,12 @@ import { Printer, Search, Calendar, MapPin, Scale, Gavel, FileText, RefreshCw, L
 import { API_BASE, apiFetch } from '@/lib/api';
 import { TableSkeleton } from '@/components/SkeletonLoaders';
 import { useAuth } from '@/context/AuthContext';
+import useSWR from 'swr';
+import { swrFetcher } from '@/lib/fetcher';
 import { toast } from 'sonner';
 
 export default function CauseListPage() {
   const { user } = useAuth();
-  const [hearings, setHearings] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   
   // Filter states
   const [district, setDistrict] = useState('');
@@ -27,33 +27,15 @@ export default function CauseListPage() {
   const canView = user?.role === 'Admin' || user?.permissions?.cause_list?.view === true;
   const canPrint = user?.role === 'Admin' || user?.permissions?.cause_list?.print === true;
 
-  const fetchCauseList = () => {
-    if (!canView) return;
-    setLoading(true);
-    let url = `${API_BASE}/hearings/?date=${selectedDate}&limit=1000`;
-    if (district.trim()) url += `&district=${encodeURIComponent(district.trim())}`;
-    if (tehsil.trim()) url += `&tehsil=${encodeURIComponent(tehsil.trim())}`;
-    if (court.trim()) url += `&court=${encodeURIComponent(court.trim())}`;
+  // Build the URL for SWR
+  let url = `${API_BASE}/hearings/?date=${selectedDate}&limit=1000`;
+  if (district.trim()) url += `&district=${encodeURIComponent(district.trim())}`;
+  if (tehsil.trim()) url += `&tehsil=${encodeURIComponent(tehsil.trim())}`;
+  if (court.trim()) url += `&court=${encodeURIComponent(court.trim())}`;
 
-    apiFetch(url)
-      .then(res => res.json())
-      .then(data => {
-        const results = Array.isArray(data) ? data : (data.results || []);
-        setHearings(results);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Failed to fetch cause list:', err);
-        toast.error('Failed to load cause list data');
-        setLoading(false);
-      });
-  };
+  const { data, isLoading: loading, mutate: fetchCauseList } = useSWR(canView ? url : null, swrFetcher);
 
-  useEffect(() => {
-    if (canView) {
-      fetchCauseList();
-    }
-  }, [selectedDate, user]);
+  const hearings = Array.isArray(data) ? data : (data?.results || []);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,17 +46,7 @@ export default function CauseListPage() {
     setDistrict('');
     setTehsil('');
     setCourt('');
-    // Trigger fetch after clearing filters in next tick or set direct state
-    setTimeout(() => {
-      if (!canView) return;
-      setLoading(true);
-      apiFetch(`${API_BASE}/hearings/?date=${selectedDate}&limit=1000`)
-        .then(res => res.json())
-        .then(data => {
-          setHearings(Array.isArray(data) ? data : (data.results || []));
-          setLoading(false);
-        });
-    }, 0);
+    // SWR will automatically fetch the new URL on the next render
   };
 
   if (!canView) {

@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { Search, Download, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
-import { API_BASE, apiFetch, safeJson } from '@/lib/api';
 import { TableRowSkeleton } from '@/components/SkeletonLoaders';
+import useSWR from 'swr';
+import { swrFetcher } from '@/lib/fetcher';
+import { API_BASE } from '@/lib/api';
 
 const TYPE_FILTER = ['All', 'Payment', 'Expense'];
 
@@ -14,20 +16,12 @@ function fmtDate(d: string | null) {
 }
 
 export default function AccountsPage() {
-  const [ledger, setLedger] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('All');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
 
-  useEffect(() => {
-    apiFetch(`${API_BASE}/accounts/ledger/`)
-      .then(r => safeJson(r))
-      .then(d => setLedger(d))
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
+  const { data: ledger, isLoading: loading } = useSWR(`${API_BASE}/accounts/ledger/`, swrFetcher);
 
   const raw: any[] = ledger?.transactions ?? [];
 

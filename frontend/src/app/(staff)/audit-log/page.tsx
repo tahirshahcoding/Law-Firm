@@ -5,31 +5,27 @@ import { Activity, Clock, User, ShieldAlert, FileText, FileDown, Eye, FileSignat
 import { API_BASE, apiFetch } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { TableSkeleton } from '@/components/SkeletonLoaders';
+import useSWR from 'swr';
+import { swrFetcher } from '@/lib/fetcher';
 
 export default function AuditLogPage() {
-  const [logs, setLogs] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState('all');
   const { user } = useAuth();
+  const isAdmin = user && ['Admin', 'Senior Partner'].includes(user.role || '');
 
+  // Redirect if not admin
   useEffect(() => {
-    if (user && !['Admin', 'Senior Partner'].includes(user.role || '')) {
+    if (user && !isAdmin) {
       window.location.href = '/';
-      return;
     }
+  }, [user, isAdmin]);
 
-    setLoading(true);
-    apiFetch(`${API_BASE}/audit-log/?period=${period}`)
-      .then(res => res.json())
-      .then(data => {
-        setLogs(Array.isArray(data) ? data : []);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Failed to fetch audit logs:', err);
-        setLoading(false);
-      });
-  }, [user, period]);
+  const { data, isLoading: loading } = useSWR(
+    isAdmin ? `${API_BASE}/audit-log/?period=${period}` : null,
+    swrFetcher
+  );
+  
+  const logs = Array.isArray(data) ? data : [];
 
   const getActionColor = (action: string) => {
     switch (action.toLowerCase()) {

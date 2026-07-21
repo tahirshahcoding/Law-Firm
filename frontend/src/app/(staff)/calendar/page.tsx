@@ -7,6 +7,8 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { API_BASE, apiFetch } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { TableSkeleton } from '@/components/SkeletonLoaders';
+import useSWR from 'swr';
+import { swrFetcher } from '@/lib/fetcher';
 
 import { MonthlyView, WeeklyView, DailyView, AgendaView } from './components/CalendarViews';
 import { EventDetailsModal } from './components/EventDetailsModal';
@@ -36,9 +38,6 @@ function CalendarPageContent() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>('month');
   
-  const [events, setEvents] = useState<CalendarEvent[]>([]);
-  const [loading, setLoading] = useState(true);
-  
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
   
@@ -46,58 +45,24 @@ function CalendarPageContent() {
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
+
+  // Determine the required range based on the current date
+  const reqStart = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1).toISOString();
+  const reqEnd = new Date(currentDate.getFullYear(), currentDate.getMonth() + 2, 0).toISOString();
+
+  const query = new URLSearchParams({
+    start: reqStart,
+    end: reqEnd,
+    limit: '1000'
+  });
   
-  // Track the currently loaded range to avoid redundant fetches
-  const [loadedRange, setLoadedRange] = useState<{start: string, end: string} | null>(null);
+  if (debouncedSearchTerm) query.append('search', debouncedSearchTerm);
+  if (filterType) query.append('event_type', filterType);
 
-  const fetchEvents = (force = false) => {
-    // Determine the required range based on the current date
-    const reqStart = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1).toISOString();
-    const reqEnd = new Date(currentDate.getFullYear(), currentDate.getMonth() + 2, 0).toISOString();
+  const url = `${API_BASE}/calendar-events/?${query.toString()}`;
+  const { data: rawEvents, isLoading: loading, mutate: fetchEvents } = useSWR(url, swrFetcher);
 
-    // If we're not forcing a refresh, and we already have a loaded range that covers the required range, skip fetching
-    if (!force && loadedRange && !debouncedSearchTerm && !filterType) {
-        if (reqStart >= loadedRange.start && reqEnd <= loadedRange.end) {
-            return;
-        }
-    }
-
-    setLoading(true);
-    
-    const query = new URLSearchParams({
-      start: reqStart,
-      end: reqEnd,
-      limit: '1000'
-    });
-    
-    if (debouncedSearchTerm) query.append('search', debouncedSearchTerm);
-    if (filterType) query.append('event_type', filterType);
-
-    apiFetch(`${API_BASE}/calendar-events/?${query.toString()}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data && Array.isArray(data.results)) {
-          setEvents(data.results);
-        } else if (Array.isArray(data)) {
-          setEvents(data);
-        } else {
-          setEvents([]);
-        }
-        // Only update loaded range if no search/filters are applied
-        if (!debouncedSearchTerm && !filterType) {
-            setLoadedRange({ start: reqStart, end: reqEnd });
-        }
-      })
-      .catch(err => {
-        console.error('Failed to fetch events:', err);
-        setEvents([]);
-      })
-      .finally(() => setLoading(false));
-  };
-
-  useEffect(() => {
-    fetchEvents();
-  }, [currentDate.getMonth(), currentDate.getFullYear(), debouncedSearchTerm, filterType]);
+  const events = Array.isArray(rawEvents?.results) ? rawEvents.results : (Array.isArray(rawEvents) ? rawEvents : []);
 
   const handlePrev = () => {
     const d = new Date(currentDate);

@@ -5,6 +5,8 @@ import { MessageSquare, Search, Trash2, Phone, Mail, ChevronDown, RefreshCw, Che
 import { API_BASE, apiFetch } from '@/lib/api';
 import { useUI } from '@/context/UIContext';
 import { ListSkeleton } from '@/components/SkeletonLoaders';
+import useSWR from 'swr';
+import { swrFetcher } from '@/lib/fetcher';
 
 type Consultation = {
   id: string;
@@ -25,28 +27,13 @@ const STATUS_STYLES: Record<string, string> = {
 };
 
 export default function ConsultationsPage() {
-  const [consultations, setConsultations] = useState<Consultation[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
   const [expanded, setExpanded] = useState<string | null>(null);
   const { confirm, toast, showLoading, hideLoading } = useUI();
 
-  const fetchConsultations = () => {
-    setLoading(true);
-    apiFetch(`${API_BASE}/consultations/`)
-      .then(res => res.json())
-      .then(data => {
-        setConsultations(Array.isArray(data) ? data : data.results || []);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Failed to fetch consultations:', err);
-        setLoading(false);
-      });
-  };
-
-  useEffect(() => { fetchConsultations(); }, []);
+  const { data, isLoading: loading, mutate: fetchConsultations } = useSWR(`${API_BASE}/consultations/`, swrFetcher);
+  const consultations: Consultation[] = Array.isArray(data) ? data : data?.results || [];
 
   const handleStatusChange = async (id: string, newStatus: string) => {
     try {

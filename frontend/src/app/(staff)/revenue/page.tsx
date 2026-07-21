@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { Download, TrendingUp, DollarSign, Calendar, Landmark, CreditCard } from 'lucide-react';
-import { API_BASE, apiFetch, safeJson } from '@/lib/api';
+import { API_BASE } from '@/lib/api';
+import useSWR from 'swr';
+import { swrFetcher } from '@/lib/fetcher';
 import { motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, AreaChart, Area } from 'recharts';
 
@@ -11,24 +13,7 @@ function fmt(n: any) {
 }
 
 export default function RevenuePage() {
-  const [ledger, setLedger] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchLedger();
-  }, []);
-
-  const fetchLedger = async () => {
-    try {
-      const res = await apiFetch(`${API_BASE}/accounts/ledger/`);
-      const data = await safeJson(res);
-      setLedger(data);
-    } catch (err) {
-      console.error('Failed to fetch ledger:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: ledger, isLoading: loading } = useSWR(`${API_BASE}/accounts/ledger/`, swrFetcher);
 
   const chartData = ledger?.revenue_chart || [];
   

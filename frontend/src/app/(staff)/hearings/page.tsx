@@ -9,10 +9,10 @@ import HearingDocumentsModal from '@/components/HearingDocumentsModal';
 import { useAuth } from '@/context/AuthContext';
 import { useUI } from '@/context/UIContext';
 import { TableSkeleton } from '@/components/SkeletonLoaders';
+import useSWR from 'swr';
+import { swrFetcher } from '@/lib/fetcher';
 
 export default function HearingsPage() {
-  const [hearings, setHearings] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   
   // Modals state
@@ -30,28 +30,10 @@ export default function HearingsPage() {
   const canEditHearings   = user?.role === 'Admin' || user?.permissions?.hearings?.edit === true;
   const canDeleteHearings = user?.role === 'Admin' || user?.permissions?.hearings?.delete === true;
 
-  const fetchHearings = () => {
-    if (!canViewHearings) return;
-    setLoading(true);
-    apiFetch(`${API_BASE}/hearings/`)
-      .then(res => res.json())
-      .then(data => {
-        const hearingsData = data && Array.isArray(data.results) ? data.results : Array.isArray(data) ? data : [];
-        // Sort chronologically (closest dates first)
-        const sortedData = [...hearingsData].sort((a: any, b: any) => new Date(a.hearing_date).getTime() - new Date(b.hearing_date).getTime());
-        setHearings(sortedData);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Failed to fetch hearings:', err);
-        setHearings([]);
-        setLoading(false);
-      });
-  };
+  const { data, error, isLoading: loading, mutate: fetchHearings } = useSWR(canViewHearings ? `${API_BASE}/hearings/` : null, swrFetcher);
 
-  useEffect(() => {
-    fetchHearings();
-  }, []);
+  const hearingsData = data && Array.isArray(data.results) ? data.results : Array.isArray(data) ? data : [];
+  const hearings = [...hearingsData].sort((a: any, b: any) => new Date(a.hearing_date).getTime() - new Date(b.hearing_date).getTime());
 
   const handleDelete = async (id: string, caseNumber: string, date: string) => {
     const ok = await confirm({
