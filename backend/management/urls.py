@@ -4,7 +4,7 @@ from .views import (
     ClientViewSet, CaseViewSet, HearingViewSet, HearingDocumentViewSet, TaskViewSet, InvoiceViewSet,
     AccountsLedgerView, DailyDiaryView, DashboardStatsView, AdminUserView, AdminUserDetailView, CurrentUserView,
     CustomTokenObtainPairView, TokenRefreshCookieView, LogoutView, AdvocatesView,
-    ClientPortalView, ClientResetPasswordView, ConsultationViewSet, AuditLogView, PaymentViewSet, ExpenseViewSet,
+    ClientPortalView, ClientResetPasswordView, ClientChangePasswordView, ConsultationViewSet, AuditLogView, PaymentViewSet, ExpenseViewSet,
     PingView, CaseTimelineViewSet, ConflictCheckView, CourtViewSet, JudgeViewSet, CalendarEventViewSet, NotificationViewSet, DeadlineViewSet, BackupDatabaseView,
     MessageViewSet, ClientPortalMessagesView
 )
@@ -42,6 +42,7 @@ urlpatterns = [
     path('portal/data/',                           ClientPortalView.as_view(),           name='client_portal'),
     path('portal/messages/',                       ClientPortalMessagesView.as_view(),   name='client_portal_messages'),
     path('portal/reset-password/<uuid:pk>/',       ClientResetPasswordView.as_view(),    name='client_reset_password'),
+    path('portal/change-password/',                ClientChangePasswordView.as_view(),   name='client_change_password'),
 
     # ── User Management (staff only) ───────────────────────────────────────────
     path('users/me/',    CurrentUserView.as_view(), name='users_me'),

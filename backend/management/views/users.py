@@ -471,6 +471,41 @@ class ClientResetPasswordView(APIView):
         })
 
 
+# ── Client Password Change ────────────────────────────────────────────────────
+
+class ClientChangePasswordView(APIView):
+    """Client-facing API to change their own password from the portal."""
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        if not hasattr(request.user, 'client_profile'):
+            return _error("Only clients can change their portal password here.", status.HTTP_403_FORBIDDEN)
+        
+        current_password = request.data.get('current_password')
+        new_password = request.data.get('new_password')
+        
+        if not current_password or not new_password:
+            return _error("current_password and new_password are required.", status.HTTP_400_BAD_REQUEST)
+            
+        if not request.user.check_password(current_password):
+            return _error("Incorrect current password.", status.HTTP_400_BAD_REQUEST)
+            
+        if len(new_password) < 6:
+            return _error("New password must be at least 6 characters long.", status.HTTP_400_BAD_REQUEST)
+            
+        try:
+            request.user.set_password(new_password)
+            request.user.save(update_fields=['password'])
+            
+            # Keep portal_password in sync for admin reference
+            client = request.user.client_profile
+            client.portal_password = new_password
+            client.save(update_fields=['portal_password'])
+            
+            return Response({'message': 'Password changed successfully.'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return _error(str(e), status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 # ── Case ViewSet ──────────────────────────────────────────────────────────────
 
 class ConsultationViewSet(viewsets.ModelViewSet):

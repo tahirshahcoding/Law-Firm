@@ -159,6 +159,50 @@ export default function DashboardPage() {
   const [expandedCase, setExpandedCase] = useState<string | null>(null);
   const [profileOpen, setProfileOpen] = useState(false);
 
+  // Password Change State
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({ current_password: '', new_password: '' });
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [passwordSuccess, setPasswordSuccess] = useState(false);
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPasswordError(null);
+    setPasswordSuccess(false);
+    
+    if (passwordForm.new_password.length < 6) {
+      setPasswordError('New password must be at least 6 characters.');
+      return;
+    }
+
+    setPasswordLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/portal/change-password/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCsrfToken()
+        },
+        credentials: 'include',
+        body: JSON.stringify(passwordForm)
+      });
+      
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        setPasswordSuccess(true);
+        setPasswordForm({ current_password: '', new_password: '' });
+        setTimeout(() => setShowPasswordModal(false), 2000);
+      } else {
+        setPasswordError(data.error || 'Failed to change password. Please try again.');
+      }
+    } catch (err: any) {
+      setPasswordError('An error occurred. Please try again later.');
+    } finally {
+      setPasswordLoading(false);
+    }
+  };
+
   // Messages State
   const [messages, setMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState('');
@@ -407,7 +451,9 @@ export default function DashboardPage() {
             </div>
             <h4 className="font-bold text-slate-800 text-sm mb-1">{t.sidebar.needHelp}</h4>
             <p className="text-xs text-slate-500 mb-3 leading-relaxed">{t.sidebar.helpText}</p>
-            <button className="w-full flex items-center justify-center gap-2 bg-white border border-blue-200 text-blue-700 px-3 py-2 rounded-xl text-xs font-bold hover:bg-blue-50 transition-colors shadow-sm">
+            <button 
+              onClick={() => setActiveTab('messages')}
+              className="w-full flex items-center justify-center gap-2 bg-white border border-blue-200 text-blue-700 px-3 py-2 rounded-xl text-xs font-bold hover:bg-blue-50 transition-colors shadow-sm">
               <PhoneCall size={14} /> {t.sidebar.contactOffice}
             </button>
           </div>
@@ -1353,7 +1399,15 @@ export default function DashboardPage() {
                       <p className="font-bold text-slate-800 text-lg">Password & Security</p>
                       <p className="text-sm text-slate-500 font-medium mt-1">Update your account password</p>
                     </div>
-                    <button className="px-6 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-all shadow-sm shrink-0">
+                    <button 
+                      onClick={() => {
+                        setPasswordForm({ current_password: '', new_password: '' });
+                        setPasswordError(null);
+                        setPasswordSuccess(false);
+                        setShowPasswordModal(true);
+                      }}
+                      className="px-6 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-all shadow-sm shrink-0"
+                    >
                       Change Password
                     </button>
                   </div>
@@ -1428,6 +1482,75 @@ export default function DashboardPage() {
           ))}
         </div>
       </nav>
+
+      {/* Password Change Modal */}
+      {showPasswordModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between p-6 border-b border-slate-100">
+              <h2 className="text-xl font-bold text-slate-900">Change Password</h2>
+              <button onClick={() => setShowPasswordModal(false)} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-colors">
+                <X size={20} />
+              </button>
+            </div>
+            
+            <form onSubmit={handleChangePassword} className="p-6 space-y-4">
+              {passwordSuccess ? (
+                <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 flex flex-col items-center justify-center text-center py-8">
+                  <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-3">
+                    <CheckCheck size={24} />
+                  </div>
+                  <p className="text-emerald-700 font-bold">Password changed successfully!</p>
+                  <p className="text-sm text-emerald-600/80 mt-1">You will use this new password next time you log in.</p>
+                </div>
+              ) : (
+                <>
+                  {passwordError && (
+                    <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-sm text-rose-600 font-medium flex items-center gap-2">
+                      <AlertCircle size={16} className="shrink-0" />
+                      {passwordError}
+                    </div>
+                  )}
+                  
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-1.5">Current Password</label>
+                    <input 
+                      type="password" 
+                      required 
+                      value={passwordForm.current_password}
+                      onChange={(e) => setPasswordForm({ ...passwordForm, current_password: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-slate-900"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-1.5">New Password</label>
+                    <input 
+                      type="password" 
+                      required 
+                      minLength={6}
+                      value={passwordForm.new_password}
+                      onChange={(e) => setPasswordForm({ ...passwordForm, new_password: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-slate-900" 
+                    />
+                    <p className="text-xs text-slate-500 font-medium mt-1.5">Must be at least 6 characters long.</p>
+                  </div>
+                  
+                  <div className="pt-4 flex justify-end gap-3 mt-2">
+                    <button type="button" onClick={() => setShowPasswordModal(false)} className="px-5 py-2.5 rounded-xl font-bold text-slate-600 hover:bg-slate-100 transition-colors">
+                      Cancel
+                    </button>
+                    <button type="submit" disabled={passwordLoading} className="px-6 py-2.5 rounded-xl font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all disabled:opacity-50 flex items-center gap-2">
+                      {passwordLoading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : null}
+                      Update Password
+                    </button>
+                  </div>
+                </>
+              )}
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
