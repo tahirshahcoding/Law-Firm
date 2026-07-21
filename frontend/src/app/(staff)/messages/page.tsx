@@ -307,7 +307,7 @@ export default function MessagesPage() {
                           <div 
                             key={msgId} 
                             className={`group flex items-end gap-2 ${isStaff ? 'justify-end' : 'justify-start'} ${isGrouped ? 'mt-0.5' : 'mt-3'} transition-transform duration-75`}
-                            style={{ transform: swipeOffset?.id === msgId ? `translateX(${swipeOffset.offset}px)` : 'translateX(0)' }}
+                            style={{ transform: (swipeOffset && swipeOffset.id === msgId) ? `translateX(${swipeOffset.offset}px)` : 'translateX(0)' }}
                             onTouchStart={(e) => onTouchStart(e, msgId)}
                             onTouchMove={(e) => onTouchMove(e, msgId)}
                             onTouchEnd={() => onTouchEnd(msg, msgId)}
