@@ -99,32 +99,32 @@ export default function AddClientModal({ isOpen, onClose, onSuccess }: AddClient
 
             <div className="space-y-3">
               {/* Username */}
-              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
+              <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl p-4">
                 <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Portal Username</p>
                 <div className="flex items-center justify-between gap-3">
-                  <span className="font-bold text-slate-900 text-xl font-mono">{credentials.portal_username}</span>
+                  <span className="font-bold text-slate-900 dark:text-white text-xl font-mono">{credentials.portal_username}</span>
                   <button onClick={() => copyToClipboard(credentials.portal_username, 'username')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${copiedField === 'username' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600 hover:bg-slate-300'}`}>
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${copiedField === 'username' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600'}`}>
                     {copiedField === 'username' ? <><CheckCheck size={14} /> Copied!</> : <><Copy size={14} /> Copy</>}
                   </button>
                 </div>
               </div>
 
               {/* Password */}
-              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
+              <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl p-4">
                 <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Portal Password</p>
                 <div className="flex items-center justify-between gap-3">
-                  <span className="font-bold text-slate-900 text-xl font-mono tracking-wider">{credentials.portal_password}</span>
+                  <span className="font-bold text-slate-900 dark:text-white text-xl font-mono tracking-wider">{credentials.portal_password}</span>
                   <button onClick={() => copyToClipboard(credentials.portal_password, 'password')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${copiedField === 'password' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600 hover:bg-slate-300'}`}>
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${copiedField === 'password' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600'}`}>
                     {copiedField === 'password' ? <><CheckCheck size={14} /> Copied!</> : <><Copy size={14} /> Copy</>}
                   </button>
                 </div>
               </div>
             </div>
 
-            <p className="text-xs text-slate-500 text-center">
-              Client can log in at <span className="font-semibold text-blue-600">
+            <p className="text-xs text-slate-500 dark:text-slate-400 text-center">
+              Client can log in at <span className="font-semibold text-blue-600 dark:text-blue-400">
                 {(process.env.NEXT_PUBLIC_PORTAL_URL || 'clientcounsel.vercel.app').replace(/^https?:\/\//, '')}
               </span>
             </p>
@@ -177,43 +177,43 @@ export default function AddClientModal({ isOpen, onClose, onSuccess }: AddClient
             <div className="relative">
               <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input type="text" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})}
-                className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
+                className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 dark:text-white"
                 placeholder="Rizwan Ahmed" />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">CNIC (National ID)</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">CNIC (National ID)</label>
             <div className="relative">
               <CreditCard size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input type="text" required value={formData.cnic} onChange={handleCnicChange}
-                className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 font-mono"
+                className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 dark:text-white font-mono"
                 placeholder="12345-6789012-3" />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Mobile Number</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Mobile Number</label>
             <div className="relative">
               <Phone size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input type="text" required value={formData.mobile_number} onChange={(e) => setFormData({...formData, mobile_number: e.target.value})}
-                className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 font-mono"
+                className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 dark:text-white font-mono"
                 placeholder="+92 300 1234567" />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Residential Address</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Residential Address</label>
             <div className="relative">
               <MapPin size={16} className="absolute left-3 top-3 text-slate-400" />
               <textarea required rows={3} value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})}
-                className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 resize-none"
+                className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 dark:text-white resize-none"
                 placeholder="123 Legal Avenue, City..." />
             </div>
           </div>
 
           <div className="pt-4 flex justify-end gap-3">
-            <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg font-medium text-slate-600 hover:bg-slate-50 border border-slate-200 transition-colors">Cancel</button>
+            <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors">Cancel</button>
             <button type="submit"
               className="px-6 py-2 rounded-lg font-medium bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 duration-300 shadow-[0_4px_12px_rgba(37,99,235,0.25)] hover:shadow-[0_6px_16px_rgba(37,99,235,0.35)] hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[100px] text-white">
               Add Client
