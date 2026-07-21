@@ -151,10 +151,56 @@ export default function MessagesPage() {
 
   if (loading) {
     return (
-      <div className="flex h-[calc(100vh-100px)] items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm text-slate-400">Loading conversations…</p>
+      <div className="flex h-[calc(100vh-100px)] rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-lg bg-white dark:bg-slate-950 animate-pulse">
+        {/* Skeleton Sidebar */}
+        <div className="w-[320px] shrink-0 flex flex-col border-r border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
+          <div className="px-5 pt-5 pb-4 shrink-0 space-y-4">
+            <div className="flex justify-between items-center">
+              <div className="h-6 w-24 bg-slate-200 dark:bg-slate-800 rounded"></div>
+              <div className="h-5 w-12 bg-slate-200 dark:bg-slate-800 rounded-full"></div>
+            </div>
+            <div className="h-10 w-full bg-slate-200 dark:bg-slate-800 rounded-xl"></div>
+          </div>
+          <div className="flex-1 px-2 space-y-2">
+            {[1, 2, 3, 4, 5].map(i => (
+              <div key={i} className="flex items-center gap-3 p-3">
+                <div className="w-11 h-11 rounded-full bg-slate-200 dark:bg-slate-800 shrink-0"></div>
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 w-1/2 bg-slate-200 dark:bg-slate-800 rounded"></div>
+                  <div className="h-3 w-3/4 bg-slate-200 dark:bg-slate-800 rounded"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        {/* Skeleton Main Chat */}
+        <div className="flex-1 flex flex-col bg-white dark:bg-slate-950">
+          <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center gap-3.5">
+            <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 shrink-0"></div>
+            <div className="space-y-2">
+              <div className="h-4 w-32 bg-slate-200 dark:bg-slate-800 rounded"></div>
+              <div className="h-2 w-20 bg-slate-200 dark:bg-slate-800 rounded"></div>
+            </div>
+          </div>
+          <div className="flex-1 px-6 py-5 space-y-6">
+            <div className="flex gap-2 justify-start">
+              <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 shrink-0"></div>
+              <div className="w-48 h-16 bg-slate-200 dark:bg-slate-800 rounded-2xl rounded-tl-sm"></div>
+            </div>
+            <div className="flex gap-2 justify-end">
+              <div className="w-64 h-12 bg-slate-200 dark:bg-slate-800 rounded-2xl rounded-tr-sm"></div>
+            </div>
+            <div className="flex gap-2 justify-start">
+              <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 shrink-0"></div>
+              <div className="w-32 h-10 bg-slate-200 dark:bg-slate-800 rounded-2xl rounded-tl-sm"></div>
+            </div>
+          </div>
+          <div className="px-6 py-4 border-t border-slate-100 dark:border-slate-800">
+            <div className="flex items-center gap-2">
+              <div className="flex-1 h-12 bg-slate-200 dark:bg-slate-800 rounded-2xl"></div>
+              <div className="w-12 h-12 bg-slate-200 dark:bg-slate-800 rounded-2xl shrink-0"></div>
+            </div>
+          </div>
         </div>
       </div>
     );
