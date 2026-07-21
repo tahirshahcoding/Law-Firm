@@ -242,9 +242,11 @@ export function challanMessage(
     lines.push(
       ``,
       `🏦 *Bank Details*`,
-      `Bank: Bank of Khyber`,
-      `A/C: 1029384756`,
-      `IBAN: PK99 BOK 1029 3847 56`,
+      `Bank: ALLIED BANK LIMITED`,
+      `Name: RAHIM ULLAH`,
+      `A/C: 09800010033550130015`,
+      `IBAN: PK32ABPA0010033550130015`,
+      `Easypaisa: 03420813399`,
       ``,
       `Please make the payment before the due date. Contact us for any queries.`
     );

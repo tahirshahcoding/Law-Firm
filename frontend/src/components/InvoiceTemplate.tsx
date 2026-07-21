@@ -169,8 +169,8 @@ function ChallanCopy({
       >
         <div>
           <span className="font-bold block uppercase tracking-wider text-[8px] mb-0.5" style={{ color: COLORS.slate600 }}>Bank Details & Due Date</span>
-          <p className="leading-tight">Deposit at <strong style={{ color: COLORS.slate800 }}>Bank of Khyber</strong> | Account No: <strong className="font-mono" style={{ color: COLORS.slate800 }}>1029384756</strong></p>
-          <p className="leading-tight">IBAN: <strong className="font-mono" style={{ color: COLORS.slate800 }}>PK99 BOK 1029 3847 56</strong> | Due Date: <strong className="font-bold" style={{ color: COLORS.rose600 }}>{dueDate}</strong></p>
+          <p className="leading-tight">Deposit at <strong style={{ color: COLORS.slate800 }}>ALLIED BANK LIMITED</strong> | Title: <strong style={{ color: COLORS.slate800 }}>RAHIM ULLAH</strong> | Account No: <strong className="font-mono" style={{ color: COLORS.slate800 }}>09800010033550130015</strong></p>
+          <p className="leading-tight">IBAN: <strong className="font-mono" style={{ color: COLORS.slate800 }}>PK32ABPA0010033550130015</strong> | Easypaisa: <strong className="font-mono" style={{ color: COLORS.slate800 }}>03420813399</strong> | Due Date: <strong className="font-bold" style={{ color: COLORS.rose600 }}>{dueDate}</strong></p>
         </div>
 
         <div className="flex gap-6 items-end">
