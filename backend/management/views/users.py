@@ -213,21 +213,24 @@ class AdminUserView(APIView):
                 last_name=data.get('last_name', ''),
                 email=data.get('email', '')
             )
-            profile = UserProfile.objects.create(
-                user=user,
-                role=data.get('role', 'Staff'),
-                permissions=perms
-            )
+            
+            # A post_save signal automatically creates an empty UserProfile for every new User.
+            # So instead of creating one (which causes an IntegrityError), we just update it.
+            profile = user.profile
+            profile.role = data.get('role', 'Staff')
+            profile.permissions = perms
             
             if 'avatar' in request.FILES:
                 profile.avatar = request.FILES['avatar']
-                profile.save()
+                
+            profile.save()
                 
             return Response(
                 UserSerializer(user, context={'request': request}).data,
                 status=status.HTTP_201_CREATED
             )
-        except IntegrityError:
+        except IntegrityError as e:
+            print(f"DEBUG IntegrityError: {e}")
             return _error("A user with that username already exists.")
         except KeyError as e:
             return _error(f"Missing required field: {e}")
