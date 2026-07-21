@@ -1,6 +1,6 @@
 'use client';
 
-import { API_BASE, apiFetch, safeJson } from '@/lib/api';
+import { API_BASE, apiFetch, safeJson, parseApiError } from '@/lib/api';
 import { sendWhatsApp, clientCredentialsMessage } from '@/lib/whatsapp';
 import { useState } from 'react';
 import { X, User, CreditCard, Phone, MapPin, Copy, CheckCheck, Key, Shield, MessageCircle } from 'lucide-react';
@@ -52,7 +52,7 @@ export default function AddClientModal({ isOpen, onClose, onSuccess }: AddClient
         body: JSON.stringify(formData),
       });
       const data = await safeJson(res);
-      if (!res.ok) throw new Error(data.error || data.detail || 'Failed to create client');
+      if (!res.ok) throw new Error(parseApiError(data) || 'Failed to create client');
       toast.success('Client profile created successfully.');
       onSuccess(data);
       // Show credentials instead of closing

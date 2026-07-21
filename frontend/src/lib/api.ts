@@ -104,14 +104,17 @@ export async function safeJson(res: Response): Promise<any> {
 export function parseApiError(data: any): string {
   if (!data) return 'An unexpected error occurred.';
   if (typeof data === 'string') return data;
-  if (data.detail) return data.detail;
-  if (data.error) return data.error;
+  
+  if (data.detail && typeof data.detail === 'string') return data.detail;
+  if (data.error && typeof data.error === 'string') return data.error;
 
-  if (typeof data === 'object') {
+  const errorObj = (data.error && typeof data.error === 'object') ? data.error : data;
+
+  if (typeof errorObj === 'object') {
     const messages: string[] = [];
-    for (const key in data) {
+    for (const key in errorObj) {
       if (key === 'status_code') continue;
-      const val = data[key];
+      const val = errorObj[key];
       const cleanKey = key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
       
       if (Array.isArray(val)) {
