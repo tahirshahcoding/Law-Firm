@@ -22,7 +22,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from ..models import (
     Client, Case, Hearing, HearingDocument, Task,
-    Payment, Invoice, Expense, UserProfile, ConsultationRequest, CaseTimeline, Court, Judge, CalendarEvent, Notification, Deadline
+    Payment, Invoice, Expense, UserProfile, ConsultationRequest, CaseTimeline, Court, Judge, CalendarEvent, Notification, Deadline, Message
 )
 from ..serializers import (
     ClientSerializer, CaseSerializer, HearingSerializer, HearingDocumentSerializer,
@@ -126,6 +126,7 @@ class DashboardStatsView(APIView):
             "todays_hearings": Hearing.objects.filter(hearing_date=today).count(),
             "pending_tasks":   Task.objects.filter(is_completed=False).count() if role == 'Admin' else Task.objects.filter(is_completed=False, assigned_to=request.user).count(),
             "total_revenue":   0, # Default to 0 for unauthorized users
+            "unread_messages": Message.objects.filter(sender_type='Client', is_read=False).count(),
         }
 
         if has_accounts_view:

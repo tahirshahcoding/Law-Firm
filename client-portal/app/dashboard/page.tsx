@@ -425,21 +425,28 @@ export default function DashboardPage() {
             { id: 'cases', label: t.sidebar.myCases, icon: <Briefcase size={18} /> },
             { id: 'hearings', label: t.sidebar.hearings, icon: <Calendar size={18} /> },
             { id: 'financials', label: t.sidebar.financials, icon: <Wallet size={18} /> },
-            { id: 'messages', label: t.sidebar.messages, icon: <MessageSquare size={18} /> },
+            { id: 'messages', label: t.sidebar.messages, icon: <MessageSquare size={18} />, badge: data?.unread_messages_count },
             { id: 'profile', label: t.sidebar.profile, icon: <User size={18} /> },
             { id: 'settings', label: t.sidebar.settings, icon: <Settings size={18} /> },
           ].map(item => (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id as any)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
                 activeTab === item.id 
                   ? 'bg-blue-50 text-blue-700' 
                   : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
               }`}
             >
-              <span className={activeTab === item.id ? 'text-blue-600' : 'text-slate-400'}>{item.icon}</span>
-              {item.label}
+              <div className="flex items-center gap-3">
+                <span className={activeTab === item.id ? 'text-blue-600' : 'text-slate-400'}>{item.icon}</span>
+                {item.label}
+              </div>
+              {item.badge > 0 && (
+                <span className="bg-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                  {item.badge}
+                </span>
+              )}
             </button>
           ))}
         </nav>
@@ -1462,20 +1469,25 @@ export default function DashboardPage() {
             { id: 'overview',   icon: <LayoutDashboard size={20} />,  label: t.sidebar.overview },
             { id: 'cases',      icon: <Briefcase size={20} />,        label: t.sidebar.myCases },
             { id: 'hearings',   icon: <Calendar size={20} />,         label: t.sidebar.hearings },
-            { id: 'messages',   icon: <MessageSquare size={20} />,    label: t.sidebar.messages },
+            { id: 'messages',   icon: <MessageSquare size={20} />,    label: t.sidebar.messages, badge: data?.unread_messages_count },
             { id: 'financials', icon: <Wallet size={20} />,           label: t.sidebar.financials },
           ].map(item => (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id as any)}
-              className={`flex flex-col items-center justify-center gap-1 text-[10px] font-bold transition-colors ${
+              className={`relative flex flex-col items-center justify-center gap-1 text-[10px] font-bold transition-colors ${
                 activeTab === item.id
                   ? 'text-blue-600'
                   : 'text-slate-400 hover:text-slate-600'
               }`}
             >
-              <span className={`transition-transform ${activeTab === item.id ? 'scale-110' : ''}`}>
+              <span className={`transition-transform ${activeTab === item.id ? 'scale-110' : ''} relative`}>
                 {item.icon}
+                {item.badge > 0 && (
+                  <span className="absolute -top-1.5 -right-2 w-3.5 h-3.5 bg-rose-500 border-2 border-white rounded-full flex items-center justify-center text-[8px] text-white">
+                    {item.badge > 9 ? '9+' : item.badge}
+                  </span>
+                )}
               </span>
               <span className="leading-none truncate max-w-[56px] text-center">{item.label}</span>
             </button>

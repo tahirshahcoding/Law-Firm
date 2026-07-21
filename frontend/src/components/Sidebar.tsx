@@ -2,9 +2,33 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { API_BASE } from '@/lib/api';
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const [unreadMessages, setUnreadMessages] = useState(0);
+
+  useEffect(() => {
+    const fetchUnread = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/dashboard/stats/`, {
+          credentials: 'include'
+        });
+        const data = await res.json();
+        if (data && data.unread_messages !== undefined) {
+          setUnreadMessages(data.unread_messages);
+        }
+      } catch (err) {
+        // silently fail
+      }
+    };
+    fetchUnread();
+    
+    // Check every 30 seconds
+    const interval = setInterval(fetchUnread, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   const navItems = [
     { name: 'Dashboard', href: '/' },
@@ -32,13 +56,18 @@ export default function Sidebar() {
               <li key={item.name}>
                 <Link
                   href={item.href}
-                  className={`block px-4 py-3 rounded-lg transition-all duration-200 ${
+                  className={`flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-200 ${
                     isActive
                       ? 'bg-blue-50 text-blue-600 font-medium'
                       : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
                   }`}
                 >
-                  {item.name}
+                  <span>{item.name}</span>
+                  {item.name === 'Messages' && unreadMessages > 0 && (
+                    <span className="bg-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                      {unreadMessages > 99 ? '99+' : unreadMessages}
+                    </span>
+                  )}
                 </Link>
               </li>
             );

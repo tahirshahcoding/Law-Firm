@@ -18,7 +18,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from ..models import (
     Client, Case, Hearing, HearingDocument, Task,
-    Payment, Invoice, Expense, UserProfile, ConsultationRequest, CaseTimeline, Court, Judge, CalendarEvent, Notification, Deadline
+    Payment, Invoice, Expense, UserProfile, ConsultationRequest, CaseTimeline, Court, Judge, CalendarEvent, Notification, Deadline, Message
 )
 from ..serializers import (
     ClientSerializer, CaseSerializer, HearingSerializer, HearingDocumentSerializer,
@@ -352,12 +352,15 @@ class ClientPortalView(APIView):
             .order_by('-payment_date')
         )
 
+        unread_messages_count = Message.objects.filter(client=client, sender_type='Staff', is_read=False).count()
+
         return Response({
             "client":   ClientSerializer(client).data,
             "cases":    CaseSerializer(cases, many=True).data,
             "hearings": HearingSerializer(hearings, many=True).data,
             "invoices": InvoiceSerializer(invoices, many=True).data,
             "payments": PaymentSerializer(payments, many=True).data,
+            "unread_messages_count": unread_messages_count,
         })
 
 
