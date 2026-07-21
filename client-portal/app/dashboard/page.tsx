@@ -384,6 +384,8 @@ export default function DashboardPage() {
   const handleLogout = async () => {
     try { await fetch(`${API_BASE}/auth/logout/`, { method: 'POST', credentials: 'include' }); }
     catch { /* ignore */ }
+    localStorage.removeItem('clientPortalData');
+    localStorage.removeItem('clientPortalMessages');
     router.push('/');
   };
 

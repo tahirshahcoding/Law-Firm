@@ -160,7 +160,7 @@ class CaseTimelineViewSet(viewsets.ModelViewSet):
         except Case.DoesNotExist:
             return _error("Case not found.", status.HTTP_404_NOT_FOUND)
 
-        role = getattr(request.user.profile, 'role', '')
+        role = getattr(getattr(request.user, 'profile', None), 'role', '')
         if role != 'Admin' and case.assigned_to != request.user:
             return _error("Only Admins and the Assigned Advocate can add manual notes.", status.HTTP_403_FORBIDDEN)
 

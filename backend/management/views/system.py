@@ -90,7 +90,7 @@ class DailyDiaryView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        role = getattr(request.user.profile, 'role', '')
+        role = getattr(getattr(request.user, 'profile', None), 'role', '')
         if role == 'Accountant':
             return _error("Forbidden", status.HTTP_403_FORBIDDEN)
 
@@ -113,8 +113,8 @@ class DashboardStatsView(APIView):
 
     def get(self, request):
         today = date.today()
-        role = getattr(request.user.profile, 'role', '')
-        perms = getattr(request.user.profile, 'permissions', {})
+        role = getattr(getattr(request.user, 'profile', None), 'role', '')
+        perms = getattr(getattr(request.user, 'profile', None), 'permissions', {})
         has_accounts_view = role == 'Admin' or role == 'Accountant' or perms.get('accounts', {}).get('view', False)
 
         # Base response for all users
@@ -194,7 +194,7 @@ class AuditLogView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        if getattr(request.user.profile, 'role', '') != 'Admin':
+        if getattr(getattr(request.user, 'profile', None), 'role', '') != 'Admin':
             return _error("Forbidden", status.HTTP_403_FORBIDDEN)
 
         period = request.query_params.get('period', 'all')
@@ -348,7 +348,7 @@ class BackupDatabaseView(APIView):
         return backup_dir
 
     def get(self, request):
-        if getattr(request.user.profile, 'role', '') != 'Admin':
+        if getattr(getattr(request.user, 'profile', None), 'role', '') != 'Admin':
             return _error("Forbidden", status.HTTP_403_FORBIDDEN)
             
         if request.query_params.get('download') == 'true':
@@ -386,7 +386,7 @@ class BackupDatabaseView(APIView):
         }, status=status.HTTP_200_OK)
 
     def put(self, request):
-        if getattr(request.user.profile, 'role', '') != 'Admin':
+        if getattr(getattr(request.user, 'profile', None), 'role', '') != 'Admin':
             return _error("Forbidden", status.HTTP_403_FORBIDDEN)
             
         password = request.data.get('password')

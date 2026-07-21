@@ -17,6 +17,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.middleware.csrf import get_token
 from ..models import (
     Client, Case, Hearing, HearingDocument, Task,
     Payment, Invoice, Expense, UserProfile, ConsultationRequest, CaseTimeline, Court, Judge, CalendarEvent, Notification, Deadline, Message
@@ -124,6 +125,10 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
         tokens = serializer.validated_data
         response = Response({'detail': 'Login successful.'}, status=status.HTTP_200_OK)
+        
+        # Force setting the csrftoken cookie for use by the frontend
+        get_token(request)
+        
         _set_jwt_cookies(response, tokens['access'], tokens.get('refresh'))
         return response
 
@@ -173,7 +178,7 @@ class AdminUserView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        if getattr(request.user.profile, 'role', '') != 'Admin':
+        if not hasattr(request.user, 'profile') or request.user.profile.role != 'Admin':
             return _error("Forbidden", status.HTTP_403_FORBIDDEN)
         users = User.objects.all().select_related('profile')
         serializer = UserSerializer(users, many=True, context={'request': request})
@@ -181,7 +186,7 @@ class AdminUserView(APIView):
 
     @transaction.atomic
     def post(self, request):
-        if getattr(request.user.profile, 'role', '') != 'Admin':
+        if not hasattr(request.user, 'profile') or request.user.profile.role != 'Admin':
             return _error("Forbidden", status.HTTP_403_FORBIDDEN)
 
         data = request.data
@@ -235,7 +240,7 @@ class AdminUserDetailView(APIView):
 
     @transaction.atomic
     def put(self, request, pk):
-        if getattr(request.user.profile, 'role', '') != 'Admin':
+        if not hasattr(request.user, 'profile') or request.user.profile.role != 'Admin':
             return _error("Forbidden", status.HTTP_403_FORBIDDEN)
 
         try:
@@ -254,6 +259,10 @@ class AdminUserDetailView(APIView):
                 setattr(user, field, data[field])
 
         if 'password' in data and data['password']:
+            try:
+                validate_password(data['password'])
+            except ValidationError as e:
+                return _error(f"Weak password: {', '.join([str(m) for m in e.messages])}", status.HTTP_400_BAD_REQUEST)
             user.set_password(data['password'])
 
         user.save()
@@ -279,7 +288,7 @@ class AdminUserDetailView(APIView):
 
     @transaction.atomic
     def delete(self, request, pk):
-        if getattr(request.user.profile, 'role', '') != 'Admin':
+        if not hasattr(request.user, 'profile') or request.user.profile.role != 'Admin':
             return _error("Forbidden", status.HTTP_403_FORBIDDEN)
 
         if request.user.id == pk:
@@ -317,6 +326,10 @@ class CurrentUserView(APIView):
             user.email = data['email'].strip()
 
         if 'password' in data and data['password']:
+            try:
+                validate_password(data['password'])
+            except ValidationError as e:
+                return _error(f"Weak password: {', '.join([str(m) for m in e.messages])}", status.HTTP_400_BAD_REQUEST)
             user.set_password(data['password'])
 
         user.save()

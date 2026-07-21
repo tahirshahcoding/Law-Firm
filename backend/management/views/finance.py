@@ -26,6 +26,7 @@ from ..serializers import (
     TaskSerializer, InvoiceSerializer, UserSerializer, CustomTokenObtainPairSerializer,
     PaymentSerializer, ExpenseSerializer, ConsultationRequestSerializer, CaseTimelineSerializer, CourtSerializer, JudgeSerializer, CalendarEventSerializer, NotificationSerializer, DeadlineSerializer
 )
+from ..permissions import HasModulePermission
 
 try:
     import boto3
@@ -84,8 +85,9 @@ from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 
 
 class PaymentViewSet(viewsets.ModelViewSet):
+    required_module = 'accounts'
     serializer_class = PaymentSerializer
-    permission_classes = [IsStaffUser]
+    permission_classes = [IsStaffUser, HasModulePermission]
 
     def get_queryset(self):
         user = self.request.user
@@ -106,8 +108,9 @@ class PaymentViewSet(viewsets.ModelViewSet):
                 self.permission_denied(request, message="You do not have permission to modify payment records.")
 
 class ExpenseViewSet(viewsets.ModelViewSet):
+    required_module = 'accounts'
     serializer_class = ExpenseSerializer
-    permission_classes = [IsStaffUser]
+    permission_classes = [IsStaffUser, HasModulePermission]
 
     def get_queryset(self):
         user = self.request.user
@@ -128,8 +131,9 @@ class ExpenseViewSet(viewsets.ModelViewSet):
                 self.permission_denied(request, message="You do not have permission to modify expenses.")
 
 class InvoiceViewSet(viewsets.ModelViewSet):
+    required_module = 'accounts'
     serializer_class = InvoiceSerializer
-    permission_classes = [IsStaffUser]
+    permission_classes = [IsStaffUser, HasModulePermission]
 
     def get_queryset(self):
         user = self.request.user
@@ -165,8 +169,8 @@ class AccountsLedgerView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        role = getattr(request.user.profile, 'role', '')
-        perms = getattr(request.user.profile, 'permissions', {})
+        role = getattr(getattr(request.user, 'profile', None), 'role', '')
+        perms = getattr(getattr(request.user, 'profile', None), 'permissions', {})
         if role != 'Admin' and role != 'Accountant' and not perms.get('accounts', {}).get('view', False):
             return _error("Forbidden", status.HTTP_403_FORBIDDEN)
 

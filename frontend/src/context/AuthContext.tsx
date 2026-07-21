@@ -98,6 +98,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // Even if the request fails, clear local state so the UI logs out
     }
+    
+    // Clear Service Worker caches (NetworkFirst cached responses like cases, tasks)
+    if (typeof window !== 'undefined' && 'caches' in window) {
+      try {
+        const cacheKeys = await caches.keys();
+        await Promise.all(cacheKeys.map(key => caches.delete(key)));
+      } catch (e) {
+        console.error('Failed to clear caches', e);
+      }
+    }
+    
     setUser(null);
     router.push('/login');
   };
