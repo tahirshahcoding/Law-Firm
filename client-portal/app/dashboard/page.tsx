@@ -444,13 +444,9 @@ export default function DashboardPage() {
           <div className="flex items-center gap-2 sm:gap-5 ms-auto">
             <button 
               onClick={() => setLanguage(language === 'en' ? 'ur' : 'en')}
-              className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm font-bold text-slate-600 hover:text-blue-600 transition-colors bg-slate-50 px-2 sm:px-3 py-1.5 rounded-full border border-slate-200"
+              className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm font-bold text-slate-600 hover:text-blue-600 transition-colors bg-slate-50 px-2 sm:px-3 py-1.5 rounded-full border border-slate-200 mr-2"
             >
               <Globe size={13} /> {language === 'en' ? 'اردو' : 'EN'}
-            </button>
-            <button className="relative text-slate-400 hover:text-slate-700 transition-colors">
-              <Bell size={19} />
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-white">3</span>
             </button>
             <div className="relative">
               <div className="flex items-center gap-1.5 sm:gap-3 sm:border-s sm:border-slate-200 sm:ps-5 cursor-pointer hover:bg-slate-50 p-1.5 rounded-xl transition-colors" onClick={() => setProfileOpen(!profileOpen)}>
@@ -1269,8 +1265,95 @@ export default function DashboardPage() {
             </div>
           )}
 
+          {/* Profile Tab */}
+          {activeTab === 'profile' && (
+            <div className="w-full max-w-4xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 mt-4">
+              <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/60 shadow-sm">
+                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+                  <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-4xl sm:text-5xl shadow-lg shrink-0">
+                    {data?.client?.name?.[0]?.toUpperCase() ?? 'U'}
+                  </div>
+                  <div className="flex-1 text-center sm:text-left">
+                    <h2 className="text-2xl font-bold text-slate-900 mb-2">{data?.client?.name}</h2>
+                    <p className="text-slate-500 font-medium">{t.sidebar.profile}</p>
+                  </div>
+                </div>
+
+                <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Phone</p>
+                    <p className="font-semibold text-slate-800">{data?.client?.phone || '—'}</p>
+                  </div>
+                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">CNIC</p>
+                    <p className="font-semibold text-slate-800">{data?.client?.cnic || '—'}</p>
+                  </div>
+                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Email</p>
+                    <p className="font-semibold text-slate-800">{data?.client?.email || '—'}</p>
+                  </div>
+                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Address</p>
+                    <p className="font-semibold text-slate-800">{data?.client?.address || '—'}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Settings Tab */}
+          {activeTab === 'settings' && (
+            <div className="w-full max-w-4xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 mt-4">
+              <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/60 shadow-sm">
+                <div className="mb-6 border-b border-slate-100 pb-4">
+                  <h2 className="text-2xl font-bold text-slate-900">{t.sidebar.settings}</h2>
+                  <p className="text-slate-500 mt-1">Manage your account preferences and application settings.</p>
+                </div>
+                
+                <div className="space-y-4">
+                  {/* Password */}
+                  <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                    <div>
+                      <p className="font-bold text-slate-800">Password & Security</p>
+                      <p className="text-sm text-slate-500">Update your account password</p>
+                    </div>
+                    <button className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-100 transition-colors">
+                      Change
+                    </button>
+                  </div>
+
+                  {/* Language */}
+                  <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                    <div>
+                      <p className="font-bold text-slate-800">Language Preference</p>
+                      <p className="text-sm text-slate-500">Switch between English and Urdu</p>
+                    </div>
+                    <button 
+                      onClick={() => setLanguage(language === 'en' ? 'ur' : 'en')}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition-colors flex items-center gap-2"
+                    >
+                      <Globe size={16} /> {language === 'en' ? 'Switch to Urdu' : 'Switch to English'}
+                    </button>
+                  </div>
+
+                  {/* Notifications */}
+                  <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                    <div>
+                      <p className="font-bold text-slate-800">Email Notifications</p>
+                      <p className="text-sm text-slate-500">Receive case updates via email</p>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" defaultChecked className="sr-only peer" />
+                      <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Unimplemented Fallbacks */}
-          {activeTab !== 'overview' && activeTab !== 'cases' && activeTab !== 'hearings' && activeTab !== 'financials' && activeTab !== 'messages' && (
+          {activeTab !== 'overview' && activeTab !== 'cases' && activeTab !== 'hearings' && activeTab !== 'financials' && activeTab !== 'messages' && activeTab !== 'profile' && activeTab !== 'settings' && (
             <div className="max-w-7xl mx-auto flex items-center justify-center h-[50vh] text-slate-500 animate-in fade-in">
               <div className="text-center">
                 <Briefcase size={48} className="mx-auto mb-4 text-slate-300" />
