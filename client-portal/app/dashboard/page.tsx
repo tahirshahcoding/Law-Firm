@@ -433,7 +433,11 @@ export default function DashboardPage() {
         </header>
 
         {/* Dashboard Content */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-8 pb-24 md:pb-8 custom-scrollbar relative">
+        <main className={`flex-1 overflow-y-auto custom-scrollbar relative ${
+          activeTab === 'messages'
+            ? 'p-0 pb-[72px] sm:p-8 sm:pb-8' // Edge-to-edge on mobile, pb-18 for bottom nav
+            : 'p-4 sm:p-8 pb-24 md:pb-8'
+        }`}>
           {activeTab === 'overview' && (
             <div className="w-full space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
               
@@ -1024,7 +1028,7 @@ export default function DashboardPage() {
           )}
 
           {activeTab === 'messages' && (
-            <div className="w-full max-w-3xl mx-auto flex flex-col rounded-none sm:rounded-3xl overflow-hidden border-0 sm:border border-slate-200/60 shadow-none sm:shadow-xl bg-white animate-in fade-in duration-300" style={{ height: 'calc(100dvh - 136px)' }}>
+            <div className="w-full h-full max-w-3xl mx-auto flex flex-col rounded-none sm:rounded-3xl overflow-hidden border-0 sm:border border-slate-200/60 shadow-none sm:shadow-xl bg-white animate-in fade-in duration-300">
 
               {/* ── Chat Header ── */}
               <div className="bg-white border-b border-slate-100 px-5 py-3.5 flex items-center gap-4 shrink-0">
