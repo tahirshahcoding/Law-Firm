@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Lock, User, Eye, EyeOff, ShieldAlert } from 'lucide-react';
 import Image from 'next/image';
 
-import { API_BASE } from '@/lib/api';
+import { API_BASE, getCsrfToken } from '@/lib/api';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -43,7 +43,13 @@ export default function LoginPage() {
 
       if (me.role !== 'Client') {
         // Clear the cookie immediately — staff must use the staff system
-        await fetch(`${API_BASE}/auth/logout/`, { method: 'POST', credentials: 'include' });
+        await fetch(`${API_BASE}/auth/logout/`, { 
+          method: 'POST', 
+          credentials: 'include',
+          headers: {
+            'X-CSRFToken': getCsrfToken()
+          }
+        });
         setError('This portal is for clients only. Staff must use the staff system.');
         return;
       }
