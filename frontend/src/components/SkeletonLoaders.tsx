@@ -110,7 +110,7 @@ export function WidgetSkeleton() {
 
 export function AppShellSkeleton() {
   return (
-    <div className="flex h-screen overflow-hidden w-full bg-slate-50">
+    <div className="flex h-screen overflow-hidden w-full bg-slate-50 dark:bg-slate-800/50">
       {/* Sidebar Skeleton (Desktop only) */}
       <div className="hidden md:flex w-64 bg-slate-900 flex-col animate-pulse">
         <div className="h-16 border-b border-slate-800 flex items-center px-6">
@@ -126,7 +126,7 @@ export function AppShellSkeleton() {
       
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header Skeleton */}
-        <div className="h-16 bg-white border-b border-slate-200 flex items-center px-4 md:px-8 z-10 animate-pulse">
+        <div className="h-16 bg-white border-b border-slate-200 dark:border-slate-700 flex items-center px-4 md:px-8 z-10 animate-pulse">
           <div className="md:hidden w-8 h-8 bg-slate-200 rounded shrink-0"></div>
           <div className="hidden md:block h-5 bg-slate-200 rounded w-48"></div>
           <div className="ml-auto w-8 h-8 bg-slate-200 rounded-full shrink-0"></div>
@@ -178,7 +178,7 @@ export function TableRowSkeleton({ columns = 5 }: { columns?: number }) {
     <>
       {[...Array(5)].map((_, i) => (
         <tr key={i} className="animate-pulse">
-          <td colSpan={columns} className="px-6 py-4 border-b border-slate-100">
+          <td colSpan={columns} className="px-6 py-4 border-b border-slate-100 dark:border-slate-800">
             <div className="flex gap-4 w-full">
               <div className="h-4 bg-slate-200 rounded w-1/4"></div>
               <div className="h-4 bg-slate-200 rounded w-1/4"></div>

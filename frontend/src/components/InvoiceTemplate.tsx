@@ -70,7 +70,7 @@ function ChallanCopy({
       <div className="flex justify-between items-center relative z-10">
         {/* Firm Logo & Title */}
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg overflow-hidden relative border border-slate-200 shadow-sm shrink-0">
+          <div className="w-8 h-8 rounded-lg overflow-hidden relative border border-slate-200 dark:border-slate-700 shadow-sm shrink-0">
             <img src="/logo.png" alt="Logo" className="w-full h-full object-cover scale-[1.15]" />
           </div>
           <div>

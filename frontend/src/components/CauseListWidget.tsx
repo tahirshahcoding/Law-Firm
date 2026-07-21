@@ -50,13 +50,13 @@ export default function CauseListWidget() {
   const stages = Object.keys(grouped);
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] border border-slate-100 flex flex-col h-full">
-      <div className="flex items-center justify-between mb-6 border-b border-slate-100 pb-4 shrink-0">
+    <div className="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] border border-slate-100 dark:border-slate-800 flex flex-col h-full">
+      <div className="flex items-center justify-between mb-6 border-b border-slate-100 dark:border-slate-800 pb-4 shrink-0">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
             <Gavel size={20} />
           </div>
-          <h3 className="font-bold text-lg text-slate-900">Today's Cause List</h3>
+          <h3 className="font-bold text-lg text-slate-900 dark:text-white">Today's Cause List</h3>
         </div>
         <Link href="/cause-list" className="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors">
           Full Cause List <ArrowRight size={16} />
@@ -72,10 +72,10 @@ export default function CauseListWidget() {
               </h4>
               <div className="space-y-2">
                 {grouped[stage].map((h: any) => (
-                  <div key={h.id} className="p-3 bg-slate-50 hover:bg-slate-100/80 border border-slate-100 rounded-xl transition-all flex items-start justify-between gap-3">
+                  <div key={h.id} className="p-3 bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800/80 border border-slate-100 dark:border-slate-800 rounded-xl transition-all flex items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
-                      <p className="font-bold text-sm text-slate-800">{h.case_number}</p>
-                      <p className="text-xs text-slate-500 font-medium truncate">
+                      <p className="font-bold text-sm text-slate-800 dark:text-slate-200">{h.case_number}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-medium truncate">
                         {h.client_name || 'Client'} vs {h.opponent_name}
                       </p>
                       <div className="flex items-center gap-1.5 mt-1 text-[10px] text-slate-400 font-medium">
@@ -94,9 +94,9 @@ export default function CauseListWidget() {
             </div>
           ))
         ) : (
-          <div className="h-full py-12 flex flex-col items-center justify-center text-slate-400 bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+          <div className="h-full py-12 flex flex-col items-center justify-center text-slate-400 bg-slate-50/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
             <CalendarDays size={32} className="text-slate-300 mb-3" />
-            <p className="text-slate-900 font-medium">No Hearings Today</p>
+            <p className="text-slate-900 dark:text-white font-medium">No Hearings Today</p>
             <p className="text-sm">Enjoy your clear schedule.</p>
           </div>
         )}

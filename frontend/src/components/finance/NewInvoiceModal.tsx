@@ -130,7 +130,7 @@ export default function NewInvoiceModal({ onClose, onSuccess }: NewInvoiceModalP
                     <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">{selectedCase.case_number}</p>
                     <p className="text-xs text-slate-500 dark:text-slate-400">{selectedCase.client_name}</p>
                   </div>
-                  <button type="button" onClick={() => { setSelectedCase(null); setForm(p => ({ ...p, case: '' })); setCaseSearch(''); setItems([{ description: '', amount: '' }]); }} className="text-slate-400 hover:text-slate-700">
+                  <button type="button" onClick={() => { setSelectedCase(null); setForm(p => ({ ...p, case: '' })); setCaseSearch(''); setItems([{ description: '', amount: '' }]); }} className="text-slate-400 hover:text-slate-700 dark:text-slate-300">
                     <X size={16} />
                   </button>
                 </div>
@@ -163,12 +163,12 @@ export default function NewInvoiceModal({ onClose, onSuccess }: NewInvoiceModalP
                             }}
                             className="w-full text-left px-4 py-2.5 hover:bg-blue-50 border-b border-slate-50 last:border-0"
                           >
-                            <p className="text-sm font-semibold text-slate-800">{c.case_number}</p>
-                            <p className="text-xs text-slate-500">{c.client_name} · {c.status}</p>
+                            <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">{c.case_number}</p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">{c.client_name} · {c.status}</p>
                           </button>
                         ))
                       ) : (
-                        <div className="p-3 text-sm text-slate-500 text-center">No cases found</div>
+                        <div className="p-3 text-sm text-slate-500 dark:text-slate-400 text-center">No cases found</div>
                       )}
                     </div>
                   )}
@@ -179,12 +179,12 @@ export default function NewInvoiceModal({ onClose, onSuccess }: NewInvoiceModalP
             {/* Dates */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1.5">Issue Date*</label>
+                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Issue Date*</label>
                 <input type="date" value={form.issue_date} onChange={e => setForm(p => ({ ...p, issue_date: e.target.value }))}
                   className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white" required />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1.5">Due Date*</label>
+                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Due Date*</label>
                 <input type="date" value={form.due_date} onChange={e => setForm(p => ({ ...p, due_date: e.target.value }))}
                   className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white" required />
               </div>
@@ -193,10 +193,10 @@ export default function NewInvoiceModal({ onClose, onSuccess }: NewInvoiceModalP
             {/* Line Items */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="text-xs font-semibold text-slate-600">Line Items*</label>
+                <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Line Items*</label>
               </div>
-              <div className="border border-slate-200 rounded-xl overflow-hidden">
-                <div className="grid grid-cols-[1fr_140px_40px] bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-500 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+              <div className="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
+                <div className="grid grid-cols-[1fr_140px_40px] bg-slate-50 dark:bg-slate-800/50 px-3 py-2 text-xs font-semibold text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
                   <span>Description</span>
                   <span className="text-right">Amount (PKR)</span>
                   <span />
@@ -233,11 +233,11 @@ export default function NewInvoiceModal({ onClose, onSuccess }: NewInvoiceModalP
                     </div>
                   ))}
                 </div>
-                <div className="px-3 py-2 border-t border-slate-100 bg-slate-50/60 flex items-center justify-between">
+                <div className="px-3 py-2 border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 flex items-center justify-between">
                   <button type="button" onClick={addItem} className="flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700">
                     <Plus size={14} /> Add Item
                   </button>
-                  <div className="text-sm font-bold text-slate-800">
+                  <div className="text-sm font-bold text-slate-800 dark:text-slate-200">
                     Total: PKR {total.toLocaleString()}
                   </div>
                 </div>
@@ -247,9 +247,9 @@ export default function NewInvoiceModal({ onClose, onSuccess }: NewInvoiceModalP
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-slate-100 shrink-0 flex gap-3 bg-white">
+        <div className="px-6 py-4 border-t border-slate-100 dark:border-slate-800 shrink-0 flex gap-3 bg-white">
           <button type="button" onClick={onClose}
-            className="flex-1 py-2.5 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors">
+            className="flex-1 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
             Cancel
           </button>
           <button type="submit" form="new-invoice-form" disabled={loading}

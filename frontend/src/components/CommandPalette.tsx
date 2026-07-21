@@ -108,21 +108,21 @@ export default function CommandPalette() {
 
         <div className="max-h-[60vh] overflow-y-auto overscroll-contain">
           {loading && (
-            <div className="p-8 text-center text-slate-500 text-sm">
+            <div className="p-8 text-center text-slate-500 dark:text-slate-400 text-sm">
               <div className="w-5 h-5 border-2 border-slate-600 border-t-slate-400 rounded-full animate-spin mx-auto mb-2"></div>
               Searching...
             </div>
           )}
 
           {!loading && query && results.cases.length === 0 && results.clients.length === 0 && results.invoices.length === 0 && (
-            <div className="p-8 text-center text-slate-500 text-sm">
+            <div className="p-8 text-center text-slate-500 dark:text-slate-400 text-sm">
               No results found for "{query}".
             </div>
           )}
 
           {!loading && results.cases.length > 0 && (
             <div className="p-2">
-              <div className="px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              <div className="px-3 py-2 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Cases
               </div>
               {results.cases.map((c) => (
@@ -138,7 +138,7 @@ export default function CommandPalette() {
                     <div className="text-sm font-medium text-slate-200 group-hover:text-blue-400 transition-colors truncate">
                       {c.case_number}
                     </div>
-                    <div className="text-xs text-slate-500 truncate">
+                    <div className="text-xs text-slate-500 dark:text-slate-400 truncate">
                       vs {c.opponent_name} • {c.court}
                     </div>
                   </div>
@@ -149,7 +149,7 @@ export default function CommandPalette() {
 
           {!loading && results.clients.length > 0 && (
             <div className="p-2 border-t border-slate-800">
-              <div className="px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              <div className="px-3 py-2 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Clients
               </div>
               {results.clients.map((client) => (
@@ -165,7 +165,7 @@ export default function CommandPalette() {
                     <div className="text-sm font-medium text-slate-200 group-hover:text-emerald-400 transition-colors truncate">
                       {client.name} {client.client_number ? `(${client.client_number})` : ''}
                     </div>
-                    <div className="text-xs text-slate-500 truncate">
+                    <div className="text-xs text-slate-500 dark:text-slate-400 truncate">
                       CNIC: {client.cnic}
                     </div>
                   </div>
@@ -176,7 +176,7 @@ export default function CommandPalette() {
 
           {!loading && results.invoices.length > 0 && (
             <div className="p-2 border-t border-slate-800">
-              <div className="px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              <div className="px-3 py-2 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Challans
               </div>
               {results.invoices.map((invoice) => (
@@ -192,7 +192,7 @@ export default function CommandPalette() {
                     <div className="text-sm font-medium text-slate-200 group-hover:text-amber-400 transition-colors truncate">
                       {invoice.invoice_number}
                     </div>
-                    <div className="text-xs text-slate-500 truncate">
+                    <div className="text-xs text-slate-500 dark:text-slate-400 truncate">
                       Client: {invoice.client_name} • Amount: Rs. {Number(invoice.amount).toLocaleString()}
                     </div>
                   </div>

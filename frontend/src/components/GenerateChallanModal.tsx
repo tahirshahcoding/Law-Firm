@@ -123,20 +123,20 @@ export default function GenerateChallanModal({ isOpen, onClose, onSuccess }: Gen
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
-        <div className="flex items-center justify-between p-6 border-b border-slate-100 shrink-0">
-          <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh] border dark:border-slate-800">
+        <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800 shrink-0">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <FileText size={20} className="text-blue-600" />
             Generate Challan
           </h2>
-          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"><X size={20} /></button>
+          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors"><X size={20} /></button>
         </div>
 
         <div className="overflow-y-auto">
           <form onSubmit={handleSubmit} className="p-6 space-y-5">
             {/* Case Selector */}
             <div className="relative">
-              <label className="block text-sm font-medium text-slate-700 mb-1">Select Case *</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Select Case *</label>
               <div className="relative">
                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
@@ -157,20 +157,20 @@ export default function GenerateChallanModal({ isOpen, onClose, onSuccess }: Gen
               {showDropdown && (
                 <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg max-h-60 overflow-auto text-slate-900 dark:text-white">
                   {loadingCases ? (
-                    <div className="p-3 text-sm text-slate-500 text-center">Loading cases...</div>
+                    <div className="p-3 text-sm text-slate-500 dark:text-slate-400 text-center">Loading cases...</div>
                   ) : filteredCases.length > 0 ? (
                     filteredCases.map(c => (
                       <div
                         key={c.id}
                         onClick={() => handleSelectCase(c)}
-                        className="px-4 py-2 hover:bg-slate-50 cursor-pointer border-b border-slate-50 last:border-0"
+                        className="px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer border-b border-slate-50 last:border-0"
                       >
-                        <div className="font-semibold text-slate-900 text-sm">{c.case_number}</div>
-                        <div className="text-xs text-slate-500">{c.client_name} vs {c.opponent_name}</div>
+                        <div className="font-semibold text-slate-900 dark:text-white text-sm">{c.case_number}</div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400">{c.client_name} vs {c.opponent_name}</div>
                       </div>
                     ))
                   ) : (
-                    <div className="p-3 text-sm text-slate-500 text-center">No cases found</div>
+                    <div className="p-3 text-sm text-slate-500 dark:text-slate-400 text-center">No cases found</div>
                   )}
                 </div>
               )}
@@ -178,7 +178,7 @@ export default function GenerateChallanModal({ isOpen, onClose, onSuccess }: Gen
 
             {/* Amount */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Challan Amount (Rs.) *</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Challan Amount (Rs.) *</label>
               <div className="relative">
                 <Banknote size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input 
@@ -192,7 +192,7 @@ export default function GenerateChallanModal({ isOpen, onClose, onSuccess }: Gen
                 />
               </div>
               {selectedCase && (
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   Total case fee: Rs. {Number(selectedCase.total_fee).toLocaleString()}
                 </p>
               )}
@@ -200,7 +200,7 @@ export default function GenerateChallanModal({ isOpen, onClose, onSuccess }: Gen
 
             {/* Due Date */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Due Date *</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Due Date *</label>
               <div className="relative">
                 <Calendar size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input 
@@ -216,7 +216,7 @@ export default function GenerateChallanModal({ isOpen, onClose, onSuccess }: Gen
 
             {/* Description */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Description</label>
               <div className="relative">
                 <AlignLeft size={16} className="absolute left-3 top-3 text-slate-400" />
                 <textarea 
@@ -229,8 +229,8 @@ export default function GenerateChallanModal({ isOpen, onClose, onSuccess }: Gen
               </div>
             </div>
 
-            <div className="pt-4 flex justify-end gap-3 border-t border-slate-100">
-              <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg font-medium text-slate-600 hover:bg-slate-50 border border-slate-200 transition-colors">Cancel</button>
+            <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 dark:border-slate-800">
+              <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors">Cancel</button>
               <button type="submit" disabled={!selectedCase}
                 className="px-6 py-2 rounded-lg font-medium bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 duration-300 shadow-[0_4px_12px_rgba(37,99,235,0.25)] hover:shadow-[0_6px_16px_rgba(37,99,235,0.35)] hover:-translate-y-0.5 disabled:opacity-50 flex items-center justify-center min-w-[140px] text-white">
                 Generate Challan

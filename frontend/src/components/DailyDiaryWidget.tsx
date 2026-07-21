@@ -73,13 +73,13 @@ export default function DailyDiaryWidget() {
   }
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] border border-slate-100 mt-8">
-      <div className="flex items-center justify-between mb-6 border-b border-slate-100 pb-4">
+    <div className="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] border border-slate-100 dark:border-slate-800 mt-8">
+      <div className="flex items-center justify-between mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
             <Calendar size={20} />
           </div>
-          <h3 className="font-bold text-lg text-slate-900">Daily Diary (To-Do)</h3>
+          <h3 className="font-bold text-lg text-slate-900 dark:text-white">Daily Diary (To-Do)</h3>
         </div>
         <Link href="/diary" className="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors">
           View all tasks <ArrowRight size={16} />
@@ -89,7 +89,7 @@ export default function DailyDiaryWidget() {
       {tasks.length > 0 ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {tasks.map((t: any) => (
-            <div key={t.id} className={`group p-4 border rounded-xl transition-all duration-200 flex justify-between items-start bg-white ${t.is_completed ? 'border-amber-200 shadow-sm shadow-amber-100/50' : 'border-slate-100 hover:border-slate-200 hover:shadow-sm'}`}>
+            <div key={t.id} className={`group p-4 border rounded-xl transition-all duration-200 flex justify-between items-start bg-white ${t.is_completed ? 'border-amber-200 shadow-sm shadow-amber-100/50' : 'border-slate-100 dark:border-slate-800 hover:border-slate-200 dark:border-slate-700 hover:shadow-sm'}`}>
               <div className="flex items-start gap-3 flex-1">
                 <button 
                   onClick={() => !t.is_completed && handleToggleTask(t)} 
@@ -99,11 +99,11 @@ export default function DailyDiaryWidget() {
                   {t.is_completed ? <CheckCircle2 size={18} className="fill-amber-50" /> : <Circle size={18} />}
                 </button>
                 <div>
-                  <p className={`font-medium line-clamp-2 transition-colors ${t.is_completed ? 'text-slate-500 line-through' : 'text-slate-900'}`}>
+                  <p className={`font-medium line-clamp-2 transition-colors ${t.is_completed ? 'text-slate-500 dark:text-slate-400 line-through' : 'text-slate-900 dark:text-white'}`}>
                     {t.title}
                   </p>
                   {t.due_date && (
-                    <div className={`flex items-center gap-1.5 mt-2 text-xs font-semibold w-fit px-2 py-0.5 rounded border ${t.is_completed ? 'text-slate-400 bg-slate-50 border-slate-100' : 'text-rose-500 bg-rose-50 border-rose-100'}`}>
+                    <div className={`flex items-center gap-1.5 mt-2 text-xs font-semibold w-fit px-2 py-0.5 rounded border ${t.is_completed ? 'text-slate-400 bg-slate-50 dark:bg-slate-800/50 border-slate-100 dark:border-slate-800' : 'text-rose-500 bg-rose-50 border-rose-100'}`}>
                       <Clock size={12}/> Due: {formatDbDate(t.due_date)}
                     </div>
                   )}
@@ -113,9 +113,9 @@ export default function DailyDiaryWidget() {
           ))}
         </div>
       ) : (
-        <div className="py-12 flex flex-col items-center justify-center text-slate-400 bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+        <div className="py-12 flex flex-col items-center justify-center text-slate-400 bg-slate-50/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
           <CheckCircle2 size={32} className="text-slate-300 mb-3" />
-          <p className="text-slate-900 font-medium">You're all caught up!</p>
+          <p className="text-slate-900 dark:text-white font-medium">You're all caught up!</p>
           <p className="text-sm">No pending tasks in your daily diary.</p>
         </div>
       )}

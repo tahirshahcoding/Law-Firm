@@ -146,10 +146,10 @@ export default function AddHearingModal({ isOpen, onClose, onSuccess }: AddHeari
               className={`w-full px-4 py-2.5 bg-white dark:bg-slate-800 border ${isCaseDropdownOpen ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-slate-200 dark:border-slate-700'} rounded-lg text-sm transition-all cursor-pointer flex items-center justify-between text-slate-900 dark:text-white`}
               onClick={() => setIsCaseDropdownOpen(!isCaseDropdownOpen)}
             >
-              <span className={selectedCaseName ? 'text-slate-900 dark:text-white font-medium' : 'text-slate-400 dark:text-slate-500'}>
+              <span className={selectedCaseName ? 'text-slate-900 dark:text-white font-medium' : 'text-slate-400 dark:text-slate-500 dark:text-slate-400'}>
                 {selectedCaseName || 'Search & Select Active Case...'}
               </span>
-              <Search size={16} className="text-slate-400 dark:text-slate-500" />
+              <Search size={16} className="text-slate-400 dark:text-slate-500 dark:text-slate-400" />
             </div>
 
             {isCaseDropdownOpen && (
@@ -178,7 +178,7 @@ export default function AddHearingModal({ isOpen, onClose, onSuccess }: AddHeari
                       >
                         <div>
                           <p className="text-sm font-medium text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 flex items-center gap-2 transition-colors">
-                            <FolderOpen size={14} className="text-slate-400 dark:text-slate-500" />
+                            <FolderOpen size={14} className="text-slate-400 dark:text-slate-500 dark:text-slate-400" />
                             {c.case_number}
                           </p>
                           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 transition-colors">vs. {c.opponent_name}</p>
@@ -227,7 +227,7 @@ export default function AddHearingModal({ isOpen, onClose, onSuccess }: AddHeari
               required
               value={formData.hearing_stage}
               onChange={(e) => setFormData({...formData, hearing_stage: e.target.value})}
-              className="w-full px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500 font-medium text-slate-900 dark:text-white"
+              className="w-full px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500 dark:text-slate-400 font-medium text-slate-900 dark:text-white"
               placeholder="e.g. Attendance, Arguments, Evidence..."
             />
             <datalist id="stages-list">
@@ -245,12 +245,12 @@ export default function AddHearingModal({ isOpen, onClose, onSuccess }: AddHeari
           <div>
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 transition-colors">Hearing Notes (Optional)</label>
             <div className="relative">
-              <AlignLeft size={16} className="absolute left-3 top-3 text-slate-400 dark:text-slate-500" />
+              <AlignLeft size={16} className="absolute left-3 top-3 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
               <textarea
                 rows={4}
                 value={formData.notes}
                 onChange={(e) => setFormData({...formData, notes: e.target.value})}
-                className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500 resize-none text-slate-900 dark:text-white"
+                className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500 dark:text-slate-400 resize-none text-slate-900 dark:text-white"
                 placeholder="Brief summary of expected proceedings..."
               ></textarea>
             </div>

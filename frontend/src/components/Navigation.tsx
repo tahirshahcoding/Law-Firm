@@ -91,7 +91,7 @@ export default function Navigation({ mobileOpen = false, onCloseMobile }: Naviga
       >
         <button
           onClick={onCloseMobile}
-          className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+          className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
           aria-label="Close menu"
         >
           <X size={20} />
@@ -151,7 +151,7 @@ function SidebarContent({ onLinkClick, navGroups, pathname, user }: SidebarConte
           if (items.length === 0) return null;
           return (
             <div key={group.title} className="mb-6 last:mb-0">
-              <h3 className="px-3.5 mb-2 text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+              <h3 className="px-3.5 mb-2 text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">
                 {group.title}
               </h3>
               <div className="flex flex-col gap-1">
@@ -168,7 +168,7 @@ function SidebarContent({ onLinkClick, navGroups, pathname, user }: SidebarConte
                         : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'
                         }`}
                     >
-                      <Icon size={18} className={isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500'} strokeWidth={2} />
+                      <Icon size={18} className={isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500 dark:text-slate-400'} strokeWidth={2} />
                       <span className="text-sm">{item.name}</span>
                     </Link>
                   );

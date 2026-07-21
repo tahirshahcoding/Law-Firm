@@ -223,7 +223,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
               className={`w-full px-4 py-2.5 bg-white dark:bg-slate-800 border ${isClientDropdownOpen ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-slate-200 dark:border-slate-700'} rounded-lg text-sm transition-all cursor-pointer flex items-center justify-between text-slate-900 dark:text-white`}
               onClick={() => setIsClientDropdownOpen(!isClientDropdownOpen)}
             >
-              <span className={selectedClientName ? 'text-slate-900 dark:text-white font-medium' : 'text-slate-400 dark:text-slate-500'}>
+              <span className={selectedClientName ? 'text-slate-900 dark:text-white font-medium' : 'text-slate-400 dark:text-slate-500 dark:text-slate-400'}>
                 {selectedClientName || 'Search & Select Client...'}
               </span>
               <Search size={16} className="text-slate-400" />
@@ -238,7 +238,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
                     placeholder="Type to search clients..."
                     value={clientSearchText}
                     onChange={(e) => setClientSearchText(e.target.value)}
-                    className="w-full px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded text-sm focus:outline-none focus:border-blue-500 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                    className="w-full px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded text-sm focus:outline-none focus:border-blue-500 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 dark:text-slate-400"
                   />
                 </div>
                 <div className="max-h-48 overflow-y-auto">
@@ -278,7 +278,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
 
           {/* Advocate Selection */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Assigned Advocate</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Assigned Advocate</label>
             <div className="relative">
               <Users size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <select
@@ -298,7 +298,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Category</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Category</label>
               <select
                 value={formData.category}
                 onChange={(e) => setFormData({...formData, category: e.target.value})}
@@ -308,7 +308,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Priority</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Priority</label>
               <select
                 value={formData.priority}
                 onChange={(e) => setFormData({...formData, priority: e.target.value})}
@@ -318,7 +318,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Initial Status</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Initial Status</label>
               <select
                 value={formData.status}
                 onChange={(e) => setFormData({...formData, status: e.target.value})}
@@ -331,7 +331,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Case Number / FIR</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Case Number / FIR</label>
               <div className="relative">
                 <FolderOpen size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
@@ -346,7 +346,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Total Agreed Fee</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Total Agreed Fee</label>
               <div className="relative">
                 <Coins size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
@@ -365,7 +365,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Court Name / Location</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Court Name / Location</label>
               <div className="relative">
                 <Scale size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <select
@@ -385,7 +385,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Presiding Judge</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Presiding Judge</label>
               <div className="relative">
                 <Gavel size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <select
@@ -393,7 +393,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
                   value={formData.judge}
                   onChange={(e) => setFormData({...formData, judge: e.target.value})}
                   disabled={!formData.court}
-                  className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none disabled:opacity-50 disabled:bg-slate-50 text-slate-900 dark:text-white"
+                  className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none disabled:opacity-50 disabled:bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white"
                 >
                   <option value="">Select Judge...</option>
                   {judges.filter((j: any) => j.court === formData.court).map((j: any) => (
@@ -407,7 +407,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Opponent Name</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Opponent Name</label>
             <div className="relative">
               <UserX size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
@@ -458,11 +458,11 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
             </div>
           )}
 
-          <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 mt-6">
+          <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 dark:border-slate-800 mt-6">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-lg font-medium text-slate-600 hover:bg-slate-50 border border-slate-200 transition-colors"
+              className="px-4 py-2 rounded-lg font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors"
             >
               Cancel
             </button>

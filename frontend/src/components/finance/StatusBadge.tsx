@@ -16,7 +16,7 @@ const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
   },
   Unpaid: {
     label: 'Unpaid',
-    className: 'bg-slate-100 text-slate-600 ring-1 ring-slate-200',
+    className: 'bg-slate-100 text-slate-600 dark:text-slate-400 ring-1 ring-slate-200',
   },
   Overdue: {
     label: 'Overdue',
@@ -27,7 +27,7 @@ const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
 export default function StatusBadge({ status, size = 'sm' }: StatusBadgeProps) {
   const config = STATUS_CONFIG[status] ?? {
     label: status,
-    className: 'bg-slate-100 text-slate-600 ring-1 ring-slate-200',
+    className: 'bg-slate-100 text-slate-600 dark:text-slate-400 ring-1 ring-slate-200',
   };
 
   const sizeClass = size === 'sm'

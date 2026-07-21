@@ -57,10 +57,10 @@ export default function AddCourtModal({ isOpen, onClose, onSuccess }: AddCourtMo
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
-        <div className="flex items-center justify-between p-6 border-b border-slate-100 shrink-0">
-          <h2 className="text-xl font-bold text-slate-900">Add New Court</h2>
-          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-colors">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh] border dark:border-slate-800">
+        <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800 shrink-0">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white">Add New Court</h2>
+          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors">
             <X size={20} />
           </button>
         </div>
@@ -73,7 +73,7 @@ export default function AddCourtModal({ isOpen, onClose, onSuccess }: AddCourtMo
           )}
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Court Name</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Court Name</label>
             <div className="relative">
               <Scale size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
@@ -88,7 +88,7 @@ export default function AddCourtModal({ isOpen, onClose, onSuccess }: AddCourtMo
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Court Type</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Court Type</label>
             <select
               value={formData.type}
               onChange={(e) => setFormData({...formData, type: e.target.value})}
@@ -100,7 +100,7 @@ export default function AddCourtModal({ isOpen, onClose, onSuccess }: AddCourtMo
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">District (Optional)</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">District (Optional)</label>
               <div className="relative">
                 <MapPin size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
@@ -113,7 +113,7 @@ export default function AddCourtModal({ isOpen, onClose, onSuccess }: AddCourtMo
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Tehsil (Optional)</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Tehsil (Optional)</label>
               <div className="relative">
                 <MapPin size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
@@ -128,7 +128,7 @@ export default function AddCourtModal({ isOpen, onClose, onSuccess }: AddCourtMo
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Presiding Judge</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Presiding Judge</label>
             <div className="relative">
               <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
@@ -143,7 +143,7 @@ export default function AddCourtModal({ isOpen, onClose, onSuccess }: AddCourtMo
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Court Room (Optional)</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Court Room (Optional)</label>
             <div className="relative">
               <Building2 size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
@@ -156,11 +156,11 @@ export default function AddCourtModal({ isOpen, onClose, onSuccess }: AddCourtMo
             </div>
           </div>
 
-          <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 mt-6">
+          <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 dark:border-slate-800 mt-6">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-lg font-medium text-slate-600 hover:bg-slate-50 border border-slate-200"
+              className="px-4 py-2 rounded-lg font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700"
             >
               Cancel
             </button>

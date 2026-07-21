@@ -128,21 +128,21 @@ export default function InvoiceDrawer({ invoice, onClose, onUpdate }: InvoiceDra
       />
 
       {/* Drawer */}
-      <div className="fixed right-0 top-0 h-full z-50 w-full max-w-[560px] bg-white shadow-2xl flex flex-col border-l border-slate-200 animate-slide-in-right">
+      <div className="fixed right-0 top-0 h-full z-50 w-full max-w-[560px] bg-white shadow-2xl flex flex-col border-l border-slate-200 dark:border-slate-700 animate-slide-in-right">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 shrink-0">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 dark:border-slate-800 shrink-0">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-slate-100 rounded-xl">
-              <Receipt size={18} className="text-slate-600" />
+              <Receipt size={18} className="text-slate-600 dark:text-slate-400" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-900">{invoice.invoice_number}</h2>
-              <p className="text-xs text-slate-500 mt-0.5">{invoice.client_name} · {invoice.case_number}</p>
+              <h2 className="text-base font-bold text-slate-900 dark:text-white">{invoice.invoice_number}</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{invoice.client_name} · {invoice.case_number}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <StatusBadge status={invoice.status} size="md" />
-            <div className="flex items-center ml-2 border-l border-slate-200 pl-2">
+            <div className="flex items-center ml-2 border-l border-slate-200 dark:border-slate-700 pl-2">
               <button
                 onClick={handlePrint}
                 className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
@@ -167,7 +167,7 @@ export default function InvoiceDrawer({ invoice, onClose, onUpdate }: InvoiceDra
             </div>
             <button
               onClick={onClose}
-              className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors ml-1"
+              className="p-2 text-slate-400 hover:text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors ml-1"
             >
               <X size={18} />
             </button>
@@ -177,17 +177,17 @@ export default function InvoiceDrawer({ invoice, onClose, onUpdate }: InvoiceDra
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto">
           {/* Financial Summary */}
-          <div className="grid grid-cols-3 border-b border-slate-100">
-            <div className="px-6 py-5 border-r border-slate-100">
-              <p className="text-xs text-slate-500 font-medium">Invoice Amount</p>
-              <p className="text-xl font-bold text-slate-900 mt-1">{fmt(invoice.amount)}</p>
+          <div className="grid grid-cols-3 border-b border-slate-100 dark:border-slate-800">
+            <div className="px-6 py-5 border-r border-slate-100 dark:border-slate-800">
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Invoice Amount</p>
+              <p className="text-xl font-bold text-slate-900 dark:text-white mt-1">{fmt(invoice.amount)}</p>
             </div>
-            <div className="px-6 py-5 border-r border-slate-100">
-              <p className="text-xs text-slate-500 font-medium">Amount Paid</p>
+            <div className="px-6 py-5 border-r border-slate-100 dark:border-slate-800">
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Amount Paid</p>
               <p className="text-xl font-bold text-emerald-600 mt-1">{fmt(invoice.amount_paid)}</p>
             </div>
             <div className="px-6 py-5">
-              <p className="text-xs text-slate-500 font-medium">Balance Due</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Balance Due</p>
               <p className={`text-xl font-bold mt-1 ${parseFloat(invoice.balance_due) > 0 ? 'text-rose-600' : 'text-slate-400'}`}>
                 {fmt(invoice.balance_due)}
               </p>
@@ -195,24 +195,24 @@ export default function InvoiceDrawer({ invoice, onClose, onUpdate }: InvoiceDra
           </div>
 
           {/* Info */}
-          <div className="px-6 py-5 border-b border-slate-100 space-y-3">
+          <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800 space-y-3">
             <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Details</h3>
             <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
               <div>
-                <span className="text-slate-500">Client</span>
-                <p className="font-semibold text-slate-800 mt-0.5">{invoice.client_name}</p>
+                <span className="text-slate-500 dark:text-slate-400">Client</span>
+                <p className="font-semibold text-slate-800 dark:text-slate-200 mt-0.5">{invoice.client_name}</p>
               </div>
               <div>
-                <span className="text-slate-500">Case</span>
-                <p className="font-semibold text-slate-800 mt-0.5">{invoice.case_number}</p>
+                <span className="text-slate-500 dark:text-slate-400">Case</span>
+                <p className="font-semibold text-slate-800 dark:text-slate-200 mt-0.5">{invoice.case_number}</p>
               </div>
               <div>
-                <span className="text-slate-500">Issue Date</span>
-                <p className="font-semibold text-slate-800 mt-0.5">{fmtDate(invoice.issue_date)}</p>
+                <span className="text-slate-500 dark:text-slate-400">Issue Date</span>
+                <p className="font-semibold text-slate-800 dark:text-slate-200 mt-0.5">{fmtDate(invoice.issue_date)}</p>
               </div>
               <div>
-                <span className="text-slate-500">Due Date</span>
-                <p className={`font-semibold mt-0.5 ${invoice.status === 'Overdue' ? 'text-rose-600' : 'text-slate-800'}`}>
+                <span className="text-slate-500 dark:text-slate-400">Due Date</span>
+                <p className={`font-semibold mt-0.5 ${invoice.status === 'Overdue' ? 'text-rose-600' : 'text-slate-800 dark:text-slate-200'}`}>
                   {fmtDate(invoice.due_date)}
                   {invoice.status === 'Overdue' && invoice.days_overdue > 0 && (
                     <span className="ml-1.5 text-xs text-rose-500">({invoice.days_overdue}d overdue)</span>
@@ -224,20 +224,20 @@ export default function InvoiceDrawer({ invoice, onClose, onUpdate }: InvoiceDra
 
           {/* Line Items */}
           {invoice.items?.length > 0 && (
-            <div className="px-6 py-5 border-b border-slate-100">
+            <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800">
               <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Line Items</h3>
-              <div className="border border-slate-200 rounded-xl overflow-hidden">
+              <div className="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
                 <div className="divide-y divide-slate-100">
                   {invoice.items.map((item: any, i: number) => (
                     <div key={i} className="flex items-center justify-between px-4 py-3">
-                      <span className="text-sm text-slate-700">{item.description}</span>
-                      <span className="text-sm font-semibold text-slate-900">PKR {parseFloat(item.amount).toLocaleString()}</span>
+                      <span className="text-sm text-slate-700 dark:text-slate-300">{item.description}</span>
+                      <span className="text-sm font-semibold text-slate-900 dark:text-white">PKR {parseFloat(item.amount).toLocaleString()}</span>
                     </div>
                   ))}
                 </div>
-                <div className="flex justify-between px-4 py-3 bg-slate-50 border-t border-slate-200">
-                  <span className="text-sm font-bold text-slate-700">Total</span>
-                  <span className="text-sm font-bold text-slate-900">{fmt(invoice.amount)}</span>
+                <div className="flex justify-between px-4 py-3 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700">
+                  <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Total</span>
+                  <span className="text-sm font-bold text-slate-900 dark:text-white">{fmt(invoice.amount)}</span>
                 </div>
               </div>
             </div>
@@ -251,18 +251,18 @@ export default function InvoiceDrawer({ invoice, onClose, onUpdate }: InvoiceDra
             ) : payments.length > 0 ? (
               <div className="space-y-2">
                 {payments.map((p: any) => (
-                  <div key={p.id} className="flex items-center justify-between px-4 py-3 bg-slate-50 rounded-xl border border-slate-100">
+                  <div key={p.id} className="flex items-center justify-between px-4 py-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
                     <div className="flex items-center gap-3">
                       <div className="p-1.5 bg-emerald-100 rounded-lg">
                         <DollarSign size={14} className="text-emerald-600" />
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-slate-800">PKR {parseFloat(p.amount_received).toLocaleString()}</p>
-                        <p className="text-xs text-slate-500">{p.payment_method}{p.reference_number ? ` · ${p.reference_number}` : ''}</p>
+                        <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">PKR {parseFloat(p.amount_received).toLocaleString()}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{p.payment_method}{p.reference_number ? ` · ${p.reference_number}` : ''}</p>
                       </div>
                     </div>
                     <div className="text-right flex items-center gap-3">
-                      <p className="text-xs font-medium text-slate-600">{fmtDate(p.payment_date)}</p>
+                      <p className="text-xs font-medium text-slate-600 dark:text-slate-400">{fmtDate(p.payment_date)}</p>
                       <button
                         onClick={() => handleDeletePayment(p.id)}
                         className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
@@ -275,7 +275,7 @@ export default function InvoiceDrawer({ invoice, onClose, onUpdate }: InvoiceDra
                 ))}
               </div>
             ) : (
-              <div className="text-center py-6 border border-dashed border-slate-200 rounded-xl">
+              <div className="text-center py-6 border border-dashed border-slate-200 dark:border-slate-700 rounded-xl">
                 <Clock size={24} className="text-slate-300 mx-auto mb-1.5" />
                 <p className="text-sm text-slate-400">No payments recorded yet</p>
               </div>
@@ -285,7 +285,7 @@ export default function InvoiceDrawer({ invoice, onClose, onUpdate }: InvoiceDra
 
         {/* Footer Action */}
         {!isPaid && (
-          <div className="px-6 py-4 border-t border-slate-100 shrink-0 bg-white">
+          <div className="px-6 py-4 border-t border-slate-100 dark:border-slate-800 shrink-0 bg-white">
             <button
               onClick={() => setShowPaymentModal(true)}
               className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold transition-colors flex items-center justify-center gap-2"

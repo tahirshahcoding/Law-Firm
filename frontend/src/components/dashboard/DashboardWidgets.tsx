@@ -44,7 +44,7 @@ export function DailyTasks() {
       case 'high': return 'text-rose-500 bg-rose-50 dark:bg-rose-900/30 border-rose-200 dark:border-rose-800';
       case 'medium': return 'text-amber-500 bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800';
       case 'low': return 'text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-800';
-      default: return 'text-slate-500 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700';
+      default: return 'text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700';
     }
   };
 
@@ -58,7 +58,7 @@ export function DailyTasks() {
         {loading ? (
           <ListSkeleton />
         ) : tasks.length === 0 ? (
-          <div className="text-sm text-slate-500 italic">No pending tasks!</div>
+          <div className="text-sm text-slate-500 dark:text-slate-400 italic">No pending tasks!</div>
         ) : (
           tasks.map(task => (
             <div key={task.id} className="flex items-start gap-3 group">
@@ -102,7 +102,7 @@ export function RecentActivity() {
   }, []);
 
   const getActionData = (action: string, model: string) => {
-    const data = { icon: Activity, color: 'text-slate-500', bg: 'bg-slate-50 dark:bg-slate-800' };
+    const data = { icon: Activity, color: 'text-slate-500 dark:text-slate-400', bg: 'bg-slate-50 dark:bg-slate-800' };
     switch (action?.toLowerCase()) {
       case 'created': data.color = 'text-emerald-500'; data.bg = 'bg-emerald-50 dark:bg-emerald-900/30'; data.icon = CheckCircle2; break;
       case 'updated': data.color = 'text-blue-500'; data.bg = 'bg-blue-50 dark:bg-blue-900/30'; data.icon = Clock; break;
@@ -134,7 +134,7 @@ export function RecentActivity() {
       {loading ? (
         <ListSkeleton />
       ) : activities.length === 0 ? (
-        <div className="text-sm text-slate-500 italic">No recent activity</div>
+        <div className="text-sm text-slate-500 dark:text-slate-400 italic">No recent activity</div>
       ) : (
         <div className="relative border-l-2 border-slate-100 dark:border-slate-800 ml-3 space-y-6">
           {activities.map((act, i) => {
@@ -192,7 +192,7 @@ export function TodaysHearingsList() {
       {loading ? (
         <ListSkeleton />
       ) : hearings.length === 0 ? (
-        <div className="text-sm text-slate-500 italic">No hearings scheduled for today.</div>
+        <div className="text-sm text-slate-500 dark:text-slate-400 italic">No hearings scheduled for today.</div>
       ) : (
         <div className="relative border-l-2 border-slate-100 dark:border-slate-800 ml-12 space-y-8 mt-2 overflow-y-auto max-h-[300px] pr-2 custom-scrollbar">
           {hearings.map((h, i) => (
@@ -259,7 +259,7 @@ export function RecentCasesTable() {
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm">
           <thead>
-            <tr className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 border-b border-slate-100 dark:border-slate-800 transition-colors">
+            <tr className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800 transition-colors">
               <th className="pb-3 pt-2 font-bold whitespace-nowrap">Case No.</th>
               <th className="pb-3 pt-2 font-bold whitespace-nowrap">Case Title</th>
               <th className="pb-3 pt-2 font-bold whitespace-nowrap">Client</th>
@@ -275,7 +275,7 @@ export function RecentCasesTable() {
               <tr><td colSpan={6} className="py-4 text-center text-slate-500 dark:text-slate-400">No recent cases</td></tr>
             ) : (
               cases.map((c, i) => (
-                <tr key={c.id || i} className="border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                <tr key={c.id || i} className="border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 dark:hover:bg-slate-800/50 transition-colors">
                   <td className="py-3 font-semibold text-slate-900 dark:text-white whitespace-nowrap">
                     <Link href={`/cases/${c.id}`} className="hover:text-blue-600 dark:hover:text-blue-400">{c.case_number}</Link>
                   </td>
@@ -372,14 +372,14 @@ export function CalendarWidget() {
   return (
     <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-none h-full flex flex-col transition-colors">
       <div className="flex justify-between items-center mb-4">
-        <button onClick={prevMonth} className="p-1 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">&lt;</button>
+        <button onClick={prevMonth} className="p-1 text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">&lt;</button>
         <h3 className="font-bold text-slate-900 dark:text-white text-sm">{monthName}</h3>
-        <button onClick={nextMonth} className="p-1 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">&gt;</button>
+        <button onClick={nextMonth} className="p-1 text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">&gt;</button>
       </div>
       
       <div className="grid grid-cols-7 gap-1 mb-2">
         {days.map((d, i) => (
-          <div key={i} className="text-center text-[10px] font-bold text-slate-400 dark:text-slate-500 py-1">{d}</div>
+          <div key={i} className="text-center text-[10px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 py-1">{d}</div>
         ))}
       </div>
       
@@ -390,7 +390,7 @@ export function CalendarWidget() {
               <button 
                 className={`w-7 h-7 flex items-center justify-center rounded-full text-xs font-semibold transition-colors ${
                   d.isSelected ? 'bg-blue-600 text-white shadow-sm shadow-blue-600/30' : 
-                  d.currentMonth ? 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800' : 'text-slate-300 dark:text-slate-600'
+                  d.currentMonth ? 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800' : 'text-slate-300 dark:text-slate-600 dark:text-slate-400'
                 }`}
               >
                 {d.day}

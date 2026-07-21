@@ -157,7 +157,7 @@ export default function EditClientModal({ isOpen, onClose, onSuccess, clientData
                   <div className="space-y-2">
                     <div className="flex items-center justify-between bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-2.5 rounded-lg">
                       <div>
-                        <p className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500">Portal Username</p>
+                        <p className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400">Portal Username</p>
                         <p className="text-slate-800 dark:text-slate-100 text-sm font-mono font-bold mt-0.5">{clientData.client_number}</p>
                       </div>
                       <button type="button" onClick={() => copyToClipboard(clientData.client_number, 'username')}
@@ -168,7 +168,7 @@ export default function EditClientModal({ isOpen, onClose, onSuccess, clientData
 
                     <div className="flex items-center justify-between bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-2.5 rounded-lg">
                       <div>
-                        <p className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500">Portal Password</p>
+                        <p className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400">Portal Password</p>
                         <p className="text-slate-800 dark:text-slate-100 text-sm font-mono font-bold mt-0.5">{newCredentials?.portal_password || clientData.portal_password || 'Not Set'}</p>
                       </div>
                       <button type="button" onClick={() => copyToClipboard(newCredentials?.portal_password || clientData.portal_password || '', 'password')}

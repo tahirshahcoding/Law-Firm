@@ -42,7 +42,7 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className="w-64 bg-white border-r border-slate-200 min-h-screen flex flex-col transition-all duration-300">
+    <aside className="w-64 bg-white border-r border-slate-200 dark:border-slate-700 min-h-screen flex flex-col transition-all duration-300">
       <div className="p-6">
         <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
           Legal Office
@@ -59,7 +59,7 @@ export default function Sidebar() {
                   className={`flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-200 ${
                     isActive
                       ? 'bg-blue-50 text-blue-600 font-medium'
-                      : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                      : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:text-white'
                   }`}
                 >
                   <span>{item.name}</span>
@@ -74,7 +74,7 @@ export default function Sidebar() {
           })}
         </ul>
       </nav>
-      <div className="p-4 border-t border-slate-200 text-sm text-slate-500 text-center">
+      <div className="p-4 border-t border-slate-200 dark:border-slate-700 text-sm text-slate-500 dark:text-slate-400 text-center">
         &copy; {new Date().getFullYear()} AOS
       </div>
     </aside>

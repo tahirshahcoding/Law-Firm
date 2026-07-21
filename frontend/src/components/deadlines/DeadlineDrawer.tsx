@@ -66,17 +66,17 @@ export default function DeadlineDrawer({ deadline, onClose, onUpdate, onEdit }: 
       
       <div className="fixed inset-y-0 right-0 w-full max-w-md bg-white shadow-2xl z-50 flex flex-col animate-slide-in-right">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-white">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-white">
           <div className="flex items-center gap-3">
             <div className={`p-2 rounded-xl ${isCompleted ? 'bg-emerald-50 text-emerald-600' : 'bg-blue-50 text-blue-600'}`}>
               <Calendar size={20} />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-800 line-clamp-1">{deadline.title}</h2>
-              <p className="text-xs text-slate-500 font-medium">{deadline.deadline_type}</p>
+              <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200 line-clamp-1">{deadline.title}</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">{deadline.deadline_type}</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">
+          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
             <X size={20} />
           </button>
         </div>
@@ -85,46 +85,46 @@ export default function DeadlineDrawer({ deadline, onClose, onUpdate, onEdit }: 
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {/* Status & Priority Cards */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+            <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800">
               <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Status</p>
               <div className="flex items-center gap-2">
                 {deadline.status === 'Completed' ? (
-                  <><div className="w-2 h-2 rounded-full bg-emerald-500" /><span className="font-semibold text-slate-700">Completed</span></>
+                  <><div className="w-2 h-2 rounded-full bg-emerald-500" /><span className="font-semibold text-slate-700 dark:text-slate-300">Completed</span></>
                 ) : deadline.status === 'Pending' && new Date(deadline.due_date) < new Date(new Date().setHours(0,0,0,0)) ? (
                   <><div className="w-2 h-2 rounded-full bg-rose-500" /><span className="font-semibold text-rose-600">Overdue</span></>
                 ) : (
-                  <><div className="w-2 h-2 rounded-full bg-amber-500" /><span className="font-semibold text-slate-700">Pending</span></>
+                  <><div className="w-2 h-2 rounded-full bg-amber-500" /><span className="font-semibold text-slate-700 dark:text-slate-300">Pending</span></>
                 )}
               </div>
             </div>
-            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+            <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800">
               <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Priority</p>
               <div className="flex items-center gap-2">
                 {deadline.priority === 'High' && <div className="w-2 h-2 rounded-full bg-rose-500" />}
                 {deadline.priority === 'Medium' && <div className="w-2 h-2 rounded-full bg-amber-500" />}
                 {deadline.priority === 'Low' && <div className="w-2 h-2 rounded-full bg-emerald-500" />}
-                <span className="font-semibold text-slate-700">{deadline.priority}</span>
+                <span className="font-semibold text-slate-700 dark:text-slate-300">{deadline.priority}</span>
               </div>
             </div>
           </div>
 
           {/* Details List */}
-          <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
-            <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-3">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden border dark:border-slate-800">
+            <div className="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center gap-3">
               <FileText size={16} className="text-slate-400" />
               <div>
-                <p className="text-xs text-slate-500 font-medium">Related Case</p>
-                <p className="text-sm font-semibold text-slate-800">
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Related Case</p>
+                <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                   {deadline.case_number ? `${deadline.case_number} - ${deadline.client_name}` : 'Not Linked'}
                 </p>
               </div>
             </div>
             
-            <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-3">
+            <div className="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center gap-3">
               <User size={16} className="text-slate-400" />
               <div>
-                <p className="text-xs text-slate-500 font-medium">Assigned To</p>
-                <p className="text-sm font-semibold text-slate-800">
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Assigned To</p>
+                <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                   {deadline.assigned_user_name || 'Unassigned'}
                 </p>
               </div>
@@ -133,8 +133,8 @@ export default function DeadlineDrawer({ deadline, onClose, onUpdate, onEdit }: 
             <div className="px-5 py-4 flex items-center gap-3">
               <Activity size={16} className="text-slate-400" />
               <div>
-                <p className="text-xs text-slate-500 font-medium">Due Date</p>
-                <p className="text-sm font-semibold text-slate-800">
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Due Date</p>
+                <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                   {fmtDate(deadline.due_date)}
                 </p>
               </div>
@@ -147,7 +147,7 @@ export default function DeadlineDrawer({ deadline, onClose, onUpdate, onEdit }: 
               <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-2">
                 <AlignLeft size={14} /> Description
               </h3>
-              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">
+              <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">
                 {deadline.description}
               </div>
             </div>
@@ -171,7 +171,7 @@ export default function DeadlineDrawer({ deadline, onClose, onUpdate, onEdit }: 
         </div>
 
         {/* Footer Actions */}
-        <div className="p-6 bg-slate-50 border-t border-slate-100">
+        <div className="p-6 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-800">
           {!isCompleted && (
             <button 
               onClick={handleMarkCompleted}
@@ -185,7 +185,7 @@ export default function DeadlineDrawer({ deadline, onClose, onUpdate, onEdit }: 
           <div className="flex gap-3">
             <button 
               onClick={() => onEdit(deadline)}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-medium rounded-xl transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-white border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-medium rounded-xl transition-colors"
             >
               <Edit2 size={16} />
               Edit

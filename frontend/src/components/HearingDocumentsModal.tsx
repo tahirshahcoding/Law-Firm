@@ -127,16 +127,16 @@ export default function HearingDocumentsModal({ isOpen, onClose, hearingData, on
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
-        <div className="flex items-center justify-between p-6 border-b border-slate-100 shrink-0 bg-slate-50/50">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh] border dark:border-slate-800">
+        <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800 shrink-0 bg-slate-50/50">
           <div>
-            <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <FileText size={24} className="text-blue-600" />
               Hearing Documents
             </h2>
-            <p className="text-sm text-slate-500 mt-1">Manage files for Hearing on {hearingData.hearing_date}</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Manage files for Hearing on {hearingData.hearing_date}</p>
           </div>
-          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
+          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
             <X size={20} />
           </button>
         </div>
@@ -144,8 +144,8 @@ export default function HearingDocumentsModal({ isOpen, onClose, hearingData, on
         <div className="p-6 overflow-y-auto space-y-6 custom-scrollbar">
           
           {/* Upload Section */}
-          <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-            <h3 className="text-sm font-semibold text-slate-900 mb-3">Upload New Document</h3>
+          <div className="bg-white border border-slate-200 dark:border-slate-700 rounded-xl p-5 shadow-sm">
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-3">Upload New Document</h3>
             <div className="flex flex-col gap-3">
               <input
                 type="text"
@@ -158,7 +158,7 @@ export default function HearingDocumentsModal({ isOpen, onClose, hearingData, on
                 <input
                   type="file"
                   onChange={(e) => setUploadFile(e.target.files ? e.target.files[0] : null)}
-                  className="flex-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-colors cursor-pointer"
+                  className="flex-1 block w-full text-sm text-slate-500 dark:text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-colors cursor-pointer"
                 />
                 <button
                   type="button"
@@ -178,21 +178,21 @@ export default function HearingDocumentsModal({ isOpen, onClose, hearingData, on
 
           {/* List Section */}
           <div>
-            <h3 className="text-sm font-semibold text-slate-900 mb-3 flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-3 flex items-center justify-between">
               Attached Documents
-              <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full text-xs">{documents.length}</span>
+              <span className="bg-slate-100 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded-full text-xs">{documents.length}</span>
             </h3>
             
             {documents.length === 0 ? (
-              <div className="p-8 text-center bg-slate-50 border border-slate-100 border-dashed rounded-xl">
+              <div className="p-8 text-center bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 border-dashed rounded-xl">
                 <FileText size={32} className="mx-auto text-slate-300 mb-2" />
-                <p className="text-slate-500 font-medium">No documents attached yet</p>
+                <p className="text-slate-500 dark:text-slate-400 font-medium">No documents attached yet</p>
                 <p className="text-sm text-slate-400 mt-1">Upload files above to attach them to this hearing.</p>
               </div>
             ) : (
               <div className="space-y-3">
                 {documents.map(doc => (
-                  <div key={doc.id} className="flex items-center justify-between p-4 bg-white border border-slate-100 rounded-xl hover:border-slate-200 hover:shadow-sm transition-all group">
+                  <div key={doc.id} className="flex items-center justify-between p-4 bg-white border border-slate-100 dark:border-slate-800 rounded-xl hover:border-slate-200 dark:border-slate-700 hover:shadow-sm transition-all group">
                     <div className="flex-1 min-w-0 pr-4">
                       {editingDocId === doc.id ? (
                         <div className="flex items-center gap-2">
@@ -207,7 +207,7 @@ export default function HearingDocumentsModal({ isOpen, onClose, hearingData, on
                           <button onClick={() => handleSaveRename(doc.id)} className="p-1.5 bg-blue-50 text-blue-600 rounded hover:bg-blue-100">
                             <Check size={16} />
                           </button>
-                          <button onClick={() => setEditingDocId(null)} className="p-1.5 bg-slate-100 text-slate-500 rounded hover:bg-slate-200">
+                          <button onClick={() => setEditingDocId(null)} className="p-1.5 bg-slate-100 text-slate-500 dark:text-slate-400 rounded hover:bg-slate-200">
                             <X size={16} />
                           </button>
                         </div>
@@ -217,8 +217,8 @@ export default function HearingDocumentsModal({ isOpen, onClose, hearingData, on
                             <FileText size={18} />
                           </div>
                           <div>
-                            <p className="text-sm font-semibold text-slate-900 truncate">{doc.name}</p>
-                            <p className="text-xs text-slate-500">{new Date(doc.uploaded_at).toLocaleDateString()}</p>
+                            <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{doc.name}</p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">{new Date(doc.uploaded_at).toLocaleDateString()}</p>
                           </div>
                         </div>
                       )}

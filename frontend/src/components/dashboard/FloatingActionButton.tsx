@@ -25,18 +25,18 @@ export function FloatingActionButton({ onAction }: FloatingActionButtonProps) {
           isOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-90 translate-y-8 pointer-events-none'
         }`}
       >
-        <div className="bg-white rounded-2xl shadow-xl border border-slate-100 p-2 flex flex-col gap-1 w-48">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 p-2 flex flex-col gap-1 w-48 border dark:border-slate-800">
           {actions.map((action, idx) => (
             <button 
               key={idx} 
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors w-full text-left"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors w-full text-left"
               onClick={() => {
                 setIsOpen(false);
                 if (onAction) onAction(action.id);
               }}
             >
               <action.icon size={16} className={action.color} />
-              <span className="text-sm font-semibold text-slate-700">{action.name}</span>
+              <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{action.name}</span>
             </button>
           ))}
         </div>

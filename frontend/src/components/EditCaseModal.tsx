@@ -185,10 +185,10 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
-        <div className="flex items-center justify-between p-6 border-b border-slate-100 shrink-0">
-          <h2 className="text-xl font-bold text-slate-900">Edit Case Details</h2>
-          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-colors">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh] border dark:border-slate-800">
+        <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800 shrink-0">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white">Edit Case Details</h2>
+          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors">
             <X size={20} />
           </button>
         </div>
@@ -202,12 +202,12 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
 
           {/* Client Selection Combobox */}
           <div className="relative" ref={dropdownRef}>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Assigned Client</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Assigned Client</label>
             <div 
               className={`w-full px-4 py-2.5 bg-white dark:bg-slate-900 border ${isClientDropdownOpen ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-slate-200 dark:border-slate-700'} rounded-lg text-sm transition-all cursor-pointer flex items-center justify-between text-slate-900 dark:text-white`}
               onClick={() => setIsClientDropdownOpen(!isClientDropdownOpen)}
             >
-              <span className={selectedClientName ? 'text-slate-900 font-medium' : 'text-slate-400'}>
+              <span className={selectedClientName ? 'text-slate-900 dark:text-white font-medium' : 'text-slate-400'}>
                 {selectedClientName || 'Search & Select Client...'}
               </span>
               <Search size={16} className="text-slate-400" />
@@ -215,7 +215,7 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
 
             {isClientDropdownOpen && (
               <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 text-slate-900 dark:text-white">
-                <div className="p-2 border-b border-slate-100 bg-slate-50/50">
+                <div className="p-2 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50">
                   <input
                     type="text"
                     autoFocus
@@ -227,17 +227,17 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
                 </div>
                 <div className="max-h-48 overflow-y-auto">
                   {filteredClients.length === 0 ? (
-                    <div className="p-3 text-sm text-slate-500 text-center">No clients found matching '{clientSearchText}'</div>
+                    <div className="p-3 text-sm text-slate-500 dark:text-slate-400 text-center">No clients found matching '{clientSearchText}'</div>
                   ) : (
                     filteredClients.map(c => (
                       <div 
                         key={c.id} 
                         onClick={() => selectClient(c)}
-                        className="px-3 py-2 cursor-pointer hover:bg-slate-50 flex items-center justify-between group"
+                        className="px-3 py-2 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center justify-between group"
                       >
                         <div>
-                          <p className="text-sm font-medium text-slate-900 group-hover:text-blue-600">{c.name}</p>
-                          <p className="text-xs text-slate-500 font-mono">{c.client_number || '---'} | {c.cnic}</p>
+                          <p className="text-sm font-medium text-slate-900 dark:text-white group-hover:text-blue-600">{c.name}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 font-mono">{c.client_number || '---'} | {c.cnic}</p>
                         </div>
                         {formData.client === c.id && <Check size={16} className="text-blue-600" />}
                       </div>
@@ -250,7 +250,7 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
 
           {/* Advocate Selection */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Assigned Advocate</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Assigned Advocate</label>
             <div className="relative">
               <Users size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <select
@@ -270,7 +270,7 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Category</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Category</label>
               <select
                 value={formData.category}
                 onChange={(e) => setFormData({...formData, category: e.target.value})}
@@ -280,7 +280,7 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Priority</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Priority</label>
               <select
                 value={formData.priority}
                 onChange={(e) => setFormData({...formData, priority: e.target.value})}
@@ -290,7 +290,7 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Status</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Status</label>
               <select
                 value={formData.status}
                 onChange={(e) => setFormData({...formData, status: e.target.value})}
@@ -303,7 +303,7 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Case Number / FIR</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Case Number / FIR</label>
               <div className="relative">
                 <FolderOpen size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
@@ -318,7 +318,7 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Total Agreed Fee</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Total Agreed Fee</label>
               <div className="relative">
                 <Coins size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
@@ -336,7 +336,7 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Court Name / Location</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Court Name / Location</label>
             <div className="relative">
               <Scale size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <select
@@ -356,7 +356,7 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Opponent Name</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Opponent Name</label>
             <div className="relative">
               <UserX size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
@@ -411,11 +411,11 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
             
           </div>
 
-          <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 mt-6">
+          <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 dark:border-slate-800 mt-6">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-lg font-medium text-slate-600 hover:bg-slate-50 border border-slate-200 transition-colors"
+              className="px-4 py-2 rounded-lg font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors"
             >
               Cancel
             </button>

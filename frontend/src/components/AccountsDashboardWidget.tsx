@@ -33,17 +33,17 @@ export default function AccountsDashboardWidget() {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm animate-pulse space-y-6">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 p-6 shadow-sm animate-pulse space-y-6 border dark:border-slate-800">
         <div className="flex justify-between items-center">
           <div className="h-6 w-48 bg-slate-100 rounded"></div>
           <div className="h-6 w-24 bg-slate-100 rounded"></div>
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-24 bg-slate-50 rounded-2xl"></div>
+            <div key={i} className="h-24 bg-slate-50 dark:bg-slate-800/50 rounded-2xl"></div>
           ))}
         </div>
-        <div className="h-48 bg-slate-50 rounded-2xl"></div>
+        <div className="h-48 bg-slate-50 dark:bg-slate-800/50 rounded-2xl"></div>
       </div>
     );
   }
@@ -61,7 +61,7 @@ export default function AccountsDashboardWidget() {
   const overallMax = Math.max(billingMax, collectionsMax, 1);
 
   return (
-    <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-8 shadow-[0_4px_20px_-4px_rgba(6,81,237,0.03)] space-y-6 sm:space-y-8">
+    <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 p-6 sm:p-8 shadow-[0_4px_20px_-4px_rgba(6,81,237,0.03)] space-y-6 sm:space-y-8 border dark:border-slate-800">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-50 pb-4">
         <div className="flex items-center gap-2.5">
@@ -69,11 +69,11 @@ export default function AccountsDashboardWidget() {
             <Coins size={20} />
           </div>
           <div>
-            <h3 className="font-bold text-slate-800 text-lg tracking-tight">Financial Performance Overview</h3>
+            <h3 className="font-bold text-slate-800 dark:text-slate-200 text-lg tracking-tight">Financial Performance Overview</h3>
             <p className="text-slate-400 text-xs mt-0.5">Real-time ledger analytics & month-wise collections tracking</p>
           </div>
         </div>
-        <div className="flex items-center gap-1.5 bg-slate-50 text-slate-600 text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700/50 bg-white dark:bg-slate-900">
+        <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400 text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700/50 bg-white dark:bg-slate-900">
           <BarChart3 size={14} className="text-slate-400" />
           Analytics Dashboard
         </div>
@@ -82,12 +82,12 @@ export default function AccountsDashboardWidget() {
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1: Billed Current Month */}
-        <div className="bg-slate-50/60 p-5 rounded-2xl border border-slate-100 flex flex-col justify-between hover:bg-slate-50 hover:border-blue-100 transition-all duration-300">
+        <div className="bg-slate-50/60 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 flex flex-col justify-between hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-blue-100 transition-all duration-300">
           <div>
             <h4 className="text-slate-400 text-[11px] font-bold uppercase tracking-wider mb-1 flex items-center gap-1">
               <Receipt size={12} className="text-blue-500" /> Billed (This Month)
             </h4>
-            <p className="text-xl font-black font-mono text-slate-900 mt-1">
+            <p className="text-xl font-black font-mono text-slate-900 dark:text-white mt-1">
               Rs. {Number(data.current_month_billed).toLocaleString()}
             </p>
           </div>
@@ -97,7 +97,7 @@ export default function AccountsDashboardWidget() {
         </div>
 
         {/* Card 2: Collected Current Month */}
-        <div className="bg-slate-50/60 p-5 rounded-2xl border border-slate-100 flex flex-col justify-between hover:bg-slate-50 hover:border-emerald-100 transition-all duration-300">
+        <div className="bg-slate-50/60 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 flex flex-col justify-between hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-emerald-100 transition-all duration-300">
           <div>
             <h4 className="text-slate-400 text-[11px] font-bold uppercase tracking-wider mb-1 flex items-center gap-1">
               <Wallet size={12} className="text-emerald-500" /> Collected (This Month)
@@ -112,12 +112,12 @@ export default function AccountsDashboardWidget() {
         </div>
 
         {/* Card 3: Overall Collected */}
-        <div className="bg-slate-50/60 p-5 rounded-2xl border border-slate-100 flex flex-col justify-between hover:bg-slate-50 hover:border-teal-100 transition-all duration-300">
+        <div className="bg-slate-50/60 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 flex flex-col justify-between hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-teal-100 transition-all duration-300">
           <div>
             <h4 className="text-slate-400 text-[11px] font-bold uppercase tracking-wider mb-1 flex items-center gap-1">
               <CreditCard size={12} className="text-teal-500" /> Total Received
             </h4>
-            <p className="text-xl font-black font-mono text-slate-900 mt-1">
+            <p className="text-xl font-black font-mono text-slate-900 dark:text-white mt-1">
               Rs. {Number(data.overall_collected).toLocaleString()}
             </p>
           </div>
@@ -127,7 +127,7 @@ export default function AccountsDashboardWidget() {
         </div>
 
         {/* Card 4: Outstanding Balance */}
-        <div className="bg-slate-50/60 p-5 rounded-2xl border border-slate-100 flex flex-col justify-between hover:bg-slate-50 hover:border-rose-100 transition-all duration-300">
+        <div className="bg-slate-50/60 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 flex flex-col justify-between hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-rose-100 transition-all duration-300">
           <div>
             <h4 className="text-slate-400 text-[11px] font-bold uppercase tracking-wider mb-1 flex items-center gap-1">
               <TrendingUp size={12} className="text-rose-500" /> Total Outstanding
@@ -143,8 +143,8 @@ export default function AccountsDashboardWidget() {
       </div>
 
       {/* Progress Collected vs Remaining Gauge */}
-      <div className="bg-slate-50/40 border border-slate-100 rounded-2xl p-5">
-        <div className="flex justify-between items-center text-xs font-bold text-slate-600 uppercase tracking-wide mb-2.5">
+      <div className="bg-slate-50/40 border border-slate-100 dark:border-slate-800 rounded-2xl p-5">
+        <div className="flex justify-between items-center text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-2.5">
           <span>Collected: {collectionPercentage}%</span>
           <span>Remaining: {remainingPercentage}%</span>
         </div>
@@ -159,7 +159,7 @@ export default function AccountsDashboardWidget() {
           ></div>
         </div>
         <p className="text-slate-400 text-xs mt-2.5 text-center font-medium">
-          Of the total billed fee <strong className="text-slate-700 font-bold">Rs. {Number(data.overall_billed).toLocaleString()}</strong>, 
+          Of the total billed fee <strong className="text-slate-700 dark:text-slate-300 font-bold">Rs. {Number(data.overall_billed).toLocaleString()}</strong>, 
           the firm has successfully recovered <strong className="text-emerald-600 font-extrabold">Rs. {Number(data.overall_collected).toLocaleString()}</strong>.
         </p>
       </div>
@@ -167,20 +167,20 @@ export default function AccountsDashboardWidget() {
       {/* Billing vs Collections Monthwise Bar Chart */}
       <div className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-1">
-          <h4 className="text-slate-700 text-xs font-bold uppercase tracking-wider">Billing vs Collections (Last 6 Months)</h4>
+          <h4 className="text-slate-700 dark:text-slate-300 text-xs font-bold uppercase tracking-wider">Billing vs Collections (Last 6 Months)</h4>
           <div className="flex items-center gap-4 text-xs font-semibold">
             <div className="flex items-center gap-1.5">
               <span className="w-3 h-3 bg-blue-500 rounded-sm"></span>
-              <span className="text-slate-500">Invoiced Billing</span>
+              <span className="text-slate-500 dark:text-slate-400">Invoiced Billing</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="w-3 h-3 bg-emerald-500 rounded-sm"></span>
-              <span className="text-slate-500">Payments Collected</span>
+              <span className="text-slate-500 dark:text-slate-400">Payments Collected</span>
             </div>
           </div>
         </div>
 
-        <div className="border border-slate-100 rounded-2xl p-6 bg-slate-50/30">
+        <div className="border border-slate-100 dark:border-slate-800 rounded-2xl p-6 bg-slate-50/30">
           {data.billing_trend.length > 0 ? (
             <div className="flex items-end justify-between h-48 gap-3 sm:gap-6 pt-6">
               {data.billing_trend.map((b: any, idx: number) => {
@@ -198,7 +198,7 @@ export default function AccountsDashboardWidget() {
                       <p className="flex justify-between gap-4">Collected: <span className="font-mono font-bold text-emerald-400">Rs. {Number(c.amount).toLocaleString()}</span></p>
                     </div>
 
-                    <div className="flex items-end justify-center gap-1 sm:gap-1.5 w-full h-full border-b border-slate-200/80 pb-0.5">
+                    <div className="flex items-end justify-center gap-1 sm:gap-1.5 w-full h-full border-b border-slate-200 dark:border-slate-700/80 pb-0.5">
                       {/* Billing Bar (Blue) */}
                       <div className="w-[35%] bg-slate-100 rounded-t-sm overflow-hidden flex items-end h-full">
                         <div 

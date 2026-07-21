@@ -189,7 +189,7 @@ export default function CreateDeadlineModal({ isOpen, onClose, onSuccess, initia
                 className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer flex justify-between items-center transition-colors text-slate-900 dark:text-white"
                 onClick={() => setCaseMenuOpen(!caseMenuOpen)}
               >
-                <span className={`truncate ${selectedCaseObj ? 'text-slate-900 dark:text-white' : 'text-slate-400 dark:text-slate-500'}`}>
+                <span className={`truncate ${selectedCaseObj ? 'text-slate-900 dark:text-white' : 'text-slate-400 dark:text-slate-500 dark:text-slate-400'}`}>
                   {selectedCaseObj ? `${selectedCaseObj.case_number} - ${selectedCaseObj.client_name}` : 'Select Case (Optional)'}
                 </span>
               </div>
@@ -198,7 +198,7 @@ export default function CreateDeadlineModal({ isOpen, onClose, onSuccess, initia
                 <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg max-h-60 overflow-y-auto text-slate-900 dark:text-white">
                   <div className="sticky top-0 bg-white dark:bg-slate-800 p-2 border-b border-slate-100 dark:border-slate-700">
                     <div className="relative">
-                      <Search size={14} className="absolute left-3 top-2.5 text-slate-400 dark:text-slate-500" />
+                      <Search size={14} className="absolute left-3 top-2.5 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
                       <input
                         type="text"
                         placeholder="Search cases..."
@@ -255,7 +255,7 @@ export default function CreateDeadlineModal({ isOpen, onClose, onSuccess, initia
             <div>
               <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 transition-colors">Due Date</label>
               <div className="relative">
-                <Calendar className="absolute left-3 top-3 text-slate-400 dark:text-slate-500" size={18} />
+                <Calendar className="absolute left-3 top-3 text-slate-400 dark:text-slate-500 dark:text-slate-400" size={18} />
                 <input
                   type="date"
                   name="due_date"
@@ -322,7 +322,7 @@ export default function CreateDeadlineModal({ isOpen, onClose, onSuccess, initia
           <div>
             <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 transition-colors">Description</label>
             <div className="relative">
-              <AlignLeft className="absolute left-3 top-3 text-slate-400 dark:text-slate-500" size={18} />
+              <AlignLeft className="absolute left-3 top-3 text-slate-400 dark:text-slate-500 dark:text-slate-400" size={18} />
               <textarea
                 name="description"
                 value={formData.description}

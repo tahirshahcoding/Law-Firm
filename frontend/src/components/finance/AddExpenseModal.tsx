@@ -80,16 +80,16 @@ export default function AddExpenseModal({ onClose, onSuccess }: AddExpenseModalP
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden border dark:border-slate-800">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 shrink-0">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 dark:border-slate-800 shrink-0">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-rose-50 rounded-xl">
               <CreditCard size={18} className="text-rose-600" />
             </div>
-            <h2 className="text-base font-bold text-slate-900">Add Expense</h2>
+            <h2 className="text-base font-bold text-slate-900 dark:text-white">Add Expense</h2>
           </div>
-          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">
+          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
             <X size={18} />
           </button>
         </div>
@@ -102,7 +102,7 @@ export default function AddExpenseModal({ onClose, onSuccess }: AddExpenseModalP
           )}
 
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1.5">Description*</label>
+            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Description*</label>
             <input type="text" placeholder="e.g. Court filing fee"
               value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))}
               className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white" required />
@@ -110,14 +110,14 @@ export default function AddExpenseModal({ onClose, onSuccess }: AddExpenseModalP
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1.5">Category*</label>
+              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Category*</label>
               <select value={form.category} onChange={e => setForm(p => ({ ...p, category: e.target.value }))}
                 className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
                 {CATEGORIES.map(c => <option key={c}>{c}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1.5">Amount (PKR)*</label>
+              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Amount (PKR)*</label>
               <input type="number" min="0.01" step="0.01" placeholder="0"
                 value={form.amount} onChange={e => setForm(p => ({ ...p, amount: e.target.value }))}
                 className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white" required />
@@ -126,7 +126,7 @@ export default function AddExpenseModal({ onClose, onSuccess }: AddExpenseModalP
 
           {/* Related Case */}
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1.5">Related Case <span className="text-slate-400 font-normal">(optional)</span></label>
+            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Related Case <span className="text-slate-400 font-normal">(optional)</span></label>
             <div className="relative">
               <input type="text" placeholder="Search case…"
                 value={caseSearch}
@@ -139,8 +139,8 @@ export default function AddExpenseModal({ onClose, onSuccess }: AddExpenseModalP
                     <button key={c.id} type="button"
                       onClick={() => { setForm(p => ({ ...p, case: c.id })); setCaseSearch(`${c.case_number} – ${c.client_name}`); setShowCaseDropdown(false); }}
                       className="w-full text-left px-4 py-2 hover:bg-blue-50 border-b border-slate-50 last:border-0">
-                      <p className="text-sm font-semibold text-slate-800">{c.case_number}</p>
-                      <p className="text-xs text-slate-500">{c.client_name}</p>
+                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">{c.case_number}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{c.client_name}</p>
                     </button>
                   ))}
                 </div>
@@ -150,37 +150,37 @@ export default function AddExpenseModal({ onClose, onSuccess }: AddExpenseModalP
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1.5">Payment Method</label>
+              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Payment Method</label>
               <select value={form.payment_method} onChange={e => setForm(p => ({ ...p, payment_method: e.target.value }))}
                 className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
                 {PAYMENT_METHODS.map(m => <option key={m}>{m}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1.5">Date*</label>
+              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Date*</label>
               <input type="date" value={form.date} onChange={e => setForm(p => ({ ...p, date: e.target.value }))}
                 className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white" required />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1.5">Vendor / Payee</label>
+            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Vendor / Payee</label>
             <input type="text" placeholder="e.g. District Court"
               value={form.vendor} onChange={e => setForm(p => ({ ...p, vendor: e.target.value }))}
               className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white" />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1.5">Notes</label>
+            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Notes</label>
             <textarea rows={2} placeholder="Optional notes…"
               value={form.notes} onChange={e => setForm(p => ({ ...p, notes: e.target.value }))}
               className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white" />
           </div>
         </form>
 
-        <div className="px-6 py-4 border-t border-slate-100 shrink-0 flex gap-3 bg-white">
+        <div className="px-6 py-4 border-t border-slate-100 dark:border-slate-800 shrink-0 flex gap-3 bg-white">
           <button type="button" onClick={onClose}
-            className="flex-1 py-2.5 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors">
+            className="flex-1 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
             Cancel
           </button>
           <button type="submit" form="add-expense-form" disabled={loading}
