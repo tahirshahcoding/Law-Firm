@@ -33,6 +33,32 @@ export default function MessagesPage() {
   const [replyingTo, setReplyingTo] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Swipe to reply logic
+  const touchStartX = useRef<{ id: string; x: number } | null>(null);
+  const [swipeOffset, setSwipeOffset] = useState<{ id: string; offset: number } | null>(null);
+
+  const onTouchStart = (e: React.TouchEvent, msgId: string) => {
+    touchStartX.current = { id: msgId, x: e.touches[0].clientX };
+  };
+
+  const onTouchMove = (e: React.TouchEvent, msgId: string) => {
+    if (!touchStartX.current || touchStartX.current.id !== msgId) return;
+    const diff = e.touches[0].clientX - touchStartX.current.x;
+    if (diff > 0 && diff < 80) setSwipeOffset({ id: msgId, offset: diff });
+    else if (diff >= 80) setSwipeOffset({ id: msgId, offset: 80 });
+  };
+
+  const onTouchEnd = (msg: any, msgId: string) => {
+    if (swipeOffset && swipeOffset.id === msgId && swipeOffset.offset >= 50) {
+      setReplyingTo(msg);
+      if (typeof window !== 'undefined' && window.navigator && window.navigator.vibrate) {
+        window.navigator.vibrate(50);
+      }
+    }
+    touchStartX.current = null;
+    setSwipeOffset(null);
+  };
+
   const fetchConversations = async () => {
     try {
       const res = await apiFetch(`${API_BASE}/messages/conversations/`);
@@ -48,8 +74,12 @@ export default function MessagesPage() {
   const fetchMessages = async (clientId: string) => {
     try {
       const res = await apiFetch(`${API_BASE}/messages/?client_id=${clientId}`);
-      const data = await res.json();
-      setMessages(Array.isArray(data) ? data : (data.results || []));
+      const rawData = await res.json();
+      const data = Array.isArray(rawData) ? rawData : (rawData.results || []);
+      setMessages(prev => {
+        const optimistic = prev.filter((m: any) => m.is_optimistic);
+        return [...data, ...optimistic];
+      });
       await apiFetch(`${API_BASE}/messages/mark_read/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -272,8 +302,16 @@ export default function MessagesPage() {
                         const isStaff = msg.sender_type === 'Staff';
                         const prevMsg = i > 0 ? msgs[i - 1] : null;
                         const isGrouped = prevMsg && prevMsg.sender_type === msg.sender_type;
+                        const msgId = msg.id || String(i);
                         return (
-                          <div key={msg.id || i} className={`group flex items-end gap-2 ${isStaff ? 'justify-end' : 'justify-start'} ${isGrouped ? 'mt-0.5' : 'mt-3'}`}>
+                          <div 
+                            key={msgId} 
+                            className={`group flex items-end gap-2 ${isStaff ? 'justify-end' : 'justify-start'} ${isGrouped ? 'mt-0.5' : 'mt-3'} transition-transform duration-75`}
+                            style={{ transform: swipeOffset?.id === msgId ? `translateX(${swipeOffset.offset}px)` : 'translateX(0)' }}
+                            onTouchStart={(e) => onTouchStart(e, msgId)}
+                            onTouchMove={(e) => onTouchMove(e, msgId)}
+                            onTouchEnd={() => onTouchEnd(msg, msgId)}
+                          >
                             
                             {/* Reply button for client messages */}
                             {!isStaff && (

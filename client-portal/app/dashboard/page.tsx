@@ -167,6 +167,32 @@ export default function DashboardPage() {
   const [replyingTo, setReplyingTo] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Swipe to reply logic
+  const touchStartX = useRef<{ id: string; x: number } | null>(null);
+  const [swipeOffset, setSwipeOffset] = useState<{ id: string; offset: number } | null>(null);
+
+  const onTouchStart = (e: React.TouchEvent, msgId: string) => {
+    touchStartX.current = { id: msgId, x: e.touches[0].clientX };
+  };
+
+  const onTouchMove = (e: React.TouchEvent, msgId: string) => {
+    if (!touchStartX.current || touchStartX.current.id !== msgId) return;
+    const diff = e.touches[0].clientX - touchStartX.current.x;
+    if (diff > 0 && diff < 80) setSwipeOffset({ id: msgId, offset: diff });
+    else if (diff >= 80) setSwipeOffset({ id: msgId, offset: 80 });
+  };
+
+  const onTouchEnd = (msg: any, msgId: string) => {
+    if (swipeOffset && swipeOffset.id === msgId && swipeOffset.offset >= 50) {
+      setReplyingTo(msg);
+      if (typeof window !== 'undefined' && window.navigator && window.navigator.vibrate) {
+        window.navigator.vibrate(50);
+      }
+    }
+    touchStartX.current = null;
+    setSwipeOffset(null);
+  };
+
   const formatMsgTime = (dateStr: string) =>
     new Date(dateStr).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
@@ -221,7 +247,10 @@ export default function DashboardPage() {
       const res = await fetch(`${API_BASE}/portal/messages/`, { credentials: 'include' });
       if (res.ok) {
         const data = await res.json();
-        setMessages(data);
+        setMessages(prev => {
+          const optimistic = prev.filter((m: any) => m.is_optimistic);
+          return [...data, ...optimistic];
+        });
         try { localStorage.setItem('clientPortalMessages', JSON.stringify(data)); } catch (e) {}
       }
     } catch (error) {
@@ -1114,8 +1143,16 @@ export default function DashboardPage() {
                           const isClient = msg.sender_type === 'Client';
                           const prevMsg = i > 0 ? msgs[i - 1] : null;
                           const isGrouped = prevMsg && prevMsg.sender_type === msg.sender_type;
+                          const msgId = msg.id || String(i);
                           return (
-                            <div key={msg.id || i} className={`group flex items-end gap-2.5 ${isClient ? 'justify-end' : 'justify-start'} ${isGrouped ? 'mt-0.5' : 'mt-4'}`}>
+                            <div 
+                              key={msgId} 
+                              className={`group flex items-end gap-2.5 ${isClient ? 'justify-end' : 'justify-start'} ${isGrouped ? 'mt-0.5' : 'mt-4'} transition-transform duration-75`}
+                              style={{ transform: swipeOffset?.id === msgId ? `translateX(${swipeOffset.offset}px)` : 'translateX(0)' }}
+                              onTouchStart={(e) => onTouchStart(e, msgId)}
+                              onTouchMove={(e) => onTouchMove(e, msgId)}
+                              onTouchEnd={() => onTouchEnd(msg, msgId)}
+                            >
                               {/* Reply button (desktop hover, mobile tap) */}
                               {isClient && (
                                 <button onClick={() => setReplyingTo(msg)} className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 text-slate-400 hover:text-blue-600 rounded-full hover:bg-slate-100 mb-1">
