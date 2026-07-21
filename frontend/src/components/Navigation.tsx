@@ -33,7 +33,7 @@ export default function Navigation({ mobileOpen = false, onCloseMobile }: Naviga
       title: 'OPERATIONS',
       items: [
         { name: 'Clients', href: '/clients', icon: Users, module: 'clients' },
-        { name: 'Messages', href: '/messages', icon: MessageSquare, always: true },
+        { name: 'Messages', href: '/messages', icon: MessageSquare, module: 'messages' },
         { name: 'Cases', href: '/cases', icon: FolderOpen, module: 'cases' },
         { name: 'Hearings', href: '/hearings', icon: Gavel, module: 'hearings' },
         { name: 'Courts', href: '/courts', icon: Scale, module: 'courts' },
@@ -54,9 +54,9 @@ export default function Navigation({ mobileOpen = false, onCloseMobile }: Naviga
     {
       title: 'SCHEDULING',
       items: [
-        { name: 'Calendar', href: '/calendar', icon: CalendarDays, always: true },
+        { name: 'Calendar', href: '/calendar', icon: CalendarDays, module: 'calendar' },
         { name: 'Consultations', href: '/consultations', icon: MessageSquare, module: 'consultations' },
-        { name: 'Deadlines', href: '/deadlines', icon: Clock, always: true },
+        { name: 'Deadlines', href: '/deadlines', icon: Clock, module: 'deadlines' },
       ]
     },
     {

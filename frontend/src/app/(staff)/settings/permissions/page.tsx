@@ -96,6 +96,32 @@ const MODULES = [
       { key: 'delete', label: 'Delete' },
     ],
   },
+  {
+    key: 'messages',
+    label: 'Messages',
+    actions: [
+      { key: 'view',   label: 'View' },
+      { key: 'add',    label: 'Send' },
+      { key: 'delete', label: 'Delete' },
+    ],
+  },
+  {
+    key: 'deadlines',
+    label: 'Deadlines',
+    actions: [
+      { key: 'view',   label: 'View' },
+      { key: 'add',    label: 'Add' },
+      { key: 'edit',   label: 'Edit' },
+      { key: 'delete', label: 'Delete' },
+    ],
+  },
+  {
+    key: 'calendar',
+    label: 'Calendar',
+    actions: [
+      { key: 'view',   label: 'View' },
+    ],
+  },
 ];
 
 // ── Default permissions per role preset ──────────────────────────────────────
@@ -128,6 +154,9 @@ const ROLE_PRESETS: Record<string, Permissions> = {
     consultations: { view: true, edit: true, delete: false },
     courts:        { view: true, add: true, edit: true, delete: false },
     judges:        { view: true, add: true, edit: true, delete: false },
+    messages:      { view: true, add: true, delete: true },
+    deadlines:     { view: true, add: true, edit: true, delete: false },
+    calendar:      { view: true },
   }),
   'Senior Partner': buildFullPermissions({
     clients:       { view: true, add: true, edit: true, delete: true },
@@ -139,6 +168,9 @@ const ROLE_PRESETS: Record<string, Permissions> = {
     consultations: { view: true, edit: true, delete: true },
     courts:        { view: true, add: true, edit: true, delete: true },
     judges:        { view: true, add: true, edit: true, delete: true },
+    messages:      { view: true, add: true, delete: true },
+    deadlines:     { view: true, add: true, edit: true, delete: true },
+    calendar:      { view: true },
   }),
   Associate: buildFullPermissions({
     clients:       { view: true },
@@ -149,10 +181,15 @@ const ROLE_PRESETS: Record<string, Permissions> = {
     consultations: { view: true },
     courts:        { view: true },
     judges:        { view: true },
+    messages:      { view: true, add: true, delete: false },
+    deadlines:     { view: true, add: true, edit: true, delete: false },
+    calendar:      { view: true },
   }),
   Accountant: buildFullPermissions({
     accounts:      { view: true, add: true, edit: true, delete: false },
     consultations: { view: true },
+    messages:      { view: true, add: true, delete: false },
+    calendar:      { view: true },
   }),
   Staff: buildFullPermissions({
     clients:       { view: true },
@@ -161,6 +198,9 @@ const ROLE_PRESETS: Record<string, Permissions> = {
     diary:         { view: true, add: true, edit: true, delete: true },
     cause_list:    { view: true, print: true },
     consultations: { view: true },
+    messages:      { view: true, add: true, delete: false },
+    deadlines:     { view: true },
+    calendar:      { view: true },
   }),
   Admin: buildFullPermissions({
     clients:       { view: true, add: true, edit: true, delete: true },
@@ -172,6 +212,9 @@ const ROLE_PRESETS: Record<string, Permissions> = {
     consultations: { view: true, edit: true, delete: true },
     courts:        { view: true, add: true, edit: true, delete: true },
     judges:        { view: true, add: true, edit: true, delete: true },
+    messages:      { view: true, add: true, delete: true },
+    deadlines:     { view: true, add: true, edit: true, delete: true },
+    calendar:      { view: true },
   }),
 };
 
