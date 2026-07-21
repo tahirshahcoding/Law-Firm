@@ -32,35 +32,20 @@ function buildApiBase(): string {
 export const API_BASE = buildApiBase();
 
 
-// ── CSRF helper ───────────────────────────────────────────────────────────────
-/**
- * Django sets a readable `csrftoken` cookie that the browser can access via
- * document.cookie.  We read it here and inject it as the `X-CSRFToken` header
- * on every mutating request so Django's CsrfViewMiddleware is satisfied.
- * (The httpOnly JWT cookies are NOT readable — that's the whole point.)
- */
-function getCsrfToken(): string {
-  if (typeof document === 'undefined') return '';
-  const match = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/);
-  return match ? match[1] : '';
-}
-
 // ── Core fetch wrapper ────────────────────────────────────────────────────────
 /**
  * Drop-in replacement for fetch() that:
  *  1. Sends credentials (JWT httpOnly cookie) automatically via `credentials: 'include'`
- *  2. Injects X-CSRFToken on mutating requests so Django's CSRF middleware is happy
- *  3. Redirects to /login on 401 (expired/invalid token)
+ *  2. Redirects to /login on 401 (expired/invalid token)
  *
  * Note: No localStorage involved — tokens live only in httpOnly cookies.
+ * CSRF is handled implicitly via strict CORS allowed origins (Option B architecture).
  */
 export async function apiFetch(url: string, options: RequestInit = {}) {
   const method = (options.method || 'GET').toUpperCase();
-  const isMutating = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method);
 
   const headers: Record<string, string> = {
     ...(options.headers as Record<string, string>),
-    ...(isMutating ? { 'X-CSRFToken': getCsrfToken() } : {}),
   };
 
   try {

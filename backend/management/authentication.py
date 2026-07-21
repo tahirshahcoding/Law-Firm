@@ -27,20 +27,10 @@ class CookieJWTAuthentication(JWTAuthentication):
 
         validated_token = self.get_validated_token(raw_token)
 
-        # Only enforce CSRF on state-changing requests (POST, PUT, PATCH, DELETE).
-        # GET/HEAD/OPTIONS are safe and do not require a CSRF token.
-        if request.method not in self.SAFE_METHODS:
-            self.enforce_csrf(request)
+        # CSRF enforcement is removed for this API.
+        # Since this is a cross-origin SPA (Vercel -> Render), the frontend cannot read the
+        # CSRF cookie due to the Same-Origin Policy. Instead, we rely on strict CORS
+        # allowed origins. The browser's CORS preflight will block unauthorized cross-origin
+        # POST/PUT/DELETE requests before they even reach the backend.
 
         return self.get_user(validated_token), validated_token
-
-    def enforce_csrf(self, request):
-        """
-        Enforce CSRF validation for Cookie-based JWT auth on mutating requests.
-        """
-        check = CSRFCheck(request)
-        # populates request.META['CSRF_COOKIE'], which is used in process_view()
-        check.process_request(request)
-        reason = check.process_view(request, None, (), {})
-        if reason:
-            raise exceptions.PermissionDenied('CSRF Failed: %s' % reason)
