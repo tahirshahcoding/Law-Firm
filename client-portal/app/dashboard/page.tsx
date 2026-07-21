@@ -490,13 +490,11 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              {/* Main Grid */}
+              {/* Main Grid - on mobile widgets come first, then lists */}
               <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                {/* Left Column - Large lists */}
-                <div className="lg:col-span-3 space-y-6">
-                  
-                  {/* Upcoming Hearings */}
-                  <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
+                {/* Right Column - Widgets (shown first on mobile) */}
+                <div className="space-y-4 lg:order-last">
+
                     <div className="flex items-center justify-between mb-6">
                       <h3 className="text-sm font-bold text-slate-900">{t.dashboard.upcomingHearings}</h3>
                       <button onClick={() => setActiveTab('hearings')} className="text-xs font-bold text-blue-600 hover:text-blue-800">{t.dashboard.viewAll}</button>
@@ -532,7 +530,7 @@ export default function DashboardPage() {
                   </div>
 
                   {/* Case Progress */}
-                  <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
+                  <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-4 sm:p-6">
                     <div className="flex items-center justify-between mb-6">
                       <h3 className="text-sm font-bold text-slate-900">{t.dashboard.caseProgressOverview}</h3>
                       <button onClick={() => setActiveTab('cases')} className="text-xs font-bold text-blue-600 hover:text-blue-800">{t.dashboard.viewAll}</button>
@@ -563,9 +561,7 @@ export default function DashboardPage() {
                   </div>
 
                 </div>
-
-                {/* Right Column - Widgets */}
-                <div className="space-y-6">
+              </div>
                   
                   {/* Next Hearing Widget */}
                   {upcoming.length > 0 && (
@@ -885,7 +881,26 @@ export default function DashboardPage() {
                   <EmptyState message="No challans issued yet." />
                 ) : (
                   <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
-                    <div className="overflow-x-auto">
+                    {/* Mobile: card list */}
+                    <div className="sm:hidden divide-y divide-slate-50">
+                      {invoices.map((inv: any) => (
+                        <div key={inv.id} className="px-4 py-4">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0">
+                              <p className="font-mono text-xs font-bold text-slate-500">{inv.invoice_number}</p>
+                              <p className="font-mono text-xs text-slate-500 mt-0.5">{inv.case_number}</p>
+                              <p className="font-bold text-slate-900 mt-1">Rs. {Number(inv.amount).toLocaleString()}</p>
+                              <p className="text-xs text-slate-400 mt-0.5">Due: {fmt(inv.due_date)}</p>
+                            </div>
+                            <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full border shrink-0 ${invoiceStatusColor(inv.status)}`}>
+                              {invoiceStatusIcon(inv.status)} {inv.status}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    {/* Desktop: table */}
+                    <div className="hidden sm:block overflow-x-auto">
                       <table className="w-full text-start text-sm min-w-[500px]">
                         <thead className="bg-slate-50 border-b border-slate-100 text-xs font-bold text-slate-400 uppercase tracking-wider">
                           <tr>
@@ -923,7 +938,24 @@ export default function DashboardPage() {
                   <EmptyState message="No payments recorded yet." />
                 ) : (
                   <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
-                    <div className="overflow-x-auto">
+                    {/* Mobile: card list */}
+                    <div className="sm:hidden divide-y divide-slate-50">
+                      {payments.map((p: any) => (
+                        <div key={p.id} className="px-4 py-3.5 flex items-center justify-between">
+                          <div>
+                            <p className="font-mono text-xs text-slate-500">{p.case_number}</p>
+                            <p className="font-bold text-emerald-700 mt-0.5">Rs. {Number(p.amount_received).toLocaleString()}</p>
+                          </div>
+                          <p className="text-xs text-slate-400">{fmt(p.payment_date)}</p>
+                        </div>
+                      ))}
+                      <div className="bg-emerald-50 px-4 py-3 flex items-center justify-between border-t border-emerald-100">
+                        <p className="text-xs font-bold text-emerald-700">Total Paid</p>
+                        <p className="font-extrabold text-emerald-700">Rs. {totalPaid.toLocaleString()}</p>
+                      </div>
+                    </div>
+                    {/* Desktop: table */}
+                    <div className="hidden sm:block overflow-x-auto">
                       <table className="w-full text-start text-sm min-w-[400px]">
                         <thead className="bg-slate-50 border-b border-slate-100 text-xs font-bold text-slate-400 uppercase tracking-wider">
                           <tr>
@@ -957,7 +989,7 @@ export default function DashboardPage() {
           )}
 
           {activeTab === 'messages' && (
-            <div className="w-full max-w-3xl mx-auto flex flex-col rounded-none sm:rounded-3xl overflow-hidden border-0 sm:border border-slate-200/60 shadow-none sm:shadow-xl bg-white animate-in fade-in duration-300" style={{ height: 'calc(100vh - 136px)' }}>
+            <div className="w-full max-w-3xl mx-auto flex flex-col rounded-none sm:rounded-3xl overflow-hidden border-0 sm:border border-slate-200/60 shadow-none sm:shadow-xl bg-white animate-in fade-in duration-300" style={{ height: 'calc(100dvh - 136px)' }}>
 
               {/* ── Chat Header ── */}
               <div className="bg-white border-b border-slate-100 px-5 py-3.5 flex items-center gap-4 shrink-0">
