@@ -236,6 +236,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
+                    suppressHydrationWarning
                     className="absolute inset-y-0 right-2 px-3 flex items-center text-slate-400 hover:text-[#0d6efd] hover:bg-blue-50 transition-colors rounded-xl my-2"
                   >
                     {showPassword ? <EyeOff className="h-[18px] w-[18px]" strokeWidth={2} /> : <Eye className="h-[18px] w-[18px]" strokeWidth={2} />}
