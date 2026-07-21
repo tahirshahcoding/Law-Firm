@@ -27,9 +27,10 @@ function buildApiBase(): string {
     const isLocal =
       hostname === 'localhost' ||
       hostname === '127.0.0.1' ||
-      hostname.startsWith('192.168.');
+      hostname.startsWith('192.168.') ||
+      hostname.startsWith('10.');
     return isLocal
-      ? 'http://localhost:8000/api'
+      ? `http://${hostname}:8000/api`
       : '/api-proxy';
   }
 

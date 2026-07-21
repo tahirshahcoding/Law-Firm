@@ -4,7 +4,7 @@ let apiBase = 'http://localhost:8000/api';
 
 if (typeof window !== 'undefined') {
   const hostname = window.location.hostname;
-  const isLocal = hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.');
+  const isLocal = hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.') || hostname.startsWith('10.');
   
   if (!isLocal) {
     // Production API server
@@ -12,7 +12,7 @@ if (typeof window !== 'undefined') {
     apiBase = envUrl.includes('hf.space') ? '/api-proxy' : envUrl;
   } else {
     // Local dev API server
-    const envUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+    const envUrl = process.env.NEXT_PUBLIC_API_URL || `http://${hostname}:8000/api`;
     apiBase = envUrl.includes('hf.space') ? '/api-proxy' : envUrl;
   }
 } else {
