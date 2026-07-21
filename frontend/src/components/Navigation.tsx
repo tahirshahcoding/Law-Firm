@@ -36,8 +36,8 @@ export default function Navigation({ mobileOpen = false, onCloseMobile }: Naviga
         { name: 'Messages', href: '/messages', icon: MessageSquare, always: true },
         { name: 'Cases', href: '/cases', icon: FolderOpen, module: 'cases' },
         { name: 'Hearings', href: '/hearings', icon: Gavel, module: 'hearings' },
-        { name: 'Courts', href: '/courts', icon: Scale, adminOnly: true },
-        { name: 'Judges', href: '/judges', icon: BookOpen, adminOnly: true },
+        { name: 'Courts', href: '/courts', icon: Scale, module: 'courts' },
+        { name: 'Judges', href: '/judges', icon: BookOpen, module: 'judges' },
         { name: 'Cause List', href: '/cause-list', icon: CalendarDays, module: 'cause_list' },
         { name: 'Daily Diary', href: '/diary', icon: Calendar, module: 'diary' },
       ]
@@ -46,9 +46,9 @@ export default function Navigation({ mobileOpen = false, onCloseMobile }: Naviga
       title: 'FINANCE & BILLING',
       items: [
         { name: 'Accounts', href: '/accounts', icon: Coins, module: 'accounts' },
-        { name: 'Invoices', href: '/invoices', icon: Receipt, always: true },
-        { name: 'Expenses', href: '/expenses', icon: CreditCard, always: true },
-        { name: 'Revenue', href: '/revenue', icon: CircleDollarSign, always: true },
+        { name: 'Invoices', href: '/invoices', icon: Receipt, module: 'accounts' },
+        { name: 'Expenses', href: '/expenses', icon: CreditCard, module: 'accounts' },
+        { name: 'Revenue', href: '/revenue', icon: CircleDollarSign, module: 'accounts' },
       ]
     },
     {

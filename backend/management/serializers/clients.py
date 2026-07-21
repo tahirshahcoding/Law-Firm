@@ -4,7 +4,16 @@ from management.models import Client, ConsultationRequest
 class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
-        fields = '__all__'
+        fields = [
+            'id', 
+            'user', 
+            'client_number', 
+            'name', 
+            'cnic', 
+            'mobile_number', 
+            'address', 
+            'created_at'
+        ]
 
 class ConsultationRequestSerializer(serializers.ModelSerializer):
     class Meta:

@@ -14,6 +14,7 @@ from django.db.models import Sum, Q
 from django.db.models.functions import Greatest, TruncMonth
 from django.contrib.postgres.search import TrigramSimilarity
 from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from ..models import (
@@ -25,6 +26,7 @@ from ..serializers import (
     TaskSerializer, InvoiceSerializer, UserSerializer, CustomTokenObtainPairSerializer,
     PaymentSerializer, ExpenseSerializer, ConsultationRequestSerializer, CaseTimelineSerializer, CourtSerializer, JudgeSerializer, CalendarEventSerializer, NotificationSerializer, DeadlineSerializer
 )
+from ..permissions import HasModulePermission
 
 try:
     import boto3
@@ -183,6 +185,12 @@ class AdminUserView(APIView):
             return _error("Forbidden", status.HTTP_403_FORBIDDEN)
 
         data = request.data
+        
+        try:
+            validate_password(data['password'])
+        except ValidationError as e:
+            return _error(f"Weak password: {', '.join([str(m) for m in e.messages])}", status.HTTP_400_BAD_REQUEST)
+
         # Both User + UserProfile must succeed or both must roll back.
         try:
             user = User.objects.create_user(
@@ -367,8 +375,9 @@ class ClientPortalView(APIView):
 # ── Client ViewSet ────────────────────────────────────────────────────────────
 
 class ClientViewSet(viewsets.ModelViewSet):
+    required_module = 'clients'
     serializer_class = ClientSerializer
-    permission_classes = [IsStaffUser]
+    permission_classes = [IsStaffUser, HasModulePermission]
     filter_backends = [filters.SearchFilter]
     search_fields = ['name', 'cnic', 'client_number', 'cases__case_number']
 
@@ -419,8 +428,7 @@ class ClientViewSet(viewsets.ModelViewSet):
                     first_name=client.name
                 )
                 client.user = user
-                client.portal_password = raw_password
-                client.save(update_fields=['user', 'portal_password'])
+                client.save(update_fields=['user'])
             else:
                 raw_password = None
         except IntegrityError as e:
@@ -464,9 +472,6 @@ class ClientResetPasswordView(APIView):
         new_password = ''.join(secrets.choice(alphabet) for _ in range(12))
         client.user.set_password(new_password)
         client.user.save()
-        
-        client.portal_password = new_password
-        client.save(update_fields=['portal_password'])
 
         return Response({
             'portal_username': client.client_number,
@@ -493,17 +498,14 @@ class ClientChangePasswordView(APIView):
         if not request.user.check_password(current_password):
             return _error("Incorrect current password.", status.HTTP_400_BAD_REQUEST)
             
-        if len(new_password) < 6:
-            return _error("New password must be at least 6 characters long.", status.HTTP_400_BAD_REQUEST)
+        try:
+            validate_password(new_password, user=request.user)
+        except ValidationError as e:
+            return _error(f"Weak password: {', '.join([str(m) for m in e.messages])}", status.HTTP_400_BAD_REQUEST)
             
         try:
             request.user.set_password(new_password)
             request.user.save(update_fields=['password'])
-            
-            # Keep portal_password in sync for admin reference
-            client = request.user.client_profile
-            client.portal_password = new_password
-            client.save(update_fields=['portal_password'])
             
             return Response({'message': 'Password changed successfully.'}, status=status.HTTP_200_OK)
         except Exception as e:
@@ -512,14 +514,15 @@ class ClientChangePasswordView(APIView):
 # ── Case ViewSet ──────────────────────────────────────────────────────────────
 
 class ConsultationViewSet(viewsets.ModelViewSet):
+    required_module = 'consultations'
     queryset = ConsultationRequest.objects.all().order_by('-created_at')
     serializer_class = ConsultationRequestSerializer
     throttle_scope = 'consultation'
 
     def get_permissions(self):
-        if self.action == 'create':
+        if self.request.method == 'POST':
             return [AllowAny()]
-        return [IsAuthenticated()]
+        return [IsStaffUser(), HasModulePermission()]
 
     @transaction.atomic
     def create(self, request, *args, **kwargs):

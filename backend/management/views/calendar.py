@@ -26,6 +26,7 @@ from ..serializers import (
     TaskSerializer, InvoiceSerializer, UserSerializer, CustomTokenObtainPairSerializer,
     PaymentSerializer, ExpenseSerializer, ConsultationRequestSerializer, CaseTimelineSerializer, CourtSerializer, JudgeSerializer, CalendarEventSerializer, NotificationSerializer, DeadlineSerializer
 )
+from ..permissions import HasModulePermission
 
 try:
     import boto3
@@ -84,9 +85,10 @@ from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 
 
 class TaskViewSet(viewsets.ModelViewSet):
+    required_module = 'diary'
     queryset = Task.objects.all().order_by('is_completed', '-created_at')
     serializer_class = TaskSerializer
-    permission_classes = [IsStaffUser]
+    permission_classes = [IsStaffUser, HasModulePermission]
 
     @transaction.atomic
     def create(self, request, *args, **kwargs):
@@ -105,7 +107,7 @@ class TaskViewSet(viewsets.ModelViewSet):
 
 class CalendarEventViewSet(viewsets.ModelViewSet):
     serializer_class = CalendarEventSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsStaffUser]
     filter_backends = [filters.SearchFilter]
     search_fields = ['title', 'description', 'location', 'case__case_number', 'client__name']
 
@@ -147,7 +149,7 @@ class CalendarEventViewSet(viewsets.ModelViewSet):
 
 class DeadlineViewSet(viewsets.ModelViewSet):
     serializer_class = DeadlineSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsStaffUser]
 
     def get_queryset(self):
         user = self.request.user

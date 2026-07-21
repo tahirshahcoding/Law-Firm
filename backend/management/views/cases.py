@@ -26,6 +26,7 @@ from ..serializers import (
     TaskSerializer, InvoiceSerializer, UserSerializer, CustomTokenObtainPairSerializer,
     PaymentSerializer, ExpenseSerializer, ConsultationRequestSerializer, CaseTimelineSerializer, CourtSerializer, JudgeSerializer, CalendarEventSerializer, NotificationSerializer, DeadlineSerializer
 )
+from ..permissions import HasModulePermission
 
 try:
     import boto3
@@ -84,8 +85,9 @@ from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 
 
 class CaseViewSet(viewsets.ModelViewSet):
+    required_module = 'cases'
     serializer_class = CaseSerializer
-    permission_classes = [IsStaffUser]
+    permission_classes = [IsStaffUser, HasModulePermission]
     filter_backends = [filters.SearchFilter]
     search_fields = ['case_number', 'opponent_name', 'court__name']
 
@@ -202,8 +204,9 @@ class ConflictCheckView(APIView):
 # ── Hearing ViewSet ───────────────────────────────────────────────────────────
 
 class HearingViewSet(viewsets.ModelViewSet):
+    required_module = 'hearings'
     serializer_class = HearingSerializer
-    permission_classes = [IsStaffUser]
+    permission_classes = [IsStaffUser, HasModulePermission]
 
     def get_queryset(self):
         from django.db.models import OuterRef, Subquery
@@ -263,13 +266,14 @@ class HearingViewSet(viewsets.ModelViewSet):
 # ── HearingDocument ViewSet ───────────────────────────────────────────────────
 
 class HearingDocumentViewSet(viewsets.ModelViewSet):
+    required_module = 'hearings'
+    permission_classes = [IsStaffUser, HasModulePermission]
     queryset = (
         HearingDocument.objects
         .select_related('hearing', 'hearing__case')
         .order_by('-uploaded_at')
     )
     serializer_class = HearingDocumentSerializer
-    permission_classes = [IsStaffUser]
     parser_classes = [MultiPartParser, FormParser]
 
     def create(self, request, *args, **kwargs):
@@ -332,9 +336,10 @@ class HearingDocumentViewSet(viewsets.ModelViewSet):
 # ── Task ViewSet ──────────────────────────────────────────────────────────────
 
 class CourtViewSet(viewsets.ModelViewSet):
+    required_module = 'courts'
     queryset = Court.objects.all().order_by('name')
     serializer_class = CourtSerializer
-    permission_classes = [IsStaffUser]
+    permission_classes = [IsStaffUser, HasModulePermission]
     filter_backends = [filters.SearchFilter]
     search_fields = ['name', 'type', 'district', 'tehsil']
 
@@ -346,9 +351,10 @@ class CourtViewSet(viewsets.ModelViewSet):
             return _error("Cannot delete this court because it is assigned to one or more active cases.", status.HTTP_400_BAD_REQUEST)
 
 class JudgeViewSet(viewsets.ModelViewSet):
+    required_module = 'judges'
     queryset = Judge.objects.all().order_by('name')
     serializer_class = JudgeSerializer
-    permission_classes = [IsStaffUser]
+    permission_classes = [IsStaffUser, HasModulePermission]
     filter_backends = [filters.SearchFilter]
     search_fields = ['name', 'court__name']
 

@@ -15,7 +15,6 @@ class Client(models.Model):
     cnic = models.CharField(max_length=15, unique=True, db_index=True)
     mobile_number = models.CharField(max_length=20)
     address = models.TextField()
-    portal_password = models.CharField(max_length=128, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     history = HistoricalRecords()
 

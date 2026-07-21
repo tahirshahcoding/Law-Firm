@@ -25,10 +25,12 @@ class MessageSerializer(serializers.ModelSerializer):
             }
         return None
 
+from .users import IsStaffUser
+
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all().select_related('client', 'staff_sender')
     serializer_class = MessageSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsStaffUser]
 
     def get_queryset(self):
         # Staff can see all messages, but they usually want to filter by client

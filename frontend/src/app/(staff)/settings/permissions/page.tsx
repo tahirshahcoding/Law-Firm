@@ -76,6 +76,26 @@ const MODULES = [
       { key: 'delete', label: 'Delete' },
     ],
   },
+  {
+    key: 'courts',
+    label: 'Courts',
+    actions: [
+      { key: 'view',   label: 'View' },
+      { key: 'add',    label: 'Add' },
+      { key: 'edit',   label: 'Edit' },
+      { key: 'delete', label: 'Delete' },
+    ],
+  },
+  {
+    key: 'judges',
+    label: 'Judges',
+    actions: [
+      { key: 'view',   label: 'View' },
+      { key: 'add',    label: 'Add' },
+      { key: 'edit',   label: 'Edit' },
+      { key: 'delete', label: 'Delete' },
+    ],
+  },
 ];
 
 // ── Default permissions per role preset ──────────────────────────────────────
@@ -106,6 +126,8 @@ const ROLE_PRESETS: Record<string, Permissions> = {
     diary:         { view: true, add: true, edit: true, delete: true },
     cause_list:    { view: true, print: true },
     consultations: { view: true, edit: true, delete: false },
+    courts:        { view: true, add: true, edit: true, delete: false },
+    judges:        { view: true, add: true, edit: true, delete: false },
   }),
   'Senior Partner': buildFullPermissions({
     clients:       { view: true, add: true, edit: true, delete: true },
@@ -115,6 +137,8 @@ const ROLE_PRESETS: Record<string, Permissions> = {
     diary:         { view: true, add: true, edit: true, delete: true },
     cause_list:    { view: true, print: true },
     consultations: { view: true, edit: true, delete: true },
+    courts:        { view: true, add: true, edit: true, delete: true },
+    judges:        { view: true, add: true, edit: true, delete: true },
   }),
   Associate: buildFullPermissions({
     clients:       { view: true },
@@ -123,6 +147,8 @@ const ROLE_PRESETS: Record<string, Permissions> = {
     diary:         { view: true, add: true, edit: true, delete: true },
     cause_list:    { view: true, print: true },
     consultations: { view: true },
+    courts:        { view: true },
+    judges:        { view: true },
   }),
   Accountant: buildFullPermissions({
     accounts:      { view: true, add: true, edit: true, delete: false },
@@ -144,6 +170,8 @@ const ROLE_PRESETS: Record<string, Permissions> = {
     diary:         { view: true, add: true, edit: true, delete: true },
     cause_list:    { view: true, print: true },
     consultations: { view: true, edit: true, delete: true },
+    courts:        { view: true, add: true, edit: true, delete: true },
+    judges:        { view: true, add: true, edit: true, delete: true },
   }),
 };
 
