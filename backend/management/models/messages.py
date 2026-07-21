@@ -13,6 +13,7 @@ class Message(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='messages')
     sender_type = models.CharField(max_length=20, choices=SENDER_CHOICES)
     staff_sender = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name='sent_messages')
+    reply_to = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='replies')
     content = models.TextField()
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)

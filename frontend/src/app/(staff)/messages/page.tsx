@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { apiFetch, API_BASE } from '@/lib/api';
-import { MessageSquare, Send, CheckCheck, Check, Search, MoreVertical } from 'lucide-react';
+import { MessageSquare, Send, CheckCheck, Check, Search, MoreVertical, CornerUpLeft, Clock, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 // Helper: get up to 2 uppercase initials from a name
@@ -30,6 +30,7 @@ export default function MessagesPage() {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [search, setSearch] = useState('');
+  const [replyingTo, setReplyingTo] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const fetchConversations = async () => {
@@ -82,24 +83,45 @@ export default function MessagesPage() {
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim() || !activeClient) return;
-    setSending(true);
+    
+    const messageContent = newMessage;
+    const replyToId = replyingTo?.id || null;
+    const replyDetails = replyingTo ? { id: replyingTo.id, content: replyingTo.content, sender_type: replyingTo.sender_type } : null;
+    
+    // OPTIMISTIC UI
+    const tempId = 'temp-' + Date.now();
+    const tempMsg = {
+      id: tempId,
+      content: messageContent,
+      sender_type: 'Staff',
+      created_at: new Date().toISOString(),
+      is_read: false,
+      is_optimistic: true,
+      reply_to_details: replyDetails
+    };
+    
+    setMessages(prev => [...prev, tempMsg]);
+    setNewMessage('');
+    setReplyingTo(null);
+    
     try {
       const res = await apiFetch(`${API_BASE}/messages/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ client: activeClient.client_id, content: newMessage }),
+        body: JSON.stringify({ client: activeClient.client_id, content: messageContent, reply_to: replyToId }),
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         throw new Error(err.error || err.detail || res.statusText);
       }
-      setNewMessage('');
-      fetchMessages(activeClient.client_id);
-      fetchConversations();
+      
+      const finalMsg = await res.json();
+      setMessages(prev => prev.map(m => m.id === tempId ? finalMsg : m));
+      // fetchMessages(activeClient.client_id); // Optional, since we have optimistic UI
+      fetchConversations(); // update latest message snippet in sidebar
     } catch (error: any) {
       toast.error('Failed to send: ' + error.message);
-    } finally {
-      setSending(false);
+      setMessages(prev => prev.filter(m => m.id !== tempId));
     }
   };
 
@@ -251,31 +273,67 @@ export default function MessagesPage() {
                         const prevMsg = i > 0 ? msgs[i - 1] : null;
                         const isGrouped = prevMsg && prevMsg.sender_type === msg.sender_type;
                         return (
-                          <div key={msg.id || i} className={`flex items-end gap-2 ${isStaff ? 'justify-end' : 'justify-start'} ${isGrouped ? 'mt-0.5' : 'mt-3'}`}>
+                          <div key={msg.id || i} className={`group flex items-end gap-2 ${isStaff ? 'justify-end' : 'justify-start'} ${isGrouped ? 'mt-0.5' : 'mt-3'}`}>
+                            
+                            {/* Reply button for client messages */}
+                            {!isStaff && (
+                              <button onClick={() => setReplyingTo(msg)} className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 text-slate-400 hover:text-blue-600 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 mb-1">
+                                <CornerUpLeft size={14} />
+                              </button>
+                            )}
+
                             {!isStaff && (
                               <div className={`w-7 h-7 rounded-full shrink-0 flex items-center justify-center text-[10px] font-black text-white bg-gradient-to-br from-slate-400 to-slate-600 ${isGrouped ? 'invisible' : ''}`}>
                                 {initials(activeClient.client_name)}
                               </div>
                             )}
-                            <div className="max-w-[65%]">
+                            <div className="max-w-[65%] flex flex-col">
                               <div className={`px-4 py-2.5 shadow-sm text-sm leading-relaxed ${
                                 isStaff
                                   ? `bg-blue-600 text-white ${isGrouped ? 'rounded-2xl rounded-tr-md' : 'rounded-2xl rounded-tr-sm'}`
                                   : `bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-800 dark:text-slate-100 ${isGrouped ? 'rounded-2xl rounded-tl-md' : 'rounded-2xl rounded-tl-sm'}`
-                              }`}>
+                              } ${msg.is_optimistic ? 'opacity-70' : ''}`}>
+                                
+                                {/* Quoted Reply Section */}
+                                {msg.reply_to_details && (
+                                  <div className={`mb-1.5 px-2.5 py-1.5 rounded-lg text-[11px] border-l-4 ${
+                                    isStaff 
+                                      ? 'bg-blue-700/50 border-blue-300 text-blue-50' 
+                                      : 'bg-slate-100 dark:bg-slate-700/50 border-slate-400 dark:border-slate-500 text-slate-600 dark:text-slate-300'
+                                  }`}>
+                                    <p className={`font-bold mb-0.5 ${isStaff ? 'text-blue-200' : 'text-slate-700 dark:text-slate-200'}`}>
+                                      {msg.reply_to_details.sender_type === 'Staff' ? 'You' : activeClient.client_name}
+                                    </p>
+                                    <p className="line-clamp-2 truncate whitespace-normal leading-snug">{msg.reply_to_details.content}</p>
+                                  </div>
+                                )}
+
                                 <p className="whitespace-pre-wrap">{msg.content}</p>
+                                
                                 <div className="flex items-center gap-1 mt-1.5 justify-end">
                                   <span className={`text-[10px] font-medium ${isStaff ? 'text-blue-200' : 'text-slate-400 dark:text-slate-500'}`}>
                                     {formatTime(msg.created_at)}
                                   </span>
                                   {isStaff && (
-                                    msg.is_read
-                                      ? <CheckCheck size={13} className="text-cyan-300" />
-                                      : <Check size={13} className="text-blue-300/70" />
+                                    msg.is_optimistic ? (
+                                      <Clock size={11} className="text-blue-300/70" />
+                                    ) : msg.is_read ? (
+                                      <CheckCheck size={13} className="text-cyan-300" />
+                                    ) : (
+                                      <Check size={13} className="text-blue-300/70" />
+                                    )
                                   )}
                                 </div>
                               </div>
                             </div>
+                            
+                            {/* Reply button for staff messages */}
+                            {isStaff && (
+                              <button onClick={() => setReplyingTo(msg)} className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 text-slate-400 hover:text-blue-600 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 mb-1">
+                                <CornerUpLeft size={14} />
+                              </button>
+                            )}
+
                           </div>
                         );
                       })}
@@ -287,29 +345,48 @@ export default function MessagesPage() {
             </div>
 
             {/* Input Bar */}
-            <div className="px-4 py-3 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 shrink-0">
-              <form onSubmit={sendMessage} className="flex items-end gap-2">
-                <input
-                  type="text"
-                  value={newMessage}
-                  onChange={e => setNewMessage(e.target.value)}
-                  placeholder="Write a message…"
-                  className="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl px-5 py-3.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all"
-                  disabled={sending}
-                  onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(e as any); } }}
-                />
-                <button
-                  type="submit"
-                  disabled={!newMessage.trim() || sending}
-                  className="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 active:scale-95 disabled:opacity-40 transition-all shadow-lg shadow-blue-600/30 shrink-0"
-                >
-                  {sending
-                    ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    : <Send size={17} className="-ml-0.5" />
-                  }
-                </button>
-              </form>
-              <p className="text-[11px] text-slate-400 dark:text-slate-600 text-center mt-2">Enter to send · Shift+Enter for new line</p>
+            <div className="border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 shrink-0 relative">
+              
+              {/* Reply Preview */}
+              {replyingTo && (
+                <div className="absolute bottom-full left-0 right-0 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 px-6 py-2.5 flex items-center gap-3 animate-in slide-in-from-bottom-2">
+                  <div className="w-1 h-full rounded-full bg-blue-500 self-stretch min-h-[36px]" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-bold text-blue-600 dark:text-blue-400 mb-0.5">
+                      {replyingTo.sender_type === 'Staff' ? 'You' : activeClient.client_name}
+                    </p>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-1 truncate">{replyingTo.content}</p>
+                  </div>
+                  <button type="button" onClick={() => setReplyingTo(null)} className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
+                    <X size={16} />
+                  </button>
+                </div>
+              )}
+
+              <div className="px-6 py-4">
+                <form onSubmit={sendMessage} className="flex items-end gap-2">
+                  <input
+                    type="text"
+                    value={newMessage}
+                    onChange={e => setNewMessage(e.target.value)}
+                    placeholder="Write a message…"
+                    className="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl px-5 py-3.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all"
+                    disabled={sending}
+                    onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(e as any); } }}
+                  />
+                  <button
+                    type="submit"
+                    disabled={!newMessage.trim() || sending}
+                    className="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 active:scale-95 disabled:opacity-40 transition-all shadow-lg shadow-blue-600/30 shrink-0"
+                  >
+                    {sending
+                      ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      : <Send size={17} className="-ml-0.5" />
+                    }
+                  </button>
+                </form>
+                <p className="text-[11px] text-slate-400 dark:text-slate-600 text-center mt-2.5">Enter to send · Shift+Enter for new line</p>
+              </div>
             </div>
           </>
         ) : (

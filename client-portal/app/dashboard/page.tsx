@@ -31,7 +31,9 @@ import {
   Eye,
   Send,
   Check,
-  CheckCheck
+  CheckCheck,
+  CornerUpLeft,
+  X
 } from 'lucide-react';
 import Image from 'next/image';
 
@@ -162,6 +164,7 @@ export default function DashboardPage() {
   const [newMessage, setNewMessage] = useState('');
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [sendingMessage, setSendingMessage] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const formatMsgTime = (dateStr: string) =>
@@ -257,7 +260,27 @@ export default function DashboardPage() {
     e.preventDefault();
     if (!newMessage.trim()) return;
     
-    setSendingMessage(true);
+    const messageContent = newMessage;
+    const replyToId = replyingTo?.id || null;
+    const replyDetails = replyingTo ? { id: replyingTo.id, content: replyingTo.content, sender_type: replyingTo.sender_type } : null;
+    
+    // OPTIMISTIC UI UPDATE
+    const tempId = 'temp-' + Date.now();
+    const tempMsg = {
+      id: tempId,
+      content: messageContent,
+      sender_type: 'Client',
+      created_at: new Date().toISOString(),
+      is_read: false,
+      is_optimistic: true,
+      reply_to_details: replyDetails
+    };
+    
+    setMessages(prev => [...prev, tempMsg]);
+    setNewMessage('');
+    setReplyingTo(null);
+
+    // Make API call silently in background
     try {
       const res = await fetch(`${API_BASE}/portal/messages/`, {
         method: 'POST',
@@ -266,21 +289,22 @@ export default function DashboardPage() {
           'X-CSRFToken': getCsrfToken()
         },
         credentials: 'include',
-        body: JSON.stringify({ content: newMessage })
+        body: JSON.stringify({ content: messageContent, reply_to: replyToId })
       });
       if (res.ok) {
-        setNewMessage('');
-        fetchMessages();
+        const finalMsg = await res.json();
+        setMessages(prev => prev.map(m => m.id === tempId ? finalMsg : m));
+        // cache instantly
+        localStorage.setItem('clientPortalMessages', JSON.stringify(messages.map(m => m.id === tempId ? finalMsg : m)));
       } else {
+        // Revert on error
+        setMessages(prev => prev.filter(m => m.id !== tempId));
         const errorData = await res.json().catch(() => ({}));
         console.error('Server returned error:', errorData);
-        alert('Server Error: ' + (errorData.error || errorData.detail || res.statusText));
       }
     } catch (error: any) {
       console.error('Failed to send message', error);
-      alert('Failed to send message: ' + error.message);
-    } finally {
-      setSendingMessage(false);
+      setMessages(prev => prev.filter(m => m.id !== tempId));
     }
   };
 
@@ -1091,31 +1115,67 @@ export default function DashboardPage() {
                           const prevMsg = i > 0 ? msgs[i - 1] : null;
                           const isGrouped = prevMsg && prevMsg.sender_type === msg.sender_type;
                           return (
-                            <div key={msg.id || i} className={`flex items-end gap-2.5 ${isClient ? 'justify-end' : 'justify-start'} ${isGrouped ? 'mt-0.5' : 'mt-4'}`}>
+                            <div key={msg.id || i} className={`group flex items-end gap-2.5 ${isClient ? 'justify-end' : 'justify-start'} ${isGrouped ? 'mt-0.5' : 'mt-4'}`}>
+                              {/* Reply button (desktop hover, mobile tap) */}
+                              {isClient && (
+                                <button onClick={() => setReplyingTo(msg)} className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 text-slate-400 hover:text-blue-600 rounded-full hover:bg-slate-100 mb-1">
+                                  <CornerUpLeft size={14} />
+                                </button>
+                              )}
+                              
                               {/* Advocate avatar */}
                               {!isClient && (
                                 <div className={`w-7 h-7 rounded-full shrink-0 bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-[10px] font-black text-white shadow-sm ${isGrouped ? 'invisible' : ''}`}>
                                   RA
                                 </div>
                               )}
-                              <div className="max-w-[72%]">
+                              
+                              <div className="max-w-[72%] flex flex-col">
                                 <div className={`px-4 py-2.5 text-sm leading-relaxed shadow-sm ${
                                   isClient
                                     ? `bg-blue-600 text-white ${isGrouped ? 'rounded-2xl rounded-br-md' : 'rounded-2xl rounded-br-sm'}`
                                     : `bg-white border border-slate-100 text-slate-800 ${isGrouped ? 'rounded-2xl rounded-bl-md' : 'rounded-2xl rounded-bl-sm'}`
-                                }`}>
+                                } ${msg.is_optimistic ? 'opacity-70' : ''}`}>
+                                  
+                                  {/* Quoted Reply Section */}
+                                  {msg.reply_to_details && (
+                                    <div className={`mb-1.5 px-2.5 py-1.5 rounded-lg text-[11px] border-l-4 ${
+                                      isClient 
+                                        ? 'bg-blue-700/50 border-blue-300 text-blue-50' 
+                                        : 'bg-slate-100 border-indigo-400 text-slate-600'
+                                    }`}>
+                                      <p className={`font-bold mb-0.5 ${isClient ? 'text-blue-200' : 'text-indigo-600'}`}>
+                                        {msg.reply_to_details.sender_type === 'Staff' ? 'Rahimullah Advocate' : 'You'}
+                                      </p>
+                                      <p className="line-clamp-2 truncate whitespace-normal leading-snug">{msg.reply_to_details.content}</p>
+                                    </div>
+                                  )}
+
                                   <p className="whitespace-pre-wrap">{msg.content}</p>
+                                  
                                   <div className="flex items-center gap-1 mt-1.5 justify-end">
                                     <span className={`text-[10px] font-medium ${isClient ? 'text-blue-200' : 'text-slate-400'}`}>
                                       {formatMsgTime(msg.created_at)}
                                     </span>
-                                    {isClient && (msg.is_read
-                                      ? <CheckCheck size={13} className="text-cyan-300" />
-                                      : <Check size={13} className="text-blue-300/70" />
+                                    {isClient && (
+                                      msg.is_optimistic ? (
+                                        <Clock size={11} className="text-blue-300/70" />
+                                      ) : msg.is_read ? (
+                                        <CheckCheck size={13} className="text-cyan-300" />
+                                      ) : (
+                                        <Check size={13} className="text-blue-300/70" />
+                                      )
                                     )}
                                   </div>
                                 </div>
                               </div>
+                              
+                              {/* Reply button for advocate messages */}
+                              {!isClient && (
+                                <button onClick={() => setReplyingTo(msg)} className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 text-slate-400 hover:text-blue-600 rounded-full hover:bg-slate-100 mb-1">
+                                  <CornerUpLeft size={14} />
+                                </button>
+                              )}
                             </div>
                           );
                         })}
@@ -1127,28 +1187,47 @@ export default function DashboardPage() {
               </div>
 
               {/* ── Input ── */}
-              <div className="px-4 py-3 bg-white border-t border-slate-100 shrink-0">
-                <form onSubmit={sendMessage} className="flex items-end gap-2">
-                  <input
-                    type="text"
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder="Type your message…"
-                    className="flex-1 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-2xl px-5 py-3.5 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all outline-none placeholder-slate-400"
-                    disabled={sendingMessage}
-                    onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(e as any); } }}
-                  />
-                  <button
-                    type="submit"
-                    disabled={!newMessage.trim() || sendingMessage}
-                    className="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 active:scale-95 disabled:opacity-40 transition-all shadow-lg shadow-blue-600/30 shrink-0"
-                  >
-                    {sendingMessage
-                      ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      : <Send size={16} className="-ml-0.5" />}
-                  </button>
-                </form>
-                <p className="text-[11px] text-slate-400 dark:text-slate-600 text-center mt-2">Enter to send · All messages are confidential</p>
+              <div className="bg-slate-50 border-t border-slate-200 shrink-0 relative">
+                
+                {/* Reply Preview */}
+                {replyingTo && (
+                  <div className="absolute bottom-full left-0 right-0 bg-slate-50 border-t border-slate-200 px-4 py-2 flex items-center gap-3 animate-in slide-in-from-bottom-2">
+                    <div className="w-1 h-full rounded-full bg-blue-500 self-stretch min-h-[36px]" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-bold text-blue-600 mb-0.5">
+                        {replyingTo.sender_type === 'Staff' ? 'Rahimullah Advocate' : 'You'}
+                      </p>
+                      <p className="text-xs text-slate-600 line-clamp-1 truncate">{replyingTo.content}</p>
+                    </div>
+                    <button type="button" onClick={() => setReplyingTo(null)} className="p-1.5 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-200 transition-colors">
+                      <X size={16} />
+                    </button>
+                  </div>
+                )}
+
+                <div className="px-4 py-3 bg-white">
+                  <form onSubmit={sendMessage} className="flex items-end gap-2">
+                    <input
+                      type="text"
+                      value={newMessage}
+                      onChange={(e) => setNewMessage(e.target.value)}
+                      placeholder="Type your message…"
+                      className="flex-1 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-2xl px-5 py-3.5 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all outline-none placeholder-slate-400"
+                      disabled={sendingMessage}
+                      onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(e as any); } }}
+                    />
+                    <button
+                      type="submit"
+                      disabled={!newMessage.trim() || sendingMessage}
+                      className="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 active:scale-95 disabled:opacity-40 transition-all shadow-lg shadow-blue-600/30 shrink-0"
+                    >
+                      {sendingMessage
+                        ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        : <Send size={16} className="-ml-0.5" />}
+                    </button>
+                  </form>
+                  <p className="text-[11px] text-slate-400 dark:text-slate-600 text-center mt-2">Enter to send · All messages are confidential</p>
+                </div>
               </div>
             </div>
           )}

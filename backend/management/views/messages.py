@@ -6,11 +6,24 @@ from rest_framework.serializers import ModelSerializer
 from management.models import Message, Client
 from django.db.models import Max, Q
 
-class MessageSerializer(ModelSerializer):
+from rest_framework import serializers
+
+class MessageSerializer(serializers.ModelSerializer):
+    reply_to_details = serializers.SerializerMethodField()
+
     class Meta:
         model = Message
         fields = '__all__'
         read_only_fields = ['sender_type', 'staff_sender', 'is_read']
+
+    def get_reply_to_details(self, obj):
+        if obj.reply_to:
+            return {
+                'id': obj.reply_to.id,
+                'content': obj.reply_to.content,
+                'sender_type': obj.reply_to.sender_type,
+            }
+        return None
 
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all().select_related('client', 'staff_sender')
@@ -84,13 +97,16 @@ class ClientPortalMessagesView(APIView):
         
         client = user.client_profile
         content = request.data.get('content')
+        reply_to_id = request.data.get('reply_to')
+        
         if not content:
             return Response({"error": "Content is required"}, status=status.HTTP_400_BAD_REQUEST)
             
         message = Message.objects.create(
             client=client,
             sender_type='Client',
-            content=content
+            content=content,
+            reply_to_id=reply_to_id
         )
         serializer = MessageSerializer(message)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
