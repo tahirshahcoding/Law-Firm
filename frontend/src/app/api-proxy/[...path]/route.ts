@@ -24,10 +24,20 @@ async function handleProxy(request: NextRequest, { params }: { params: Promise<{
 
     const headers = new Headers(request.headers);
     
-    // Strip original routing headers to bypass HF ingress rejection
-    headers.delete('host');
-    headers.delete('origin');
-    headers.delete('referer');
+    if (IS_LOCAL_DEV) {
+        // Local dev: inject trusted Origin + Referer so Django's CSRF middleware is satisfied.
+        // Server-to-server requests have no Referer by default, which causes CSRF failures.
+        // Django trusts http://localhost:8000 (it's in CSRF_TRUSTED_ORIGINS via CORS_ALLOWED_ORIGINS).
+        headers.set('origin', 'http://localhost:3000');
+        headers.set('referer', 'http://localhost:3000/');
+        // Use the upstream host, not the Next.js host
+        headers.set('host', '127.0.0.1:8000');
+    } else {
+        // Production (HF Space): strip headers that trigger HF ingress rejection
+        headers.delete('host');
+        headers.delete('origin');
+        headers.delete('referer');
+    }
 
     try {
         const response = await fetch(targetUrl, {
@@ -40,11 +50,11 @@ async function handleProxy(request: NextRequest, { params }: { params: Promise<{
         // Create a new headers object to modify the response
         const responseHeaders = new Headers(response.headers);
         
-        // 2. CRITICAL: Intercept and rewrite the Set-Cookie header
+        // CRITICAL: Intercept and rewrite the Set-Cookie header
         const setCookieHeader = responseHeaders.get('set-cookie');
         if (setCookieHeader) {
-            // Strip any explicit Domain attribute so the browser accepts it for the Vercel domain
-            // Example transformation: "jwt=123; Domain=.hf.space; HttpOnly" -> "jwt=123; HttpOnly"
+            // Strip any explicit Domain attribute so the browser accepts it for the frontend domain
+            // Example: "jwt=123; Domain=.hf.space; HttpOnly" → "jwt=123; HttpOnly"
             const rewrittenCookie = setCookieHeader.replace(/Domain=[^;]+;?\s*/gi, '');
             responseHeaders.set('set-cookie', rewrittenCookie);
         }
