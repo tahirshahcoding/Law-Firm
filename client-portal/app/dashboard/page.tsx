@@ -274,7 +274,7 @@ export default function DashboardPage() {
   const activeCases   = cases.filter((c: any) => c.status === 'Active').length;
 
   return (
-    <div className="flex h-screen bg-slate-50 overflow-hidden font-sans">
+    <div className="flex h-[100dvh] bg-slate-50 overflow-hidden font-sans">
 
       {/* ── Sidebar ── */}
       <aside className="w-64 bg-white border-e border-slate-200/60 hidden md:flex flex-col flex-shrink-0 relative z-20">
@@ -354,26 +354,26 @@ export default function DashboardPage() {
               </div>
             </div>
 
-          <div className="flex items-center gap-5 ms-4">
+          <div className="flex items-center gap-2 sm:gap-5 ms-auto">
             <button 
               onClick={() => setLanguage(language === 'en' ? 'ur' : 'en')}
-              className="flex items-center gap-1.5 text-sm font-bold text-slate-600 hover:text-blue-600 transition-colors bg-slate-50 px-3 py-1.5 rounded-full border border-slate-200"
+              className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm font-bold text-slate-600 hover:text-blue-600 transition-colors bg-slate-50 px-2 sm:px-3 py-1.5 rounded-full border border-slate-200"
             >
-              <Globe size={14} /> {language === 'en' ? 'اردو' : 'EN'}
+              <Globe size={13} /> {language === 'en' ? 'اردو' : 'EN'}
             </button>
             <button className="relative text-slate-400 hover:text-slate-700 transition-colors">
-              <Bell size={20} />
+              <Bell size={19} />
               <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-white">3</span>
             </button>
             <div className="relative">
-              <div className="flex items-center gap-3 border-s border-slate-200 ps-5 cursor-pointer hover:bg-slate-50 p-1.5 rounded-xl transition-colors" onClick={() => setProfileOpen(!profileOpen)}>
-                <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-sm">
+              <div className="flex items-center gap-1.5 sm:gap-3 sm:border-s sm:border-slate-200 sm:ps-5 cursor-pointer hover:bg-slate-50 p-1.5 rounded-xl transition-colors" onClick={() => setProfileOpen(!profileOpen)}>
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-sm shrink-0">
                   {data?.client?.name?.[0]?.toUpperCase() ?? 'U'}
                 </div>
                 <div className="hidden sm:block text-start">
                   <p className="text-sm font-bold text-slate-800 leading-none">{data?.client?.name}</p>
                 </div>
-                <ChevronDown size={14} className="text-slate-400" />
+                <ChevronDown size={13} className="text-slate-400" />
               </div>
 
               {/* Profile Dropdown */}

@@ -5,13 +5,42 @@
   --font-geist-mono: 'Courier New', monospace;
 }
 
-* { box-sizing: border-box; }
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+}
 
 body {
   font-family: var(--font-geist-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #f8fafc; /* slate-50 */
+  /* Prevent text inflation on mobile */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* iOS safe-area support for bottom nav */
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Smooth scrolling on iOS */
+.custom-scrollbar {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent table overflow on mobile */
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Remove blue tap highlight on mobile */
+button, a {
+  -webkit-tap-highlight-color: transparent;
 }
 
 @font-face {
