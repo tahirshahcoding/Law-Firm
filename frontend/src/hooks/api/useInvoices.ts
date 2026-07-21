@@ -27,7 +27,7 @@ export function useInvoices(options: UseInvoicesOptions = {}) {
   if (search) query.append('search', search);
   if (status) query.append('status', status);
 
-  const url = enabled ? `${API_BASE}/finance/invoices/?${query.toString()}` : null;
+  const url = enabled ? `${API_BASE}/invoices/?${query.toString()}` : null;
 
   const { data, error, isLoading, mutate } = useSWR(url, swrFetcher, {
     revalidateOnFocus: false,
