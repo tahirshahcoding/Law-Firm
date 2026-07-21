@@ -106,74 +106,74 @@ export default function EditClientModal({ isOpen, onClose, onSuccess, clientData
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
-        <div className="flex items-center justify-between p-6 border-b border-slate-100 shrink-0">
-          <h2 className="text-xl font-bold text-slate-900">Edit Client Profile</h2>
-          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"><X size={20} /></button>
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh] border border-transparent dark:border-slate-800">
+        <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800 shrink-0">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white">Edit Client Profile</h2>
+          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors"><X size={20} /></button>
         </div>
 
         <div className="overflow-y-auto">
           <form onSubmit={handleSubmit} className="p-6 space-y-4">
-            {error && <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-sm text-rose-600 font-medium">{error}</div>}
+            {error && <div className="p-3 rounded-lg bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 text-sm text-rose-600 dark:text-rose-400 font-medium">{error}</div>}
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
               <div className="relative"><User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input type="text" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" placeholder="John Doe" />
+                  className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 dark:text-white" placeholder="John Doe" />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">CNIC (National ID)</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">CNIC (National ID)</label>
               <div className="relative"><CreditCard size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input type="text" required value={formData.cnic} onChange={handleCnicChange}
-                  className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono" placeholder="12345-6789012-3" />
+                  className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono text-slate-900 dark:text-white" placeholder="12345-6789012-3" />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Mobile Number</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Mobile Number</label>
               <div className="relative"><Phone size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input type="text" required value={formData.mobile_number} onChange={(e) => setFormData({...formData, mobile_number: e.target.value})}
-                  className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono" placeholder="+92 300 1234567" />
+                  className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono text-slate-900 dark:text-white" placeholder="+92 300 1234567" />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Residential Address</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Residential Address</label>
               <div className="relative"><MapPin size={16} className="absolute left-3 top-3 text-slate-400" />
                 <textarea required rows={3} value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})}
-                  className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none" placeholder="123 Legal Avenue, City..." />
+                  className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none text-slate-900 dark:text-white" placeholder="123 Legal Avenue, City..." />
               </div>
             </div>
 
             {/* Admin-only: Reset Portal Password */}
             {user?.role === 'Admin' && (
-              <div className="pt-2 border-t border-slate-100">
-                <p className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2"><Key size={15} className="text-amber-500" /> Client Portal Access</p>
-                <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
+              <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+                <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2"><Key size={15} className="text-amber-500" /> Client Portal Access</p>
+                <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl p-4 space-y-3">
                   {/* Username & Password Display */}
                   <div className="space-y-2">
-                    <div className="flex items-center justify-between bg-white border border-slate-100 p-2.5 rounded-lg">
+                    <div className="flex items-center justify-between bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-2.5 rounded-lg">
                       <div>
-                        <p className="text-[10px] uppercase font-bold text-slate-400">Portal Username</p>
-                        <p className="text-slate-800 text-sm font-mono font-bold mt-0.5">{clientData.client_number}</p>
+                        <p className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500">Portal Username</p>
+                        <p className="text-slate-800 dark:text-slate-100 text-sm font-mono font-bold mt-0.5">{clientData.client_number}</p>
                       </div>
                       <button type="button" onClick={() => copyToClipboard(clientData.client_number, 'username')}
-                        className={`p-1.5 rounded transition-all ${copiedField === 'username' ? 'text-emerald-600 bg-emerald-50' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'}`}>
+                        className={`p-1.5 rounded transition-all ${copiedField === 'username' ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'}`}>
                         {copiedField === 'username' ? <CheckCheck size={14} /> : <Copy size={14} />}
                       </button>
                     </div>
 
-                    <div className="flex items-center justify-between bg-white border border-slate-100 p-2.5 rounded-lg">
+                    <div className="flex items-center justify-between bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-2.5 rounded-lg">
                       <div>
-                        <p className="text-[10px] uppercase font-bold text-slate-400">Portal Password</p>
-                        <p className="text-slate-800 text-sm font-mono font-bold mt-0.5">{newCredentials?.portal_password || clientData.portal_password || 'Not Set'}</p>
+                        <p className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500">Portal Password</p>
+                        <p className="text-slate-800 dark:text-slate-100 text-sm font-mono font-bold mt-0.5">{newCredentials?.portal_password || clientData.portal_password || 'Not Set'}</p>
                       </div>
                       <button type="button" onClick={() => copyToClipboard(newCredentials?.portal_password || clientData.portal_password || '', 'password')}
                         disabled={!newCredentials?.portal_password && !clientData.portal_password}
-                        className={`p-1.5 rounded transition-all disabled:opacity-30 ${copiedField === 'password' ? 'text-emerald-600 bg-emerald-50' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'}`}>
+                        className={`p-1.5 rounded transition-all disabled:opacity-30 ${copiedField === 'password' ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'}`}>
                         {copiedField === 'password' ? <CheckCheck size={14} /> : <Copy size={14} />}
                       </button>
                     </div>
@@ -182,7 +182,7 @@ export default function EditClientModal({ isOpen, onClose, onSuccess, clientData
                   {/* Actions Row */}
                   <div className="flex items-center justify-between pt-1">
                     <button type="button" onClick={handleResetPassword}
-                      className="flex items-center gap-1.5 px-3 py-2 bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 rounded-lg text-xs font-bold transition-all disabled:opacity-50">
+                      className="flex items-center gap-1.5 px-3 py-2 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-500 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900/40 rounded-lg text-xs font-bold transition-all disabled:opacity-50">
                       <RefreshCw size={13} />
                       Reset Password
                     </button>
@@ -200,7 +200,7 @@ export default function EditClientModal({ isOpen, onClose, onSuccess, clientData
                           sendWhatsApp(phone, msg);
                         }
                       }}
-                        className="flex items-center gap-1.5 px-3 py-2 bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 rounded-lg text-xs font-bold transition-all">
+                        className="flex items-center gap-1.5 px-3 py-2 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-500 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 rounded-lg text-xs font-bold transition-all">
                         <MessageCircle size={13} /> WhatsApp
                       </button>
                     )}
@@ -209,8 +209,8 @@ export default function EditClientModal({ isOpen, onClose, onSuccess, clientData
               </div>
             )}
 
-            <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 mt-2">
-              <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg font-medium text-slate-600 hover:bg-slate-50 border border-slate-200 transition-colors">Cancel</button>
+            <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 dark:border-slate-800 mt-2">
+              <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors">Cancel</button>
               <button type="submit"
                 className="px-6 py-2 rounded-lg font-medium bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 duration-300 shadow-[0_4px_12px_rgba(37,99,235,0.25)] hover:shadow-[0_6px_16px_rgba(37,99,235,0.35)] hover:-translate-y-0.5 disabled:opacity-50 flex items-center justify-center min-w-[100px] text-white">
                 Save Changes

@@ -1267,34 +1267,65 @@ export default function DashboardPage() {
 
           {/* Profile Tab */}
           {activeTab === 'profile' && (
-            <div className="w-full max-w-4xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 mt-4">
-              <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/60 shadow-sm">
-                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
-                  <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-4xl sm:text-5xl shadow-lg shrink-0">
+            <div className="w-full max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10">
+              
+              {/* Header Banner */}
+              <div className="relative h-48 md:h-64 rounded-3xl overflow-hidden mb-16 shadow-sm mx-4 md:mx-0 mt-4 md:mt-0">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800"></div>
+                
+                {/* Floating details inside banner */}
+                <div className="absolute top-6 right-6 flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-md rounded-xl text-white font-semibold text-sm border border-white/20 shadow-lg">
+                  <BadgeCheck size={18} className="text-blue-200" />
+                  Verified Client
+                </div>
+              </div>
+
+              {/* Profile Info Overlay */}
+              <div className="px-6 md:px-12 -mt-24 md:-mt-28 relative z-10 flex flex-col md:flex-row items-center md:items-end gap-6 mb-12">
+                <div className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-white p-2 shadow-xl shrink-0">
+                  <div className="w-full h-full rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-black text-5xl md:text-6xl shadow-inner">
                     {data?.client?.name?.[0]?.toUpperCase() ?? 'U'}
                   </div>
-                  <div className="flex-1 text-center sm:text-left">
-                    <h2 className="text-2xl font-bold text-slate-900 mb-2">{data?.client?.name}</h2>
-                    <p className="text-slate-500 font-medium">{t.sidebar.profile}</p>
+                </div>
+                <div className="flex-1 text-center md:text-left mb-2 md:mb-4">
+                  <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">{data?.client?.name}</h2>
+                  <p className="text-slate-500 font-semibold text-base md:text-lg mt-1 flex items-center justify-center md:justify-start gap-2">
+                    <User size={18} /> Client Portal Profile
+                  </p>
+                </div>
+              </div>
+
+              {/* Data Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 px-4 md:px-0">
+                {/* Contact Card */}
+                <div className="bg-white rounded-3xl p-6 md:p-8 border border-slate-200/60 shadow-sm hover:shadow-md transition-shadow">
+                  <h3 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2"><PhoneCall size={20} className="text-blue-600" /> Contact Details</h3>
+                  <div className="space-y-6">
+                    <div>
+                      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Phone Number</p>
+                      <p className="font-semibold text-slate-900 text-lg">{data?.client?.phone || '—'}</p>
+                    </div>
+                    <div className="h-px w-full bg-slate-100"></div>
+                    <div>
+                      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Email Address</p>
+                      <p className="font-semibold text-slate-900 text-lg">{data?.client?.email || '—'}</p>
+                    </div>
                   </div>
                 </div>
 
-                <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Phone</p>
-                    <p className="font-semibold text-slate-800">{data?.client?.phone || '—'}</p>
-                  </div>
-                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">CNIC</p>
-                    <p className="font-semibold text-slate-800">{data?.client?.cnic || '—'}</p>
-                  </div>
-                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Email</p>
-                    <p className="font-semibold text-slate-800">{data?.client?.email || '—'}</p>
-                  </div>
-                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Address</p>
-                    <p className="font-semibold text-slate-800">{data?.client?.address || '—'}</p>
+                {/* Identity Card */}
+                <div className="bg-white rounded-3xl p-6 md:p-8 border border-slate-200/60 shadow-sm hover:shadow-md transition-shadow">
+                  <h3 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2"><CreditCard size={20} className="text-indigo-600" /> Identity Details</h3>
+                  <div className="space-y-6">
+                    <div>
+                      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">CNIC (National ID)</p>
+                      <p className="font-mono font-bold text-slate-900 text-lg">{data?.client?.cnic || '—'}</p>
+                    </div>
+                    <div className="h-px w-full bg-slate-100"></div>
+                    <div>
+                      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Residential Address</p>
+                      <p className="font-medium text-slate-900 leading-relaxed">{data?.client?.address || '—'}</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1303,48 +1334,53 @@ export default function DashboardPage() {
 
           {/* Settings Tab */}
           {activeTab === 'settings' && (
-            <div className="w-full max-w-4xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 mt-4">
-              <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/60 shadow-sm">
-                <div className="mb-6 border-b border-slate-100 pb-4">
-                  <h2 className="text-2xl font-bold text-slate-900">{t.sidebar.settings}</h2>
-                  <p className="text-slate-500 mt-1">Manage your account preferences and application settings.</p>
+            <div className="w-full max-w-4xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 mt-4 md:mt-8 px-4 md:px-0 pb-10">
+              <div className="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200/60 shadow-sm">
+                <div className="mb-8 border-b border-slate-100 pb-6 flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600">
+                    <Settings size={24} />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-black text-slate-900">{t.sidebar.settings}</h2>
+                    <p className="text-slate-500 mt-1 font-medium">Manage your account preferences and application settings.</p>
+                  </div>
                 </div>
                 
-                <div className="space-y-4">
+                <div className="space-y-6">
                   {/* Password */}
-                  <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 md:p-6 bg-slate-50 rounded-2xl border border-slate-100 hover:border-slate-200 transition-colors">
                     <div>
-                      <p className="font-bold text-slate-800">Password & Security</p>
-                      <p className="text-sm text-slate-500">Update your account password</p>
+                      <p className="font-bold text-slate-800 text-lg">Password & Security</p>
+                      <p className="text-sm text-slate-500 font-medium mt-1">Update your account password</p>
                     </div>
-                    <button className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-100 transition-colors">
-                      Change
+                    <button className="px-6 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-all shadow-sm shrink-0">
+                      Change Password
                     </button>
                   </div>
 
                   {/* Language */}
-                  <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 md:p-6 bg-slate-50 rounded-2xl border border-slate-100 hover:border-slate-200 transition-colors">
                     <div>
-                      <p className="font-bold text-slate-800">Language Preference</p>
-                      <p className="text-sm text-slate-500">Switch between English and Urdu</p>
+                      <p className="font-bold text-slate-800 text-lg">Language Preference</p>
+                      <p className="text-sm text-slate-500 font-medium mt-1">Switch between English and Urdu</p>
                     </div>
                     <button 
                       onClick={() => setLanguage(language === 'en' ? 'ur' : 'en')}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition-colors flex items-center gap-2"
+                      className="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition-all shadow-[0_4px_12px_rgba(37,99,235,0.25)] flex items-center justify-center gap-2 shrink-0 hover:-translate-y-0.5"
                     >
-                      <Globe size={16} /> {language === 'en' ? 'Switch to Urdu' : 'Switch to English'}
+                      <Globe size={18} /> {language === 'en' ? 'Switch to Urdu' : 'Switch to English'}
                     </button>
                   </div>
 
                   {/* Notifications */}
-                  <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                  <div className="flex items-center justify-between p-5 md:p-6 bg-slate-50 rounded-2xl border border-slate-100 hover:border-slate-200 transition-colors">
                     <div>
-                      <p className="font-bold text-slate-800">Email Notifications</p>
-                      <p className="text-sm text-slate-500">Receive case updates via email</p>
+                      <p className="font-bold text-slate-800 text-lg">Email Notifications</p>
+                      <p className="text-sm text-slate-500 font-medium mt-1">Receive case updates via email</p>
                     </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
+                    <label className="relative inline-flex items-center cursor-pointer shrink-0">
                       <input type="checkbox" defaultChecked className="sr-only peer" />
-                      <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                      <div className="w-14 h-7 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-blue-600 shadow-inner"></div>
                     </label>
                   </div>
                 </div>
