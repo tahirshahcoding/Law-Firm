@@ -128,7 +128,7 @@ export default function InvoiceDrawer({ invoice, onClose, onUpdate }: InvoiceDra
       />
 
       {/* Drawer */}
-      <div className="fixed right-0 top-0 h-full z-50 w-full max-w-[560px] bg-white shadow-2xl flex flex-col border-l border-slate-200 dark:border-slate-700 animate-slide-in-right">
+      <div className="fixed right-0 top-0 h-full z-50 w-full max-w-[560px] bg-white dark:bg-slate-900 shadow-2xl flex flex-col border-l border-slate-200 dark:border-slate-700 animate-slide-in-right">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 dark:border-slate-800 shrink-0">
           <div className="flex items-center gap-3">
@@ -285,7 +285,7 @@ export default function InvoiceDrawer({ invoice, onClose, onUpdate }: InvoiceDra
 
         {/* Footer Action */}
         {!isPaid && (
-          <div className="px-6 py-4 border-t border-slate-100 dark:border-slate-800 shrink-0 bg-white">
+          <div className="px-6 py-4 border-t border-slate-100 dark:border-slate-800 shrink-0 bg-white dark:bg-slate-900">
             <button
               onClick={() => setShowPaymentModal(true)}
               className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold transition-colors flex items-center justify-center gap-2"
