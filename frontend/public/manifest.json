@@ -1,7 +1,7 @@
 {
-  "name": "EagleNest Legal Solutions",
-  "short_name": "EagleNest",
-  "description": "Legal Office Management System for EagleNest Legal Solutions",
+  "name": "Rahimullah Advocate",
+  "short_name": "R Advocate",
+  "description": "Legal Office Management System for Rahimullah Advocate",
   "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#0f172a",
