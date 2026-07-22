@@ -34,6 +34,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
   
   // Combobox specific state
   const [clients, setClients] = useState<any[]>([]);
+  const [isLoadingClients, setIsLoadingClients] = useState(false);
   const [advocates, setAdvocates] = useState<any[]>([]);
   const [courts, setCourts] = useState<any[]>([]);
   const [judges, setJudges] = useState<any[]>([]);
@@ -76,10 +77,12 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
 
   useEffect(() => {
     if (isOpen) {
+      setIsLoadingClients(true);
       apiFetch(`${API_BASE}/clients/?limit=1000`)
         .then(res => res.json())
         .then(data => setClients(Array.isArray(data) ? data : (data.results || [])))
-        .catch(err => console.error("Failed to load clients:", err));
+        .catch(err => console.error("Failed to load clients:", err))
+        .finally(() => setIsLoadingClients(false));
         
       apiFetch(`${API_BASE}/users/advocates/`)
         .then(res => res.json())
@@ -242,7 +245,13 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
                   />
                 </div>
                 <div className="max-h-48 overflow-y-auto">
-                  {filteredClients.length === 0 ? (
+                  {isLoadingClients ? (
+                    <div className="p-3 space-y-2">
+                      <div className="h-12 bg-slate-100 dark:bg-slate-700/50 rounded animate-pulse"></div>
+                      <div className="h-12 bg-slate-100 dark:bg-slate-700/50 rounded animate-pulse"></div>
+                      <div className="h-12 bg-slate-100 dark:bg-slate-700/50 rounded animate-pulse"></div>
+                    </div>
+                  ) : filteredClients.length === 0 ? (
                     <div className="p-3 text-sm text-slate-500 dark:text-slate-400 text-center flex flex-col items-center gap-2">
                       <p>No clients found matching '{clientSearchText}'</p>
                       <button 

@@ -55,7 +55,7 @@ function ChallanCopy({
 
   return (
     <div 
-      className="flex flex-col justify-between h-[302px] border rounded-xl p-4 bg-white relative font-sans" 
+      className="flex flex-col justify-between h-[285px] border rounded-xl p-4 bg-white relative font-sans" 
       style={{ boxSizing: 'border-box', borderColor: COLORS.slate300, backgroundColor: COLORS.white, color: COLORS.slate800 }}
     >
       {/* Status Watermark in Background */}
@@ -215,8 +215,8 @@ export default function InvoiceTemplate({ caseData }: { caseData: any }) {
 
   return (
     <div 
-      className="p-6 w-full flex flex-col justify-between" 
-      style={{ minHeight: '1056px', maxHeight: '1056px', boxSizing: 'border-box', backgroundColor: COLORS.white }}
+      className="p-4 w-full flex flex-col justify-between h-[100vh] print:h-[100vh]" 
+      style={{ boxSizing: 'border-box', backgroundColor: COLORS.white, overflow: 'hidden' }}
     >
       {copies.map((copy, index) => (
         <React.Fragment key={copy.type}>

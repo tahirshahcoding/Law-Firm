@@ -170,7 +170,7 @@ export default function InvoicesPage() {
       {/* Slide-out Panel */}
       {selectedInvoice && (
         <InvoiceDrawer
-          invoice={selectedInvoice}
+          invoice={invoices.find((i: any) => i.id === selectedInvoice.id) || selectedInvoice}
           onClose={() => setSelectedInvoice(null)}
           onUpdate={() => mutate()}
         />
