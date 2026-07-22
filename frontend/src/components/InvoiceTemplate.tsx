@@ -76,6 +76,9 @@ function ChallanCopy({
           <div>
             <h1 className="text-sm font-extrabold tracking-tight uppercase leading-none" style={{ color: COLORS.slate900 }}>Rahimullah Advocate</h1>
             <p className="text-[9px] font-semibold tracking-wider uppercase mt-0.5" style={{ color: COLORS.slate500 }}>Advocate High Court</p>
+            <p className="text-[7px] font-medium tracking-wide mt-1" style={{ color: COLORS.slate500 }}>
+              Hassan Trade Center Kabal, Swat | Ph: 0345-9309670
+            </p>
           </div>
         </div>
 

@@ -15,6 +15,7 @@ def ping_view(request):
 urlpatterns = [
     path('admin/', admin.site.urls),
     # Map the management URLs to an 'api/' prefix
+    path('api/public/', include('management.public_urls')),
     path('api/', include('management.urls')),
     # Add a root view to avoid 404
     path('', api_root, name='api-root'),

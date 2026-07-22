@@ -236,9 +236,8 @@ export default function BookConsultationPage() {
                 <div>
                   <p className="font-bold tracking-wide">Rahimullah Advocate</p>
                   <p className="text-slate-300 text-sm leading-relaxed mt-1">
-                    District Courts Complex<br />
-                    G.T. Road, Mingora<br />
-                    Swat, Khyber Pakhtunkhwa
+                    Opposite Tehsil Courts 1st Floor,<br />
+                    Hassan Trade Center Kabal, Swat
                   </p>
                 </div>
               </div>
@@ -249,17 +248,7 @@ export default function BookConsultationPage() {
                 </div>
                 <div>
                   <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-0.5">Office Line</p>
-                  <p className="font-bold text-lg">+92 946 123456</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-5 bg-rose-950/30 p-4 -ml-4 rounded-md border border-rose-900/50">
-                <div className="w-10 h-10 rounded-full bg-rose-500/20 flex items-center justify-center flex-shrink-0 border border-rose-500/30">
-                  <AlertCircle className="text-rose-400 animate-pulse" size={20} />
-                </div>
-                <div>
-                  <p className="text-rose-300 text-xs font-bold uppercase tracking-wider mb-0.5">24/7 Emergency Bail</p>
-                  <p className="font-bold text-lg text-white">+92 300 9876543</p>
+                  <p className="font-bold text-lg">0345-9309670</p>
                 </div>
               </div>
 
@@ -269,20 +258,7 @@ export default function BookConsultationPage() {
                 </div>
                 <div>
                   <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-0.5">Legal Inquiries</p>
-                  <p className="font-bold">contact@rahimullahadvocate.pk</p>
-                </div>
-              </div>
-
-              <div className="pt-6 border-t border-white/10">
-                <div className="flex items-start gap-5">
-                  <div className="w-10 h-10 rounded-full bg-transparent flex items-center justify-center flex-shrink-0">
-                    <Clock className="text-slate-500" size={20} />
-                  </div>
-                  <div>
-                    <p className="font-bold text-sm text-slate-300">Business Hours</p>
-                    <p className="text-slate-400 text-sm mt-1">Mon – Sat: 9:00 AM – 5:00 PM</p>
-                    <p className="text-slate-500 text-xs mt-1">Sunday: Closed</p>
-                  </div>
+                  <p className="font-bold">rahimullahadvocate@gmail.com</p>
                 </div>
               </div>
 

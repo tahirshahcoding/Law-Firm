@@ -1,230 +1,262 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Scale, Briefcase, Shield, Users, LockKeyhole, ArrowRight, CheckCircle2, Award, Building } from "lucide-react";
+import ContactForm from "../components/ContactForm";
+import { Scale, Briefcase, Shield, Users, LockKeyhole, ArrowRight, Building, PenTool, BookOpen, User, ArrowUpRight, Search, Calendar, FileText, CreditCard, MessageSquare, Book, FileCheck, CheckCircle2, Award } from "lucide-react";
+import { ScrollReveal, RevealItem } from "../components/ScrollReveal";
 
 export default function Home() {
   return (
-    <div className="w-full">
+    <div className="w-full bg-white text-slate-800 font-sans overflow-hidden">
       
       {/* 1. HERO SECTION */}
-      <section className="relative text-white py-32 px-8 flex items-center justify-center min-h-[85vh] overflow-hidden">
-        {/* Background Image */}
+      <section className="relative w-full h-[90vh] min-h-[600px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image 
-            src="/images/hero.png" 
-            alt="Law Firm Office" 
+            src="/images/hero-bg.png" 
+            alt="Law Firm Architecture" 
             fill 
             className="object-cover object-center"
             priority
           />
-          {/* Rich Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-navy/95 via-navy/80 to-transparent z-0"></div>
-          <div className="absolute inset-0 bg-black/30 z-0"></div>
+          {/* Light overlay for readability */}
+          <div className="absolute inset-0 bg-white/40 z-0 backdrop-blur-[1px]"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/50 to-transparent z-0"></div>
         </div>
 
-        <div className="relative z-10 max-w-7xl w-full flex flex-col md:flex-row items-center justify-between gap-12">
-          <div className="max-w-3xl flex flex-col items-start text-left animate-in fade-in slide-in-from-bottom-8 duration-1000 fill-mode-both">
-            <div className="inline-flex items-center gap-2 bg-gold/20 border border-gold/50 px-4 py-2 text-gold text-sm font-bold tracking-widest uppercase mb-6 backdrop-blur-sm rounded-sm">
-              <Scale size={16} /> Preeminent Legal Advocacy & Counsel
+        <div className="relative z-10 max-w-[1600px] mx-auto w-full px-8 flex flex-col md:flex-row items-center justify-between h-full">
+          {/* Hero Content */}
+          <ScrollReveal delay={0.2}>
+            <div className="max-w-3xl flex flex-col items-start text-left mt-16 md:mt-0">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-8 h-[2px] bg-gold"></div>
+                <span className="text-gold font-bold tracking-widest uppercase text-sm">Dedicated to Justice. Committed to You.</span>
+              </div>
+              <h1 className="font-serif text-6xl lg:text-8xl font-bold leading-[1.05] mb-6 text-navy tracking-tight">
+                Strategic Legal<br/>Solutions.<br/>
+                <span className="text-gold italic font-medium font-serif mt-2 block">Proven Results.</span>
+              </h1>
+              <p className="text-xl text-slate-600 mb-10 max-w-lg leading-relaxed font-medium">
+                We provide exceptional legal representation with integrity, expertise, and a relentless commitment to your success.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 w-full mb-12">
+                <Link href="/book-consultation" className="bg-gold hover:bg-goldHover text-white px-10 py-5 text-sm font-bold rounded-sm transition-all duration-300 text-center flex items-center justify-center shadow-xl shadow-gold/20 hover:shadow-gold/40 hover:-translate-y-1">
+                  BOOK CONSULTATION &rarr;
+                </Link>
+                <Link href="/hearings" className="bg-white hover:bg-slate-50 text-navy border border-slate-300 px-10 py-5 text-sm font-bold rounded-sm transition-all duration-300 text-center flex items-center justify-center shadow-md hover:shadow-lg hover:-translate-y-1">
+                  TRACK YOUR CASE &rarr;
+                </Link>
+              </div>
+              
+              {/* Trusted By Clients */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 border-t border-slate-200/60 pt-6">
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Trusted By 500+ Clients</span>
+                <div className="flex items-center">
+                  <div className="flex -space-x-3">
+                    <div className="w-10 h-10 rounded-full border-2 border-white bg-slate-200 overflow-hidden"><img src="https://i.pravatar.cc/100?img=11" alt="client" /></div>
+                    <div className="w-10 h-10 rounded-full border-2 border-white bg-slate-200 overflow-hidden"><img src="https://i.pravatar.cc/100?img=12" alt="client" /></div>
+                    <div className="w-10 h-10 rounded-full border-2 border-white bg-slate-200 overflow-hidden"><img src="https://i.pravatar.cc/100?img=5" alt="client" /></div>
+                    <div className="w-10 h-10 rounded-full border-2 border-white bg-slate-200 overflow-hidden"><img src="https://i.pravatar.cc/100?img=8" alt="client" /></div>
+                  </div>
+                  <div className="ml-4 bg-white border border-gold text-gold font-bold text-xs px-3 py-1.5 rounded-full shadow-sm">
+                    500+
+                  </div>
+                </div>
+              </div>
             </div>
-            <h1 className="font-serif text-5xl md:text-7xl font-bold leading-[1.1] mb-6 drop-shadow-lg">
-              Rigorous Advocacy.<br/>
-              <span className="text-gold">Exceptional Outcomes.</span>
-            </h1>
-            <p className="text-lg md:text-xl text-slate-200 mb-10 max-w-2xl leading-relaxed drop-shadow-md">
-              We deliver authoritative legal representation and strategic counsel to corporate entities and private individuals across Khyber Pakhtunkhwa. Guided by professional excellence and legal precision, we safeguard our clients' interests with absolute commitment.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-5 w-full">
-              <Link href="/book-consultation" className="group bg-gold hover:bg-goldHover text-white px-8 py-4 text-lg font-bold rounded-sm transition-all duration-300 w-full sm:w-auto text-center flex items-center justify-center gap-3 shadow-lg shadow-gold/20 hover:shadow-gold/40 hover:-translate-y-1">
-                Book a Consultation
-                <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <a href={process.env.NEXT_PUBLIC_PORTAL_URL || "https://clientcounsel.vercel.app"} className="group flex items-center justify-center gap-3 border border-white/40 bg-white/10 backdrop-blur-md hover:border-white hover:bg-white/20 text-white px-8 py-4 text-lg font-bold rounded-sm transition-all duration-300 w-full sm:w-auto text-center hover:-translate-y-1">
-                <LockKeyhole size={20} className="text-gold" />
-                Client Portal Login
-              </a>
+          </ScrollReveal>
+          
+          {/* Floating Badge on Right */}
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden lg:flex flex-col items-center bg-white/40 backdrop-blur-md px-12 py-16 shadow-2xl border-l border-y border-white/40 w-72 transition-transform hover:-translate-x-2 duration-500">
+            <div className="relative w-20 h-20 flex items-center justify-center mb-10">
+              <div className="absolute inset-0 rounded-full border border-gold/50 border-dashed animate-[spin_20s_linear_infinite]"></div>
+              <div className="absolute inset-2 rounded-full border border-gold/80"></div>
+              <Scale className="text-gold w-8 h-8 relative z-10" strokeWidth={1.5} />
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 2. TRUST INDICATORS (STATS STRIP) */}
-      <section className="bg-navy border-b border-white/10 relative z-20 -mt-8 mx-auto max-w-6xl shadow-2xl rounded-sm">
-        <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-white/10">
-          <div className="p-8 flex items-center justify-center gap-6 group hover:bg-white/5 transition-colors">
-            <Award className="text-gold w-12 h-12 flex-shrink-0 group-hover:scale-110 transition-transform duration-500" />
-            <div>
-              <div className="text-3xl font-serif font-bold text-white mb-1">25+</div>
-              <div className="text-slate-400 text-sm font-medium tracking-wide uppercase">Years Experience</div>
-            </div>
-          </div>
-          <div className="p-8 flex items-center justify-center gap-6 group hover:bg-white/5 transition-colors">
-            <Scale className="text-gold w-12 h-12 flex-shrink-0 group-hover:scale-110 transition-transform duration-500" />
-            <div>
-              <div className="text-3xl font-serif font-bold text-white mb-1">98%</div>
-              <div className="text-slate-400 text-sm font-medium tracking-wide uppercase">Success Rate</div>
-            </div>
-          </div>
-          <div className="p-8 flex items-center justify-center gap-6 group hover:bg-white/5 transition-colors">
-            <Building className="text-gold w-12 h-12 flex-shrink-0 group-hover:scale-110 transition-transform duration-500" />
-            <div>
-              <div className="text-3xl font-serif font-bold text-white mb-1">2,500+</div>
-              <div className="text-slate-400 text-sm font-medium tracking-wide uppercase">Cases Resolved</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 3. ABOUT THE FIRM TEASER */}
-      <section className="py-24 px-8 max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16">
-        <div className="flex-1 relative">
-          <div className="absolute -inset-4 bg-gold/10 transform rotate-3 rounded-sm z-0"></div>
-          <Image 
-            src="/images/about.png" 
-            alt="Rahimullah Advocate Legal Team" 
-            width={600} 
-            height={400} 
-            className="relative z-10 w-full h-auto object-cover rounded-sm shadow-xl"
-          />
-        </div>
-        <div className="flex-1 space-y-6">
-          <h2 className="text-gold font-bold tracking-widest uppercase text-sm">Our Legacy</h2>
-          <h3 className="font-serif text-4xl md:text-5xl font-bold text-navy leading-tight">
-            Unwavering Commitment to Justice.
-          </h3>
-          <p className="text-lg text-slate-600 leading-relaxed">
-            Rahimullah Advocate & Associates operates on a foundation of legal precision and professional excellence. For over two decades, our chambers have served as a cornerstone of legal advocacy, complex litigation, and strategic advisory services in Swat. 
-          </p>
-          <ul className="space-y-4 mt-6">
-            <li className="flex items-start gap-3">
-              <CheckCircle2 className="text-gold flex-shrink-0 mt-1" size={20} />
-              <span className="text-slate-700">Every matter is personally directed and managed by senior partners.</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <CheckCircle2 className="text-gold flex-shrink-0 mt-1" size={20} />
-              <span className="text-slate-700">Extensive expertise and a proven record within the regional courts of Khyber Pakhtunkhwa.</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <CheckCircle2 className="text-gold flex-shrink-0 mt-1" size={20} />
-              <span className="text-slate-700">Discreet, highly secure systems for client records and communications.</span>
-            </li>
-          </ul>
-          <div className="pt-6">
-            <Link href="/services" className="inline-flex items-center gap-2 border-b-2 border-gold text-navy font-bold pb-1 hover:text-gold transition-colors">
-              Our Professional Methodology <ArrowRight size={16} />
-            </Link>
+            <h3 className="text-navy font-bold text-[15px] tracking-[0.2em] uppercase text-center leading-[2.5]">
+              Experience.<br/>Integrity.<br/>Results.
+            </h3>
+            <div className="w-12 h-[2px] bg-gold mt-10"></div>
           </div>
         </div>
       </section>
 
-      {/* 4. PRACTICE AREAS GRID */}
-      <section className="py-24 px-8 bg-slate-50 relative">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16 max-w-2xl mx-auto">
-            <h2 className="font-serif text-4xl md:text-5xl font-bold text-navy mb-6">Specialized Fields of Practice</h2>
-            <div className="h-1 w-20 bg-gold mx-auto mb-6"></div>
-            <p className="text-slate-600 text-lg">We concentrate our resources on key practice areas to ensure our clients receive specialized, results-oriented legal advocacy.</p>
+      {/* 2. STATS STRIP */}
+      <section className="relative z-20 -mt-16 mx-auto max-w-[1400px] px-4 md:px-8 mb-32">
+        <ScrollReveal delay={0.4}>
+          <div className="bg-white/90 backdrop-blur-lg rounded-sm shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] border border-white grid grid-cols-2 md:grid-cols-4 py-10 px-4 gap-4 md:gap-0 md:divide-x md:divide-slate-100">
+            <div className="flex flex-col items-center text-center p-4">
+              <Building className="text-gold w-12 h-12 mb-4" strokeWidth={1.5}/>
+              <div className="text-4xl font-serif font-bold text-navy mb-2">20+</div>
+              <div className="text-slate-500 text-xs font-bold uppercase tracking-widest">Years of Experience</div>
+            </div>
+            <div className="flex flex-col items-center text-center p-4">
+              <Briefcase className="text-gold w-12 h-12 mb-4" strokeWidth={1.5}/>
+              <div className="text-4xl font-serif font-bold text-navy mb-2">1500+</div>
+              <div className="text-slate-500 text-xs font-bold uppercase tracking-widest">Cases Handled</div>
+            </div>
+            <div className="flex flex-col items-center text-center p-4">
+              <Award className="text-gold w-12 h-12 mb-4" strokeWidth={1.5}/>
+              <div className="text-4xl font-serif font-bold text-navy mb-2">98%</div>
+              <div className="text-slate-500 text-xs font-bold uppercase tracking-widest">Success Rate</div>
+            </div>
+            <div className="flex flex-col items-center text-center p-4">
+              <Users className="text-gold w-12 h-12 mb-4" strokeWidth={1.5}/>
+              <div className="text-4xl font-serif font-bold text-navy mb-2">500+</div>
+              <div className="text-slate-500 text-xs font-bold uppercase tracking-widest">Happy Clients</div>
+            </div>
           </div>
+        </ScrollReveal>
+      </section>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      {/* 3. PRACTICE AREAS & CLIENT PORTAL */}
+      <section className="max-w-[1600px] mx-auto px-8 py-16 mb-24">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+          
+          {/* Left Side: Practice Areas */}
+          <div className="lg:col-span-8">
+            <ScrollReveal>
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-8 h-[2px] bg-gold"></div>
+                <span className="text-gold font-bold tracking-widest uppercase text-xs">Our Practice Areas</span>
+              </div>
+              <h2 className="font-serif text-5xl font-bold text-navy mb-12 tracking-tight">
+                Comprehensive Legal Services
+              </h2>
+            </ScrollReveal>
             
-            {/* Card 1 */}
-            <div className="group bg-white p-10 border border-slate-200 shadow-sm hover:shadow-2xl hover:border-gold/50 transition-all duration-500 rounded-sm relative overflow-hidden flex flex-col hover:-translate-y-2">
-              <div className="absolute top-0 left-0 w-full h-1 bg-transparent group-hover:bg-gold transition-colors duration-500"></div>
-              <Scale className="text-navy group-hover:text-gold transition-colors duration-500 mb-6" size={48} />
-              <h3 className="font-serif text-2xl font-bold text-navy mb-4">Civil Litigation</h3>
-              <p className="text-slate-600 text-sm leading-relaxed mb-8 flex-grow">Resolving complex property, contractual, and civil disputes through thorough evidentiary analysis and court representation.</p>
-              <Link href="/services" className="inline-flex items-center gap-2 text-gold font-bold text-sm hover:text-navy transition-colors duration-200 uppercase tracking-wide">
-                Learn More <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform duration-300"/>
-              </Link>
-            </div>
-
-            {/* Card 2 */}
-            <div className="group bg-white p-10 border border-slate-200 shadow-sm hover:shadow-2xl hover:border-gold/50 transition-all duration-500 rounded-sm relative overflow-hidden flex flex-col hover:-translate-y-2">
-              <div className="absolute top-0 left-0 w-full h-1 bg-transparent group-hover:bg-gold transition-colors duration-500"></div>
-              <Briefcase className="text-navy group-hover:text-gold transition-colors duration-500 mb-6" size={48} />
-              <h3 className="font-serif text-2xl font-bold text-navy mb-4">Corporate Law</h3>
-              <p className="text-slate-600 text-sm leading-relaxed mb-8 flex-grow">Structuring corporate entities, drafting commercial agreements, and representing businesses to protect enterprise value.</p>
-              <Link href="/services" className="inline-flex items-center gap-2 text-gold font-bold text-sm hover:text-navy transition-colors duration-200 uppercase tracking-wide">
-                Learn More <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform duration-300"/>
-              </Link>
-            </div>
-
-            {/* Card 3 */}
-            <div className="group bg-white p-10 border border-slate-200 shadow-sm hover:shadow-2xl hover:border-gold/50 transition-all duration-500 rounded-sm relative overflow-hidden flex flex-col hover:-translate-y-2">
-              <div className="absolute top-0 left-0 w-full h-1 bg-transparent group-hover:bg-gold transition-colors duration-500"></div>
-              <Shield className="text-navy group-hover:text-gold transition-colors duration-500 mb-6" size={48} />
-              <h3 className="font-serif text-2xl font-bold text-navy mb-4">Criminal Defense</h3>
-              <p className="text-slate-600 text-sm leading-relaxed mb-8 flex-grow">Providing rigorous, strategic representation to safeguard constitutional rights and legal protections at all stages of the judicial process.</p>
-              <Link href="/services" className="inline-flex items-center gap-2 text-gold font-bold text-sm hover:text-navy transition-colors duration-200 uppercase tracking-wide">
-                Learn More <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform duration-300"/>
-              </Link>
-            </div>
-
-            {/* Card 4 */}
-            <div className="group bg-white p-10 border border-slate-200 shadow-sm hover:shadow-2xl hover:border-gold/50 transition-all duration-500 rounded-sm relative overflow-hidden flex flex-col hover:-translate-y-2">
-              <div className="absolute top-0 left-0 w-full h-1 bg-transparent group-hover:bg-gold transition-colors duration-500"></div>
-              <Users className="text-navy group-hover:text-gold transition-colors duration-500 mb-6" size={48} />
-              <h3 className="font-serif text-2xl font-bold text-navy mb-4">Family Law</h3>
-              <p className="text-slate-600 text-sm leading-relaxed mb-8 flex-grow">Advising on family law matters, including marital dissolutions, child custody, and estate succession, with absolute discretion.</p>
-              <Link href="/services" className="inline-flex items-center gap-2 text-gold font-bold text-sm hover:text-navy transition-colors duration-200 uppercase tracking-wide">
-                Learn More <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform duration-300"/>
-              </Link>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* 5. THE SECURE PORTAL FLEX */}
-      <section className="bg-navy text-white py-24 px-8 border-t-4 border-gold relative overflow-hidden">
-        {/* Decorative background element */}
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-gold/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
-        
-        <div className="relative z-10 max-w-6xl mx-auto flex flex-col lg:flex-row items-center gap-16">
-          <div className="flex-1">
-            <div className="inline-flex items-center gap-2 bg-white/10 px-3 py-1 rounded-full text-gold text-xs font-bold tracking-widest uppercase mb-6 border border-white/20">
-              <LockKeyhole size={14} /> Industry-Standard Encrypted Vault
-            </div>
-            <h2 className="font-serif text-4xl md:text-5xl font-bold mb-6 leading-tight">Secure Electronic Case<br/>Management System</h2>
-            <p className="text-slate-300 leading-relaxed mb-10 text-lg">
-              We maintain the confidentiality and security of all client records. Through our secure electronic portal, clients can access case documentation, review scheduled court appearances, and communicate securely with their legal counsel in compliance with privacy regulations.
-            </p>
-            <a href={process.env.NEXT_PUBLIC_PORTAL_URL || "https://clientcounsel.vercel.app"} className="group inline-flex items-center gap-3 bg-white text-navy hover:bg-gold hover:text-white px-8 py-4 font-bold rounded-sm transition-all duration-300 shadow-xl hover:-translate-y-1">
-              <LockKeyhole size={20} className="group-hover:animate-pulse" />
-              Client Portal Access
-            </a>
+            <ScrollReveal staggerChildren={true}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                {[
+                  { title: 'Civil Litigation', icon: <Scale strokeWidth={1.5} className="w-12 h-12"/>, desc: 'Contract disputes, recovery suits, property matters and more.' },
+                  { title: 'Family Law', icon: <Users strokeWidth={1.5} className="w-12 h-12"/>, desc: 'Divorce, child custody, maintenance, succession and family disputes.' },
+                  { title: 'Criminal Defense', icon: <PenTool strokeWidth={1.5} className="w-12 h-12"/>, desc: 'Bail, appeals, FIR quashment, trial defense and representation.' },
+                  { title: 'Corporate Law', icon: <Building strokeWidth={1.5} className="w-12 h-12"/>, desc: 'Company formation, compliance, contracts and legal advisory.' },
+                  { title: 'Property Law', icon: <Building strokeWidth={1.5} className="w-12 h-12"/>, desc: 'Sale/purchase, transfers, leases, tenancy and real estate matters.' },
+                  { title: 'Taxation', icon: <FileCheck strokeWidth={1.5} className="w-12 h-12"/>, desc: 'Income tax, sales tax, appeals, litigation, and advisory.' },
+                ].map((area, i) => (
+                  <RevealItem key={i} className="group bg-white p-10 border border-slate-100 shadow-sm rounded-sm hover:border-gold hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 flex flex-col items-center text-center">
+                    <div className="text-gold mb-6 group-hover:scale-110 transition-transform duration-500">{area.icon}</div>
+                    <h3 className="font-bold text-navy text-xl mb-4">{area.title}</h3>
+                    <p className="text-slate-500 text-sm leading-relaxed mb-8 flex-grow">{area.desc}</p>
+                    <Link href={`/services#${area.title.toLowerCase().replace(' ', '-')}`} className="text-gold font-bold text-xs tracking-widest uppercase flex items-center gap-2 group-hover:gap-3 transition-all">
+                      Learn More &rarr;
+                    </Link>
+                  </RevealItem>
+                ))}
+              </div>
+            </ScrollReveal>
           </div>
           
-          <div className="flex-1 w-full relative">
-            <div className="absolute inset-0 bg-gold blur-2xl opacity-20 transform translate-y-4"></div>
-            <div className="w-full bg-slate-900 rounded-lg p-1 border border-slate-700 shadow-2xl relative overflow-hidden group">
-               {/* Mockup UI representation */}
-               <div className="bg-slate-800 rounded-md p-8 h-full">
-                 <div className="flex items-center justify-between mb-8 border-b border-slate-700 pb-6">
-                   <div className="flex items-center gap-4">
-                     <div className="w-14 h-14 bg-navy rounded-md flex items-center justify-center border border-slate-600 shadow-inner">
-                       <LockKeyhole className="text-gold" size={28} />
-                     </div>
-                     <div>
-                       <div className="text-sm text-slate-400 font-medium">Connection Status</div>
-                       <div className="font-bold text-emerald-400 flex items-center gap-2">
-                         <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                         256-bit AES Encrypted
-                       </div>
-                     </div>
-                   </div>
-                 </div>
-                 <div className="space-y-4 relative">
-                   <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent to-slate-800 z-10"></div>
-                   <div className="h-5 bg-slate-700 rounded w-3/4 animate-pulse"></div>
-                   <div className="h-5 bg-slate-700 rounded w-1/2 animate-pulse delay-75"></div>
-                   <div className="h-5 bg-slate-700 rounded w-5/6 animate-pulse delay-150"></div>
-                   <div className="h-5 bg-slate-700 rounded w-2/3 animate-pulse delay-200"></div>
-                 </div>
-               </div>
+          {/* Right Side: Client Portal Card */}
+          <div className="lg:col-span-4 mt-12 lg:mt-0">
+            <ScrollReveal delay={0.3}>
+              <div className="bg-navy lg:bg-white text-white lg:text-slate-800 rounded-sm shadow-2xl border border-navy lg:border-slate-100 overflow-hidden h-full flex flex-col relative group hover:-translate-y-2 transition-all duration-500">
+                <div className="absolute inset-0 bg-[url('/images/hero-bg.png')] bg-cover bg-center opacity-10 lg:opacity-5 grayscale group-hover:grayscale-0 group-hover:opacity-20 lg:group-hover:opacity-10 transition-all duration-700"></div>
+                
+                <div className="p-12 flex-grow relative z-10">
+                  <div className="flex items-center gap-2 text-gold font-bold text-xs tracking-widest uppercase mb-8">
+                    <LockKeyhole size={16} /> Client Portal
+                  </div>
+                  <h3 className="font-serif text-4xl font-bold mb-6 leading-tight tracking-tight">
+                    Your Case.<br/>Always Accessible.
+                  </h3>
+                  <p className="text-slate-300 lg:text-slate-500 text-base mb-10 leading-relaxed">
+                    Securely access your case details, documents, hearings and more.
+                  </p>
+                  <a href={process.env.NEXT_PUBLIC_PORTAL_URL || "https://clientcounsel.vercel.app"} className="bg-gold hover:bg-goldHover lg:bg-navy lg:hover:bg-slate-800 text-white w-full py-5 rounded-sm font-bold text-xs tracking-widest uppercase flex justify-center items-center gap-3 transition-all mb-10 shadow-xl hover:shadow-2xl hover:-translate-y-1">
+                    LOGIN TO PORTAL &rarr;
+                  </a>
+                  
+                  <ul className="space-y-5">
+                    {[
+                      { text: 'Track Case Progress', icon: <Search size={18}/> },
+                      { text: 'Upcoming Hearings', icon: <Calendar size={18}/> },
+                      { text: 'Documents & Files', icon: <FileText size={18}/> },
+                      { text: 'Invoices & Payments', icon: <CreditCard size={18}/> },
+                      { text: 'Messages & Updates', icon: <MessageSquare size={18}/> },
+                    ].map((item, i) => (
+                      <li key={i} className="flex items-center gap-4 text-slate-200 lg:text-slate-600 text-sm font-bold">
+                        <div className="text-gold bg-gold/20 lg:bg-gold/10 p-2 rounded-sm">{item.icon}</div>
+                        {item.text}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="bg-slate-800 lg:bg-slate-50 p-8 border-t border-slate-700 lg:border-slate-100 relative z-10 text-center">
+                  <Link href="/contact" className="text-slate-300 hover:text-gold lg:text-slate-500 lg:hover:text-gold text-sm font-bold tracking-wide transition-colors">
+                    New Client? Register Here &rarr;
+                  </Link>
+                </div>
+              </div>
+            </ScrollReveal>
+          </div>
+          
+        </div>
+      </section>
+
+      {/* 4. FEATURES BANNER */}
+      <section className="border-y border-slate-100 bg-white">
+        <ScrollReveal>
+          <div className="max-w-[1600px] mx-auto px-8 py-16">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:divide-x lg:divide-slate-100">
+              {[
+                { title: 'Strategic Approach', desc: 'Tailored legal strategies designed for the best possible outcomes.', icon: <BookOpen className="text-gold" strokeWidth={1.5} size={32}/> },
+                { title: 'Clear Communication', desc: 'We keep you informed at every step of the process.', icon: <Scale className="text-gold" strokeWidth={1.5} size={32}/> },
+                { title: 'Confidential & Secure', desc: 'Your information is protected with the highest standards.', icon: <Shield className="text-gold" strokeWidth={1.5} size={32}/> },
+                { title: 'Result Driven', desc: 'We are committed to achieving the best results for you.', icon: <User className="text-gold" strokeWidth={1.5} size={32}/> },
+              ].map((f, i) => (
+                <div key={i} className="flex gap-6 p-4 items-start group">
+                  <div className="flex-shrink-0 mt-1 group-hover:scale-110 transition-transform duration-300">{f.icon}</div>
+                  <div>
+                    <h4 className="font-bold text-navy mb-3 text-lg">{f.title}</h4>
+                    <p className="text-sm text-slate-500 leading-relaxed font-medium">{f.desc}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
+        </ScrollReveal>
+      </section>
+
+      {/* 5. BOTTOM SECTION (Testimonials, Articles, Form) */}
+      <section className="bg-slate-50 py-32 px-8">
+        <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start">
+          
+          {/* Testimonial */}
+          <ScrollReveal delay={0.1}>
+            <div>
+              <div className="flex justify-between items-end mb-10">
+                <h4 className="font-bold text-xs tracking-widest text-slate-500 uppercase">What Our Clients Say</h4>
+                <Link href="/reviews" className="text-xs font-bold text-gold flex items-center gap-1 hover:text-navy transition-colors tracking-wider uppercase">View All &rarr;</Link>
+              </div>
+              <div className="bg-white p-10 rounded-sm shadow-sm border border-slate-100 relative group hover:shadow-xl transition-shadow duration-500">
+                <span className="text-8xl text-gold/10 font-serif absolute top-2 left-6 leading-none">"</span>
+                <p className="text-slate-600 italic leading-relaxed relative z-10 mt-8 mb-10 text-base font-medium">
+                  Excellent legal services with complete professionalism. They handled my case with great expertise and delivered the best possible outcome. Highly recommended.
+                </p>
+                <div className="flex gap-1 mb-6 text-gold">
+                  {[1,2,3,4,5].map(star => <svg key={star} className="w-5 h-5 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>)}
+                </div>
+                <div className="font-bold text-navy text-lg">— Umair Farooq</div>
+                <div className="text-sm text-slate-500 font-medium">Business Owner</div>
+                
+                {/* Pagination Dots */}
+                <div className="flex gap-2 mt-12 justify-center">
+                  <div className="w-2.5 h-2.5 rounded-full bg-gold"></div>
+                  <div className="w-2 h-2 rounded-full bg-slate-300 mt-0.5"></div>
+                  <div className="w-2 h-2 rounded-full bg-slate-300 mt-0.5"></div>
+                </div>
+              </div>
+            </div>
+          </ScrollReveal>
+
+          {/* Consultation Form */}
+          <ScrollReveal delay={0.3}>
+            <div className="h-full">
+              <ContactForm />
+            </div>
+          </ScrollReveal>
+
         </div>
       </section>
 

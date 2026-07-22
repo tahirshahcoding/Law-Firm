@@ -205,8 +205,9 @@ CSRF_TRUSTED_ORIGINS = [
     "https://lawsiteswat.vercel.app"
 ] + CORS_ALLOWED_ORIGINS
 
-# Allow CORS on both API and media file paths (so browser can load avatar images)
-CORS_URLS_REGEX = r'^/(api|media)/.*$'
+# Allow all origins for dev
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_URLS_REGEX = r'^.*$'
 
 # Required for cookie-based auth — browser must send credentials with cross-origin requests
 CORS_ALLOW_CREDENTIALS = True
@@ -235,6 +236,7 @@ REST_FRAMEWORK = {
         'user': '1000/minute',
         'login': '10/minute',
         'consultation': '10/minute',
+        'public_hearings': '60/hour',
     },
     'EXCEPTION_HANDLER': 'management.exceptions.custom_exception_handler',
 }

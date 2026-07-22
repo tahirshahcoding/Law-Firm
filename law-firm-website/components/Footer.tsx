@@ -26,15 +26,15 @@ export function Footer() {
           <ul className="space-y-4 text-sm">
             <li className="flex items-start gap-3">
               <MapPin className="text-[#B4935E] shrink-0 mt-0.5" size={18} />
-              <span>Bar Association Road, Mingora,<br/>Swat, Khyber Pakhtunkhwa</span>
+              <span>Opposite Tehsil Courts 1st Floor,<br/>Hassan Trade Center Kabal, Swat</span>
             </li>
             <li className="flex items-center gap-3">
               <Phone className="text-[#B4935E] shrink-0" size={18} />
-              <span>+92 300 123 4567</span>
+              <span>0345-9309670</span>
             </li>
             <li className="flex items-center gap-3">
               <Mail className="text-[#B4935E] shrink-0" size={18} />
-              <span>contact@rahimullahadvocate.pk</span>
+              <span>rahimullahadvocate@gmail.com</span>
             </li>
           </ul>
         </div>
