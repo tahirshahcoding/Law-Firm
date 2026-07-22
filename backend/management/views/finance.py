@@ -175,7 +175,7 @@ class AccountsLedgerView(APIView):
     def get(self, request):
         role = getattr(getattr(request.user, 'profile', None), 'role', '')
         perms = getattr(getattr(request.user, 'profile', None), 'permissions', {})
-        if role != 'Admin' and role != 'Accountant' and not perms.get('accounts', {}).get('view', False):
+        if role != 'Admin' and role != 'Accountant' and not perms.get('accounts', {}).get('view', False) and not perms.get('reports', {}).get('view', False):
             return _error("Forbidden", status.HTTP_403_FORBIDDEN)
 
         # Recompute totals by evaluating the properties for each invoice to ensure accuracy

@@ -4,9 +4,11 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { API_BASE } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const { user } = useAuth();
   const [unreadMessages, setUnreadMessages] = useState(0);
 
   useEffect(() => {
@@ -38,6 +40,7 @@ export default function Sidebar() {
     { name: 'Deadlines', href: '/deadlines' },
     { name: 'Daily Diary', href: '/diary' },
     { name: 'Accounts', href: '/accounts' },
+    { name: 'Reports', href: '/reports' },
     { name: 'Messages', href: '/messages' },
   ];
 
@@ -52,6 +55,19 @@ export default function Sidebar() {
         <ul className="space-y-2 px-4">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
+            
+            // Check granular permissions for specific modules
+            const moduleKey = item.name.toLowerCase().replace(' ', '_');
+            const canView = user?.role === 'Admin' || 
+                           item.name === 'Dashboard' || // Dashboard is always visible
+                           item.name === 'Messages' ||  // Messages are always visible
+                           item.name === 'Daily Diary' || // Diary is mostly accessible
+                           (user?.permissions && user.permissions[moduleKey]?.view === true);
+
+            if (!canView && item.name !== 'Dashboard' && item.name !== 'Messages' && item.name !== 'Daily Diary') {
+                return null;
+            }
+
             return (
               <li key={item.name}>
                 <Link

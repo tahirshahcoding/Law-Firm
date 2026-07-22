@@ -122,6 +122,14 @@ const MODULES = [
       { key: 'view',   label: 'View' },
     ],
   },
+  {
+    key: 'reports',
+    label: 'Reports',
+    actions: [
+      { key: 'view',   label: 'View' },
+      { key: 'print',  label: 'Export & Print' },
+    ],
+  },
 ];
 
 // ── Default permissions per role preset ──────────────────────────────────────
@@ -157,6 +165,7 @@ const ROLE_PRESETS: Record<string, Permissions> = {
     messages:      { view: true, add: true, delete: true },
     deadlines:     { view: true, add: true, edit: true, delete: false },
     calendar:      { view: true },
+    reports:       { view: true, print: true },
   }),
   'Senior Partner': buildFullPermissions({
     clients:       { view: true, add: true, edit: true, delete: true },
@@ -171,6 +180,7 @@ const ROLE_PRESETS: Record<string, Permissions> = {
     messages:      { view: true, add: true, delete: true },
     deadlines:     { view: true, add: true, edit: true, delete: true },
     calendar:      { view: true },
+    reports:       { view: true, print: true },
   }),
   Associate: buildFullPermissions({
     clients:       { view: true },
@@ -184,12 +194,14 @@ const ROLE_PRESETS: Record<string, Permissions> = {
     messages:      { view: true, add: true, delete: false },
     deadlines:     { view: true, add: true, edit: true, delete: false },
     calendar:      { view: true },
+    reports:       { view: false },
   }),
   Accountant: buildFullPermissions({
     accounts:      { view: true, add: true, edit: true, delete: false },
     consultations: { view: true },
     messages:      { view: true, add: true, delete: false },
     calendar:      { view: true },
+    reports:       { view: true, print: true },
   }),
   Staff: buildFullPermissions({
     clients:       { view: true },
@@ -201,6 +213,7 @@ const ROLE_PRESETS: Record<string, Permissions> = {
     messages:      { view: true, add: true, delete: false },
     deadlines:     { view: true },
     calendar:      { view: true },
+    reports:       { view: false },
   }),
   Admin: buildFullPermissions({
     clients:       { view: true, add: true, edit: true, delete: true },
@@ -215,6 +228,7 @@ const ROLE_PRESETS: Record<string, Permissions> = {
     messages:      { view: true, add: true, delete: true },
     deadlines:     { view: true, add: true, edit: true, delete: true },
     calendar:      { view: true },
+    reports:       { view: true, print: true },
   }),
 };
 

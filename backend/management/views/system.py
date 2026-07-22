@@ -115,7 +115,7 @@ class DashboardStatsView(APIView):
         today = date.today()
         role = getattr(getattr(request.user, 'profile', None), 'role', '')
         perms = getattr(getattr(request.user, 'profile', None), 'permissions', {})
-        has_accounts_view = role == 'Admin' or role == 'Accountant' or perms.get('accounts', {}).get('view', False)
+        has_accounts_view = role == 'Admin' or role == 'Accountant' or perms.get('accounts', {}).get('view', False) or perms.get('reports', {}).get('view', False)
 
         # Base response for all users
         response_data = {
