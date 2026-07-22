@@ -95,7 +95,11 @@ class PaymentViewSet(viewsets.ModelViewSet):
         role = getattr(profile, 'role', '')
         perms = getattr(profile, 'permissions', {})
         if role == 'Admin' or role == 'Accountant' or perms.get('accounts', {}).get('view', False):
-            return Payment.objects.select_related('invoice', 'invoice__case', 'invoice__case__client').order_by('-payment_date')
+            qs = Payment.objects.select_related('invoice', 'invoice__case', 'invoice__case__client').order_by('-payment_date')
+            invoice_id = self.request.query_params.get('invoice')
+            if invoice_id:
+                qs = qs.filter(invoice_id=invoice_id)
+            return qs
         return Payment.objects.none()
 
     def check_permissions(self, request):
