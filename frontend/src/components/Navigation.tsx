@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Users, FolderOpen, Calendar, Gavel, Coins, Settings, X, MessageSquare, Activity, CalendarDays, Scale, BookOpen, Receipt, CreditCard, CircleDollarSign, Clock } from 'lucide-react';
+import { LayoutDashboard, Users, FolderOpen, Calendar, Gavel, Coins, Settings, X, MessageSquare, Activity, CalendarDays, Scale, BookOpen, Receipt, CreditCard, CircleDollarSign, Clock, BarChart3 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import Image from 'next/image';
 
@@ -21,6 +21,7 @@ function canView(user: any, module: string): boolean {
   if (module === 'clients' && user.permissions?.manage_clients) return true;
   if (module === 'cases' && user.permissions?.manage_cases) return true;
   if (module === 'accounts' && user.permissions?.manage_accounts) return true;
+  if (module === 'reports' && user.permissions?.manage_reports) return true;
   return false;
 }
 
@@ -49,6 +50,7 @@ export default function Navigation({ mobileOpen = false, onCloseMobile }: Naviga
         { name: 'Invoices', href: '/invoices', icon: Receipt, module: 'accounts' },
         { name: 'Expenses', href: '/expenses', icon: CreditCard, module: 'accounts' },
         { name: 'Revenue', href: '/revenue', icon: CircleDollarSign, module: 'accounts' },
+        { name: 'Reports', href: '/reports', icon: BarChart3, module: 'reports' },
       ]
     },
     {
