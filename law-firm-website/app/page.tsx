@@ -52,10 +52,10 @@ export default function Home() {
                 <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Trusted By 500+ Clients</span>
                 <div className="flex items-center">
                   <div className="flex -space-x-3">
-                    <div className="w-10 h-10 rounded-full border-2 border-white bg-slate-200 overflow-hidden"><img src="https://i.pravatar.cc/100?img=11" alt="client" /></div>
-                    <div className="w-10 h-10 rounded-full border-2 border-white bg-slate-200 overflow-hidden"><img src="https://i.pravatar.cc/100?img=12" alt="client" /></div>
-                    <div className="w-10 h-10 rounded-full border-2 border-white bg-slate-200 overflow-hidden"><img src="https://i.pravatar.cc/100?img=5" alt="client" /></div>
-                    <div className="w-10 h-10 rounded-full border-2 border-white bg-slate-200 overflow-hidden"><img src="https://i.pravatar.cc/100?img=8" alt="client" /></div>
+                    <div className="relative w-10 h-10 rounded-full border-2 border-white bg-slate-200 overflow-hidden"><Image src="https://i.pravatar.cc/100?img=11" alt="client" fill sizes="40px" className="object-cover" /></div>
+                    <div className="relative w-10 h-10 rounded-full border-2 border-white bg-slate-200 overflow-hidden"><Image src="https://i.pravatar.cc/100?img=12" alt="client" fill sizes="40px" className="object-cover" /></div>
+                    <div className="relative w-10 h-10 rounded-full border-2 border-white bg-slate-200 overflow-hidden"><Image src="https://i.pravatar.cc/100?img=5" alt="client" fill sizes="40px" className="object-cover" /></div>
+                    <div className="relative w-10 h-10 rounded-full border-2 border-white bg-slate-200 overflow-hidden"><Image src="https://i.pravatar.cc/100?img=8" alt="client" fill sizes="40px" className="object-cover" /></div>
                   </div>
                   <div className="ml-4 bg-white border border-gold text-gold font-bold text-xs px-3 py-1.5 rounded-full shadow-sm">
                     500+

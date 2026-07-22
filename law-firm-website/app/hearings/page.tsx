@@ -1,5 +1,6 @@
 import HearingsDashboard from '@/components/HearingsDashboard';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export const metadata = {
   title: 'Hearings & Cause List - Rahimullah Advocate',
@@ -12,10 +13,13 @@ export default function HearingsPage() {
       {/* Hero Section */}
       <section className="relative bg-navy text-white pt-32 pb-20 overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img 
+          <Image 
             src="/hero-bg.jpg" 
             alt="Courthouse pillars" 
-            className="w-full h-full object-cover opacity-20"
+            fill
+            className="object-cover opacity-20"
+            priority
+            sizes="100vw"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-navy via-navy/90 to-transparent"></div>
         </div>

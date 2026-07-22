@@ -27,8 +27,8 @@ export default function DailyDiaryPage() {
   
   // Update optimistic tasks when rawTasks change
   useEffect(() => {
-    setOptimisticTasks(rawTasks);
-  }, [rawTasks]);
+    setOptimisticTasks(Array.isArray(tasksData) ? tasksData : (tasksData?.results || []));
+  }, [tasksData]);
 
   const tasks = optimisticTasks || rawTasks;
 
