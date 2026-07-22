@@ -24,12 +24,14 @@ export default function HearingsDashboard() {
   const fetchHearings = async (timeframe: string) => {
     setLoading(true);
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/';
-      // Handle the 'all' tab case for the timeframe logic in the backend 
-      // where 'all' might not be a specific keyword, we can just omit it or map it.
-      // Our backend supports today, tomorrow, yesterday, last_7, next_7, upcoming, past.
+      let baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/';
+      if (!baseUrl.endsWith('/')) baseUrl += '/';
+      
       const param = timeframe === 'all' ? '' : `?timeframe=${timeframe}`;
-      const url = `${baseUrl}api/public/hearings/${param}`;
+      
+      // Prevent /apiapi/ or /api/api/ if NEXT_PUBLIC_API_URL already includes /api
+      const apiPrefix = baseUrl.endsWith('/api/') ? '' : 'api/';
+      const url = `${baseUrl}${apiPrefix}public/hearings/${param}`;
       
       const res = await fetch(url);
       

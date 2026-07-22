@@ -27,8 +27,11 @@ export default function ContactForm() {
     setSuccess(false);
 
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/';
-      const response = await fetch(`${baseUrl}api/consultations/`, {
+      let baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/';
+      if (!baseUrl.endsWith('/')) baseUrl += '/';
+      const apiPrefix = baseUrl.endsWith('/api/') ? '' : 'api/';
+      
+      const response = await fetch(`${baseUrl}${apiPrefix}consultations/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
