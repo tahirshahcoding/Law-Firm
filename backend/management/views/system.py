@@ -338,6 +338,10 @@ def log_backup_action(action, user, details):
     with open(log_path, 'w') as f:
         json.dump(logs, f)
 
+def _error(message, status_code):
+    from rest_framework.response import Response
+    return Response({'error': message}, status=status_code)
+
 class BackupDatabaseView(APIView):
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, JSONParser]

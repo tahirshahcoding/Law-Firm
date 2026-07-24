@@ -8,6 +8,7 @@ from .views import (
     PingView, CaseTimelineViewSet, ConflictCheckView, CourtViewSet, JudgeViewSet, CalendarEventViewSet, NotificationViewSet, DeadlineViewSet, BackupDatabaseView,
     MessageViewSet, ClientPortalMessagesView
 )
+from .views.reports import CaseReportViewSet, FinancialReportViewSet, ProductivityReportViewSet
 
 # Router handles the standard GET/POST/PUT/DELETE for all resource ViewSets
 router = DefaultRouter()
@@ -27,6 +28,9 @@ router.register(r'calendar-events',   CalendarEventViewSet,   basename='calendar
 router.register(r'notifications',     NotificationViewSet,    basename='notification')
 router.register(r'deadlines',         DeadlineViewSet,        basename='deadline')
 router.register(r'messages',          MessageViewSet,         basename='message')
+router.register(r'reports/cases',         CaseReportViewSet,      basename='report-cases')
+router.register(r'reports/financials',    FinancialReportViewSet, basename='report-financials')
+router.register(r'reports/productivity',  ProductivityReportViewSet, basename='report-productivity')
 
 urlpatterns = [
     # ── Staff Auth (cookie-based) ──────────────────────────────────────────────
