@@ -97,16 +97,13 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
 if DATABASE_URL:
-    db_config = dj_database_url.parse(
-        DATABASE_URL,
-        conn_max_age=600,
-        conn_health_checks=True,
-        ssl_require=True,
-    )
-    # Disable server-side cursors to avoid PgBouncer/connection pooler issues during dumpdata
-    db_config['OPTIONS'] = {'DISABLE_SERVER_SIDE_CURSORS': True}
     DATABASES = {
-        'default': db_config
+        'default': dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=600,
+            conn_health_checks=True,
+            ssl_require=True,
+        )
     }
 else:
     # Local Docker Compose setup
@@ -118,9 +115,6 @@ else:
             'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'supersecurepassword123'),
             'HOST': os.environ.get('POSTGRES_HOST', 'db'),
             'PORT': os.environ.get('POSTGRES_PORT', '5432'),
-            'OPTIONS': {
-                'DISABLE_SERVER_SIDE_CURSORS': True,
-            }
         }
     }
 
