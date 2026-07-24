@@ -357,18 +357,35 @@ class BackupDatabaseView(APIView):
             
         if request.query_params.get('download') == 'true':
             try:
-                out = io.StringIO()
-                # Exclude auth and contenttypes which can cause restore conflicts
-                call_command('dumpdata', exclude=['auth.permission', 'contenttypes'], indent=2, stdout=out)
-                
+                from django.apps import apps
+                from django.core import serializers as django_serializers
+
+                # Manually serialize each model table-by-table.
+                # This avoids Django's dumpdata which uses server-side cursors
+                # that are blocked by PgBouncer connection pooling.
+                EXCLUDED_APPS = {'contenttypes', 'auth.permission', 'admin', 'sessions'}
+                all_objects = []
+
+                for model in apps.get_models():
+                    label = f"{model._meta.app_label}.{model._meta.model_name}"
+                    # Skip excluded models
+                    if model._meta.app_label in EXCLUDED_APPS or label in EXCLUDED_APPS:
+                        continue
+                    # Fetch all rows for this model at once (no server-side cursor)
+                    qs = model._default_manager.using('default').all()
+                    all_objects.extend(list(qs))
+
+                serialized = django_serializers.serialize('json', all_objects, indent=2)
+
                 filename = f"backup_{timezone.now().strftime('%Y-%m-%d_%H-%M')}.json"
-                response = HttpResponse(out.getvalue(), content_type='application/json')
+                response = HttpResponse(serialized, content_type='application/json')
                 response['Content-Disposition'] = f'attachment; filename="{filename}"'
-                
+
                 log_backup_action('Created Backup', request.user, f"Downloaded Backup {filename}")
                 return response
             except Exception as e:
                 return _error(str(e), status.HTTP_500_INTERNAL_SERVER_ERROR)
+
         
         # If not downloading, return the last backup info from the audit logs
         last_backup_date = None
