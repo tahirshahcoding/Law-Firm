@@ -203,8 +203,8 @@ CSRF_TRUSTED_ORIGINS = [
     "https://lawsiteswat.vercel.app"
 ] + CORS_ALLOWED_ORIGINS
 
-# Allow all origins for dev
-CORS_ALLOW_ALL_ORIGINS = True
+# Allow all origins for dev only
+CORS_ALLOW_ALL_ORIGINS = DEBUG
 CORS_URLS_REGEX = r'^.*$'
 
 # Required for cookie-based auth — browser must send credentials with cross-origin requests
@@ -282,4 +282,23 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60  # 30 minutes max per task
+
+# ── Caching Configuration ─────────────────────────────────────────────────────
+_REDIS_CACHE_URL = os.environ.get('REDIS_URL', os.environ.get('CELERY_BROKER_URL'))
+if _REDIS_CACHE_URL and not _REDIS_CACHE_URL.startswith('redis://localhost'):
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+            'LOCATION': _REDIS_CACHE_URL,
+            'TIMEOUT': 300,
+        }
+    }
+else:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            'LOCATION': 'unique-snowflake',
+            'TIMEOUT': 300,
+        }
+    }
 

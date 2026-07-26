@@ -31,4 +31,4 @@ RUN chmod +x build.sh
 # Expose port 7860 as required by Hugging Face Spaces
 EXPOSE 7860
 
-CMD ["sh", "-c", "./build.sh && gunicorn core.wsgi:application --bind 0.0.0.0:7860"]
+CMD ["sh", "-c", "./build.sh && gunicorn core.wsgi:application --bind 0.0.0.0:7860 --workers 2 --threads 4 --timeout 120 --keep-alive 5"]
