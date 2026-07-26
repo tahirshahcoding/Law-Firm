@@ -112,26 +112,26 @@ const toastConfig: Record<ToastType, {
   success: {
     icon: <CheckCircle2 size={18} className="text-emerald-500 shrink-0" />,
     bar: 'bg-emerald-500',
-    bg: 'bg-white',
-    text: 'text-slate-800',
+    bg: 'bg-white dark:bg-slate-900',
+    text: 'text-slate-800 dark:text-slate-100',
   },
   error: {
     icon: <XCircle size={18} className="text-rose-500 shrink-0" />,
     bar: 'bg-rose-500',
-    bg: 'bg-white',
-    text: 'text-slate-800',
+    bg: 'bg-white dark:bg-slate-900',
+    text: 'text-slate-800 dark:text-slate-100',
   },
   info: {
     icon: <Info size={18} className="text-blue-500 shrink-0" />,
     bar: 'bg-blue-500',
-    bg: 'bg-white',
-    text: 'text-slate-800',
+    bg: 'bg-white dark:bg-slate-900',
+    text: 'text-slate-800 dark:text-slate-100',
   },
   warning: {
     icon: <AlertTriangle size={18} className="text-amber-500 shrink-0" />,
     bar: 'bg-amber-500',
-    bg: 'bg-white',
-    text: 'text-slate-800',
+    bg: 'bg-white dark:bg-slate-900',
+    text: 'text-slate-800 dark:text-slate-100',
   },
 };
 
@@ -290,7 +290,7 @@ export function UIProvider({ children }: { children: ReactNode }) {
           />
 
           {/* Panel */}
-          <div className="relative bg-white rounded-2xl shadow-2xl shadow-slate-900/20 w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="relative bg-white dark:bg-slate-900 rounded-2xl shadow-2xl shadow-slate-900/20 border border-slate-200 dark:border-slate-800 w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             {/* Top accent bar */}
             <div className={`h-1 w-full ${cfg?.confirmBtn.includes('rose') ? 'bg-rose-500' : cfg?.confirmBtn.includes('amber') ? 'bg-amber-500' : 'bg-blue-500'}`} />
 
@@ -301,10 +301,10 @@ export function UIProvider({ children }: { children: ReactNode }) {
                   {cfg?.icon}
                 </div>
                 <div className="flex-1 min-w-0 pt-0.5">
-                  <h2 id="confirm-title" className="text-base font-bold text-slate-900 leading-snug">
+                  <h2 id="confirm-title" className="text-base font-bold text-slate-900 dark:text-white leading-snug">
                     {dialog.title}
                   </h2>
-                  <p className="text-sm text-slate-500 mt-1 leading-relaxed">
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
                     {dialog.message}
                   </p>
                 </div>
@@ -314,7 +314,7 @@ export function UIProvider({ children }: { children: ReactNode }) {
               <div className="flex items-center justify-end gap-3 mt-6">
                 <button
                   onClick={handleCancel}
-                  className="px-4 py-2 text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-slate-300"
+                  className="px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-slate-300 dark:focus:ring-slate-700"
                 >
                   {dialog.cancelLabel ?? 'Cancel'}
                 </button>
@@ -337,7 +337,7 @@ export function UIProvider({ children }: { children: ReactNode }) {
           return (
             <div
               key={t.id}
-              className={`${tc.bg} rounded-xl shadow-lg shadow-slate-900/10 border border-slate-100 overflow-hidden pointer-events-auto animate-in slide-in-from-right-4 fade-in duration-300`}
+              className={`${tc.bg} rounded-xl shadow-lg shadow-slate-900/10 border border-slate-100 dark:border-slate-800 overflow-hidden pointer-events-auto animate-in slide-in-from-right-4 fade-in duration-300`}
             >
               {/* Progress bar */}
               <div className={`h-0.5 ${tc.bar} animate-[shrink_4s_linear_forwards]`} />
@@ -346,7 +346,7 @@ export function UIProvider({ children }: { children: ReactNode }) {
                 <p className={`text-sm font-medium flex-1 leading-snug ${tc.text}`}>{t.message}</p>
                 <button
                   onClick={() => setToasts(prev => prev.filter(x => x.id !== t.id))}
-                  className="text-slate-300 hover:text-slate-500 transition-colors shrink-0"
+                  className="text-slate-300 dark:text-slate-600 hover:text-slate-500 dark:hover:text-slate-400 transition-colors shrink-0"
                 >
                   <X size={15} />
                 </button>
@@ -359,13 +359,13 @@ export function UIProvider({ children }: { children: ReactNode }) {
       {/* ── Loading Overlay ────────────────────────────────────────────── */}
       {loadingState.active && (
         <div className="fixed inset-0 z-[10050] flex flex-col items-center justify-center bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-300">
-          <div className="bg-white/80 backdrop-blur-xl border border-white/20 p-8 rounded-2xl shadow-2xl flex flex-col items-center max-w-xs text-center scale-95 animate-in zoom-in duration-200">
+          <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/20 dark:border-slate-800 p-8 rounded-2xl shadow-2xl flex flex-col items-center max-w-xs text-center scale-95 animate-in zoom-in duration-200">
             <div className="relative w-16 h-16 flex items-center justify-center mb-4">
               {/* Spinning Ring */}
-              <div className="absolute inset-0 border-4 border-slate-100 rounded-full" />
+              <div className="absolute inset-0 border-4 border-slate-100 dark:border-slate-800 rounded-full" />
               <div className="absolute inset-0 border-4 border-t-blue-600 border-r-blue-600/30 border-b-blue-600/10 border-l-blue-600/5 rounded-full animate-spin" />
             </div>
-            <p className="text-slate-900 font-semibold text-[15px] tracking-wide leading-snug">
+            <p className="text-slate-900 dark:text-white font-semibold text-[15px] tracking-wide leading-snug">
               {loadingState.message}
             </p>
           </div>
