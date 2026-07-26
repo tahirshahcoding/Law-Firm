@@ -405,6 +405,7 @@ export default function DashboardPage() {
   const hearings  = data?.hearings  ?? [];
   const invoices  = data?.invoices  ?? [];
   const payments  = data?.payments  ?? [];
+  const timelines = data?.timelines ?? [];
 
   const upcoming  = hearings.filter((h: any) => h.hearing_date >= today).sort((a: any, b: any) => a.hearing_date.localeCompare(b.hearing_date));
   const past      = hearings.filter((h: any) => h.hearing_date <  today).sort((a: any, b: any) => b.hearing_date.localeCompare(a.hearing_date));
@@ -815,6 +816,7 @@ export default function DashboardPage() {
                       const isOpen   = expandedCase === c.id;
                       const cHearings = hearings.filter((h: any) => h.case === c.id || h.case_number === c.case_number);
                       const cInvoices = invoices.filter((i: any) => i.case === c.id);
+                      const cTimelines = timelines.filter((t: any) => t.case === c.id || t.case_id === c.id);
                       const cPaid     = payments.filter((p: any) => {
                         const ci = cInvoices.find((inv: any) => inv.case === p.case);
                         return !!ci;
@@ -862,6 +864,35 @@ export default function DashboardPage() {
                           {/* Expanded accordion content */}
                           {isOpen && (
                             <div className="border-t border-slate-100 divide-y divide-slate-50">
+                              {/* Case Timeline / Progress History */}
+                              <div className="p-5 bg-slate-50/40">
+                                <p className="text-xs font-extrabold text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-1.5">
+                                  <Clock size={14} className="text-blue-600" /> Case Progress & Timeline History
+                                </p>
+                                {cTimelines.length === 0 ? (
+                                  <p className="text-xs text-slate-400 italic">No timeline events recorded yet.</p>
+                                ) : (
+                                  <div className="relative ps-6 border-s-2 border-blue-200 ms-2 space-y-3 my-2">
+                                    {cTimelines.map((item: any) => (
+                                      <div key={item.id} className="relative group">
+                                        <div className="absolute -start-[31px] top-1.5 w-3.5 h-3.5 rounded-full bg-blue-600 border-2 border-white shadow-sm group-hover:scale-125 transition-transform" />
+                                        <div className="bg-white p-3.5 rounded-xl border border-slate-200/80 shadow-sm">
+                                          <div className="flex items-center justify-between gap-2 mb-1">
+                                            <span className="font-bold text-[11px] text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md uppercase tracking-wider">
+                                              {item.activity_type === 'StatusChange' ? 'Milestone' : item.activity_type}
+                                            </span>
+                                            <span className="text-[10px] font-semibold text-slate-400">
+                                              {new Date(item.timestamp).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                            </span>
+                                          </div>
+                                          <p className="text-xs font-medium text-slate-700 leading-relaxed">{item.description}</p>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+
                               {/* Hearings for this case */}
                               <div className="p-5">
                                 <p className="text-xs font-extrabold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1.5">

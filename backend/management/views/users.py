@@ -387,6 +387,12 @@ class ClientPortalView(APIView):
             .select_related('invoice__case', 'invoice__case__client')
             .order_by('-payment_date')
         )
+        timelines = (
+            CaseTimeline.objects
+            .filter(case__client=client)
+            .select_related('case')
+            .order_by('-timestamp')
+        )
 
         unread_messages_count = Message.objects.filter(client=client, sender_type='Staff', is_read=False).count()
 
@@ -396,6 +402,7 @@ class ClientPortalView(APIView):
             "hearings": HearingSerializer(hearings, many=True).data,
             "invoices": InvoiceSerializer(invoices, many=True).data,
             "payments": PaymentSerializer(payments, many=True).data,
+            "timelines": CaseTimelineSerializer(timelines, many=True).data,
             "unread_messages_count": unread_messages_count,
         })
 
