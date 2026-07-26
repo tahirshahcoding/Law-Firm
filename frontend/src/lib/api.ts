@@ -7,17 +7,22 @@
 // It should already include /api, e.g. https://example.com/api
 // This prevents silent double-appending when the env var is already correct.
 function buildApiBase(): string {
-  // Always use the internal Next.js proxy — this is critical for cookie-based auth.
-  // Cookies set by Django (SameSite=Lax) only get sent back by the browser on
-  // same-origin requests. If we call 127.0.0.1:8000 directly from localhost:3000,
-  // the browser treats it as cross-origin and drops the cookie on follow-up requests.
-  // By always routing through /api-proxy (same origin as the frontend), cookies work
-  // in both local dev and production.
+  // Historically we always routed through the internal Next.js /api-proxy because
+  // Django's auth cookie was SameSite=Lax, which the browser drops on cross-origin
+  // requests. Production cookies are now SameSite=None; Secure (see backend
+  // core/settings.py — _COOKIE_SAMESITE), which IS sent cross-origin over HTTPS.
+  // That means the proxy hop may no longer be necessary — it currently costs an
+  // extra Vercel serverless round-trip (with its own cold start) on every request.
+  //
+  // NEXT_PUBLIC_DIRECT_API=true is an opt-in flag to test calling the
+  // Hugging Face backend directly, bypassing the proxy.
+  const directApi = process.env.NEXT_PUBLIC_DIRECT_API === 'true';
+
   if (typeof window !== 'undefined') {
-    const hostname = window.location.hostname;
-    // Only bypass proxy for non-local production where NEXT_PUBLIC_API_URL is set
     const envUrl = process.env.NEXT_PUBLIC_API_URL;
-    if (envUrl && !envUrl.includes('hf.space')) {
+    const isHfBackend = envUrl?.includes('hf.space');
+
+    if (envUrl && (!isHfBackend || directApi)) {
       let url = envUrl.replace(/\/$/, '');
       if (!url.endsWith('/api')) url += '/api';
       return url;
