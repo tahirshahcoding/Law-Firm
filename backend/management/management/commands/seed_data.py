@@ -13,7 +13,7 @@ import random
 
 from management.models import (
     UserProfile, Client, Case, Hearing,
-    Payment, Task, Invoice, ConsultationRequest,
+    Payment, Task, Invoice, InvoiceItem, ConsultationRequest,
     Court, Judge
 )
 
@@ -169,11 +169,11 @@ class Command(BaseCommand):
         # 5. Hearings
         self._create_hearings(cases)
 
-        # 6. Payments
-        self._create_payments(cases)
+        # 6. Invoices & Items
+        invoices = self._create_invoices(cases)
 
-        # 7. Invoices
-        self._create_invoices(cases)
+        # 7. Payments
+        self._create_payments(invoices)
 
         # 8. Tasks
         self._create_tasks()
@@ -313,41 +313,51 @@ class Command(BaseCommand):
                 count += 1
         self.stdout.write(self.style.SUCCESS("[OK] Hearings created ({}).".format(count)))
 
-    def _create_payments(self, cases):
+    def _create_invoices(self, cases):
         count = 0
+        today = date.today()
+        invoices = []
         for case in cases:
-            if Payment.objects.filter(case=case).exists():
+            inv = Invoice.objects.filter(case=case).first()
+            if not inv:
+                inv = Invoice.objects.create(
+                    case=case,
+                    issue_date=today - timedelta(days=random.randint(30, 120)),
+                    due_date=today + timedelta(days=random.randint(5, 30)),
+                    status='Unpaid'
+                )
+                InvoiceItem.objects.create(
+                    invoice=inv,
+                    description="Professional legal services rendered for {}".format(case.case_number),
+                    amount=case.total_fee
+                )
+                count += 1
+            invoices.append(inv)
+        self.stdout.write(self.style.SUCCESS("[OK] Invoices created ({}).".format(count)))
+        return invoices
+
+    def _create_payments(self, invoices):
+        count = 0
+        today = date.today()
+        for invoice in invoices:
+            if Payment.objects.filter(invoice=invoice).exists():
                 continue
-            total = float(case.total_fee)
+            total = float(invoice.total_amount)
+            if total <= 0:
+                continue
             paid_pct = random.uniform(0.3, 0.9)
             paid_total = total * paid_pct
             num_payments = random.randint(1, 3)
             per_payment = paid_total / num_payments
             for _ in range(num_payments):
                 Payment.objects.create(
-                    case=case,
+                    invoice=invoice,
                     amount_received=f"{per_payment:.2f}",
+                    payment_date=today - timedelta(days=random.randint(1, 25)),
+                    payment_method=random.choice(['Cash', 'Bank Transfer', 'Cheque'])
                 )
                 count += 1
         self.stdout.write(self.style.SUCCESS("[OK] Payments created ({}).".format(count)))
-
-    def _create_invoices(self, cases):
-        count = 0
-        today = date.today()
-        statuses = ["Paid", "Paid", "Partial", "Pending"]
-        for case in cases:
-            if Invoice.objects.filter(case=case).exists():
-                continue
-            Invoice.objects.create(
-                case=case,
-                amount=case.total_fee,
-                description="Professional legal services rendered for {}".format(case.case_number),
-                issue_date=today - timedelta(days=random.randint(30, 120)),
-                due_date=today + timedelta(days=random.randint(5, 30)),
-                status=random.choice(statuses),
-            )
-            count += 1
-        self.stdout.write(self.style.SUCCESS("[OK] Invoices created ({}).".format(count)))
 
     def _create_tasks(self):
         count = 0
