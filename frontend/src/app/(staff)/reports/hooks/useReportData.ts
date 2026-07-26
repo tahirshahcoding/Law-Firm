@@ -3,7 +3,7 @@ import { apiFetch, API_BASE, safeJson, parseApiError } from '@/lib/api';
 
 export function useReportData(endpoint: string) {
   const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchReport = useCallback(async (filters: Record<string, any>) => {

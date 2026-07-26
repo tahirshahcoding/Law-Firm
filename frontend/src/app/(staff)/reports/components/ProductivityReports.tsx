@@ -18,7 +18,7 @@ export function ProductivityReports() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (loading) return <AppShellSkeleton />;
+  if (loading || (!data && !error)) return <AppShellSkeleton />;
   if (error) return <div className="text-red-500 p-4 bg-red-50 dark:bg-red-900/20 rounded-xl">{error}</div>;
   if (!data) return null;
 

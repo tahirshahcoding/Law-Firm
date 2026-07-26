@@ -28,7 +28,7 @@ export function CaseReports() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (caseLoading || hearingLoading) return <AppShellSkeleton />;
+  if (caseLoading || hearingLoading || (!caseData && !caseError) || (!hearingData && !caseError)) return <AppShellSkeleton />;
   if (caseError) return <div className="text-red-500 p-4 bg-red-50 dark:bg-red-900/20 rounded-xl">{caseError}</div>;
   if (!caseData || !hearingData) return null;
 
