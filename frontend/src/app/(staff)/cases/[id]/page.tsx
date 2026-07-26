@@ -145,7 +145,7 @@ export default function CaseDetailPage() {
       
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Link href="/cases" className="p-2 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-blue-600 hover:border-blue-200 transition-colors shadow-sm">
+        <Link href="/cases" prefetch={false} className="p-2 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-blue-600 hover:border-blue-200 transition-colors shadow-sm">
           <ArrowLeft size={20} />
         </Link>
         <div>

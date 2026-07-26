@@ -4,20 +4,22 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { X, Plus, FolderOpen, Users, Calendar, MessageSquare, ListTodo, FileText, Receipt, Banknote, DollarSign, Timer, Landmark, Gavel } from 'lucide-react';
 
+import dynamic from 'next/dynamic';
+
 // Core
-import AddCaseModal from './AddCaseModal';
-import AddClientModal from './AddClientModal';
-import AddHearingModal from './AddHearingModal';
-import GenerateChallanModal from './GenerateChallanModal';
+const AddCaseModal = dynamic(() => import('./AddCaseModal'), { ssr: false });
+const AddClientModal = dynamic(() => import('./AddClientModal'), { ssr: false });
+const AddHearingModal = dynamic(() => import('./AddHearingModal'), { ssr: false });
+const GenerateChallanModal = dynamic(() => import('./GenerateChallanModal'), { ssr: false });
 
 // Finance
-import NewInvoiceModal from './finance/NewInvoiceModal';
-import AddExpenseModal from './finance/AddExpenseModal';
+const NewInvoiceModal = dynamic(() => import('./finance/NewInvoiceModal'), { ssr: false });
+const AddExpenseModal = dynamic(() => import('./finance/AddExpenseModal'), { ssr: false });
 
 // Deadlines & Court
-import CreateDeadlineModal from './deadlines/CreateDeadlineModal';
-import AddCourtModal from './AddCourtModal';
-import AddJudgeModal from './AddJudgeModal';
+const CreateDeadlineModal = dynamic(() => import('./deadlines/CreateDeadlineModal'), { ssr: false });
+const AddCourtModal = dynamic(() => import('./AddCourtModal'), { ssr: false });
+const AddJudgeModal = dynamic(() => import('./AddJudgeModal'), { ssr: false });
 
 type ModalType = 
   | 'case' | 'client' | 'hearing' | 'challan' 

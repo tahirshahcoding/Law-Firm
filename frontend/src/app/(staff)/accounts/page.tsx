@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Search, Download, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import { TableRowSkeleton } from '@/components/SkeletonLoaders';
 import useSWR from 'swr';

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Printer, Search, Calendar, MapPin, Scale, Gavel, FileText, RefreshCw, Layers, Shield } from 'lucide-react';
 import { API_BASE, apiFetch } from '@/lib/api';
 import { TableSkeleton } from '@/components/SkeletonLoaders';

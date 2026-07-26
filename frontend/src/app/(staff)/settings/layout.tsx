@@ -41,6 +41,7 @@ export default function SettingsLayout({ children }: { children: ReactNode }) {
                 <li key={item.href}>
                   <Link 
                     href={item.href}
+                    prefetch={false}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                       isActive 
                         ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 shadow-sm shadow-blue-100 dark:shadow-none' 

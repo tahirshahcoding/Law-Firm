@@ -1,13 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import dynamic from 'next/dynamic';
 import { Plus, Search, Download, Filter } from 'lucide-react';
 import { API_BASE, apiFetch, safeJson } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import StatusBadge from '@/components/finance/StatusBadge';
 import InvoiceDrawer from '@/components/finance/InvoiceDrawer';
 import { TableRowSkeleton } from '@/components/SkeletonLoaders';
-import NewInvoiceModal from '@/components/finance/NewInvoiceModal';
+const NewInvoiceModal = dynamic(() => import('@/components/finance/NewInvoiceModal'), { ssr: false });
 import { useInvoices } from '@/hooks/api/useInvoices';
 
 const STATUSES = ['All', 'Unpaid', 'Partial', 'Paid', 'Overdue'];

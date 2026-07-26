@@ -1,41 +1,38 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import useSWR from 'swr';
+import { swrFetcher } from '@/lib/fetcher';
 import { Bell, CheckCircle2, Circle, Clock, MessageSquare, Briefcase, Users, FileText, Check, Activity } from 'lucide-react';
 import Link from 'next/link';
 import { API_BASE, apiFetch } from '@/lib/api';
 import { ListSkeleton, TableRowSkeleton } from '@/components/SkeletonLoaders';
 
 export function DailyTasks() {
-  const [tasks, setTasks] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    apiFetch(`${API_BASE}/tasks/`)
-      .then(res => res.json())
-      .then(data => {
-        const tasksData = Array.isArray(data) ? data : (data.results || []);
-        const pending = tasksData.filter((t: any) => !t.is_completed).slice(0, 5);
-        setTasks(pending);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Failed to fetch tasks:', err);
-        setLoading(false);
-      });
-  }, []);
+  const { data, isLoading: loading, mutate } = useSWR(`${API_BASE}/tasks/`, swrFetcher);
+  const tasksData = Array.isArray(data) ? data : (data?.results || []);
+  const tasks: any[] = tasksData.filter((t: any) => !t.is_completed).slice(0, 5);
 
   const toggleTask = async (task: any) => {
-    setTasks(prev => prev.map(t => t.id === task.id ? { ...t, is_completed: true } : t));
+    mutate(
+      (currentData: any) => {
+        if (!currentData) return currentData;
+        const list = Array.isArray(currentData) ? currentData : (currentData.results || []);
+        const updated = list.map((t: any) => t.id === task.id ? { ...t, is_completed: true } : t);
+        return Array.isArray(currentData) ? updated : { ...currentData, results: updated };
+      },
+      false
+    );
     try {
       await apiFetch(`${API_BASE}/tasks/${task.id}/`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ is_completed: true }),
       });
+      mutate();
     } catch (err) {
       console.error(err);
-      setTasks(prev => prev.map(t => t.id === task.id ? { ...t, is_completed: false } : t));
+      mutate();
     }
   };
 
@@ -52,7 +49,7 @@ export function DailyTasks() {
     <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-none h-full flex flex-col transition-colors">
       <div className="flex justify-between items-center mb-6">
         <h3 className="font-bold text-slate-900 dark:text-white">Daily Tasks</h3>
-        <Link href="/diary" className="text-xs font-semibold text-blue-600 hover:text-blue-700">View All Tasks</Link>
+        <Link href="/diary" prefetch={false} className="text-xs font-semibold text-blue-600 hover:text-blue-700">View All Tasks</Link>
       </div>
       <div className="flex flex-col gap-4 overflow-y-auto pr-2 custom-scrollbar">
         {loading ? (
@@ -60,7 +57,7 @@ export function DailyTasks() {
         ) : tasks.length === 0 ? (
           <div className="text-sm text-slate-500 dark:text-slate-400 italic">No pending tasks!</div>
         ) : (
-          tasks.map(task => (
+          tasks.map((task: any) => (
             <div key={task.id} className="flex items-start gap-3 group">
               <button onClick={() => !task.is_completed && toggleTask(task)} disabled={task.is_completed} className={`mt-0.5 shrink-0 ${task.is_completed ? 'text-blue-500' : 'text-slate-300 hover:text-blue-400'} transition-colors`}>
                 {task.is_completed ? <CheckCircle2 size={18} /> : <Circle size={18} />}
@@ -84,22 +81,9 @@ export function DailyTasks() {
 }
 
 export function RecentActivity() {
-  const [activities, setActivities] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    apiFetch(`${API_BASE}/audit-log/`)
-      .then(res => res.json())
-      .then(data => {
-        const logs = Array.isArray(data) ? data : [];
-        setActivities(logs.slice(0, 5));
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Failed to fetch audit logs:', err);
-        setLoading(false);
-      });
-  }, []);
+  const { data, isLoading: loading } = useSWR(`${API_BASE}/audit-log/`, swrFetcher);
+  const logs = Array.isArray(data) ? data : (data?.results || []);
+  const activities: any[] = logs.slice(0, 5);
 
   const getActionData = (action: string, model: string) => {
     const data = { icon: Activity, color: 'text-slate-500 dark:text-slate-400', bg: 'bg-slate-50 dark:bg-slate-800' };
@@ -137,7 +121,7 @@ export function RecentActivity() {
         <div className="text-sm text-slate-500 dark:text-slate-400 italic">No recent activity</div>
       ) : (
         <div className="relative border-l-2 border-slate-100 dark:border-slate-800 ml-3 space-y-6">
-          {activities.map((act, i) => {
+          {activities.map((act: any, i) => {
             const { icon: Icon, color, bg } = getActionData(act.action, act.model);
             return (
               <div key={i} className="relative pl-6">
@@ -161,32 +145,19 @@ export function RecentActivity() {
 }
 
 export function TodaysHearingsList() {
-  const [hearings, setHearings] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const today = new Date();
+  const offset = today.getTimezoneOffset();
+  const localToday = new Date(today.getTime() - (offset * 60 * 1000));
+  const dateStr = localToday.toISOString().split('T')[0];
 
-  useEffect(() => {
-    const today = new Date();
-    const offset = today.getTimezoneOffset();
-    const localToday = new Date(today.getTime() - (offset * 60 * 1000));
-    const dateStr = localToday.toISOString().split('T')[0];
-
-    apiFetch(`${API_BASE}/hearings/?date=${dateStr}`)
-      .then(res => res.json())
-      .then(data => {
-        setHearings(Array.isArray(data) ? data : (data.results || []));
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error("Failed to fetch today's hearings:", err);
-        setLoading(false);
-      });
-  }, []);
+  const { data, isLoading: loading } = useSWR(`${API_BASE}/hearings/?date=${dateStr}`, swrFetcher);
+  const hearings: any[] = Array.isArray(data) ? data : (data?.results || []);
 
   return (
     <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-none h-full flex flex-col transition-colors">
       <div className="flex justify-between items-center mb-6">
         <h3 className="font-bold text-slate-900 dark:text-white">Today's Hearings</h3>
-        <Link href="/cause-list" className="text-xs font-semibold text-blue-600 hover:text-blue-700">Cause List</Link>
+        <Link href="/cause-list" prefetch={false} className="text-xs font-semibold text-blue-600 hover:text-blue-700">Cause List</Link>
       </div>
       
       {loading ? (
@@ -195,7 +166,7 @@ export function TodaysHearingsList() {
         <div className="text-sm text-slate-500 dark:text-slate-400 italic">No hearings scheduled for today.</div>
       ) : (
         <div className="relative border-l-2 border-slate-100 dark:border-slate-800 ml-12 space-y-8 mt-2 overflow-y-auto max-h-[300px] pr-2 custom-scrollbar">
-          {hearings.map((h, i) => (
+          {hearings.map((h: any, i) => (
             <div key={h.id || i} className="relative pl-6">
               <div className="absolute -left-[32px] top-0.5 w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 border-4 border-white dark:border-slate-900 flex items-center justify-center transition-colors">
                 <div className="w-2 h-2 rounded-full bg-blue-500"></div>
@@ -225,21 +196,8 @@ export function TodaysHearingsList() {
 
 
 export function RecentCasesTable() {
-  const [cases, setCases] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    apiFetch(`${API_BASE}/cases/?limit=5`)
-      .then(res => res.json())
-      .then(data => {
-        setCases(Array.isArray(data) ? data.slice(0, 5) : (data.results || []).slice(0, 5));
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Failed to fetch cases:', err);
-        setLoading(false);
-      });
-  }, []);
+  const { data, isLoading: loading } = useSWR(`${API_BASE}/cases/?limit=5`, swrFetcher);
+  const cases: any[] = Array.isArray(data) ? data.slice(0, 5) : (data?.results || []).slice(0, 5);
 
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
@@ -254,7 +212,7 @@ export function RecentCasesTable() {
     <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-none h-full flex flex-col transition-colors">
       <div className="flex justify-between items-center mb-4">
         <h3 className="font-bold text-slate-900 dark:text-white">Recent Cases</h3>
-        <Link href="/cases" className="text-xs font-semibold text-blue-600 hover:text-blue-700">View All Cases</Link>
+        <Link href="/cases" prefetch={false} className="text-xs font-semibold text-blue-600 hover:text-blue-700">View All Cases</Link>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm">
@@ -274,10 +232,10 @@ export function RecentCasesTable() {
             ) : cases.length === 0 ? (
               <tr><td colSpan={6} className="py-4 text-center text-slate-500 dark:text-slate-400">No recent cases</td></tr>
             ) : (
-              cases.map((c, i) => (
+              cases.map((c: any, i) => (
                 <tr key={c.id || i} className="border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 dark:hover:bg-slate-800/50 transition-colors">
                   <td className="py-3 font-semibold text-slate-900 dark:text-white whitespace-nowrap">
-                    <Link href={`/cases/${c.id}`} className="hover:text-blue-600 dark:hover:text-blue-400">{c.case_number}</Link>
+                    <Link href={`/cases/${c.id}`} prefetch={false} className="hover:text-blue-600 dark:hover:text-blue-400">{c.case_number}</Link>
                   </td>
                   <td className="py-3 whitespace-nowrap max-w-[150px] truncate" title={`${c.client_name} vs ${c.opponent_name}`}>
                     {c.client_name} vs {c.opponent_name}
@@ -302,23 +260,15 @@ export function RecentCasesTable() {
 
 export function CalendarWidget() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [events, setEvents] = useState<any[]>([]);
   const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
-  useEffect(() => {
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
-    // Use local timezone format for dates to fetch
-    const startDateStr = new Date(year, month, 1).toLocaleDateString('en-CA'); // YYYY-MM-DD format usually
-    const endDateStr = new Date(year, month + 1, 0).toLocaleDateString('en-CA');
-    
-    apiFetch(`${API_BASE}/calendar-events/?start=${startDateStr}&end=${endDateStr}`)
-      .then(res => res.json())
-      .then(data => {
-        setEvents(Array.isArray(data) ? data : (data.results || []));
-      })
-      .catch(err => console.error('Failed to fetch calendar events:', err));
-  }, [currentDate]);
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+  const startDateStr = new Date(year, month, 1).toLocaleDateString('en-CA');
+  const endDateStr = new Date(year, month + 1, 0).toLocaleDateString('en-CA');
+
+  const { data } = useSWR(`${API_BASE}/calendar-events/?start=${startDateStr}&end=${endDateStr}`, swrFetcher);
+  const events: any[] = Array.isArray(data) ? data : (data?.results || []);
 
   const prevMonth = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
@@ -344,7 +294,7 @@ export function CalendarWidget() {
     const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
     
     // Parse event dates properly into local time
-    const dayEvents = events.filter(e => {
+    const dayEvents = events.filter((e: any) => {
       if (!e.start_date) return false;
       const start = new Date(e.start_date);
       const eDateStr = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}-${String(start.getDate()).padStart(2, '0')}`;
@@ -356,9 +306,9 @@ export function CalendarWidget() {
       day: i, 
       currentMonth: true, 
       isSelected: isToday,
-      isHearing: dayEvents.some(e => e.event_type === 'Court Hearing'),
-      isMeeting: dayEvents.some(e => e.event_type === 'Client Meeting'),
-      isDeadline: dayEvents.some(e => e.event_type === 'Filing Deadline')
+      isHearing: dayEvents.some((e: any) => e.event_type === 'Court Hearing'),
+      isMeeting: dayEvents.some((e: any) => e.event_type === 'Client Meeting'),
+      isDeadline: dayEvents.some((e: any) => e.event_type === 'Filing Deadline')
     });
   }
   // next month padding

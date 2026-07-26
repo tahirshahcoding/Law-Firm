@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import dynamic from 'next/dynamic';
 import { Plus, Search, Calendar, Edit2, Trash2, MapPin, AlignLeft, FolderOpen, MoreVertical, Check, FileText, Gavel } from 'lucide-react';
 import { API_BASE, apiFetch } from '@/lib/api';
-import AddHearingModal from '@/components/AddHearingModal';
-import EditHearingModal from '@/components/EditHearingModal';
-import HearingDocumentsModal from '@/components/HearingDocumentsModal';
+const AddHearingModal = dynamic(() => import('@/components/AddHearingModal'), { ssr: false });
+const EditHearingModal = dynamic(() => import('@/components/EditHearingModal'), { ssr: false });
+const HearingDocumentsModal = dynamic(() => import('@/components/HearingDocumentsModal'), { ssr: false });
 import { useAuth } from '@/context/AuthContext';
 import { useUI } from '@/context/UIContext';
 import { TableSkeleton } from '@/components/SkeletonLoaders';

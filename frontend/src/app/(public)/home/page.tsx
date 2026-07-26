@@ -213,7 +213,7 @@ export default function PublicHomePage() {
         <p className="mt-2">
           <a href="https://clientcounsel.vercel.app" className="text-blue-400 hover:text-blue-300 underline">Client Portal</a>
           {' · '}
-          <Link href="/login" className="text-slate-500 hover:text-slate-300">Staff Login</Link>
+          <Link href="/login" prefetch={false} className="text-slate-500 hover:text-slate-300">Staff Login</Link>
         </p>
       </footer>
     </div>

@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import dynamic from 'next/dynamic';
 import { Plus, Search, Trash2 } from 'lucide-react';
 import { API_BASE, apiFetch } from '@/lib/api';
 import useSWR from 'swr';
@@ -8,7 +9,7 @@ import { swrFetcher } from '@/lib/fetcher';
 import { useAuth } from '@/context/AuthContext';
 import { useUI } from '@/context/UIContext';
 import { TableRowSkeleton } from '@/components/SkeletonLoaders';
-import AddExpenseModal from '@/components/finance/AddExpenseModal';
+const AddExpenseModal = dynamic(() => import('@/components/finance/AddExpenseModal'), { ssr: false });
 
 const CATEGORIES = ['All', 'Court Fee', 'Stamp Paper', 'Printing', 'Fuel', 'Courier', 'Staff Salary', 'Office Rent', 'Internet', 'Electricity', 'Other'];
 

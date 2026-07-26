@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Calendar as CalendarIcon, Plus, CheckCircle2, Circle, Clock, Trash2, Gavel, Scale, FolderOpen } from 'lucide-react';
 import { API_BASE, apiFetch } from '@/lib/api';
 import { ListSkeleton } from '@/components/SkeletonLoaders';
@@ -19,18 +19,9 @@ export default function DailyDiaryPage() {
 
   const loading = tasksLoading || hearingsLoading;
   
-  const rawTasks = Array.isArray(tasksData) ? tasksData : (tasksData?.results || []);
+  const tasks = Array.isArray(tasksData) ? tasksData : (tasksData?.results || []);
   const rawHearings = Array.isArray(hearingsData) ? hearingsData : (hearingsData?.results || []);
   const hearings = [...rawHearings].sort((a: any, b: any) => a.case_title?.localeCompare(b.case_title));
-  // optimistic state for tasks
-  const [optimisticTasks, setOptimisticTasks] = useState<any[] | null>(null);
-  
-  // Update optimistic tasks when rawTasks change
-  useEffect(() => {
-    setOptimisticTasks(Array.isArray(tasksData) ? tasksData : (tasksData?.results || []));
-  }, [tasksData]);
-
-  const tasks = optimisticTasks || rawTasks;
 
   const fetchTasksAndHearings = () => {
     mutateTasks();
@@ -38,8 +29,13 @@ export default function DailyDiaryPage() {
   };
 
   const handleToggleTask = async (task: any) => {
-    setOptimisticTasks((prevTasks: any) => 
-      (prevTasks || tasks).map((t: any) => t.id === task.id ? { ...t, is_completed: !task.is_completed } : t)
+    mutateTasks(
+      (current: any) => {
+        const list = Array.isArray(current) ? current : (current?.results || []);
+        const updated = list.map((t: any) => t.id === task.id ? { ...t, is_completed: !task.is_completed } : t);
+        return Array.isArray(current) ? updated : { ...current, results: updated };
+      },
+      false
     );
 
     try {
@@ -49,13 +45,9 @@ export default function DailyDiaryPage() {
         body: JSON.stringify({ is_completed: !task.is_completed }),
       });
       if (!res.ok) throw new Error('Failed to update task');
+      mutateTasks();
     } catch (err) {
       console.error(err);
-      // Revert optimism on failure
-      setOptimisticTasks((prevTasks: any) => 
-        (prevTasks || tasks).map((t: any) => t.id === task.id ? { ...t, is_completed: task.is_completed } : t)
-      );
-    } finally {
       mutateTasks();
     }
   };
@@ -70,15 +62,23 @@ export default function DailyDiaryPage() {
     if (!ok) return;
     try {
       showLoading('Deleting task...');
+      mutateTasks(
+        (current: any) => {
+          const list = Array.isArray(current) ? current : (current?.results || []);
+          const updated = list.filter((t: any) => t.id !== id);
+          return Array.isArray(current) ? updated : { ...current, results: updated };
+        },
+        false
+      );
       const res = await apiFetch(`${API_BASE}/tasks/${id}/`, {
         method: 'DELETE',
       });
       if (!res.ok) throw new Error('Failed to delete task');
       toast.success("Task deleted");
-      setOptimisticTasks((prevTasks: any) => (prevTasks || tasks).filter((t: any) => t.id !== id));
       mutateTasks();
     } catch (err) {
       console.error(err);
+      mutateTasks();
     } finally {
       hideLoading();
     }

@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import dynamic from 'next/dynamic';
 import { Plus, Search, Filter, Calendar, CheckCircle, AlertTriangle, Clock, ChevronRight } from 'lucide-react';
 import { API_BASE, apiFetch, safeJson } from '@/lib/api';
 import { TableRowSkeleton } from '@/components/SkeletonLoaders';
 import { useUI } from '@/context/UIContext';
-import CreateDeadlineModal from '@/components/deadlines/CreateDeadlineModal';
+const CreateDeadlineModal = dynamic(() => import('@/components/deadlines/CreateDeadlineModal'), { ssr: false });
 import DeadlineDrawer from '@/components/deadlines/DeadlineDrawer';
 import { useDeadlines } from '@/hooks/api/useDeadlines';
 

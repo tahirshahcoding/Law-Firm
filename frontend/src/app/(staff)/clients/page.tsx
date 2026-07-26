@@ -1,13 +1,14 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { Plus, Search, Eye, Trash2, Edit2, CreditCard, Phone, Users, MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { API_BASE, apiFetch } from '@/lib/api';
 import { useClients } from '@/hooks/api/useClients';
-import AddClientModal from '@/components/AddClientModal';
-import EditClientModal from '@/components/EditClientModal';
+const AddClientModal = dynamic(() => import('@/components/AddClientModal'), { ssr: false });
+const EditClientModal = dynamic(() => import('@/components/EditClientModal'), { ssr: false });
 import { useAuth } from '@/context/AuthContext';
 import { useUI } from '@/context/UIContext';
 import { TableSkeleton } from '@/components/SkeletonLoaders';

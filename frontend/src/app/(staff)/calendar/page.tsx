@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { Plus, Search, ChevronLeft, ChevronRight, Calendar as CalendarIcon, Filter, Layers, List, AlignLeft } from 'lucide-react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { API_BASE, apiFetch } from '@/lib/api';
@@ -11,8 +12,8 @@ import useSWR from 'swr';
 import { swrFetcher } from '@/lib/fetcher';
 
 import { MonthlyView, WeeklyView, DailyView, AgendaView } from './components/CalendarViews';
-import { EventDetailsModal } from './components/EventDetailsModal';
-import { AddManualEventModal } from './components/AddManualEventModal';
+const EventDetailsModal = dynamic(() => import('./components/EventDetailsModal').then(m => m.EventDetailsModal), { ssr: false });
+const AddManualEventModal = dynamic(() => import('./components/AddManualEventModal').then(m => m.AddManualEventModal), { ssr: false });
 
 export interface CalendarEvent {
   id: string;

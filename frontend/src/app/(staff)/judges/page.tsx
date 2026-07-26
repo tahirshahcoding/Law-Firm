@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { Plus, Search, Trash2, Edit2, User, Building2, Briefcase, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { API_BASE, apiFetch } from '@/lib/api';
-import AddJudgeModal from '@/components/AddJudgeModal';
-import EditJudgeModal from '@/components/EditJudgeModal';
+const AddJudgeModal = dynamic(() => import('@/components/AddJudgeModal'), { ssr: false });
+const EditJudgeModal = dynamic(() => import('@/components/EditJudgeModal'), { ssr: false });
 import { useAuth } from '@/context/AuthContext';
 import { useUI } from '@/context/UIContext';
 import { TableSkeleton } from '@/components/SkeletonLoaders';

@@ -1,14 +1,15 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { Plus, Search, FolderOpen, MoreVertical, Eye, Trash2, Edit2, Scale, UserX, Clock, Gavel, ChevronLeft, ChevronRight, Download } from 'lucide-react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { API_BASE, apiFetch } from '@/lib/api';
 import { useCases } from '@/hooks/api/useCases';
-import AddCaseModal from '@/components/AddCaseModal';
-import EditCaseModal from '@/components/EditCaseModal';
+const AddCaseModal = dynamic(() => import('@/components/AddCaseModal'), { ssr: false });
+const EditCaseModal = dynamic(() => import('@/components/EditCaseModal'), { ssr: false });
 import { useAuth } from '@/context/AuthContext';
 import { useUI } from '@/context/UIContext';
 import { TableSkeleton } from '@/components/SkeletonLoaders';
@@ -275,7 +276,7 @@ function CasesPageContent() {
                       </div>
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
-                      <Link href={`/cases/${caseItem.id}`} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="View Case">
+                      <Link href={`/cases/${caseItem.id}`} prefetch={false} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="View Case">
                         <Eye size={17} />
                       </Link>
                       <button 
@@ -363,6 +364,7 @@ function CasesPageContent() {
                         <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           <Link 
                             href={`/cases/${caseItem.id}`}
+                            prefetch={false}
                             className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                             title="View Case"
                           >

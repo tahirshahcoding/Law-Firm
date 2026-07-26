@@ -1,6 +1,5 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { Download, TrendingUp, DollarSign, Calendar, Landmark, CreditCard } from 'lucide-react';
 import { API_BASE } from '@/lib/api';
 import useSWR from 'swr';

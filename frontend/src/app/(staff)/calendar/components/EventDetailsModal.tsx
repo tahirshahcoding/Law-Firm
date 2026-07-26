@@ -120,7 +120,7 @@ export function EventDetailsModal({ isOpen, onClose, event, onEventDeleted }: Ev
                   <FolderOpen size={14} /> Case
                 </div>
                 {event.case ? (
-                  <Link href={`/cases/${event.case}`} className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline font-bold flex items-center gap-1">
+                  <Link href={`/cases/${event.case}`} prefetch={false} className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline font-bold flex items-center gap-1">
                     {event.case_number}
                     <ExternalLink size={14} />
                   </Link>
@@ -136,7 +136,7 @@ export function EventDetailsModal({ isOpen, onClose, event, onEventDeleted }: Ev
                   <User size={14} /> Client
                 </div>
                 {event.client ? (
-                  <Link href={`/clients/${event.client}`} className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline font-bold flex items-center gap-1">
+                  <Link href={`/clients/${event.client}`} prefetch={false} className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline font-bold flex items-center gap-1">
                     {event.client_name}
                     <ExternalLink size={14} />
                   </Link>

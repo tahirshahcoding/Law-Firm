@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { MessageSquare, Search, Trash2, Phone, Mail, ChevronDown, RefreshCw, CheckCircle2, Clock, X } from 'lucide-react';
 import { API_BASE, apiFetch } from '@/lib/api';
 import { useUI } from '@/context/UIContext';
