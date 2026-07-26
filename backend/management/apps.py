@@ -7,14 +7,3 @@ class ManagementConfig(AppConfig):
 
     def ready(self):
         import management.models.signals
-        import os
-        # Prevent scheduler from running multiple times in dev/autoreload or celery
-        if os.environ.get('RUN_MAIN', None) != 'true':
-            # In production (gunicorn) RUN_MAIN isn't set this way usually, but 
-            # we need to be careful with multiple gunicorn workers.
-            # For HuggingFace spaces, usually it's 1 worker or we accept it running per worker.
-            try:
-                from . import scheduler
-                scheduler.start()
-            except ImportError:
-                pass

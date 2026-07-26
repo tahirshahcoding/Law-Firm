@@ -14,5 +14,6 @@ django-simple-history==3.11.0
 pillow==12.1.1
 pytest==9.1.1
 pytest-django
-APScheduler
+celery==5.4.0
+redis==5.2.1
 xhtml2pdf==0.2.17
