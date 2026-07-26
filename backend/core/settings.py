@@ -203,8 +203,16 @@ CSRF_TRUSTED_ORIGINS = [
     "https://lawsiteswat.vercel.app"
 ] + CORS_ALLOWED_ORIGINS
 
-# Allow all origins for dev only
-CORS_ALLOW_ALL_ORIGINS = DEBUG
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://.*\.vercel\.app$",
+    r"^http://localhost:\d+$",
+    r"^http://127\.0\.0\.1:\d+$",
+    r"^http://10\.\d+\.\d+\.\d+:\d+$",
+    r"^http://192\.168\.\d+\.\d+:\d+$",
+]
+
+# Allow all origins if explicitly requested or in dev
+CORS_ALLOW_ALL_ORIGINS = os.environ.get('CORS_ALLOW_ALL_ORIGINS', 'True').lower() == 'true' or DEBUG
 CORS_URLS_REGEX = r'^.*$'
 
 # Required for cookie-based auth — browser must send credentials with cross-origin requests
