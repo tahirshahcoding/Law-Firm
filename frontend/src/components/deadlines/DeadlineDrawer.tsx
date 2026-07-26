@@ -64,11 +64,11 @@ export default function DeadlineDrawer({ deadline, onClose, onUpdate, onEdit }: 
         onClick={onClose}
       />
       
-      <div className="fixed inset-y-0 right-0 w-full max-w-md bg-white shadow-2xl z-50 flex flex-col animate-slide-in-right">
+      <div className="fixed inset-y-0 right-0 w-full max-w-md bg-white dark:bg-slate-900 shadow-2xl z-50 flex flex-col border-l border-slate-200 dark:border-slate-800 animate-slide-in-right">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-white">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900">
           <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-xl ${isCompleted ? 'bg-emerald-50 text-emerald-600' : 'bg-blue-50 text-blue-600'}`}>
+            <div className={`p-2 rounded-xl ${isCompleted ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400' : 'bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400'}`}>
               <Calendar size={20} />
             </div>
             <div>
@@ -91,7 +91,7 @@ export default function DeadlineDrawer({ deadline, onClose, onUpdate, onEdit }: 
                 {deadline.status === 'Completed' ? (
                   <><div className="w-2 h-2 rounded-full bg-emerald-500" /><span className="font-semibold text-slate-700 dark:text-slate-300">Completed</span></>
                 ) : deadline.status === 'Pending' && new Date(deadline.due_date) < new Date(new Date().setHours(0,0,0,0)) ? (
-                  <><div className="w-2 h-2 rounded-full bg-rose-500" /><span className="font-semibold text-rose-600">Overdue</span></>
+                  <><div className="w-2 h-2 rounded-full bg-rose-500" /><span className="font-semibold text-rose-600 dark:text-rose-400">Overdue</span></>
                 ) : (
                   <><div className="w-2 h-2 rounded-full bg-amber-500" /><span className="font-semibold text-slate-700 dark:text-slate-300">Pending</span></>
                 )}
@@ -109,7 +109,7 @@ export default function DeadlineDrawer({ deadline, onClose, onUpdate, onEdit }: 
           </div>
 
           {/* Details List */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden border dark:border-slate-800">
+          <div className="bg-white dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden">
             <div className="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center gap-3">
               <FileText size={16} className="text-slate-400" />
               <div>
@@ -161,7 +161,7 @@ export default function DeadlineDrawer({ deadline, onClose, onUpdate, onEdit }: 
               </h3>
               <div className="flex flex-wrap gap-2">
                 {deadline.reminders.map((r: any) => (
-                  <span key={r} className="px-3 py-1 bg-blue-50 text-blue-600 rounded-lg text-xs font-medium">
+                  <span key={r} className="px-3 py-1 bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/50 rounded-lg text-xs font-medium">
                     {r} Days Before
                   </span>
                 ))}
@@ -171,11 +171,11 @@ export default function DeadlineDrawer({ deadline, onClose, onUpdate, onEdit }: 
         </div>
 
         {/* Footer Actions */}
-        <div className="p-6 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-800">
+        <div className="p-6 bg-slate-50 dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800">
           {!isCompleted && (
             <button 
               onClick={handleMarkCompleted}
-              className="w-full mb-3 flex items-center justify-center gap-2 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition-colors"
+              className="w-full mb-3 flex items-center justify-center gap-2 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition-colors shadow-sm"
             >
               <CheckCircle size={18} />
               Mark as Completed
@@ -185,7 +185,7 @@ export default function DeadlineDrawer({ deadline, onClose, onUpdate, onEdit }: 
           <div className="flex gap-3">
             <button 
               onClick={() => onEdit(deadline)}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-white border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-medium rounded-xl transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium rounded-xl transition-colors"
             >
               <Edit2 size={16} />
               Edit
@@ -193,7 +193,7 @@ export default function DeadlineDrawer({ deadline, onClose, onUpdate, onEdit }: 
             <button 
               onClick={handleDelete}
               disabled={isDeleting}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 font-medium rounded-xl transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-white dark:bg-slate-800 border border-rose-200 dark:border-rose-900/50 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 font-medium rounded-xl transition-colors"
             >
               <Trash2 size={16} />
               Delete
