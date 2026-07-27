@@ -6,7 +6,7 @@ import { API_BASE, apiFetch } from '@/lib/api';
 import { CASE_STATUSES, CASE_CATEGORIES } from '@/lib/constants';
 import { PrintFriendlyReport } from './components/PrintFriendlyReport';
 import { ExportToolbar } from './components/ExportToolbar';
-import { Printer, FileText, RotateCcw, Play, ShieldCheck, Calendar, Briefcase, Gavel, CheckCircle2, Users } from 'lucide-react';
+import { Printer, FileText, RotateCcw, Play, ShieldCheck, Calendar, Briefcase, Gavel, CheckCircle2, Users, Filter } from 'lucide-react';
 
 export default function ReportsPage() {
   const { user } = useAuth();
@@ -26,6 +26,7 @@ export default function ReportsPage() {
     status: string;
     staff_id: string;
     court: string;
+    scope: 'overview' | 'detailed';
   }>({
     start_date: '',
     end_date: '',
@@ -33,6 +34,7 @@ export default function ReportsPage() {
     status: '',
     staff_id: '',
     court: '',
+    scope: 'overview',
   });
 
   const [generatedReport, setGeneratedReport] = useState<{
@@ -111,6 +113,7 @@ export default function ReportsPage() {
       status: '',
       staff_id: '',
       court: '',
+      scope: 'overview',
     });
     setGeneratedReport(null);
   };
@@ -122,6 +125,9 @@ export default function ReportsPage() {
 
     const cleanFilters: Record<string, any> = {};
     const displayParts: string[] = [];
+
+    cleanFilters.scope = criteria.scope;
+    displayParts.push(`Depth: ${criteria.scope === 'detailed' ? 'Detailed Register' : 'Summary Overview'}`);
 
     if (criteria.start_date) {
       cleanFilters.start_date = criteria.start_date;
@@ -155,7 +161,7 @@ export default function ReportsPage() {
       type: selectedReportType,
       filters: cleanFilters,
       label: activeReport.title,
-      summaryText: displayParts.length > 0 ? displayParts.join(' | ') : 'ALL RECORDS (No filters applied)',
+      summaryText: displayParts.join(' | '),
     });
   };
 
@@ -260,6 +266,25 @@ export default function ReportsPage() {
                         </option>
                       );
                     })}
+                  </select>
+                </div>
+              </div>
+
+              {/* Report Depth / Scope */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                  Report Detail Level
+                </label>
+                <div className="relative">
+                  <Filter size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                  <select
+                    name="scope"
+                    value={criteria.scope}
+                    onChange={handleCriteriaChange}
+                    className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm"
+                  >
+                    <option value="overview">📊 Summary Overview</option>
+                    <option value="detailed">📋 Detailed Itemized Register</option>
                   </select>
                 </div>
               </div>

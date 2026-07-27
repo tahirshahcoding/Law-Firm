@@ -14,6 +14,7 @@ class ReportFilterSerializer(serializers.Serializer):
     court_id = serializers.IntegerField(required=False, allow_null=True)
     court = serializers.IntegerField(required=False, allow_null=True)
     category = serializers.CharField(required=False, allow_null=True, max_length=100)
+    scope = serializers.CharField(required=False, allow_null=True, default='overview', max_length=20)
 
     def to_orm_filters(self, user, prefix='', date_field='created_at__date'):
         """

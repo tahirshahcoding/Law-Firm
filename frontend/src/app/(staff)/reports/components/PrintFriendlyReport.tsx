@@ -41,10 +41,11 @@ export function PrintFriendlyReport({ reportType, filters, reportTitle, filtersS
 
   const totalCases = caseData?.total_cases || 0;
   const totalHearings = hearingData?.total_hearings || 0;
+  const isDetailed = filters.scope === 'detailed';
 
   return (
     <div className="bg-white text-black p-6 sm:p-10 border border-slate-300 shadow-sm rounded-lg print:border-none print:shadow-none print:p-0 w-full font-sans">
-
+      
       {/* Formal Document Header */}
       <div className="text-center border-b-2 border-black pb-6 mb-6">
         <h1 className="text-xl sm:text-2xl font-black tracking-wider uppercase text-black">
@@ -54,16 +55,16 @@ export function PrintFriendlyReport({ reportType, filters, reportTitle, filtersS
           Law Chamber Swat | Office Management System
         </p>
         <h2 className="text-lg sm:text-xl font-bold underline underline-offset-4 mt-4 uppercase text-black">
-          {reportTitle}
+          {reportTitle} {isDetailed ? '(ITEMIZED REGISTER)' : '(SUMMARY OVERVIEW)'}
         </h2>
-
+        
         <div className="mt-4 flex flex-col sm:flex-row justify-between text-xs text-slate-600 border-t border-slate-200 pt-2">
           <span><strong>Generated On:</strong> {new Date().toLocaleString()}</span>
           <span><strong>Selection Criteria:</strong> {displaySummary}</span>
         </div>
       </div>
 
-      {/* REPORT CONTENT: SIMPLE TABULAR LAYOUTS */}
+      {/* REPORT CONTENT */}
 
       {/* 1. MASTER REPORT */}
       {reportType === 'master' && (
@@ -71,7 +72,7 @@ export function PrintFriendlyReport({ reportType, filters, reportTitle, filtersS
           {/* Executive Summary Table */}
           <div>
             <h3 className="font-bold text-base uppercase bg-slate-100 p-2 border border-black mb-2 text-black">
-              1. Executive Summary & KPIs
+              1. Executive Summary &amp; KPIs
             </h3>
             <table className="w-full border-collapse border border-black text-left">
               <tbody>
@@ -100,6 +101,45 @@ export function PrintFriendlyReport({ reportType, filters, reportTitle, filtersS
               </tbody>
             </table>
           </div>
+
+          {/* Detailed Itemized Cases Register (when scope == detailed) */}
+          {isDetailed && caseData?.detailed_cases && (
+            <div>
+              <h3 className="font-bold text-base uppercase bg-slate-100 p-2 border border-black mb-2 text-black">
+                Itemized Case Register ({caseData.detailed_cases.length} Records)
+              </h3>
+              <table className="w-full border-collapse border border-black text-left text-xs">
+                <thead>
+                  <tr className="bg-slate-200 font-bold">
+                    <th className="border border-black p-1.5 text-center w-8">#</th>
+                    <th className="border border-black p-1.5">Case No / FIR</th>
+                    <th className="border border-black p-1.5">Client Name</th>
+                    <th className="border border-black p-1.5">Opponent</th>
+                    <th className="border border-black p-1.5">Category</th>
+                    <th className="border border-black p-1.5">Court Forum</th>
+                    <th className="border border-black p-1.5">Advocate</th>
+                    <th className="border border-black p-1.5">Status</th>
+                    <th className="border border-black p-1.5 text-right">Agreed Fee</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {caseData.detailed_cases.map((c: any, idx: number) => (
+                    <tr key={c.id || idx}>
+                      <td className="border border-black p-1.5 text-center font-bold">{idx + 1}</td>
+                      <td className="border border-black p-1.5 font-bold">{c.case_number}</td>
+                      <td className="border border-black p-1.5">{c.client__name}</td>
+                      <td className="border border-black p-1.5">{c.opponent_name}</td>
+                      <td className="border border-black p-1.5">{c.category}</td>
+                      <td className="border border-black p-1.5">{c.court__name}</td>
+                      <td className="border border-black p-1.5">{c.assigned_advocate}</td>
+                      <td className="border border-black p-1.5 font-semibold">{c.status}</td>
+                      <td className="border border-black p-1.5 text-right font-mono">Rs {Number(c.total_fee || 0).toLocaleString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
 
           {/* Case Status Breakdown */}
           {caseData?.status_distribution && (
@@ -140,61 +180,6 @@ export function PrintFriendlyReport({ reportType, filters, reportTitle, filtersS
               </table>
             </div>
           )}
-
-          {/* Court Load Breakdown */}
-          {caseData?.court_load && (
-            <div>
-              <h3 className="font-bold text-base uppercase bg-slate-100 p-2 border border-black mb-2 text-black">
-                3. Caseload Distribution by Court
-              </h3>
-              <table className="w-full border-collapse border border-black text-left">
-                <thead>
-                  <tr className="bg-slate-200 font-bold">
-                    <th className="border border-black p-2">Court Name / Forum</th>
-                    <th className="border border-black p-2 text-right">Assigned Caseload</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {caseData.court_load.map((item: any, idx: number) => (
-                    <tr key={idx}>
-                      <td className="border border-black p-2 font-medium">{item.court__name || 'Unassigned Court'}</td>
-                      <td className="border border-black p-2 text-right font-bold">{item.count}</td>
-                    </tr>
-                  ))}
-                  {caseData.court_load.length === 0 && (
-                    <tr><td colSpan={2} className="p-4 text-center text-slate-500">No court records found.</td></tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {/* Financial Collections by Category */}
-          {finData?.revenue_by_category && (
-            <div>
-              <h3 className="font-bold text-base uppercase bg-slate-100 p-2 border border-black mb-2 text-black">
-                4. Revenue Collections by Practice Area
-              </h3>
-              <table className="w-full border-collapse border border-black text-left">
-                <thead>
-                  <tr className="bg-slate-200 font-bold">
-                    <th className="border border-black p-2">Practice Area / Category</th>
-                    <th className="border border-black p-2 text-right">Total Collected (Rs)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {finData.revenue_by_category.map((item: any, idx: number) => (
-                    <tr key={idx}>
-                      <td className="border border-black p-2 font-medium">{item.category || 'General Legal Services'}</td>
-                      <td className="border border-black p-2 text-right font-bold">
-                        Rs {Number(item.revenue || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
         </div>
       )}
 
@@ -210,24 +195,104 @@ export function PrintFriendlyReport({ reportType, filters, reportTitle, filtersS
                 <tr>
                   <th className="border border-black p-3 bg-slate-50 w-1/3 font-bold">Total Invoiced Amount</th>
                   <td className="border border-black p-3 font-bold text-lg">
-                    Rs {Number(finData.kpis.total_billed || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    Rs {Number(finData.kpis?.total_billed || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                   </td>
                 </tr>
                 <tr>
                   <th className="border border-black p-3 bg-slate-50 font-bold">Total Collections Received</th>
                   <td className="border border-black p-3 font-bold text-lg text-emerald-800">
-                    Rs {Number(finData.kpis.total_collected || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    Rs {Number(finData.kpis?.total_collected || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                   </td>
                 </tr>
                 <tr>
                   <th className="border border-black p-3 bg-slate-50 font-bold">Total Outstanding Receivables</th>
                   <td className="border border-black p-3 font-bold text-lg text-red-800">
-                    Rs {Number(finData.kpis.total_outstanding || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    Rs {Number(finData.kpis?.total_outstanding || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
+
+          {/* Detailed Invoices Register */}
+          {isDetailed && finData.detailed_invoices && (
+            <div>
+              <h3 className="font-bold text-base uppercase bg-slate-100 p-2 border border-black mb-2 text-black">
+                Itemized Invoices Register ({finData.detailed_invoices.length} Records)
+              </h3>
+              <table className="w-full border-collapse border border-black text-left text-xs">
+                <thead>
+                  <tr className="bg-slate-200 font-bold">
+                    <th className="border border-black p-1.5 text-center w-8">#</th>
+                    <th className="border border-black p-1.5">Invoice #</th>
+                    <th className="border border-black p-1.5">Client Name</th>
+                    <th className="border border-black p-1.5">Case Number</th>
+                    <th className="border border-black p-1.5">Issue Date</th>
+                    <th className="border border-black p-1.5">Due Date</th>
+                    <th className="border border-black p-1.5 text-right">Billed (Rs)</th>
+                    <th className="border border-black p-1.5 text-right">Paid (Rs)</th>
+                    <th className="border border-black p-1.5 text-right">Balance (Rs)</th>
+                    <th className="border border-black p-1.5">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {finData.detailed_invoices.map((inv: any, idx: number) => (
+                    <tr key={idx}>
+                      <td className="border border-black p-1.5 text-center font-bold">{idx + 1}</td>
+                      <td className="border border-black p-1.5 font-bold">{inv.invoice_number}</td>
+                      <td className="border border-black p-1.5">{inv.client_name}</td>
+                      <td className="border border-black p-1.5">{inv.case_number}</td>
+                      <td className="border border-black p-1.5">{inv.issue_date}</td>
+                      <td className="border border-black p-1.5">{inv.due_date}</td>
+                      <td className="border border-black p-1.5 text-right font-mono">Rs {Number(inv.total_amount || 0).toLocaleString()}</td>
+                      <td className="border border-black p-1.5 text-right font-mono text-emerald-800">Rs {Number(inv.paid_amount || 0).toLocaleString()}</td>
+                      <td className="border border-black p-1.5 text-right font-mono text-red-800">Rs {Number(inv.balance || 0).toLocaleString()}</td>
+                      <td className="border border-black p-1.5 font-semibold">{inv.status}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* Detailed Payments Register */}
+          {isDetailed && finData.detailed_payments && (
+            <div>
+              <h3 className="font-bold text-base uppercase bg-slate-100 p-2 border border-black mb-2 text-black">
+                Itemized Payments Collection Register ({finData.detailed_payments.length} Records)
+              </h3>
+              <table className="w-full border-collapse border border-black text-left text-xs">
+                <thead>
+                  <tr className="bg-slate-200 font-bold">
+                    <th className="border border-black p-1.5 text-center w-8">#</th>
+                    <th className="border border-black p-1.5">Payment Date</th>
+                    <th className="border border-black p-1.5">Invoice #</th>
+                    <th className="border border-black p-1.5">Client Name</th>
+                    <th className="border border-black p-1.5">Case Number</th>
+                    <th className="border border-black p-1.5">Method</th>
+                    <th className="border border-black p-1.5">Reference #</th>
+                    <th className="border border-black p-1.5 text-right">Amount Received (Rs)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {finData.detailed_payments.map((p: any, idx: number) => (
+                    <tr key={idx}>
+                      <td className="border border-black p-1.5 text-center font-bold">{idx + 1}</td>
+                      <td className="border border-black p-1.5">{p.payment_date}</td>
+                      <td className="border border-black p-1.5 font-bold">{p.invoice__invoice_number}</td>
+                      <td className="border border-black p-1.5">{p.invoice__case__client__name}</td>
+                      <td className="border border-black p-1.5">{p.invoice__case__case_number}</td>
+                      <td className="border border-black p-1.5">{p.payment_method}</td>
+                      <td className="border border-black p-1.5 font-mono">{p.reference_number || '---'}</td>
+                      <td className="border border-black p-1.5 text-right font-bold text-emerald-800">
+                        Rs {Number(p.amount_received || 0).toLocaleString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
 
           <div>
             <h3 className="font-bold text-base uppercase bg-slate-100 p-2 border border-black mb-2 text-black">
@@ -249,9 +314,6 @@ export function PrintFriendlyReport({ reportType, filters, reportTitle, filtersS
                     </td>
                   </tr>
                 ))}
-                {(finData.revenue_by_category || []).length === 0 && (
-                  <tr><td colSpan={2} className="p-4 text-center text-slate-500">No payment records found for this period.</td></tr>
-                )}
               </tbody>
             </table>
           </div>
@@ -261,6 +323,45 @@ export function PrintFriendlyReport({ reportType, filters, reportTitle, filtersS
       {/* 3. CASES REPORT / CASE STATUS REPORT */}
       {(reportType === 'cases' || reportType === 'status') && caseData && (
         <div className="space-y-6 text-sm">
+          {/* Detailed Itemized Cases Register */}
+          {isDetailed && caseData.detailed_cases && (
+            <div>
+              <h3 className="font-bold text-base uppercase bg-slate-100 p-2 border border-black mb-2 text-black">
+                Itemized Case Register ({caseData.detailed_cases.length} Records)
+              </h3>
+              <table className="w-full border-collapse border border-black text-left text-xs">
+                <thead>
+                  <tr className="bg-slate-200 font-bold">
+                    <th className="border border-black p-1.5 text-center w-8">#</th>
+                    <th className="border border-black p-1.5">Case No / FIR</th>
+                    <th className="border border-black p-1.5">Client Name</th>
+                    <th className="border border-black p-1.5">Opponent</th>
+                    <th className="border border-black p-1.5">Category</th>
+                    <th className="border border-black p-1.5">Court Forum</th>
+                    <th className="border border-black p-1.5">Advocate</th>
+                    <th className="border border-black p-1.5">Status</th>
+                    <th className="border border-black p-1.5 text-right">Agreed Fee</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {caseData.detailed_cases.map((c: any, idx: number) => (
+                    <tr key={c.id || idx}>
+                      <td className="border border-black p-1.5 text-center font-bold">{idx + 1}</td>
+                      <td className="border border-black p-1.5 font-bold">{c.case_number}</td>
+                      <td className="border border-black p-1.5">{c.client__name}</td>
+                      <td className="border border-black p-1.5">{c.opponent_name}</td>
+                      <td className="border border-black p-1.5">{c.category}</td>
+                      <td className="border border-black p-1.5">{c.court__name}</td>
+                      <td className="border border-black p-1.5">{c.assigned_advocate}</td>
+                      <td className="border border-black p-1.5 font-semibold">{c.status}</td>
+                      <td className="border border-black p-1.5 text-right font-mono">Rs {Number(c.total_fee || 0).toLocaleString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
           <div>
             <h3 className="font-bold text-base uppercase bg-slate-100 p-2 border border-black mb-2 text-black">
               Case Status Distribution Table
@@ -285,59 +386,6 @@ export function PrintFriendlyReport({ reportType, filters, reportTitle, filtersS
                   );
                 })}
               </tbody>
-              <tfoot>
-                <tr className="bg-slate-100 font-bold">
-                  <td className="border border-black p-2">Total Cases</td>
-                  <td className="border border-black p-2 text-right">{totalCases}</td>
-                  <td className="border border-black p-2 text-right">100%</td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-
-          <div>
-            <h3 className="font-bold text-base uppercase bg-slate-100 p-2 border border-black mb-2 text-black">
-              Caseload by Court / Forum
-            </h3>
-            <table className="w-full border-collapse border border-black text-left">
-              <thead>
-                <tr className="bg-slate-200 font-bold">
-                  <th className="border border-black p-2">Court Name</th>
-                  <th className="border border-black p-2 text-right">Cases Assigned</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(caseData.court_load || []).map((item: any, idx: number) => (
-                  <tr key={idx}>
-                    <td className="border border-black p-2 font-medium">{item.court__name || 'Unassigned Court'}</td>
-                    <td className="border border-black p-2 text-right font-bold">{item.count}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <div>
-            <h3 className="font-bold text-base uppercase bg-slate-100 p-2 border border-black mb-2 text-black">
-              Top Clients by Litigation Volume
-            </h3>
-            <table className="w-full border-collapse border border-black text-left">
-              <thead>
-                <tr className="bg-slate-200 font-bold">
-                  <th className="border border-black p-2 w-16 text-center">Rank</th>
-                  <th className="border border-black p-2">Client Name</th>
-                  <th className="border border-black p-2 text-right">Case Volume</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(caseData.top_clients || []).map((client: any, idx: number) => (
-                  <tr key={idx}>
-                    <td className="border border-black p-2 text-center font-bold">#{idx + 1}</td>
-                    <td className="border border-black p-2 font-medium">{client.client__name || 'Unnamed Client'}</td>
-                    <td className="border border-black p-2 text-right font-bold">{client.count}</td>
-                  </tr>
-                ))}
-              </tbody>
             </table>
           </div>
         </div>
@@ -346,6 +394,45 @@ export function PrintFriendlyReport({ reportType, filters, reportTitle, filtersS
       {/* 4. HEARINGS REPORT */}
       {reportType === 'hearings' && hearingData && (
         <div className="space-y-6 text-sm">
+          {/* Detailed Itemized Hearings Register */}
+          {isDetailed && hearingData.detailed_hearings && (
+            <div>
+              <h3 className="font-bold text-base uppercase bg-slate-100 p-2 border border-black mb-2 text-black">
+                Itemized Cause List &amp; Hearing Register ({hearingData.detailed_hearings.length} Records)
+              </h3>
+              <table className="w-full border-collapse border border-black text-left text-xs">
+                <thead>
+                  <tr className="bg-slate-200 font-bold">
+                    <th className="border border-black p-1.5 text-center w-8">#</th>
+                    <th className="border border-black p-1.5">Hearing Date</th>
+                    <th className="border border-black p-1.5">Case Number</th>
+                    <th className="border border-black p-1.5">Client Name</th>
+                    <th className="border border-black p-1.5">Court Forum</th>
+                    <th className="border border-black p-1.5">Hearing Stage</th>
+                    <th className="border border-black p-1.5">Next Date</th>
+                    <th className="border border-black p-1.5">Advocate</th>
+                    <th className="border border-black p-1.5">Notes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {hearingData.detailed_hearings.map((h: any, idx: number) => (
+                    <tr key={h.id || idx}>
+                      <td className="border border-black p-1.5 text-center font-bold">{idx + 1}</td>
+                      <td className="border border-black p-1.5 font-bold">{h.hearing_date}</td>
+                      <td className="border border-black p-1.5">{h.case__case_number}</td>
+                      <td className="border border-black p-1.5">{h.case__client__name}</td>
+                      <td className="border border-black p-1.5">{h.case__court__name}</td>
+                      <td className="border border-black p-1.5 font-semibold">{h.hearing_stage}</td>
+                      <td className="border border-black p-1.5">{h.next_date || '---'}</td>
+                      <td className="border border-black p-1.5">{h.assigned_advocate}</td>
+                      <td className="border border-black p-1.5 truncate max-w-xs">{h.notes || '---'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
           <div>
             <h3 className="font-bold text-base uppercase bg-slate-100 p-2 border border-black mb-2 text-black">
               Procedural Hearing Stage Analysis
@@ -370,13 +457,6 @@ export function PrintFriendlyReport({ reportType, filters, reportTitle, filtersS
                   );
                 })}
               </tbody>
-              <tfoot>
-                <tr className="bg-slate-100 font-bold">
-                  <td className="border border-black p-2">Total Hearings Scheduled</td>
-                  <td className="border border-black p-2 text-right">{totalHearings}</td>
-                  <td className="border border-black p-2 text-right">100%</td>
-                </tr>
-              </tfoot>
             </table>
           </div>
         </div>
@@ -385,9 +465,44 @@ export function PrintFriendlyReport({ reportType, filters, reportTitle, filtersS
       {/* 5. STAFF PRODUCTIVITY REPORT */}
       {reportType === 'productivity' && prodData && (
         <div className="space-y-6 text-sm">
+          {/* Detailed Itemized Deadlines Register */}
+          {isDetailed && prodData.detailed_deadlines && (
+            <div>
+              <h3 className="font-bold text-base uppercase bg-slate-100 p-2 border border-black mb-2 text-black">
+                Itemized Staff Deadlines &amp; Task Register ({prodData.detailed_deadlines.length} Records)
+              </h3>
+              <table className="w-full border-collapse border border-black text-left text-xs">
+                <thead>
+                  <tr className="bg-slate-200 font-bold">
+                    <th className="border border-black p-1.5 text-center w-8">#</th>
+                    <th className="border border-black p-1.5">Task / Deadline Title</th>
+                    <th className="border border-black p-1.5">Case Number</th>
+                    <th className="border border-black p-1.5">Assigned Advocate</th>
+                    <th className="border border-black p-1.5">Priority</th>
+                    <th className="border border-black p-1.5">Due Date</th>
+                    <th className="border border-black p-1.5">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {prodData.detailed_deadlines.map((d: any, idx: number) => (
+                    <tr key={d.id || idx}>
+                      <td className="border border-black p-1.5 text-center font-bold">{idx + 1}</td>
+                      <td className="border border-black p-1.5 font-bold">{d.title}</td>
+                      <td className="border border-black p-1.5">{d.case__case_number || 'General'}</td>
+                      <td className="border border-black p-1.5">{d.assigned_advocate}</td>
+                      <td className="border border-black p-1.5">{d.priority}</td>
+                      <td className="border border-black p-1.5 font-mono">{d.due_date}</td>
+                      <td className="border border-black p-1.5 font-semibold">{d.status}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
           <div>
             <h3 className="font-bold text-base uppercase bg-slate-100 p-2 border border-black mb-2 text-black">
-              Advocate Caseload & Task Completion Matrix
+              Advocate Caseload &amp; Task Completion Matrix
             </h3>
             <table className="w-full border-collapse border border-black text-left">
               <thead>
@@ -400,7 +515,7 @@ export function PrintFriendlyReport({ reportType, filters, reportTitle, filtersS
                 </tr>
               </thead>
               <tbody>
-                {(prodData || []).map((staff: any, idx: number) => (
+                {(prodData.matrix || prodData || []).map((staff: any, idx: number) => (
                   <tr key={idx}>
                     <td className="border border-black p-2 font-bold">{staff.name || `User #${staff.id}`}</td>
                     <td className="border border-black p-2">{staff.role || 'Staff'}</td>
@@ -409,9 +524,6 @@ export function PrintFriendlyReport({ reportType, filters, reportTitle, filtersS
                     <td className="border border-black p-2 text-right font-semibold text-amber-800">{staff.pending || 0}</td>
                   </tr>
                 ))}
-                {(prodData || []).length === 0 && (
-                  <tr><td colSpan={5} className="p-4 text-center text-slate-500">No staff records found.</td></tr>
-                )}
               </tbody>
             </table>
           </div>

@@ -24,6 +24,7 @@ class CaseReportViewSet(viewsets.ViewSet):
         filters = ReportFilterSerializer(data=request.query_params)
         filters.is_valid(raise_exception=True)
         orm_filters = filters.to_orm_filters(request.user)
+        scope = filters.validated_data.get('scope') or 'overview'
         
         # Base Queryset scoped securely
         qs = Case.objects.filter(**orm_filters)
@@ -37,18 +38,36 @@ class CaseReportViewSet(viewsets.ViewSet):
         # Top Clients by Case Volume
         client_data = qs.values('client__name').annotate(count=Count('id')).order_by('-count')[:10]
 
-        return Response({
+        res_data = {
             'status_distribution': list(status_data),
             'court_load': list(court_data),
             'top_clients': list(client_data),
             'total_cases': qs.count()
-        })
+        }
+
+        if scope == 'detailed':
+            detailed_cases = list(qs.values(
+                'id', 'case_number', 'client__name',
+                'opponent_name', 'category', 'status', 'priority',
+                'court__name', 'judge__name', 'total_fee', 'created_at',
+                'assigned_to__first_name', 'assigned_to__last_name', 'assigned_to__username'
+            )[:500])
+            for c in detailed_cases:
+                fname = c.pop('assigned_to__first_name', '')
+                lname = c.pop('assigned_to__last_name', '')
+                uname = c.pop('assigned_to__username', '')
+                c['assigned_advocate'] = f"{fname} {lname}".strip() or uname or 'Unassigned'
+            res_data['detailed_cases'] = detailed_cases
+
+        return Response(res_data)
         
     @action(detail=False, methods=['get'])
     def hearings(self, request):
         """ Separate endpoint for hearing stats, still under 'cases' category """
         filters = ReportFilterSerializer(data=request.query_params)
         filters.is_valid(raise_exception=True)
+        scope = filters.validated_data.get('scope') or 'overview'
+
         # Filter hearings by their actual hearing_date, while retaining role-based scoping on the case
         orm_filters = filters.to_orm_filters(request.user, prefix='case__', date_field='hearings__hearing_date')
         
@@ -64,10 +83,25 @@ class CaseReportViewSet(viewsets.ViewSet):
         
         hearing_stages = qs.values('hearing_stage').annotate(count=Count('id')).order_by('-count')
         
-        return Response({
+        res_data = {
             'hearing_stages': list(hearing_stages),
             'total_hearings': qs.count()
-        })
+        }
+
+        if scope == 'detailed':
+            detailed_hearings = list(qs.values(
+                'id', 'hearing_date', 'hearing_stage', 'next_date', 'notes',
+                'case__case_number', 'case__client__name', 'case__court__name', 'case__judge__name',
+                'case__assigned_to__first_name', 'case__assigned_to__last_name', 'case__assigned_to__username'
+            )[:500])
+            for h in detailed_hearings:
+                fname = h.pop('case__assigned_to__first_name', '')
+                lname = h.pop('case__assigned_to__last_name', '')
+                uname = h.pop('case__assigned_to__username', '')
+                h['assigned_advocate'] = f"{fname} {lname}".strip() or uname or 'Unassigned'
+            res_data['detailed_hearings'] = detailed_hearings
+
+        return Response(res_data)
 
     @action(detail=False, methods=['get'])
     def export_csv(self, request):
@@ -95,6 +129,7 @@ class FinancialReportViewSet(viewsets.ViewSet):
 
         # Build base filters from the serializer (no prefix — we'll apply them manually)
         data = filters.validated_data
+        scope = data.get('scope') or 'overview'
         profile = getattr(request.user, 'profile', None)
         role = getattr(profile, 'role', '')
 
@@ -151,14 +186,39 @@ class FinancialReportViewSet(viewsets.ViewSet):
             for item in category_revenue if item['invoice__case__category']
         ]
 
-        return Response({
+        res_data = {
             'kpis': {
                 'total_billed': total_billed,
                 'total_collected': total_collected,
                 'total_outstanding': total_outstanding
             },
             'revenue_by_category': formatted_revenue
-        })
+        }
+
+        if scope == 'detailed':
+            detailed_invoices = []
+            for inv in qs_invoices.select_related('case__client').prefetch_related('items', 'payments')[:300]:
+                detailed_invoices.append({
+                    'invoice_number': inv.invoice_number,
+                    'client_name': inv.case.client.name,
+                    'case_number': inv.case.case_number,
+                    'issue_date': inv.issue_date,
+                    'due_date': inv.due_date,
+                    'total_amount': float(inv.total_amount),
+                    'paid_amount': float(inv.paid_amount),
+                    'balance': float(inv.balance),
+                    'status': inv.dynamic_status,
+                })
+
+            detailed_payments = list(qs_payments.values(
+                'id', 'payment_date', 'payment_method', 'amount_received', 'reference_number',
+                'invoice__invoice_number', 'invoice__case__case_number', 'invoice__case__client__name'
+            )[:300])
+
+            res_data['detailed_invoices'] = detailed_invoices
+            res_data['detailed_payments'] = detailed_payments
+
+        return Response(res_data)
         
     @action(detail=False, methods=['get'])
     def export_csv(self, request):
@@ -196,6 +256,7 @@ class ProductivityReportViewSet(viewsets.ViewSet):
         filters = ReportFilterSerializer(data=request.query_params)
         filters.is_valid(raise_exception=True)
         
+        scope = filters.validated_data.get('scope') or 'overview'
         start_date = filters.validated_data.get('start_date')
         end_date = filters.validated_data.get('end_date')
         staff_id = filters.validated_data.get('staff_id')
@@ -242,5 +303,28 @@ class ProductivityReportViewSet(viewsets.ViewSet):
                 'pending': u['pending_deadlines']
             })
             
-        return Response(formatted)
+        res_data = {
+            'matrix': formatted
+        }
+
+        if scope == 'detailed':
+            dl_qs = Deadline.objects.filter(Q(assigned_to__in=users) | Q(assigned_to__isnull=True))
+            if start_date:
+                dl_qs = dl_qs.filter(due_date__gte=start_date)
+            if end_date:
+                dl_qs = dl_qs.filter(due_date__lte=end_date)
+                
+            detailed_deadlines = list(dl_qs.values(
+                'id', 'title', 'due_date', 'priority', 'status',
+                'assigned_to__first_name', 'assigned_to__last_name', 'assigned_to__username',
+                'case__case_number'
+            )[:300])
+            for d in detailed_deadlines:
+                fname = d.pop('assigned_to__first_name', '')
+                lname = d.pop('assigned_to__last_name', '')
+                uname = d.pop('assigned_to__username', '')
+                d['assigned_advocate'] = f"{fname} {lname}".strip() or uname or 'Unassigned'
+            res_data['detailed_deadlines'] = detailed_deadlines
+
+        return Response(res_data)
 
