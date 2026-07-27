@@ -78,8 +78,8 @@
 }
 
 @page {
-  size: auto;
-  margin: 12mm 15mm;
+  size: A4 portrait;
+  margin: 0;
 }
 
 @media print {
@@ -109,5 +109,9 @@
   .signature-block {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
+  }
+
+  .print\:hidden {
+    display: none !important;
   }
 }

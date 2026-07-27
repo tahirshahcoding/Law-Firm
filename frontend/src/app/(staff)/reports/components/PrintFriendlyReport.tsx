@@ -55,7 +55,7 @@ export function PrintFriendlyReport({ reportType, filters, reportTitle, filtersS
   const refNumber = `RA-RPT-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}-${Math.floor(1000 + Math.random() * 9000)}`;
 
   return (
-    <div className="bg-white text-slate-900 p-8 sm:p-12 border border-slate-300 shadow-lg rounded-xl print:border-none print:shadow-none print:p-0 w-full max-w-5xl mx-auto font-sans leading-relaxed">
+    <div className="bg-white text-slate-900 p-8 sm:p-12 border border-slate-300 shadow-lg rounded-xl print:border-none print:shadow-none print:p-10 w-full max-w-5xl mx-auto font-sans leading-relaxed">
       
       {/* ── FORMAL A4 CHAMBER LETTERHEAD HEADER ── */}
       <div className="border-b-2 border-slate-900 pb-5 mb-6">

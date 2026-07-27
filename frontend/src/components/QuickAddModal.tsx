@@ -61,7 +61,7 @@ export default function QuickAddModal() {
     <>
       <button 
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-40 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 duration-300 shadow-[0_4px_12px_rgba(37,99,235,0.25)] hover:shadow-[0_6px_16px_rgba(37,99,235,0.35)] hover:-translate-y-0.5 p-4 rounded-full shadow-lg hover:shadow-xl duration-300 group flex items-center justify-center text-white"
+        className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-40 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 duration-300 shadow-[0_4px_12px_rgba(37,99,235,0.25)] hover:shadow-[0_6px_16px_rgba(37,99,235,0.35)] hover:-translate-y-0.5 p-4 rounded-full shadow-lg hover:shadow-xl group flex items-center justify-center text-white print:hidden"
         aria-label="Quick Add"
       >
         <Plus size={24} className="group-hover:rotate-90 transition-transform duration-300" />
