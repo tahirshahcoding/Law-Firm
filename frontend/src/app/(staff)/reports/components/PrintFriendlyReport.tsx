@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useReportData } from '../hooks/useReportData';
-import { Scale, ShieldCheck, FileCheck, Calendar, DollarSign, Award, UserCheck } from 'lucide-react';
+import { ShieldCheck, FileCheck, Calendar, DollarSign, Award, UserCheck } from 'lucide-react';
 
 interface PrintReportProps {
   reportType: string;
@@ -61,22 +61,17 @@ export function PrintFriendlyReport({ reportType, filters, reportTitle, filtersS
       <div className="border-b-2 border-slate-900 pb-5 mb-6">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
           
-          {/* Chamber Seal Crest */}
-          <div className="flex items-center gap-3.5">
-            <div className="w-14 h-14 rounded-xl bg-slate-900 text-white flex items-center justify-center shadow-md shrink-0 border-2 border-amber-400">
-              <Scale size={30} className="text-amber-400" />
-            </div>
-            <div>
-              <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 uppercase">
-                RAHIMULLAH &amp; ASSOCIATES
-              </h1>
-              <p className="text-xs font-extrabold text-amber-700 dark:text-amber-600 uppercase tracking-widest">
-                Advocates, Legal Consultants &amp; High Court Practitioners
-              </p>
-              <p className="text-[11px] text-slate-600 font-medium">
-                District &amp; Sessions Courts Complex, Swat, Khyber Pakhtunkhwa
-              </p>
-            </div>
+          {/* Chamber Title */}
+          <div>
+            <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 uppercase">
+              RAHIMULLAH &amp; ASSOCIATES
+            </h1>
+            <p className="text-xs font-extrabold text-amber-700 dark:text-amber-600 uppercase tracking-widest">
+              Advocates, Legal Consultants &amp; High Court Practitioners
+            </p>
+            <p className="text-[11px] text-slate-600 font-medium">
+              District &amp; Sessions Courts Complex, Swat, Khyber Pakhtunkhwa
+            </p>
           </div>
 
           {/* Document Verification Badge */}
