@@ -477,6 +477,7 @@ export default function ReportsPage() {
             filters={generatedReport.filters}
             reportTitle={generatedReport.label}
             filtersSummary={generatedReport.summaryText}
+            generatedBy={user?.username || 'Chamber Staff'}
           />
         )}
 
