@@ -595,45 +595,47 @@ export function PrintFriendlyReport({ reportType, filters, reportTitle, filtersS
       )}
 
       {/* ── FORMAL DUAL SIGNATURE & APPROVAL BLOCK ── */}
-      <div className="mt-16 pt-8 border-t-2 border-slate-900 flex flex-col sm:flex-row justify-between items-end gap-8 text-xs text-slate-700 print:mt-16 print:page-break-inside-avoid">
-        
-        {/* Prepared By Signature */}
-        <div className="w-full sm:w-64 space-y-2">
-          <div className="border-b border-slate-400 pb-8 text-slate-400 text-[11px] font-mono text-center">
-            [ Registrar / Staff Signature ]
+      <div className="signature-block break-inside-avoid print:break-inside-avoid mt-8 print:mt-6 pt-6 border-t-2 border-slate-900">
+        <div className="flex flex-col sm:flex-row justify-between items-end gap-6 text-xs text-slate-700">
+          
+          {/* Prepared By Signature */}
+          <div className="w-full sm:w-60 space-y-1.5">
+            <div className="border-b border-slate-400 pb-6 text-slate-400 text-[11px] font-mono text-center">
+              [ Registrar / Staff Signature ]
+            </div>
+            <div className="text-left space-y-0.5">
+              <p className="font-bold text-slate-900 uppercase">Prepared By:</p>
+              <p className="font-semibold text-slate-800">{generatedBy || 'Chamber Administrator'}</p>
+              <p className="text-[11px] text-slate-500 font-mono">Date: {nowStr.split(',')[0]}</p>
+            </div>
           </div>
-          <div className="text-left space-y-0.5">
-            <p className="font-bold text-slate-900 uppercase">Prepared By:</p>
-            <p className="font-semibold text-slate-800">{generatedBy || 'Chamber Administrator'}</p>
-            <p className="text-[11px] text-slate-500 font-mono">Date: {nowStr.split(',')[0]}</p>
+
+          {/* Chamber Official Stamp Frame */}
+          <div className="w-24 h-24 rounded-full border-2 border-dashed border-slate-300 flex flex-col items-center justify-center text-center p-2 text-[10px] text-slate-400 uppercase font-mono tracking-tighter shrink-0 print:border-slate-400">
+            <UserCheck size={16} className="text-slate-400 mb-0.5" />
+            <span>Official Seal</span>
+            <span>&amp; Stamp</span>
           </div>
+
+          {/* Verified & Approved By Signature */}
+          <div className="w-full sm:w-60 space-y-1.5">
+            <div className="border-b border-slate-900 pb-6 text-slate-400 text-[11px] font-mono text-center">
+              [ Senior Partner Signature ]
+            </div>
+            <div className="text-right space-y-0.5">
+              <p className="font-bold text-slate-900 uppercase">Verified &amp; Approved By:</p>
+              <p className="font-black text-slate-900">RAHIMULLAH ADVOCATE</p>
+              <p className="text-[11px] text-slate-600 font-medium">Managing Partner &amp; Head of Chamber</p>
+            </div>
+          </div>
+
         </div>
 
-        {/* Chamber Official Stamp Frame */}
-        <div className="w-28 h-28 rounded-full border-2 border-dashed border-slate-300 flex flex-col items-center justify-center text-center p-2 text-[10px] text-slate-400 uppercase font-mono tracking-tighter shrink-0 print:border-slate-400">
-          <UserCheck size={18} className="text-slate-400 mb-0.5" />
-          <span>Official Seal</span>
-          <span>&amp; Stamp</span>
+        {/* Footer Legal Notice */}
+        <div className="mt-6 pt-3 border-t border-slate-200 text-center text-[10px] text-slate-500 font-mono flex flex-col sm:flex-row justify-between items-center gap-1">
+          <span>RAHIMULLAH ADVOCATES • CONFIDENTIAL CHAMBER DOCUMENT</span>
+          <span>VERIFICATION HASH: {refNumber}</span>
         </div>
-
-        {/* Verified & Approved By Signature */}
-        <div className="w-full sm:w-64 space-y-2">
-          <div className="border-b border-slate-900 pb-8 text-slate-400 text-[11px] font-mono text-center">
-            [ Senior Partner Signature ]
-          </div>
-          <div className="text-right space-y-0.5">
-            <p className="font-bold text-slate-900 uppercase">Verified &amp; Approved By:</p>
-            <p className="font-black text-slate-900">RAHIMULLAH ADVOCATE</p>
-            <p className="text-[11px] text-slate-600 font-medium">Managing Partner &amp; Head of Chamber</p>
-          </div>
-        </div>
-
-      </div>
-
-      {/* Footer Legal Notice */}
-      <div className="mt-8 pt-3 border-t border-slate-200 text-center text-[10px] text-slate-500 font-mono flex flex-col sm:flex-row justify-between items-center gap-1">
-        <span>RAHIMULLAH ADVOCATES • CONFIDENTIAL CHAMBER DOCUMENT</span>
-        <span>VERIFICATION HASH: {refNumber}</span>
       </div>
 
     </div>
