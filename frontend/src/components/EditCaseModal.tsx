@@ -129,14 +129,14 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  if (!isOpen || !caseData) return null;
-
   const filteredClients = useMemo(() => {
     return clients.filter(c => 
       c.name.toLowerCase().includes(clientSearchText.toLowerCase()) || 
       (c.client_number && c.client_number.toLowerCase().includes(clientSearchText.toLowerCase()))
     );
   }, [clients, clientSearchText]);
+
+  if (!isOpen || !caseData) return null;
 
   const selectClient = (client: any) => {
     setFormData({ ...formData, client: client.id });
