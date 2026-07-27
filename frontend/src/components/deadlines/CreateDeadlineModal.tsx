@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { X, Calendar, AlignLeft, Search, Check } from 'lucide-react';
 import { API_BASE, apiFetch, safeJson } from '@/lib/api';
 import { useUI } from '@/context/UIContext';
@@ -149,13 +149,17 @@ export default function CreateDeadlineModal({ isOpen, onClose, onSuccess, initia
 
   if (!isOpen) return null;
 
-  const filteredCases = cases.filter(c => 
-    c.case_number.toLowerCase().includes(caseSearch.toLowerCase()) || 
-    c.client_name?.toLowerCase().includes(caseSearch.toLowerCase()) ||
-    c.opponent_name?.toLowerCase().includes(caseSearch.toLowerCase())
-  );
+  const filteredCases = useMemo(() => {
+    return cases.filter(c => 
+      c.case_number.toLowerCase().includes(caseSearch.toLowerCase()) || 
+      c.client_name?.toLowerCase().includes(caseSearch.toLowerCase()) ||
+      c.opponent_name?.toLowerCase().includes(caseSearch.toLowerCase())
+    );
+  }, [cases, caseSearch]);
   
-  const selectedCaseObj = cases.find(c => c.id === formData.case);
+  const selectedCaseObj = useMemo(() => {
+    return cases.find(c => c.id === formData.case);
+  }, [cases, formData.case]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm overflow-y-auto">

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { X, FolderOpen, Scale, Gavel, UserX, Coins, Search, Check, Users } from 'lucide-react';
 import { API_BASE, apiFetch, safeJson } from '@/lib/api';
 import { sendWhatsApp, caseRegisteredMessage } from '@/lib/whatsapp';
@@ -114,10 +114,12 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
 
   if (!isOpen) return null;
 
-  const filteredClients = clients.filter(c => 
-    c.name.toLowerCase().includes(clientSearchText.toLowerCase()) || 
-    (c.client_number && c.client_number.toLowerCase().includes(clientSearchText.toLowerCase()))
-  );
+  const filteredClients = useMemo(() => {
+    return clients.filter(c => 
+      c.name.toLowerCase().includes(clientSearchText.toLowerCase()) || 
+      (c.client_number && c.client_number.toLowerCase().includes(clientSearchText.toLowerCase()))
+    );
+  }, [clients, clientSearchText]);
 
   const selectClient = (client: any) => {
     setFormData({ ...formData, client: client.id });
