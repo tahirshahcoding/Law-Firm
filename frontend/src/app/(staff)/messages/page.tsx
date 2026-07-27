@@ -32,10 +32,10 @@ export default function MessagesPage() {
   const [replyingTo, setReplyingTo] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const { data: convData, isLoading: loading, mutate: mutateConversations } = useSWR(`${API_BASE}/messages/conversations/`, swrFetcher, { refreshInterval: 5000 });
+  const { data: convData, isLoading: loading, mutate: mutateConversations } = useSWR(`${API_BASE}/messages/conversations/`, swrFetcher, { refreshInterval: 15000, revalidateOnFocus: true });
   const conversations: any[] = Array.isArray(convData) ? convData : (convData?.results || []);
 
-  const { data: msgData, mutate: mutateMessages } = useSWR(activeClient ? `${API_BASE}/messages/?client_id=${activeClient.client_id}` : null, swrFetcher, { refreshInterval: 5000 });
+  const { data: msgData, mutate: mutateMessages } = useSWR(activeClient ? `${API_BASE}/messages/?client_id=${activeClient.client_id}` : null, swrFetcher, { refreshInterval: 15000, revalidateOnFocus: true });
   const messages: any[] = Array.isArray(msgData) ? msgData : (msgData?.results || []);
 
   // Swipe to reply logic

@@ -297,25 +297,38 @@ class AccountsLedgerView(APIView):
 
         # Build chronological ledger (Cash Flow: Payments vs Expenses)
         transactions = []
-        for p in Payment.objects.select_related('invoice', 'invoice__case', 'invoice__case__client').order_by('-payment_date')[:limit]:
+        payment_rows = Payment.objects.order_by('-payment_date')[:limit].values(
+            'payment_date', 'created_at', 'payment_method',
+            'invoice__invoice_number',
+            'invoice__case__client__name',
+            'invoice__case__case_number',
+            'amount_received'
+        )
+        for p in payment_rows:
+            dt = p['payment_date'].isoformat() if p['payment_date'] else p['created_at'].date().isoformat()
             transactions.append({
-                "date": p.payment_date.isoformat() if p.payment_date else p.created_at.date().isoformat(),
+                "date": dt,
                 "type": "Payment",
-                "description": f"Payment via {p.payment_method} for {p.invoice.invoice_number}",
-                "client_name": p.invoice.case.client.name,
-                "case_number": p.invoice.case.case_number,
+                "description": f"Payment via {p['payment_method']} for {p['invoice__invoice_number']}",
+                "client_name": p['invoice__case__client__name'],
+                "case_number": p['invoice__case__case_number'],
                 "debit": None,
-                "credit": float(p.amount_received)
+                "credit": float(p['amount_received'])
             })
             
-        for e in Expense.objects.select_related('case', 'case__client').order_by('-date')[:limit]:
+        expense_rows = Expense.objects.order_by('-date')[:limit].values(
+            'date', 'created_at', 'category', 'description',
+            'case__client__name', 'case__case_number', 'amount'
+        )
+        for e in expense_rows:
+            dt = e['date'].isoformat() if e['date'] else e['created_at'].date().isoformat()
             transactions.append({
-                "date": e.date.isoformat() if e.date else e.created_at.date().isoformat(),
+                "date": dt,
                 "type": "Expense",
-                "description": f"{e.category} - {e.description}",
-                "client_name": e.case.client.name if e.case else None,
-                "case_number": e.case.case_number if e.case else None,
-                "debit": float(e.amount),
+                "description": f"{e['category']} - {e['description']}",
+                "client_name": e['case__client__name'],
+                "case_number": e['case__case_number'],
+                "debit": float(e['amount']),
                 "credit": None
             })
 

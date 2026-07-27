@@ -63,7 +63,7 @@ class Case(models.Model):
         User, null=True, blank=True,
         on_delete=models.SET_NULL, related_name='assigned_cases'
     )
-    case_number = models.CharField(max_length=100)
+    case_number = models.CharField(max_length=100, db_index=True)
     court = models.ForeignKey(Court, on_delete=models.RESTRICT, related_name='cases')
     judge = models.ForeignKey(Judge, on_delete=models.RESTRICT, related_name='cases')
     opponent_name = models.CharField(max_length=255, db_index=True)
@@ -71,11 +71,11 @@ class Case(models.Model):
         max_digits=10, decimal_places=2,
         validators=[MinValueValidator(Decimal('0.01'))]
     )
-    status = models.CharField(max_length=50, choices=CASE_STATUS_CHOICES, default='Case Accepted')
-    category = models.CharField(max_length=100, choices=CASE_CATEGORY_CHOICES, default='Civil')
+    status = models.CharField(max_length=50, choices=CASE_STATUS_CHOICES, default='Case Accepted', db_index=True)
+    category = models.CharField(max_length=100, choices=CASE_CATEGORY_CHOICES, default='Civil', db_index=True)
     priority = models.CharField(max_length=50, choices=CASE_PRIORITY_CHOICES, default='Medium')
     filing_deadline = models.DateField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     history = HistoricalRecords()
 
     @transaction.atomic
@@ -162,7 +162,7 @@ class CaseTimeline(models.Model):
 class Hearing(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     case = models.ForeignKey(Case, on_delete=models.CASCADE, related_name='hearings')
-    hearing_date = models.DateField()
+    hearing_date = models.DateField(db_index=True)
     hearing_time = models.TimeField(null=True, blank=True)
     next_date = models.DateField(null=True, blank=True)
     hearing_stage = models.CharField(max_length=150, default='Attendance', db_index=True)
