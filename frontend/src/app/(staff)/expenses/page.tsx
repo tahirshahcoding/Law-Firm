@@ -10,6 +10,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useUI } from '@/context/UIContext';
 import { TableRowSkeleton } from '@/components/SkeletonLoaders';
 const AddExpenseModal = dynamic(() => import('@/components/finance/AddExpenseModal'), { ssr: false });
+import { useDebounce } from '@/hooks/useDebounce';
 
 const CATEGORIES = ['All', 'Court Fee', 'Stamp Paper', 'Printing', 'Fuel', 'Courier', 'Staff Salary', 'Office Rent', 'Internet', 'Electricity', 'Other'];
 
@@ -21,13 +22,22 @@ function fmtDate(d: string | null) {
 
 export default function ExpensesPage() {
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebounce(search, 300);
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [showModal, setShowModal] = useState(false);
   const { user } = useAuth();
   const { confirm, toast, showLoading, hideLoading } = useUI();
   const canManage = user?.role === 'Admin' || user?.permissions?.accounts?.edit;
 
-  const { data, isLoading: loading, mutate: fetchExpenses } = useSWR(`${API_BASE}/expenses/`, swrFetcher);
+  let url = `${API_BASE}/expenses/?limit=1000`;
+  if (debouncedSearch.trim()) {
+    url += `&search=${encodeURIComponent(debouncedSearch.trim())}`;
+  }
+  if (categoryFilter !== 'All') {
+    url += `&category=${encodeURIComponent(categoryFilter)}`;
+  }
+
+  const { data, isLoading: loading, mutate: fetchExpenses } = useSWR(url, swrFetcher);
   const expenses: any[] = data?.results || (Array.isArray(data) ? data : []);
 
   const filtered = expenses.filter(e => {

@@ -10,7 +10,7 @@ from ..serializers.public import PublicHearingSerializer
 class PublicHearingPagination(PageNumberPagination):
     page_size = 50
     page_size_query_param = 'limit'
-    max_page_size = 100
+    max_page_size = 1000
 
 class PublicHearingViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = PublicHearingSerializer
@@ -22,6 +22,7 @@ class PublicHearingViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_field = 'id'
 
     def get_queryset(self):
+        from django.db.models import Q
         today = timezone.now().date()
         window_start = today - timedelta(days=30)
         window_end = today + timedelta(days=30)
@@ -46,5 +47,15 @@ class PublicHearingViewSet(viewsets.ReadOnlyModelViewSet):
             qs = qs.filter(hearing_date__gte=today)
         elif filter_param == 'past':
             qs = qs.filter(hearing_date__lt=today).order_by('-hearing_date', '-hearing_time')
+
+        search = self.request.query_params.get('search', '').strip()
+        if search:
+            qs = qs.filter(
+                Q(case__client__name__icontains=search) |
+                Q(case__opponent_name__icontains=search) |
+                Q(case__case_number__icontains=search) |
+                Q(case__court__name__icontains=search) |
+                Q(case__judge__name__icontains=search)
+            ).distinct()
             
         return qs

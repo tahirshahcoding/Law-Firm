@@ -19,7 +19,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from ..models import (
     Client, Case, Hearing, HearingDocument, Task,
-    Payment, Invoice, Expense, UserProfile, ConsultationRequest, CaseTimeline, Court, Judge, CalendarEvent, Notification, Deadline
+    Payment, Invoice, InvoiceItem, Expense, UserProfile, ConsultationRequest, CaseTimeline, Court, Judge, CalendarEvent, Notification, Deadline
 )
 from ..serializers import (
     ClientSerializer, CaseSerializer, HearingSerializer, HearingDocumentSerializer,
@@ -99,6 +99,15 @@ class PaymentViewSet(viewsets.ModelViewSet):
             invoice_id = self.request.query_params.get('invoice')
             if invoice_id:
                 qs = qs.filter(invoice_id=invoice_id)
+            search = self.request.query_params.get('search', '').strip()
+            if search:
+                qs = qs.filter(
+                    Q(invoice__invoice_number__icontains=search) |
+                    Q(invoice__case__case_number__icontains=search) |
+                    Q(invoice__case__client__name__icontains=search) |
+                    Q(payment_method__icontains=search) |
+                    Q(notes__icontains=search)
+                ).distinct()
             return qs
         return Payment.objects.none()
 
@@ -122,7 +131,19 @@ class ExpenseViewSet(viewsets.ModelViewSet):
         role = getattr(profile, 'role', '')
         perms = getattr(profile, 'permissions', {})
         if role == 'Admin' or role == 'Accountant' or perms.get('accounts', {}).get('view', False):
-            return Expense.objects.all().order_by('-date', '-created_at')
+            qs = Expense.objects.select_related('case', 'case__client').all().order_by('-date', '-created_at')
+            search = self.request.query_params.get('search', '').strip()
+            if search:
+                qs = qs.filter(
+                    Q(description__icontains=search) |
+                    Q(vendor__icontains=search) |
+                    Q(case__case_number__icontains=search) |
+                    Q(case__client__name__icontains=search)
+                ).distinct()
+            category = self.request.query_params.get('category', '').strip()
+            if category and category.lower() != 'all':
+                qs = qs.filter(category__iexact=category)
+            return qs
         return Expense.objects.none()
 
     def check_permissions(self, request):
@@ -145,7 +166,15 @@ class InvoiceViewSet(viewsets.ModelViewSet):
         role = getattr(profile, 'role', '')
         perms = getattr(profile, 'permissions', {})
         if role == 'Admin' or role == 'Accountant' or perms.get('accounts', {}).get('view', False):
-            return Invoice.objects.select_related('case', 'case__client', 'case__court').prefetch_related('items', 'payments').order_by('-created_at')
+            qs = Invoice.objects.select_related('case', 'case__client', 'case__court').prefetch_related('items', 'payments').order_by('-created_at')
+            search = self.request.query_params.get('search', '').strip()
+            if search:
+                qs = qs.filter(
+                    Q(invoice_number__icontains=search) |
+                    Q(case__case_number__icontains=search) |
+                    Q(case__client__name__icontains=search)
+                ).distinct()
+            return qs
         return Invoice.objects.none()
 
     def check_permissions(self, request):
@@ -178,10 +207,8 @@ class AccountsLedgerView(APIView):
         if role != 'Admin' and role != 'Accountant' and not perms.get('accounts', {}).get('view', False) and not perms.get('reports', {}).get('view', False):
             return _error("Forbidden", status.HTTP_403_FORBIDDEN)
 
-        # Recompute totals by evaluating the properties for each invoice to ensure accuracy
-        invoices = Invoice.objects.select_related('case', 'case__client').all()
-        total_billed = sum(inv.total_amount for inv in invoices)
-        total_received = sum(inv.paid_amount for inv in invoices)
+        total_billed = InvoiceItem.objects.aggregate(total=Sum('amount'))['total'] or 0
+        total_received = Payment.objects.aggregate(total=Sum('amount_received'))['total'] or 0
         
         total_expenses = Expense.objects.aggregate(total=Sum('amount'))['total'] or 0
         net_profit = total_received - total_expenses
@@ -262,9 +289,15 @@ class AccountsLedgerView(APIView):
                 "expenses": raw_chart[m]["expenses"]
             })
 
+        limit_param = request.query_params.get('limit')
+        try:
+            limit = int(limit_param) if limit_param else 2000
+        except ValueError:
+            limit = 2000
+
         # Build chronological ledger (Cash Flow: Payments vs Expenses)
         transactions = []
-        for p in Payment.objects.select_related('invoice', 'invoice__case', 'invoice__case__client').all():
+        for p in Payment.objects.select_related('invoice', 'invoice__case', 'invoice__case__client').order_by('-payment_date')[:limit]:
             transactions.append({
                 "date": p.payment_date.isoformat() if p.payment_date else p.created_at.date().isoformat(),
                 "type": "Payment",
@@ -275,7 +308,7 @@ class AccountsLedgerView(APIView):
                 "credit": float(p.amount_received)
             })
             
-        for e in Expense.objects.select_related('case', 'case__client').all():
+        for e in Expense.objects.select_related('case', 'case__client').order_by('-date')[:limit]:
             transactions.append({
                 "date": e.date.isoformat() if e.date else e.created_at.date().isoformat(),
                 "type": "Expense",
@@ -287,6 +320,8 @@ class AccountsLedgerView(APIView):
             })
 
         transactions.sort(key=lambda x: x['date'], reverse=True)
+        if len(transactions) > limit:
+            transactions = transactions[:limit]
 
         return Response({
             "total_billed":             float(total_billed),

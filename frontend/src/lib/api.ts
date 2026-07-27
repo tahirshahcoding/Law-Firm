@@ -136,3 +136,6 @@ export function parseApiError(data: any): string {
   }
   return JSON.stringify(data);
 }
+
+export { swrFetcher } from './fetcher';
+

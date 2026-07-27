@@ -49,10 +49,18 @@ class CaseReportViewSet(viewsets.ViewSet):
         """ Separate endpoint for hearing stats, still under 'cases' category """
         filters = ReportFilterSerializer(data=request.query_params)
         filters.is_valid(raise_exception=True)
-        # Use prefix since we are querying Hearings but filtering by Case attributes
-        orm_filters = filters.to_orm_filters(request.user, prefix='case__')
+        # Filter hearings by their actual hearing_date, while retaining role-based scoping on the case
+        orm_filters = filters.to_orm_filters(request.user, prefix='case__', date_field='hearings__hearing_date')
         
-        qs = Hearing.objects.filter(**orm_filters)
+        # We need to map case__assigned_to to case__assigned_to for scoping, but date to hearing_date
+        clean_filters = {}
+        for k, v in orm_filters.items():
+            if 'hearings__hearing_date' in k:
+                clean_filters[k.replace('case__hearings__', '')] = v
+            else:
+                clean_filters[k] = v
+                
+        qs = Hearing.objects.filter(**clean_filters)
         
         hearing_stages = qs.values('hearing_stage').annotate(count=Count('id')).order_by('-count')
         
@@ -84,16 +92,56 @@ class FinancialReportViewSet(viewsets.ViewSet):
     def list(self, request):
         filters = ReportFilterSerializer(data=request.query_params)
         filters.is_valid(raise_exception=True)
-        orm_filters = filters.to_orm_filters(request.user, prefix='case__')
-        
-        qs = Invoice.objects.filter(**orm_filters)
-        
-        total_billed = InvoiceItem.objects.filter(invoice__in=qs).aggregate(s=Sum('amount'))['s'] or Decimal('0.00')
-        total_collected = Payment.objects.filter(invoice__in=qs).aggregate(s=Sum('amount_received'))['s'] or Decimal('0.00')
+
+        # Build base filters from the serializer (no prefix — we'll apply them manually)
+        data = filters.validated_data
+        profile = getattr(request.user, 'profile', None)
+        role = getattr(profile, 'role', '')
+
+        # ── Shared case-level filters ─────────────────────────────────
+        case_filters = {}
+        if data.get('status'):
+            case_filters['case__status'] = data['status']
+        if data.get('court_id'):
+            case_filters['case__court_id'] = data['court_id']
+        elif data.get('court'):
+            case_filters['case__court_id'] = data['court']
+        if data.get('category'):
+            case_filters['case__category'] = data['category']
+
+        # Role scoping: low-privilege users see only their own cases
+        if role in ('Admin', 'Senior Partner', 'Manager'):
+            staff_id = data.get('staff_id') or data.get('staff')
+            if staff_id:
+                case_filters['case__assigned_to'] = staff_id
+        else:
+            case_filters['case__assigned_to'] = request.user.id
+
+        # ── Invoice query (date = issue_date) ─────────────────────────
+        inv_filters = dict(case_filters)
+        if data.get('start_date'):
+            inv_filters['issue_date__gte'] = data['start_date']
+        if data.get('end_date'):
+            inv_filters['issue_date__lte'] = data['end_date']
+        qs_invoices = Invoice.objects.filter(**inv_filters)
+
+        # ── Payment query (date = payment_date, FK path: invoice__case__) ─
+        pay_filters = {
+            k.replace('case__', 'invoice__case__'): v
+            for k, v in case_filters.items()
+        }
+        if data.get('start_date'):
+            pay_filters['payment_date__gte'] = data['start_date']
+        if data.get('end_date'):
+            pay_filters['payment_date__lte'] = data['end_date']
+        qs_payments = Payment.objects.filter(**pay_filters)
+
+        total_billed = InvoiceItem.objects.filter(invoice__in=qs_invoices).aggregate(s=Sum('amount'))['s'] or Decimal('0.00')
+        total_collected = qs_payments.aggregate(s=Sum('amount_received'))['s'] or Decimal('0.00')
         total_outstanding = total_billed - total_collected
 
         # Revenue by Category
-        category_revenue = Payment.objects.filter(invoice__in=qs).values(
+        category_revenue = qs_payments.values(
             'invoice__case__category'
         ).annotate(revenue=Sum('amount_received')).order_by('-revenue')
         
@@ -116,9 +164,10 @@ class FinancialReportViewSet(viewsets.ViewSet):
     def export_csv(self, request):
         filters = ReportFilterSerializer(data=request.query_params)
         filters.is_valid(raise_exception=True)
-        orm_filters = filters.to_orm_filters(request.user, prefix='case__')
+        inv_filters = filters.to_orm_filters(request.user, prefix='case__', date_field='invoices__issue_date')
+        clean_inv = {k.replace('case__invoices__', ''): v for k, v in inv_filters.items()}
         
-        qs = Invoice.objects.filter(**orm_filters).select_related('case__client').prefetch_related('items', 'payments')
+        qs = Invoice.objects.filter(**clean_inv).select_related('case__client').prefetch_related('items', 'payments')
         
         data = []
         for inv in qs:
@@ -161,8 +210,8 @@ class ProductivityReportViewSet(viewsets.ViewSet):
             users = users.filter(id=staff_id)
             
         case_filter = Q()
-        if start_date: case_filter &= Q(assigned_cases__created_at__gte=start_date)
-        if end_date: case_filter &= Q(assigned_cases__created_at__lte=end_date)
+        if start_date: case_filter &= Q(assigned_cases__created_at__date__gte=start_date)
+        if end_date: case_filter &= Q(assigned_cases__created_at__date__lte=end_date)
         
         deadline_filter_comp = Q(assigned_deadlines__status='Completed')
         deadline_filter_pend = Q(assigned_deadlines__status='Pending')

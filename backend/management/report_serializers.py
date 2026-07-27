@@ -9,30 +9,33 @@ class ReportFilterSerializer(serializers.Serializer):
     start_date = serializers.DateField(required=False, allow_null=True)
     end_date = serializers.DateField(required=False, allow_null=True)
     staff_id = serializers.IntegerField(required=False, allow_null=True)
+    staff = serializers.IntegerField(required=False, allow_null=True)
     status = serializers.CharField(required=False, allow_null=True, max_length=50)
     court_id = serializers.IntegerField(required=False, allow_null=True)
+    court = serializers.IntegerField(required=False, allow_null=True)
     category = serializers.CharField(required=False, allow_null=True, max_length=100)
 
-    def to_orm_filters(self, user, prefix=''):
+    def to_orm_filters(self, user, prefix='', date_field='created_at__date'):
         """
         Converts the validated filter data into Django ORM kwargs.
         Applies strict role scoping based on the requesting user.
         `prefix` allows appending these filters across relationships (e.g. 'invoice__case__')
+        `date_field` allows overriding the target field (e.g. 'issue_date' or 'payment_date')
         """
         data = self.validated_data
         filters = {}
 
         # Safe attribute mapping
         if data.get('start_date'):
-            # We map generic start_date to created_at by default, 
-            # though some reports might override this to 'date' or 'payment_date'
-            filters[f'{prefix}created_at__gte'] = data['start_date']
+            filters[f'{prefix}{date_field}__gte'] = data['start_date']
         if data.get('end_date'):
-            filters[f'{prefix}created_at__lte'] = data['end_date']
+            filters[f'{prefix}{date_field}__lte'] = data['end_date']
         if data.get('status'):
             filters[f'{prefix}status'] = data['status']
         if data.get('court_id'):
             filters[f'{prefix}court_id'] = data['court_id']
+        elif data.get('court'):
+            filters[f'{prefix}court_id'] = data['court']
         if data.get('category'):
             filters[f'{prefix}category'] = data['category']
 
@@ -44,6 +47,8 @@ class ReportFilterSerializer(serializers.Serializer):
         if role in ('Admin', 'Senior Partner', 'Manager'):
             if data.get('staff_id'):
                 filters[f'{prefix}assigned_to'] = data['staff_id']
+            elif data.get('staff'):
+                filters[f'{prefix}assigned_to'] = data['staff']
         else:
             # Low-privilege roles are forcibly scoped to their OWN ID, 
             # ignoring whatever staff_id they passed in the query params.

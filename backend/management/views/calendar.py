@@ -86,9 +86,22 @@ from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 
 class TaskViewSet(viewsets.ModelViewSet):
     required_module = 'diary'
-    queryset = Task.objects.all().order_by('is_completed', '-created_at')
     serializer_class = TaskSerializer
     permission_classes = [IsStaffUser, HasModulePermission]
+
+    def get_queryset(self):
+        qs = Task.objects.all().order_by('is_completed', '-created_at')
+        search = self.request.query_params.get('search', '').strip()
+        if search:
+            qs = qs.filter(
+                Q(title__icontains=search) |
+                Q(due_date__icontains=search)
+            ).distinct()
+        is_completed = self.request.query_params.get('is_completed')
+        if is_completed is not None and is_completed != '':
+            val = is_completed.lower() in ('true', '1', 'yes')
+            qs = qs.filter(is_completed=val)
+        return qs
 
     @transaction.atomic
     def create(self, request, *args, **kwargs):
@@ -108,8 +121,6 @@ class TaskViewSet(viewsets.ModelViewSet):
 class CalendarEventViewSet(viewsets.ModelViewSet):
     serializer_class = CalendarEventSerializer
     permission_classes = [IsStaffUser]
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['title', 'description', 'location', 'case__case_number', 'client__name']
 
     def get_queryset(self):
         qs = CalendarEvent.objects.select_related(
@@ -142,6 +153,16 @@ class CalendarEventViewSet(viewsets.ModelViewSet):
         if assigned_to_id:
             qs = qs.filter(assigned_to_id=assigned_to_id)
             
+        search = self.request.query_params.get('search', '').strip()
+        if search:
+            qs = qs.filter(
+                Q(title__icontains=search) |
+                Q(description__icontains=search) |
+                Q(location__icontains=search) |
+                Q(case__case_number__icontains=search) |
+                Q(client__name__icontains=search)
+            ).distinct()
+
         return qs
 
 
@@ -184,6 +205,18 @@ class DeadlineViewSet(viewsets.ModelViewSet):
         if deadline_type:
             qs = qs.filter(deadline_type=deadline_type)
             
+        search = self.request.query_params.get('search', '').strip()
+        if search:
+            qs = qs.filter(
+                Q(title__icontains=search) |
+                Q(description__icontains=search) |
+                Q(case__case_number__icontains=search) |
+                Q(case__client__name__icontains=search) |
+                Q(assigned_to__username__icontains=search) |
+                Q(assigned_to__first_name__icontains=search) |
+                Q(assigned_to__last_name__icontains=search)
+            ).distinct()
+
         return qs
 
     @action(detail=True, methods=['post'])

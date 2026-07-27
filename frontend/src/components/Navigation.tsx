@@ -74,21 +74,21 @@ export default function Navigation({ mobileOpen = false, onCloseMobile }: Naviga
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="w-[280px] bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex-col hidden md:flex z-10 shadow-sm dark:shadow-none shrink-0 transition-colors duration-300">
+      <aside className="w-[280px] bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex-col hidden md:flex z-10 shadow-sm dark:shadow-none shrink-0 transition-colors duration-300 print:hidden">
         <SidebarContent navGroups={navGroups} pathname={pathname} user={user} />
       </aside>
 
       {/* Mobile Backdrop */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm md:hidden print:hidden"
           onClick={onCloseMobile}
         />
       )}
 
       {/* Mobile Sidebar Drawer */}
       <aside
-        className={`fixed top-0 left-0 h-full w-[280px] bg-white dark:bg-slate-900 z-50 flex flex-col shadow-2xl transition-transform duration-300 ease-in-out md:hidden ${mobileOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed top-0 left-0 h-full w-[280px] bg-white dark:bg-slate-900 z-50 flex flex-col shadow-2xl transition-transform duration-300 ease-in-out md:hidden print:hidden ${mobileOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
       >
         <button

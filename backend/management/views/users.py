@@ -10,7 +10,7 @@ from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework import filters
 from datetime import date
 from django.db import transaction, IntegrityError
-from django.db.models import Sum, Q
+from django.db.models import Sum, Q, OuterRef, Subquery
 from django.db.models.functions import Greatest, TruncMonth
 from django.contrib.postgres.search import TrigramSimilarity
 from django.contrib.auth.models import User
@@ -368,29 +368,37 @@ class ClientPortalView(APIView):
             return _error("Only clients can access this portal.", status.HTTP_403_FORBIDDEN)
 
         client   = user.client_profile
-        cases    = Case.objects.filter(client=client).select_related('client').order_by('-created_at')
+        cases    = Case.objects.filter(client=client).select_related('client', 'court', 'judge').order_by('-created_at')
+        
+        previous_hearing = Hearing.objects.filter(
+            case=OuterRef('case'),
+            hearing_date__lt=OuterRef('hearing_date')
+        ).order_by('-hearing_date').values('hearing_date')[:1]
+
         hearings = (
             Hearing.objects
             .filter(case__client=client)
-            .select_related('case', 'case__client')
+            .select_related('case', 'case__client', 'case__court', 'case__judge', 'case__assigned_to')
+            .prefetch_related('documents')
+            .annotate(annotated_previous_date=Subquery(previous_hearing))
             .order_by('hearing_date')
         )
         invoices = (
             Invoice.objects
             .filter(case__client=client)
-            .select_related('case', 'case__client')
+            .select_related('case', 'case__client', 'case__court')
             .order_by('-issue_date')
         )
         payments = (
             Payment.objects
             .filter(invoice__case__client=client)
-            .select_related('invoice__case', 'invoice__case__client')
+            .select_related('invoice__case', 'invoice__case__client', 'invoice__case__court')
             .order_by('-payment_date')
         )
         timelines = (
             CaseTimeline.objects
             .filter(case__client=client)
-            .select_related('case')
+            .select_related('case', 'actor')
             .order_by('-timestamp')
         )
 
@@ -413,20 +421,18 @@ class ClientViewSet(viewsets.ModelViewSet):
     required_module = 'clients'
     serializer_class = ClientSerializer
     permission_classes = [IsStaffUser, HasModulePermission]
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['name', 'cnic', 'client_number', 'cases__case_number']
 
     def get_queryset(self):
-        qs = Client.objects.all().order_by('-created_at')
+        qs = Client.objects.select_related('user').all().order_by('-created_at')
         search = self.request.query_params.get('search', '').strip()
         if search:
-            qs = qs.annotate(
-                similarity=Greatest(
-                    TrigramSimilarity('name', search),
-                    TrigramSimilarity('cnic', search),
-                    TrigramSimilarity('client_number', search),
-                )
-            ).filter(similarity__gt=0.1).order_by('-similarity')
+            qs = qs.filter(
+                Q(name__icontains=search) |
+                Q(cnic__icontains=search) |
+                Q(client_number__icontains=search) |
+                Q(mobile_number__icontains=search) |
+                Q(cases__case_number__icontains=search)
+            ).distinct()
         return qs
 
     @staticmethod
@@ -550,9 +556,24 @@ class ClientChangePasswordView(APIView):
 
 class ConsultationViewSet(viewsets.ModelViewSet):
     required_module = 'consultations'
-    queryset = ConsultationRequest.objects.all().order_by('-created_at')
     serializer_class = ConsultationRequestSerializer
     throttle_scope = 'consultation'
+
+    def get_queryset(self):
+        qs = ConsultationRequest.objects.all().order_by('-created_at')
+        status_param = self.request.query_params.get('status')
+        if status_param and status_param != 'All':
+            qs = qs.filter(status=status_param)
+        search = self.request.query_params.get('search', '').strip()
+        if search:
+            qs = qs.filter(
+                Q(name__icontains=search) |
+                Q(email__icontains=search) |
+                Q(phone__icontains=search) |
+                Q(inquiry_type__icontains=search) |
+                Q(message__icontains=search)
+            ).distinct()
+        return qs
 
     def get_permissions(self):
         if self.request.method == 'POST':

@@ -64,8 +64,11 @@ class ReportPermission(BasePermission):
         if not category:
             return False # Fail safe
             
-        if category in ('financial', 'staff_productivity'):
+        if category == 'financial':
             if role not in ('Admin', 'Senior Partner', 'Accountant'):
+                return False
+        elif category == 'staff_productivity':
+            if role not in ('Admin', 'Senior Partner', 'Manager'):
                 return False
                 
         # All staff roles can view 'cases', 'hearings', etc.

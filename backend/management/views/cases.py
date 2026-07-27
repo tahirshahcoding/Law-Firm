@@ -88,8 +88,6 @@ class CaseViewSet(viewsets.ModelViewSet):
     required_module = 'cases'
     serializer_class = CaseSerializer
     permission_classes = [IsStaffUser, HasModulePermission]
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['case_number', 'opponent_name', 'court__name']
 
     def get_queryset(self):
         qs = Case.objects.all().select_related('client', 'assigned_to', 'court', 'judge').order_by('-created_at')
@@ -111,14 +109,13 @@ class CaseViewSet(viewsets.ModelViewSet):
 
         search = self.request.query_params.get('search', '').strip()
         if search:
-            qs = qs.annotate(
-                similarity=Greatest(
-                    TrigramSimilarity('case_number', search),
-                    TrigramSimilarity('opponent_name', search),
-                    TrigramSimilarity('court__name', search),
-                    TrigramSimilarity('client__name', search),
-                )
-            ).filter(similarity__gt=0.1).order_by('-similarity')
+            qs = qs.filter(
+                Q(case_number__icontains=search) |
+                Q(opponent_name__icontains=search) |
+                Q(client__name__icontains=search) |
+                Q(court__name__icontains=search) |
+                Q(judge__name__icontains=search)
+            ).distinct()
         return qs
 
     @transaction.atomic
@@ -248,6 +245,15 @@ class HearingViewSet(viewsets.ModelViewSet):
         if year:
             qs = qs.filter(hearing_date__year=year)
 
+        search = self.request.query_params.get('search', '').strip()
+        if search:
+            qs = qs.filter(
+                Q(case__case_number__icontains=search) |
+                Q(case__opponent_name__icontains=search) |
+                Q(case__client__name__icontains=search) |
+                Q(notes__icontains=search)
+            ).distinct()
+
         return qs
 
     @transaction.atomic
@@ -337,11 +343,24 @@ class HearingDocumentViewSet(viewsets.ModelViewSet):
 
 class CourtViewSet(viewsets.ModelViewSet):
     required_module = 'courts'
-    queryset = Court.objects.all().order_by('name')
     serializer_class = CourtSerializer
     permission_classes = [IsStaffUser, HasModulePermission]
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['name', 'type', 'district', 'tehsil']
+
+    def get_queryset(self):
+        from django.db.models import OuterRef, Subquery
+        from management.models import Judge
+        first_judge = Judge.objects.filter(court=OuterRef('pk')).order_by('name').values('name')[:1]
+        qs = Court.objects.annotate(annotated_judge=Subquery(first_judge)).all().order_by('name')
+        search = self.request.query_params.get('search', '').strip()
+        if search:
+            qs = qs.filter(
+                Q(name__icontains=search) |
+                Q(type__icontains=search) |
+                Q(district__icontains=search) |
+                Q(tehsil__icontains=search) |
+                Q(court_room__icontains=search)
+            ).distinct()
+        return qs
 
     def destroy(self, request, *args, **kwargs):
         from django.db.models import RestrictedError, ProtectedError
@@ -352,11 +371,22 @@ class CourtViewSet(viewsets.ModelViewSet):
 
 class JudgeViewSet(viewsets.ModelViewSet):
     required_module = 'judges'
-    queryset = Judge.objects.all().order_by('name')
     serializer_class = JudgeSerializer
     permission_classes = [IsStaffUser, HasModulePermission]
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['name', 'court__name']
+
+    def get_queryset(self):
+        qs = Judge.objects.select_related('court').all().order_by('name')
+        search = self.request.query_params.get('search', '').strip()
+        if search:
+            qs = qs.filter(
+                Q(name__icontains=search) |
+                Q(court__name__icontains=search) |
+                Q(designation__icontains=search)
+            ).distinct()
+        court_id = self.request.query_params.get('court')
+        if court_id:
+            qs = qs.filter(court_id=court_id)
+        return qs
 
     def destroy(self, request, *args, **kwargs):
         from django.db.models import RestrictedError, ProtectedError

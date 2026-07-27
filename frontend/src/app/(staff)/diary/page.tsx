@@ -21,7 +21,7 @@ export default function DailyDiaryPage() {
   
   const tasks = Array.isArray(tasksData) ? tasksData : (tasksData?.results || []);
   const rawHearings = Array.isArray(hearingsData) ? hearingsData : (hearingsData?.results || []);
-  const hearings = [...rawHearings].sort((a: any, b: any) => a.case_title?.localeCompare(b.case_title));
+  const hearings = [...rawHearings].sort((a: any, b: any) => (a.case_number || '').localeCompare(b.case_number || ''));
 
   const fetchTasksAndHearings = () => {
     mutateTasks();

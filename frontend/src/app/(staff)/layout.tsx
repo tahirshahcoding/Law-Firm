@@ -48,7 +48,7 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
 
   const fetchNotifications = async () => {
     try {
-      const res = await apiFetch(`${API_BASE}/notifications/`);
+      const res = await apiFetch(`${API_BASE}/notifications/?limit=20`);
       if (res.ok) {
         const data = await res.json();
         const results = Array.isArray(data) ? data : (data.results || []);
@@ -132,9 +132,9 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
         mobileOpen={mobileNavOpen}
         onCloseMobile={() => setMobileNavOpen(false)}
       />
-      <main className="flex-1 flex flex-col overflow-y-auto relative bg-[#F8FAFC] dark:bg-slate-950 min-w-0 transition-colors duration-300 print:overflow-visible print:h-auto print:block">
+      <main className="flex-1 flex flex-col overflow-y-auto relative bg-[#F8FAFC] dark:bg-slate-950 min-w-0 transition-colors duration-300 print:overflow-visible print:h-auto print:block print:bg-white print:p-0 print:m-0">
         {/* ── Top Bar ──────────────────────────────────────────── */}
-        <div className="min-h-[88px] bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-blue-100/50 dark:border-slate-800/80 flex items-center px-4 md:px-8 pt-4 pb-2 sticky top-0 z-20 gap-3 shadow-[0_4px_24px_-12px_rgba(37,99,235,0.08)] dark:shadow-none transition-colors duration-300">
+        <div className="min-h-[88px] bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-blue-100/50 dark:border-slate-800/80 flex items-center px-4 md:px-8 pt-4 pb-2 sticky top-0 z-20 gap-3 shadow-[0_4px_24px_-12px_rgba(37,99,235,0.08)] dark:shadow-none transition-colors duration-300 print:hidden">
           {/* Hamburger - mobile only */}
           <button
             className="md:hidden p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-800 dark:hover:text-slate-200 transition-colors shrink-0"
@@ -171,6 +171,7 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
               <input type="text" placeholder="Search anything..." className="pl-10 pr-4 py-2.5 w-[280px] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500 shadow-sm" />
             </div>
             
+
 
 
             <button 
@@ -305,7 +306,7 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
         </div>
 
         {/* Page Content */}
-        <div className="p-4 sm:p-6 lg:p-8 w-full max-w-[1600px] mx-auto">
+        <div className="p-4 sm:p-6 lg:p-8 w-full max-w-[1600px] mx-auto print:p-0 print:max-w-none print:w-full print:m-0">
           {children}
         </div>
       </main>

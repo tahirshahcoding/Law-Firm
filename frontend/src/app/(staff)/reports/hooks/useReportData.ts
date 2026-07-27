@@ -1,31 +1,39 @@
-import { useState, useCallback } from 'react';
-import { apiFetch, API_BASE, safeJson, parseApiError } from '@/lib/api';
+import { useState, useMemo } from 'react';
+import useSWR from 'swr';
+import { API_BASE } from '@/lib/api';
+import { swrFetcher } from '@/lib/fetcher';
 
 export function useReportData(endpoint: string) {
-  const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [filters, setFilters] = useState<Record<string, any> | null>(null);
 
-  const fetchReport = useCallback(async (filters: Record<string, any>) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const params = new URLSearchParams();
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value) params.append(key, String(value));
-      });
-      const response = await apiFetch(`${API_BASE}/reports/${endpoint}/?${params.toString()}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch report data.');
+  const queryString = useMemo(() => {
+    if (filters === null) return null;
+    const params = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        params.append(key, String(value));
       }
-      const jsonData = await safeJson(response);
-      setData(jsonData);
-    } catch (err: any) {
-      setError(err.message || parseApiError(err) || 'Failed to fetch report data. You may not have permission.');
-    } finally {
-      setLoading(false);
-    }
-  }, [endpoint]);
+    });
+    return params.toString();
+  }, [filters]);
 
-  return { data, loading, error, fetchReport };
+  // Only fetch when filters have been explicitly set via fetchReport()
+  const url = queryString !== null ? `${API_BASE}/reports/${endpoint}/?${queryString}` : null;
+
+  const { data, error, isLoading, mutate } = useSWR(url, swrFetcher, {
+    revalidateOnFocus: false,
+    keepPreviousData: true,
+  });
+
+  const fetchReport = (newFilters: Record<string, any>) => {
+    setFilters(newFilters || {});
+  };
+
+  return {
+    data,
+    loading: isLoading,
+    error: error ? (error.message || 'Failed to fetch report data. You may not have permission.') : null,
+    fetchReport,
+    mutate
+  };
 }

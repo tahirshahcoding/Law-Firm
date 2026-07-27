@@ -9,7 +9,7 @@ import { API_BASE, apiFetch } from '@/lib/api';
 import { ListSkeleton, TableRowSkeleton } from '@/components/SkeletonLoaders';
 
 export function DailyTasks() {
-  const { data, isLoading: loading, mutate } = useSWR(`${API_BASE}/tasks/`, swrFetcher);
+  const { data, isLoading: loading, mutate } = useSWR(`${API_BASE}/tasks/?is_completed=false&limit=10`, swrFetcher);
   const tasksData = Array.isArray(data) ? data : (data?.results || []);
   const tasks: any[] = tasksData.filter((t: any) => !t.is_completed).slice(0, 5);
 
@@ -81,7 +81,7 @@ export function DailyTasks() {
 }
 
 export function RecentActivity() {
-  const { data, isLoading: loading } = useSWR(`${API_BASE}/audit-log/`, swrFetcher);
+  const { data, isLoading: loading } = useSWR(`${API_BASE}/audit-log/?limit=10`, swrFetcher);
   const logs = Array.isArray(data) ? data : (data?.results || []);
   const activities: any[] = logs.slice(0, 5);
 

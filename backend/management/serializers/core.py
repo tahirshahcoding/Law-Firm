@@ -4,9 +4,16 @@ from management.models import Court, Judge, Notification, UserProfile
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 class CourtSerializer(serializers.ModelSerializer):
+    judge = serializers.SerializerMethodField()
+
     class Meta:
         model = Court
         fields = '__all__'
+
+    def get_judge(self, obj):
+        if hasattr(obj, 'annotated_judge') and obj.annotated_judge:
+            return obj.annotated_judge
+        return "---"
 
 class JudgeSerializer(serializers.ModelSerializer):
     court_name = serializers.CharField(source='court.name', read_only=True)

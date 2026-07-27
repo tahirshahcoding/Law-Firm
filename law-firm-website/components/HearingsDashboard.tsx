@@ -27,7 +27,7 @@ export default function HearingsDashboard() {
       let baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/';
       if (!baseUrl.endsWith('/')) baseUrl += '/';
       
-      const param = timeframe === 'all' ? '' : `?timeframe=${timeframe}`;
+      const param = timeframe === 'all' ? '?limit=1000' : `?timeframe=${timeframe}&limit=1000`;
       
       // Prevent /apiapi/ or /api/api/ if NEXT_PUBLIC_API_URL already includes /api
       const apiPrefix = baseUrl.endsWith('/api/') ? '' : 'api/';

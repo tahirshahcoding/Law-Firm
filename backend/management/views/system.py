@@ -14,7 +14,8 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import filters
 from datetime import date
 from django.db import transaction, IntegrityError
-from django.db.models import Sum, Q
+from django.db.models import Sum, Q, Count
+from django.core.cache import cache
 from django.db.models.functions import Greatest, TruncMonth
 from django.contrib.postgres.search import TrigramSimilarity
 from django.contrib.auth.models import User
@@ -90,16 +91,32 @@ class DailyDiaryView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
+        from django.db.models import OuterRef, Subquery
         role = getattr(getattr(request.user, 'profile', None), 'role', '')
         if role == 'Accountant':
             return _error("Forbidden", status.HTTP_403_FORBIDDEN)
 
-        today    = date.today()
+        date_param = request.query_params.get('date', '').strip()
+        if date_param:
+            try:
+                target_date = date.fromisoformat(date_param)
+            except ValueError:
+                target_date = date.today()
+        else:
+            target_date = date.today()
+
+        previous_hearing = Hearing.objects.filter(
+            case=OuterRef('case'),
+            hearing_date__lt=OuterRef('hearing_date')
+        ).order_by('-hearing_date').values('hearing_date')[:1]
+
         hearings = (
             Hearing.objects
-            .filter(hearing_date=today)
+            .filter(hearing_date=target_date)
             .select_related('case', 'case__client', 'case__court', 'case__judge', 'case__assigned_to')
             .prefetch_related('documents')
+            .annotate(annotated_previous_date=Subquery(previous_hearing))
+            .order_by('case__case_number')
         )
         if role == 'Associate':
             hearings = hearings.filter(case__assigned_to=request.user)
@@ -113,24 +130,34 @@ class DashboardStatsView(APIView):
 
     def get(self, request):
         today = date.today()
-        role = getattr(getattr(request.user, 'profile', None), 'role', '')
-        perms = getattr(getattr(request.user, 'profile', None), 'permissions', {})
+        user = request.user
+        role = getattr(getattr(user, 'profile', None), 'role', '')
+        perms = getattr(getattr(user, 'profile', None), 'permissions', {})
         has_accounts_view = role == 'Admin' or role == 'Accountant' or perms.get('accounts', {}).get('view', False) or perms.get('reports', {}).get('view', False)
 
-        # Base response for all users
+        cache_key = f"dashboard_stats_{user.id}_{today.isoformat()}"
+        cached_data = cache.get(cache_key)
+        if cached_data is not None:
+            return Response(cached_data, status=status.HTTP_200_OK)
+
+        case_stats = Case.objects.aggregate(
+            active=Count('id', filter=~Q(status__istartswith='Closed') & ~Q(status__iexact='Archived') & ~Q(status__icontains='Pending') & ~Q(status__iexact='Consultation')),
+            closed=Count('id', filter=Q(status__istartswith='Closed') | Q(status__iexact='Archived')),
+            pending=Count('id', filter=Q(status__icontains='Pending') | Q(status__iexact='Consultation')),
+        )
+
         response_data = {
-            "active_cases":    Case.objects.exclude(Q(status__istartswith='Closed') | Q(status__iexact='Archived') | Q(status__icontains='Pending') | Q(status__iexact='Consultation')).count(),
-            "closed_cases":    Case.objects.filter(Q(status__istartswith='Closed') | Q(status__iexact='Archived')).count(),
-            "pending_cases":   Case.objects.filter(Q(status__icontains='Pending') | Q(status__iexact='Consultation')).count(),
+            "active_cases":    case_stats['active'] or 0,
+            "closed_cases":    case_stats['closed'] or 0,
+            "pending_cases":   case_stats['pending'] or 0,
             "total_clients":   Client.objects.count(),
             "todays_hearings": Hearing.objects.filter(hearing_date=today).count(),
-            "pending_tasks":   Task.objects.filter(is_completed=False).count() if role == 'Admin' else Task.objects.filter(is_completed=False, assigned_to=request.user).count(),
-            "total_revenue":   0, # Default to 0 for unauthorized users
+            "pending_tasks":   Task.objects.filter(is_completed=False).count() if role == 'Admin' else Task.objects.filter(is_completed=False, assigned_to=user).count(),
+            "total_revenue":   0.0, # Default to 0.0 for unauthorized users
             "unread_messages": Message.objects.filter(sender_type='Client', is_read=False).count(),
         }
 
         if has_accounts_view:
-            response_data["total_revenue"] = Payment.objects.aggregate(total=Sum('amount_received'))['total'] or 0
             current_month_billed = Invoice.objects.filter(
                 issue_date__year=today.year,
                 issue_date__month=today.month
@@ -175,6 +202,7 @@ class DashboardStatsView(APIView):
                 for c in reversed(list(monthly_collections))
             ]
 
+            response_data["total_revenue"] = float(overall_collected)
             response_data["accounts_stats"] = {
                 "current_month_billed":    float(current_month_billed),
                 "current_month_collected": float(current_month_collected),
@@ -185,6 +213,7 @@ class DashboardStatsView(APIView):
                 "collections_trend":       collections_trend,
             }
 
+        cache.set(cache_key, response_data, timeout=60)
         return Response(response_data, status=status.HTTP_200_OK)
 
 
@@ -198,6 +227,15 @@ class AuditLogView(APIView):
             return _error("Forbidden", status.HTTP_403_FORBIDDEN)
 
         period = request.query_params.get('period', 'all')
+        try:
+            limit_param = int(request.query_params.get('limit', 100))
+        except ValueError:
+            limit_param = 100
+
+        cache_key = f"audit_log_{period}_{limit_param}"
+        cached_logs = cache.get(cache_key)
+        if cached_logs is not None:
+            return Response(cached_logs, status=status.HTTP_200_OK)
         
         from django.utils import timezone
         from datetime import timedelta
@@ -212,17 +250,22 @@ class AuditLogView(APIView):
             date_filter = now - timedelta(days=30)
 
         logs = []
-        models_to_audit = [
-            Client, Case, Hearing, Invoice, Deadline, 
-            Payment, Expense, Task, ConsultationRequest, CalendarEvent, CaseTimeline
-        ]
+        if limit_param <= 15:
+            models_to_audit = [Client, Case, Hearing, Payment, Invoice, Deadline, Task]
+            slice_count = 10
+        else:
+            models_to_audit = [
+                Client, Case, Hearing, Invoice, Deadline, 
+                Payment, Expense, Task, ConsultationRequest, CalendarEvent, CaseTimeline
+            ]
+            slice_count = 100
         
         for model in models_to_audit:
             qs = model.history.all().select_related('history_user').order_by('-history_date')
             if date_filter:
                 qs = qs.filter(history_date__gte=date_filter)
                 
-            for record in qs[:100]:
+            for record in qs[:slice_count]:
                 action_label = (
                     'Created' if record.history_type == '+' else
                     'Updated' if record.history_type == '~' else
@@ -258,33 +301,34 @@ class AuditLogView(APIView):
                     'details': f"{action_label} {model.__name__} {ident}",
                 })
 
-        # Append backup logs if they exist
-        import os, json
-        backup_log_path = os.path.join(settings.MEDIA_ROOT, 'backups', 'backup_logs.json')
-        if os.path.exists(backup_log_path):
-            try:
-                with open(backup_log_path, 'r') as f:
-                    backup_logs = json.load(f)
-                    
-                for entry in backup_logs:
-                    entry_date = timezone.datetime.fromisoformat(entry['date'])
-                    if date_filter and entry_date < date_filter:
-                        continue
+        if limit_param > 15:
+            import os, json
+            backup_log_path = os.path.join(str(settings.MEDIA_ROOT), 'backups', 'backup_logs.json')
+            if os.path.exists(backup_log_path):
+                try:
+                    with open(backup_log_path, 'r') as f:
+                        backup_logs = json.load(f)
                         
-                    logs.append({
-                        'id': f"sys_{entry['id']}",
-                        'model': 'System',
-                        'action': entry['action'],
-                        'user': entry['user'],
-                        'date': entry_date,
-                        'details': entry['details']
-                    })
-            except Exception:
-                pass
+                    for entry in backup_logs:
+                        entry_date = timezone.datetime.fromisoformat(entry['date'])
+                        if date_filter and entry_date < date_filter:
+                            continue
+                            
+                        logs.append({
+                            'id': f"sys_{entry['id']}",
+                            'model': 'System',
+                            'action': entry['action'],
+                            'user': entry['user'],
+                            'date': entry_date,
+                            'details': entry['details']
+                        })
+                except Exception:
+                    pass
 
         logs.sort(key=lambda x: x['date'], reverse=True)
-        limit = 500 if date_filter else 100
-        return Response(logs[:limit], status=status.HTTP_200_OK)
+        final_logs = logs[:limit_param]
+        cache.set(cache_key, final_logs, timeout=60)
+        return Response(final_logs, status=status.HTTP_200_OK)
 
 
 # ── System Ping (Keep-alive) ──────────────────────────────────────────────────
@@ -315,7 +359,7 @@ def log_backup_action(action, user, details):
     from django.utils import timezone
     from django.conf import settings
     
-    backup_dir = os.path.join(settings.MEDIA_ROOT, 'backups')
+    backup_dir = os.path.join(str(settings.MEDIA_ROOT), 'backups')
     os.makedirs(backup_dir, exist_ok=True)
     log_path = os.path.join(backup_dir, 'backup_logs.json')
     
@@ -347,7 +391,7 @@ class BackupDatabaseView(APIView):
     parser_classes = [MultiPartParser, JSONParser]
 
     def get_backup_dir(self):
-        backup_dir = os.path.join(settings.MEDIA_ROOT, 'backups')
+        backup_dir = os.path.join(str(settings.MEDIA_ROOT), 'backups')
         os.makedirs(backup_dir, exist_ok=True)
         return backup_dir
 
@@ -451,7 +495,14 @@ class NotificationViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        return Notification.objects.filter(Q(user=user) | Q(user__isnull=True)).order_by('-created_at')
+        qs = Notification.objects.filter(Q(user=user) | Q(user__isnull=True)).order_by('-created_at')
+        limit = self.request.query_params.get('limit')
+        if limit:
+            try:
+                return qs[:int(limit)]
+            except ValueError:
+                pass
+        return qs[:50]
 
     @action(detail=False, methods=['post'])
     def mark_all_read(self, request):

@@ -24,7 +24,7 @@ class HearingSerializer(serializers.ModelSerializer):
     district = serializers.CharField(source='case.court.district', read_only=True)
     tehsil = serializers.CharField(source='case.court.tehsil', read_only=True)
     court = serializers.CharField(source='case.court.name', read_only=True)
-    judge = serializers.CharField(source='case.court.judge', read_only=True)
+    judge = serializers.CharField(source='case.judge.name', read_only=True, default=None)
     client_name = serializers.CharField(source='case.client.name', read_only=True)
     client_number = serializers.CharField(source='case.client.client_number', read_only=True)
     advocate_name = serializers.SerializerMethodField()

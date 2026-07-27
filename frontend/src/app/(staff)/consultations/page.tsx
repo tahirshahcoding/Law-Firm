@@ -7,6 +7,7 @@ import { useUI } from '@/context/UIContext';
 import { ListSkeleton } from '@/components/SkeletonLoaders';
 import useSWR from 'swr';
 import { swrFetcher } from '@/lib/fetcher';
+import { useDebounce } from '@/hooks/useDebounce';
 
 type Consultation = {
   id: string;
@@ -28,11 +29,15 @@ const STATUS_STYLES: Record<string, string> = {
 
 export default function ConsultationsPage() {
   const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearch = useDebounce(searchTerm, 300);
   const [filterStatus, setFilterStatus] = useState('All');
   const [expanded, setExpanded] = useState<string | null>(null);
   const { confirm, toast, showLoading, hideLoading } = useUI();
 
-  const { data, isLoading: loading, mutate: fetchConsultations } = useSWR(`${API_BASE}/consultations/`, swrFetcher);
+  const query = new URLSearchParams({ limit: '1000' });
+  if (debouncedSearch) query.append('search', debouncedSearch);
+
+  const { data, isLoading: loading, mutate: fetchConsultations } = useSWR(`${API_BASE}/consultations/?${query.toString()}`, swrFetcher);
   const consultations: Consultation[] = Array.isArray(data) ? data : data?.results || [];
 
   const handleStatusChange = async (id: string, newStatus: string) => {

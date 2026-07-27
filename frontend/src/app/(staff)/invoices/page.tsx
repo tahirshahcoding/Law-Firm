@@ -10,6 +10,7 @@ import InvoiceDrawer from '@/components/finance/InvoiceDrawer';
 import { TableRowSkeleton } from '@/components/SkeletonLoaders';
 const NewInvoiceModal = dynamic(() => import('@/components/finance/NewInvoiceModal'), { ssr: false });
 import { useInvoices } from '@/hooks/api/useInvoices';
+import { useDebounce } from '@/hooks/useDebounce';
 
 const STATUSES = ['All', 'Unpaid', 'Partial', 'Paid', 'Overdue'];
 
@@ -21,6 +22,7 @@ function fmtDate(d: string | null) {
 
 export default function InvoicesPage() {
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebounce(search, 300);
   const [statusFilter, setStatusFilter] = useState('All');
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   const [showNewModal, setShowNewModal] = useState(false);
@@ -30,7 +32,7 @@ export default function InvoicesPage() {
 
   const { invoices, isLoading: loading, mutate } = useInvoices({
     limit: 1000,
-    search,
+    search: debouncedSearch,
     enabled: canManage || true, // Allow viewing for all authorized if API permits, or check permissions
   });
 

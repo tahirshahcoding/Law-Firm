@@ -20,6 +20,8 @@ def sync_hearing_event(sender, instance, **kwargs):
     if not instance.hearing_date:
         CalendarEvent.objects.filter(reference_hearing=instance).delete()
         return
+    if instance.case_id and not Case.objects.filter(pk=instance.case_id).exists():
+        return
     start_dt = timezone.make_aware(datetime.combine(instance.hearing_date, instance.hearing_time or time(9, 0)))
     CalendarEvent.objects.update_or_create(
         reference_hearing=instance,
@@ -42,6 +44,10 @@ def sync_task_event(sender, instance, **kwargs):
     if not instance.due_date:
         CalendarEvent.objects.filter(reference_task=instance).delete()
         return
+    if instance.case_id and not Case.objects.filter(pk=instance.case_id).exists():
+        return
+    if instance.client_id and not Client.objects.filter(pk=instance.client_id).exists():
+        return
     start_dt = timezone.make_aware(datetime.combine(instance.due_date, time(0, 0)))
     CalendarEvent.objects.update_or_create(
         reference_task=instance,
@@ -57,6 +63,8 @@ def sync_task_event(sender, instance, **kwargs):
 def sync_invoice_event(sender, instance, **kwargs):
     if not instance.due_date or instance.status == 'Paid':
         CalendarEvent.objects.filter(reference_invoice=instance).delete()
+        return
+    if instance.case_id and not Case.objects.filter(pk=instance.case_id).exists():
         return
     start_dt = timezone.make_aware(datetime.combine(instance.due_date, time(0, 0)))
     CalendarEvent.objects.update_or_create(
@@ -92,6 +100,10 @@ def sync_consultation_event(sender, instance, **kwargs):
 def sync_case_filing_event(sender, instance, **kwargs):
     if not instance.filing_deadline:
         CalendarEvent.objects.filter(case=instance, event_type='Filing Deadline').delete()
+        return
+    if not Case.objects.filter(pk=instance.pk).exists():
+        return
+    if instance.client_id and not Client.objects.filter(pk=instance.client_id).exists():
         return
     start_dt = timezone.make_aware(datetime.combine(instance.filing_deadline, time(0, 0)))
     CalendarEvent.objects.update_or_create(
@@ -149,9 +161,14 @@ def notify_payment_received(sender, instance, created, **kwargs):
         for admin in admin_users:
             Notification.objects.create(user=admin, title="Payment Received", message=f"Rs {instance.amount_received} received for {instance.invoice.case.case_number}.", type="success")
 
-@receiver([post_save, post_delete], sender=InvoiceItem)
+@receiver(post_save, sender=InvoiceItem)
 def update_invoice_status_on_item_change(sender, instance, **kwargs):
-    invoice = instance.invoice
+    try:
+        invoice = Invoice.objects.get(pk=instance.invoice_id)
+    except (Invoice.DoesNotExist, AttributeError):
+        return
+    if invoice.case_id and not Case.objects.filter(pk=invoice.case_id).exists():
+        return
     total = invoice.total_amount
     paid = invoice.paid_amount
     if total == 0 or paid == 0:
@@ -168,6 +185,8 @@ def update_invoice_status_on_item_change(sender, instance, **kwargs):
 @receiver(post_save, sender=Hearing)
 def auto_create_hearing_deadline(sender, instance, created, **kwargs):
     if created and not getattr(instance, '_auto_deadline_created', False):
+        if instance.case_id and not Case.objects.filter(pk=instance.case_id).exists():
+            return
         instance._auto_deadline_created = True
         Deadline.objects.create(
             title=f"Prepare for Hearing: {instance.hearing_stage}",
@@ -184,6 +203,8 @@ def auto_create_hearing_deadline(sender, instance, created, **kwargs):
 @receiver(post_save, sender=Invoice)
 def auto_create_invoice_deadline(sender, instance, created, **kwargs):
     if created and not getattr(instance, '_auto_deadline_created', False):
+        if instance.case_id and not Case.objects.filter(pk=instance.case_id).exists():
+            return
         instance._auto_deadline_created = True
         Deadline.objects.create(
             title=f"Payment Due: {instance.invoice_number}",
@@ -196,3 +217,21 @@ def auto_create_invoice_deadline(sender, instance, created, **kwargs):
             description=f"Auto-generated deadline for invoice payment. Amount: {instance.total_amount}",
             reminders=[3, 1]
         )
+
+from django.core.cache import cache
+
+@receiver([post_save, post_delete], sender=Case)
+@receiver([post_save, post_delete], sender=Client)
+@receiver([post_save, post_delete], sender=Hearing)
+@receiver([post_save, post_delete], sender=Task)
+@receiver([post_save, post_delete], sender=Payment)
+@receiver([post_save, post_delete], sender=Invoice)
+@receiver([post_save, post_delete], sender=Deadline)
+def invalidate_dashboard_and_audit_cache(sender, instance, **kwargs):
+    cache.clear()
+
+@receiver([post_save, post_delete], sender=User)
+@receiver([post_save, post_delete], sender=UserProfile)
+def invalidate_user_auth_cache(sender, instance, **kwargs):
+    user_id = instance.user_id if isinstance(instance, UserProfile) else instance.id
+    cache.delete(f"jwt_auth_user_{user_id}")

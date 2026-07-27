@@ -12,9 +12,11 @@ import { useUI } from '@/context/UIContext';
 import { TableSkeleton } from '@/components/SkeletonLoaders';
 import useSWR from 'swr';
 import { swrFetcher } from '@/lib/fetcher';
+import { useDebounce } from '@/hooks/useDebounce';
 
 export default function HearingsPage() {
   const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
   
   // Modals state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -31,7 +33,12 @@ export default function HearingsPage() {
   const canEditHearings   = user?.role === 'Admin' || user?.permissions?.hearings?.edit === true;
   const canDeleteHearings = user?.role === 'Admin' || user?.permissions?.hearings?.delete === true;
 
-  const { data, error, isLoading: loading, mutate: fetchHearings } = useSWR(canViewHearings ? `${API_BASE}/hearings/` : null, swrFetcher);
+  let url = `${API_BASE}/hearings/?limit=1000`;
+  if (debouncedSearchTerm.trim()) {
+    url += `&search=${encodeURIComponent(debouncedSearchTerm.trim())}`;
+  }
+
+  const { data, error, isLoading: loading, mutate: fetchHearings } = useSWR(canViewHearings ? url : null, swrFetcher);
 
   const hearingsData = data && Array.isArray(data.results) ? data.results : Array.isArray(data) ? data : [];
   const hearings = [...hearingsData].sort((a: any, b: any) => new Date(a.hearing_date).getTime() - new Date(b.hearing_date).getTime());

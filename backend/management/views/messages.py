@@ -28,7 +28,7 @@ class MessageSerializer(serializers.ModelSerializer):
 from .users import IsStaffUser
 
 class MessageViewSet(viewsets.ModelViewSet):
-    queryset = Message.objects.all().select_related('client', 'staff_sender')
+    queryset = Message.objects.all().select_related('client', 'staff_sender', 'reply_to')
     serializer_class = MessageSerializer
     permission_classes = [IsStaffUser]
 
@@ -38,6 +38,9 @@ class MessageViewSet(viewsets.ModelViewSet):
         client_id = self.request.query_params.get('client_id')
         if client_id:
             queryset = queryset.filter(client_id=client_id)
+        search = self.request.query_params.get('search', '').strip()
+        if search:
+            queryset = queryset.filter(content__icontains=search)
         return queryset
 
     def perform_create(self, serializer):
@@ -47,24 +50,39 @@ class MessageViewSet(viewsets.ModelViewSet):
     def conversations(self, request):
         """
         Returns a list of clients who have messages, annotated with their latest message details
-        and unread counts.
+        and unread counts in a single optimized SQL query.
         """
-        clients = Client.objects.filter(messages__isnull=False).distinct()
+        from django.db.models import OuterRef, Subquery, Count, Q
         
-        data = []
-        for client in clients:
-            latest_message = Message.objects.filter(client=client).order_by('-created_at').first()
-            unread_count = Message.objects.filter(client=client, sender_type='Client', is_read=False).count()
-            
-            data.append({
-                'client_id': client.id,
-                'client_name': client.name,
-                'latest_message': latest_message.content if latest_message else '',
-                'latest_message_time': latest_message.created_at if latest_message else None,
-                'unread_count': unread_count,
-            })
-            
-        data.sort(key=lambda x: x['latest_message_time'] or '', reverse=True)
+        latest_content_subquery = Message.objects.filter(
+            client=OuterRef('pk')
+        ).order_by('-created_at').values('content')[:1]
+
+        latest_time_subquery = Message.objects.filter(
+            client=OuterRef('pk')
+        ).order_by('-created_at').values('created_at')[:1]
+
+        clients = (
+            Client.objects.filter(messages__isnull=False)
+            .annotate(
+                latest_message_content=Subquery(latest_content_subquery),
+                latest_message_time=Subquery(latest_time_subquery),
+                unread_count=Count('messages', filter=Q(messages__sender_type='Client', messages__is_read=False))
+            )
+            .order_by('-latest_message_time')
+            .distinct()
+        )
+        
+        data = [
+            {
+                'client_id': c.id,
+                'client_name': c.name,
+                'latest_message': getattr(c, 'latest_message_content', '') or '',
+                'latest_message_time': getattr(c, 'latest_message_time', None),
+                'unread_count': getattr(c, 'unread_count', 0),
+            }
+            for c in clients
+        ]
         return Response(data)
 
     @action(detail=False, methods=['post'])

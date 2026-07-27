@@ -6,6 +6,7 @@ import { Plus, Search, Filter, Calendar, CheckCircle, AlertTriangle, Clock, Chev
 import { API_BASE, apiFetch, safeJson } from '@/lib/api';
 import { TableRowSkeleton } from '@/components/SkeletonLoaders';
 import { useUI } from '@/context/UIContext';
+import { useDebounce } from '@/hooks/useDebounce';
 const CreateDeadlineModal = dynamic(() => import('@/components/deadlines/CreateDeadlineModal'), { ssr: false });
 import DeadlineDrawer from '@/components/deadlines/DeadlineDrawer';
 import { useDeadlines } from '@/hooks/api/useDeadlines';
@@ -27,10 +28,11 @@ export default function DeadlinesPage() {
   const [priorityFilter, setPriorityFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebounce(search, 300);
 
   const { deadlines, isLoading: loading, mutate } = useDeadlines({
     limit: 1000,
-    search: '', // We handle client-side search below, but could pass here if needed
+    search: debouncedSearch,
     enabled: true,
   });
 

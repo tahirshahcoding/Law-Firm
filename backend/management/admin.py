@@ -10,6 +10,8 @@ class UserProfileAdmin(admin.ModelAdmin):
     list_display = ('user', 'role')
     list_filter = ('role',)
     search_fields = ('user__username', 'user__email')
+    list_select_related = ('user',)
+    raw_id_fields = ('user',)
 
 
 @admin.register(Court)
@@ -23,6 +25,8 @@ class JudgeAdmin(admin.ModelAdmin):
     list_display = ('name', 'court', 'designation')
     list_filter = ('court',)
     search_fields = ('name', 'designation')
+    list_select_related = ('court',)
+    raw_id_fields = ('court',)
 
 
 @admin.register(Client)
@@ -30,6 +34,8 @@ class ClientAdmin(admin.ModelAdmin):
     list_display = ('client_number', 'name', 'cnic', 'mobile_number', 'created_at')
     search_fields = ('client_number', 'name', 'cnic')
     readonly_fields = ('client_number', 'created_at')
+    list_select_related = ('user',)
+    raw_id_fields = ('user',)
 
 
 @admin.register(Case)
@@ -38,6 +44,8 @@ class CaseAdmin(admin.ModelAdmin):
     list_filter = ('status', 'court__district')
     search_fields = ('case_number', 'opponent_name', 'client__name')
     readonly_fields = ('created_at',)
+    list_select_related = ('client', 'court', 'judge', 'assigned_to')
+    raw_id_fields = ('client', 'court', 'judge', 'assigned_to')
 
 
 @admin.register(Hearing)
@@ -45,12 +53,16 @@ class HearingAdmin(admin.ModelAdmin):
     list_display = ('case', 'hearing_date', 'next_date', 'hearing_stage')
     list_filter = ('hearing_stage',)
     search_fields = ('case__case_number',)
+    list_select_related = ('case', 'case__client', 'case__court')
+    raw_id_fields = ('case',)
 
 
 @admin.register(HearingDocument)
 class HearingDocumentAdmin(admin.ModelAdmin):
     list_display = ('name', 'hearing', 'uploaded_at')
     search_fields = ('name', 'hearing__case__case_number')
+    list_select_related = ('hearing', 'hearing__case')
+    raw_id_fields = ('hearing',)
 
 
 @admin.register(Payment)
@@ -58,6 +70,8 @@ class PaymentAdmin(admin.ModelAdmin):
     list_display = ('invoice', 'amount_received', 'payment_date')
     search_fields = ('invoice__invoice_number', 'invoice__case__case_number')
     readonly_fields = ('payment_date',)
+    list_select_related = ('invoice', 'invoice__case', 'invoice__case__client')
+    raw_id_fields = ('invoice',)
 
 
 @admin.register(Task)
@@ -73,6 +87,8 @@ class InvoiceAdmin(admin.ModelAdmin):
     list_filter = ('status',)
     search_fields = ('invoice_number', 'case__case_number', 'case__client__name')
     readonly_fields = ('invoice_number', 'created_at')
+    list_select_related = ('case', 'case__client')
+    raw_id_fields = ('case',)
 
 from .models import Expense, InvoiceItem
 
@@ -81,10 +97,14 @@ class ExpenseAdmin(admin.ModelAdmin):
     list_display = ('category', 'case', 'amount', 'date')
     list_filter = ('category',)
     search_fields = ('category', 'case__case_number')
+    list_select_related = ('case', 'case__client')
+    raw_id_fields = ('case',)
 
 @admin.register(InvoiceItem)
 class InvoiceItemAdmin(admin.ModelAdmin):
     list_display = ('invoice', 'description', 'amount')
+    list_select_related = ('invoice',)
+    raw_id_fields = ('invoice',)
 
 
 @admin.register(ConsultationRequest)
