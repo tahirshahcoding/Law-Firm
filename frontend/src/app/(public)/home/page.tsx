@@ -50,20 +50,13 @@ export default function PublicHomePage() {
             <span className="font-bold text-xl tracking-tight text-slate-900">Rahimullah <span className="text-blue-700">Advocate</span></span>
           </div>
           <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
-            <Link href="/daily-cause-list" className="hover:text-blue-700 transition-colors">Cause List</Link>
             <a href="#practice-areas" className="hover:text-blue-700 transition-colors">Practice Areas</a>
             <a href="#contact" className="hover:text-blue-700 transition-colors">Contact</a>
           </nav>
           <div className="flex items-center gap-3">
-            <Link
-              href="/daily-cause-list"
-              className="sm:hidden text-sm font-semibold text-blue-700 hover:text-blue-900 transition-colors"
-            >
-              Cause List
-            </Link>
             <a
               href="https://clientcounsel.vercel.app"
-              className="text-sm font-semibold text-blue-700 hover:text-blue-900 transition-colors hidden sm:block"
+              className="text-sm font-semibold text-blue-700 hover:text-blue-900 transition-colors"
             >
               Client Portal
             </a>
