@@ -24,29 +24,10 @@ class PublicHearingViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         from django.db.models import Q
         today = timezone.now().date()
-        window_start = today - timedelta(days=30)
-        window_end = today + timedelta(days=30)
         
         qs = Hearing.objects.filter(
-            hearing_date__range=[window_start, window_end]
-        ).select_related('case', 'case__client', 'case__court', 'case__judge').order_by('hearing_date', 'hearing_time')
-        
-        # Support optional filtering (e.g., today, tomorrow, etc) mapped to fixed dates
-        filter_param = self.request.query_params.get('timeframe')
-        if filter_param == 'today':
-            qs = qs.filter(hearing_date=today)
-        elif filter_param == 'tomorrow':
-            qs = qs.filter(hearing_date=today + timedelta(days=1))
-        elif filter_param == 'yesterday':
-            qs = qs.filter(hearing_date=today - timedelta(days=1))
-        elif filter_param == 'last_7':
-            qs = qs.filter(hearing_date__range=[today - timedelta(days=7), today - timedelta(days=1)])
-        elif filter_param == 'next_7':
-            qs = qs.filter(hearing_date__range=[today + timedelta(days=1), today + timedelta(days=7)])
-        elif filter_param == 'upcoming':
-            qs = qs.filter(hearing_date__gte=today)
-        elif filter_param == 'past':
-            qs = qs.filter(hearing_date__lt=today).order_by('-hearing_date', '-hearing_time')
+            hearing_date=today
+        ).select_related('case', 'case__client', 'case__court', 'case__judge').order_by('hearing_time')
 
         search = self.request.query_params.get('search', '').strip()
         if search:

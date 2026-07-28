@@ -73,7 +73,7 @@ ROOT_URLCONF = 'core.urls'
 # Prevent Django from throwing RuntimeError on POST requests missing a trailing
 # slash. The Next.js proxy sometimes strips trailing slashes, and Django's
 # APPEND_SLASH redirect cannot preserve POST body — causing a 500 error.
-APPEND_SLASH = False
+APPEND_SLASH = True
 
 TEMPLATES = [
     {
@@ -212,7 +212,7 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
 ]
 
 # Allow all origins if explicitly requested or in dev
-CORS_ALLOW_ALL_ORIGINS = os.environ.get('CORS_ALLOW_ALL_ORIGINS', 'True').lower() == 'true' or DEBUG
+CORS_ALLOW_ALL_ORIGINS = os.environ.get('CORS_ALLOW_ALL_ORIGINS', 'False').lower() == 'true'
 CORS_URLS_REGEX = r'^.*$'
 
 # Required for cookie-based auth — browser must send credentials with cross-origin requests
