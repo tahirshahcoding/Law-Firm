@@ -77,6 +77,7 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: ['127.0.0.1', 'localhost', '10.93.38.3'],
   images: {
     unoptimized: true,
+  },
 };
 
 export default withPWA(nextConfig);
