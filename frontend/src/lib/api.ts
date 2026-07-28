@@ -7,31 +7,18 @@
 // It should already include /api, e.g. https://example.com/api
 // This prevents silent double-appending when the env var is already correct.
 function buildApiBase(): string {
-  // Historically we always routed through the internal Next.js /api-proxy because
-  // Django's auth cookie was SameSite=Lax, which the browser drops on cross-origin
-  // requests. Production cookies are now SameSite=None; Secure (see backend
-  // core/settings.py — _COOKIE_SAMESITE), which IS sent cross-origin over HTTPS.
-  // That means the proxy hop may no longer be necessary — it currently costs an
-  // extra Vercel serverless round-trip (with its own cold start) on every request.
-  //
-  // NEXT_PUBLIC_DIRECT_API=true is an opt-in flag to test calling the
-  // Hugging Face backend directly, bypassing the proxy.
-  const directApi = process.env.NEXT_PUBLIC_DIRECT_API === 'true';
-
   if (typeof window !== 'undefined') {
-    const envUrl = process.env.NEXT_PUBLIC_API_URL;
-    const isHfBackend = envUrl?.includes('hf.space');
+    // If running on localhost/dev server, fallback to local or proxy if needed.
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const envUrl = process.env.NEXT_PUBLIC_API_URL || (isLocalhost ? 'http://127.0.0.1:8000/api' : 'https://tahirshahcoding-law-firm.hf.space/api');
 
-    if (envUrl && (!isHfBackend || directApi)) {
-      let url = envUrl.replace(/\/$/, '');
-      if (!url.endsWith('/api')) url += '/api';
-      return url;
-    }
-    return '/api-proxy';
+    let url = envUrl.replace(/\/$/, '');
+    if (!url.endsWith('/api')) url += '/api';
+    return url;
   }
 
-  // SSR fallback — used during server-side render/build only, not in browser.
-  return 'http://127.0.0.1:8000/api';
+  // SSR fallback — used during server-side render/build
+  return process.env.NEXT_PUBLIC_API_URL || 'https://tahirshahcoding-law-firm.hf.space/api';
 }
 
 export const API_BASE = buildApiBase();
