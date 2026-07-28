@@ -16,7 +16,12 @@ class IsFromMainWebsite(BasePermission):
         origin = request.META.get('HTTP_ORIGIN', '')
         referer = request.META.get('HTTP_REFERER', '')
         
-        allowed_domains = ['https://rahimlawchamber.com', 'https://www.rahimlawchamber.com']
+        allowed_domains = [
+            'https://rahimlawchamber.com', 
+            'https://www.rahimlawchamber.com',
+            'http://rahimlawchamber.com',
+            'http://www.rahimlawchamber.com'
+        ]
         
         if origin in allowed_domains:
             return True
