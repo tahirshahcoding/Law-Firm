@@ -8,9 +8,11 @@
 // This prevents silent double-appending when the env var is already correct.
 function buildApiBase(): string {
   if (typeof window !== 'undefined') {
-    // If running on localhost/dev server, fallback to local or proxy if needed.
     const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    const envUrl = process.env.NEXT_PUBLIC_API_URL || (isLocalhost ? 'http://127.0.0.1:8000/api' : 'https://tahirshahcoding-law-firm.hf.space/api');
+    let envUrl = process.env.NEXT_PUBLIC_API_URL || (isLocalhost ? 'http://127.0.0.1:8000/api' : 'https://tahirshahcoding-law-firm.hf.space/api');
+
+    // Auto-correct any domain typo if present in env vars
+    envUrl = envUrl.replace('tahirshahcoding-law-firm-backend.hf.space', 'tahirshahcoding-law-firm.hf.space');
 
     let url = envUrl.replace(/\/$/, '');
     if (!url.endsWith('/api')) url += '/api';
@@ -18,7 +20,11 @@ function buildApiBase(): string {
   }
 
   // SSR fallback — used during server-side render/build
-  return process.env.NEXT_PUBLIC_API_URL || 'https://tahirshahcoding-law-firm.hf.space/api';
+  let envUrl = process.env.NEXT_PUBLIC_API_URL || 'https://tahirshahcoding-law-firm.hf.space/api';
+  envUrl = envUrl.replace('tahirshahcoding-law-firm-backend.hf.space', 'tahirshahcoding-law-firm.hf.space');
+  let url = envUrl.replace(/\/$/, '');
+  if (!url.endsWith('/api')) url += '/api';
+  return url;
 }
 
 export const API_BASE = buildApiBase();
