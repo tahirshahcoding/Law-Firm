@@ -71,27 +71,12 @@ const withPWA = withPWAInit({
 
 const nextConfig: NextConfig = {
   /* config options here */
+  output: 'export',
   reactCompiler: false,
   turbopack: {},
   allowedDevOrigins: ['127.0.0.1', 'localhost', '10.93.38.3'],
   images: {
-    // Skip image optimization in development — avoids "not a valid image" null errors
-    // that occur when the optimizer can't process local static files via the dev server.
-    unoptimized: process.env.NODE_ENV === 'development',
-  },
-  async headers() {
-    return [
-      {
-        source: '/(.*)',
-        headers: [
-          { key: 'X-Content-Type-Options', value: 'nosniff' },
-          { key: 'X-Frame-Options', value: 'DENY' },
-          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-          { key: 'Content-Security-Policy', value: "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: https: http: wss: ws:;" }
-        ],
-      },
-    ];
-  },
+    unoptimized: true,
 };
 
 export default withPWA(nextConfig);
