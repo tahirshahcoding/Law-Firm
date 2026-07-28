@@ -1,11 +1,30 @@
 from rest_framework import viewsets
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import BasePermission
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.throttling import AnonRateThrottle
 from django.utils import timezone
 from datetime import timedelta
 from ..models import Hearing
 from ..serializers.public import PublicHearingSerializer
+
+class IsFromMainWebsite(BasePermission):
+    """
+    Custom permission to only allow requests originating from rahimlawchamber.com.
+    Checks both Origin and Referer headers to lock down the public API.
+    """
+    def has_permission(self, request, view):
+        origin = request.META.get('HTTP_ORIGIN', '')
+        referer = request.META.get('HTTP_REFERER', '')
+        
+        allowed_domains = ['https://rahimlawchamber.com', 'https://www.rahimlawchamber.com']
+        
+        if origin in allowed_domains:
+            return True
+            
+        if any(referer.startswith(domain) for domain in allowed_domains):
+            return True
+            
+        return False
 
 class PublicHearingPagination(PageNumberPagination):
     page_size = 50
@@ -14,7 +33,7 @@ class PublicHearingPagination(PageNumberPagination):
 
 class PublicHearingViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = PublicHearingSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsFromMainWebsite]
     http_method_names = ['get', 'head', 'options']  # belt-and-suspenders w/ ReadOnlyModelViewSet
     pagination_class = PublicHearingPagination
     throttle_classes = [AnonRateThrottle]
