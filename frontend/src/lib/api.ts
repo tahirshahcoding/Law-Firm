@@ -9,22 +9,14 @@
 function buildApiBase(): string {
   if (typeof window !== 'undefined') {
     const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    let envUrl = process.env.NEXT_PUBLIC_API_URL || (isLocalhost ? 'http://127.0.0.1:8000/api' : 'https://tahirshahcoding-law-firm.hf.space/api');
-
-    // Auto-correct any domain typo if present in env vars
-    envUrl = envUrl.replace('tahirshahcoding-law-firm-backend.hf.space', 'tahirshahcoding-law-firm.hf.space');
-
-    let url = envUrl.replace(/\/$/, '');
-    if (!url.endsWith('/api')) url += '/api';
-    return url;
+    if (isLocalhost) {
+      return process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api';
+    }
+    return '/api-proxy';
   }
 
   // SSR fallback — used during server-side render/build
-  let envUrl = process.env.NEXT_PUBLIC_API_URL || 'https://tahirshahcoding-law-firm.hf.space/api';
-  envUrl = envUrl.replace('tahirshahcoding-law-firm-backend.hf.space', 'tahirshahcoding-law-firm.hf.space');
-  let url = envUrl.replace(/\/$/, '');
-  if (!url.endsWith('/api')) url += '/api';
-  return url;
+  return 'http://127.0.0.1:8000/api';
 }
 
 export const API_BASE = buildApiBase();
