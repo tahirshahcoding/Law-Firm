@@ -8,15 +8,14 @@
 // This prevents silent double-appending when the env var is already correct.
 function buildApiBase(): string {
   if (typeof window !== 'undefined') {
-    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    if (isLocalhost) {
-      return process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api';
-    }
-    return '/api-proxy';
+    // Client-side: use relative URL so it inherits the domain/IP from the browser.
+    // Nginx will intercept /api and proxy it directly to Django.
+    return '/api';
   }
 
-  // SSR fallback — used during server-side render/build
-  return 'http://127.0.0.1:8000/api';
+  // Server-side (SSR): use localhost because Nginx is listening on port 80 
+  // on the same machine and will correctly proxy it to the Django socket.
+  return process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1/api';
 }
 
 export const API_BASE = buildApiBase();
