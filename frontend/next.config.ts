@@ -71,6 +71,7 @@ const withPWA = withPWAInit({
 
 const nextConfig: NextConfig = {
   /* config options here */
+  output: 'export',
   reactCompiler: false,
   turbopack: {},
   allowedDevOrigins: ['127.0.0.1', 'localhost', '10.93.38.3'],

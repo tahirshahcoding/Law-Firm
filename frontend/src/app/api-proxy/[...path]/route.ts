@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // CRITICAL: Prevent Next.js from caching these proxy requests
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-static';
+
+export function generateStaticParams() {
+  return [{ path: ['init'] }];
+}
 
 // In production, forward to HF Space. In local dev, forward to local Django.
 // This is critical: the browser must always talk to localhost:3000 (same-origin via this proxy)
