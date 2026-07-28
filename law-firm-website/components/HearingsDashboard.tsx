@@ -13,21 +13,18 @@ interface Hearing {
   status: string;
 }
 
-const TABS = ['upcoming', 'today', 'tomorrow', 'past', 'all'];
-
 export default function HearingsDashboard() {
   const [hearings, setHearings] = useState<Hearing[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('upcoming');
   const [search, setSearch] = useState('');
 
-  const fetchHearings = async (timeframe: string) => {
+  const fetchHearings = async () => {
     setLoading(true);
     try {
       let baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/';
       if (!baseUrl.endsWith('/')) baseUrl += '/';
       
-      const param = timeframe === 'all' ? '?limit=1000' : `?timeframe=${timeframe}&limit=1000`;
+      const param = `?timeframe=today&limit=1000`;
       
       // Prevent /apiapi/ or /api/api/ if NEXT_PUBLIC_API_URL already includes /api
       const apiPrefix = baseUrl.endsWith('/api/') ? '' : 'api/';
@@ -62,8 +59,8 @@ export default function HearingsDashboard() {
   };
 
   useEffect(() => {
-    fetchHearings(activeTab);
-  }, [activeTab]);
+    fetchHearings();
+  }, []);
 
   const filteredHearings = hearings.filter(h => 
     h.case_title.toLowerCase().includes(search.toLowerCase()) || 
@@ -112,7 +109,10 @@ export default function HearingsDashboard() {
       {/* Hearings List */}
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <h2 className="text-2xl font-serif font-bold text-navy">Public Cause List</h2>
+          <div>
+            <h2 className="text-2xl font-serif font-bold text-navy">Daily Cause List</h2>
+            <p className="text-sm text-slate-500 mt-1">Today's scheduled hearings</p>
+          </div>
           
           <div className="relative">
              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
@@ -124,18 +124,6 @@ export default function HearingsDashboard() {
                onChange={(e) => setSearch(e.target.value)}
              />
           </div>
-        </div>
-        
-        <div className="px-6 border-b border-slate-100 flex gap-6 overflow-x-auto">
-          {TABS.map(tab => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`py-4 text-sm font-semibold capitalize whitespace-nowrap border-b-2 transition-colors ${activeTab === tab ? 'border-gold text-gold' : 'border-transparent text-slate-500 hover:text-navy'}`}
-            >
-              {tab.replace('_', ' ')}
-            </button>
-          ))}
         </div>
 
         <div className="p-6 space-y-4 min-h-[400px]">
