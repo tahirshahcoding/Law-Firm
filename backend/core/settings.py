@@ -198,9 +198,9 @@ CORS_ALLOWED_ORIGINS = [o.strip() for o in CORS_ALLOWED_ORIGINS_ENV.split(',') i
 
 # Add Vercel domains and local dev origins to trusted origins so Django accepts the proxied POST
 CSRF_TRUSTED_ORIGINS = [
-    "https://rahimullahadv.vercel.app",
-    "https://clientcounsel.vercel.app",
-    "https://lawsiteswat.vercel.app"
+    "https://admin.rahimlawchamber.com",
+    "https://client.rahimlawchamber.com",
+    "https://rahimlawchamber.com"
 ] + CORS_ALLOWED_ORIGINS
 
 CORS_ALLOWED_ORIGIN_REGEXES = [

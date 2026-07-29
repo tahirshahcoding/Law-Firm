@@ -44,8 +44,8 @@ export default function LoginPage() {
 
       if (me.role !== 'Client') {
         // Clear the cookie immediately — staff must use the staff system
-        await fetch(`${API_BASE}/auth/logout/`, { 
-          method: 'POST', 
+        await fetch(`${API_BASE}/auth/logout/`, {
+          method: 'POST',
           credentials: 'include',
           headers: {
             'X-CSRFToken': getCsrfToken()
@@ -68,8 +68,8 @@ export default function LoginPage() {
 
       {/* Floating Top Right Button */}
       <div className="absolute top-8 right-8 z-50">
-        <a 
-          href="https://lawsiteswat.vercel.app" 
+        <a
+          href="https://rahimlawchamber.com"
           className="flex items-center gap-2 bg-white/50 backdrop-blur border border-slate-200/60 px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-white hover:shadow-md transition-all duration-300"
         >
           <ArrowLeft size={16} /> Back to Website
@@ -84,10 +84,10 @@ export default function LoginPage() {
       </div>
 
       <div className="flex-1 flex flex-col items-center justify-center p-4 relative z-10">
-        
+
         {/* Main Card */}
         <div className="w-full max-w-[460px] bg-white rounded-[24px] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.06)] p-10 pt-14 border border-slate-100/80 relative">
-          
+
           {/* Logo Badge (Floating above card) */}
           <div className="absolute -top-10 left-1/2 -translate-x-1/2">
             <div className="relative w-20 h-20 bg-[#0A192F] rounded-full flex items-center justify-center shadow-lg border-[3px] border-white overflow-hidden">
@@ -98,7 +98,7 @@ export default function LoginPage() {
           <div className="text-center mb-10 mt-4">
             <h1 className="font-serif text-[32px] text-[#0A192F] font-semibold mb-2 tracking-tight">Welcome Back</h1>
             <p className="text-[#C1A774] text-xs font-bold uppercase tracking-[0.2em]">Client Portal</p>
-            
+
             {/* Elegant Divider */}
             <div className="flex items-center justify-center gap-4 mt-6">
               <div className="h-[1px] w-12 bg-slate-200"></div>
@@ -109,7 +109,7 @@ export default function LoginPage() {
 
           {/* Form */}
           <form onSubmit={handleLogin} className="space-y-6">
-            
+
             {error && (
               <div className="flex items-start gap-3 p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-sm">
                 <ShieldAlert size={17} className="shrink-0 mt-0.5" />
@@ -162,12 +162,12 @@ export default function LoginPage() {
             {/* Options Row */}
             <div className="flex items-center justify-between pt-1 pb-2">
               <div className="flex items-center gap-2">
-                <input 
-                  type="checkbox" 
-                  id="remember" 
+                <input
+                  type="checkbox"
+                  id="remember"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 rounded text-[#C1A774] border-slate-300 focus:ring-[#C1A774] cursor-pointer" 
+                  className="w-4 h-4 rounded text-[#C1A774] border-slate-300 focus:ring-[#C1A774] cursor-pointer"
                 />
                 <label htmlFor="remember" className="text-xs font-semibold text-slate-600 cursor-pointer">Remember me</label>
               </div>
@@ -187,7 +187,7 @@ export default function LoginPage() {
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
                 <>
-                   <ArrowLeft size={18} /> SIGN IN
+                  <ArrowLeft size={18} /> SIGN IN
                 </>
               )}
             </button>
@@ -211,7 +211,7 @@ export default function LoginPage() {
       {/* Trust Badges Footer */}
       <div className="w-full flex justify-center pb-12 relative z-10 px-4">
         <div className="flex flex-col md:flex-row items-center gap-8 md:gap-16">
-          
+
           <div className="flex items-center gap-3">
             <ShieldCheck size={28} className="text-[#C1A774]" strokeWidth={1.5} />
             <div>

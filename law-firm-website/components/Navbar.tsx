@@ -45,7 +45,7 @@ export default function Navbar() {
           <Link href="/hearings" className={getLinkClass("/hearings")}>Hearings</Link>
           <Link href="/contact" className={getLinkClass("/contact")}>Contact</Link>
 
-          <a href={process.env.NEXT_PUBLIC_PORTAL_URL || "https://clientcounsel.vercel.app"} className="flex items-center space-x-2 px-6 py-2.5 bg-gold hover:bg-goldHover text-white rounded-sm transition-colors duration-200 text-sm shadow-md hover:shadow-lg hover:-translate-y-0.5 ml-4">
+          <a href={process.env.NEXT_PUBLIC_PORTAL_URL || "https://client.rahimlawchamber.com"} className="flex items-center space-x-2 px-6 py-2.5 bg-gold hover:bg-goldHover text-white rounded-sm transition-colors duration-200 text-sm shadow-md hover:shadow-lg hover:-translate-y-0.5 ml-4">
             <Lock size={14} />
             <span className="uppercase">Client Portal &rarr;</span>
           </a>

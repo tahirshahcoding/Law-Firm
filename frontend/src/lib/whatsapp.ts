@@ -5,7 +5,7 @@
  */
 
 const FIRM_NAME = 'Rahimullah Advocate';
-const PORTAL_URL = process.env.NEXT_PUBLIC_PORTAL_URL || 'https://clientcounsel.vercel.app';
+const PORTAL_URL = process.env.NEXT_PUBLIC_PORTAL_URL || 'https://client.rahimlawchamber.com';
 
 // ── Phone number normalizer ──────────────────────────────────────────────────
 

@@ -125,7 +125,7 @@ export default function AddClientModal({ isOpen, onClose, onSuccess }: AddClient
 
             <p className="text-xs text-slate-500 dark:text-slate-400 text-center">
               Client can log in at <span className="font-semibold text-blue-600 dark:text-blue-400">
-                {(process.env.NEXT_PUBLIC_PORTAL_URL || 'clientcounsel.vercel.app').replace(/^https?:\/\//, '')}
+                {(process.env.NEXT_PUBLIC_PORTAL_URL || 'client.rahimlawchamber.com').replace(/^https?:\/\//, '')}
               </span>
             </p>
 
@@ -176,7 +176,7 @@ export default function AddClientModal({ isOpen, onClose, onSuccess }: AddClient
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
             <div className="relative">
               <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input type="text" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})}
+              <input type="text" required value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 dark:text-white"
                 placeholder="Rizwan Ahmed" />
             </div>
@@ -196,7 +196,7 @@ export default function AddClientModal({ isOpen, onClose, onSuccess }: AddClient
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Mobile Number</label>
             <div className="relative">
               <Phone size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input type="text" required value={formData.mobile_number} onChange={(e) => setFormData({...formData, mobile_number: e.target.value})}
+              <input type="text" required value={formData.mobile_number} onChange={(e) => setFormData({ ...formData, mobile_number: e.target.value })}
                 className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 dark:text-white font-mono"
                 placeholder="+92 300 1234567" />
             </div>
@@ -206,7 +206,7 @@ export default function AddClientModal({ isOpen, onClose, onSuccess }: AddClient
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Residential Address</label>
             <div className="relative">
               <MapPin size={16} className="absolute left-3 top-3 text-slate-400" />
-              <textarea required rows={3} value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})}
+              <textarea required rows={3} value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                 className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 dark:text-white resize-none"
                 placeholder="123 Legal Avenue, City..." />
             </div>

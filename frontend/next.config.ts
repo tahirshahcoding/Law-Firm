@@ -85,8 +85,9 @@ const nextConfig: NextConfig = {
       {
         source: '/api/:path*',
         // In local development, forward /api to Django. 
-        // In production, Nginx intercepts /api before it even reaches Next.js, so this rewrite won't interfere.
-        destination: process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/:path*` : 'http://127.0.0.1:8000/api/:path*',
+        // We append a trailing slash because Next.js normalizes URLs and strips them by default,
+        // which causes Django to throw a 403 CSRF error because the CSRF-exempt view requires the trailing slash.
+        destination: process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/:path*/` : 'http://127.0.0.1:8000/api/:path*/',
       },
     ];
   },
