@@ -193,6 +193,7 @@ class Hearing(models.Model):
     hearing_time = models.TimeField(null=True, blank=True)
     next_date = models.DateField(null=True, blank=True)
     hearing_stage = models.CharField(max_length=150, default='Attendance', db_index=True)
+    is_completed = models.BooleanField(default=False, db_index=True)
     notes = models.TextField(blank=True, null=True)
     history = HistoricalRecords()
 

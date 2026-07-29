@@ -2,11 +2,12 @@
 
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { Plus, Search, Calendar, Edit2, Trash2, MapPin, AlignLeft, FolderOpen, MoreVertical, Check, FileText, Gavel } from 'lucide-react';
+import { Plus, Search, Calendar, Edit2, Trash2, MapPin, AlignLeft, FolderOpen, MoreVertical, Check, FileText, Gavel, Zap, CheckCircle2 } from 'lucide-react';
 import { API_BASE, apiFetch } from '@/lib/api';
 const AddHearingModal = dynamic(() => import('@/components/AddHearingModal'), { ssr: false });
 const EditHearingModal = dynamic(() => import('@/components/EditHearingModal'), { ssr: false });
 const HearingDocumentsModal = dynamic(() => import('@/components/HearingDocumentsModal'), { ssr: false });
+const LogProceedingModal = dynamic(() => import('@/components/LogProceedingModal'), { ssr: false });
 import { useAuth } from '@/context/AuthContext';
 import { useUI } from '@/context/UIContext';
 import { TableSkeleton } from '@/components/SkeletonLoaders';
@@ -24,6 +25,7 @@ export default function HearingsPage() {
   const [selectedHearing, setSelectedHearing] = useState(null);
   const [isDocsModalOpen, setIsDocsModalOpen] = useState(false);
   const [selectedDocsHearing, setSelectedDocsHearing] = useState(null);
+  const [selectedLogHearing, setSelectedLogHearing] = useState(null);
 
   const { user } = useAuth();
   const { confirm, toast, showLoading, hideLoading } = useUI();
@@ -192,6 +194,13 @@ export default function HearingsPage() {
                       </div>
                       <div className="flex items-center gap-1 shrink-0">
                         <button 
+                          onClick={() => setSelectedLogHearing(h)}
+                          className="p-2 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800/50 rounded-lg transition-colors"
+                          title="Log Proceeding / Next Date"
+                        >
+                          <Zap size={17} />
+                        </button>
+                        <button 
                           onClick={() => handleOpenDocs(h)}
                           className="p-2 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800/50 rounded-lg transition-colors relative"
                           title="Documents"
@@ -290,6 +299,13 @@ export default function HearingsPage() {
                         <td className="px-6 py-4 text-right">
                           <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                             <button 
+                              onClick={() => setSelectedLogHearing(h)}
+                              className="p-1.5 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800/50 rounded-lg transition-colors"
+                              title="Log Proceeding / Next Date"
+                            >
+                              <Zap size={18} />
+                            </button>
+                            <button 
                               onClick={() => handleOpenDocs(h)}
                               className="p-1.5 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800/50 rounded-lg transition-colors relative"
                               title="Documents"
@@ -346,6 +362,15 @@ export default function HearingsPage() {
         onSuccess={fetchHearings}
         hearingData={selectedDocsHearing}
       />
+
+      {selectedLogHearing && (
+        <LogProceedingModal
+          isOpen={!!selectedLogHearing}
+          hearing={selectedLogHearing}
+          onClose={() => setSelectedLogHearing(null)}
+          onSuccess={fetchHearings}
+        />
+      )}
     </div>
   );
 }

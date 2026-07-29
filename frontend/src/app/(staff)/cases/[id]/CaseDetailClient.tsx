@@ -5,10 +5,12 @@ import { useParams, useRouter } from 'next/navigation';
 import { API_BASE, apiFetch } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { useUI } from '@/context/UIContext';
-import { ArrowLeft, Clock, FileText, Banknote, Edit3, MessageCircle, RefreshCw, FolderOpen, UserX, Scale, Gavel, Calendar, CheckCircle, AlertTriangle } from 'lucide-react';
-import Link from 'next/link';
-import { getStatusColor } from '@/lib/constants';
+import { getStatusColor, CLOSURE_REASONS, getClosureColor } from '@/lib/constants';
 import StatusDropdown from '@/components/StatusDropdown';
+import dynamic from 'next/dynamic';
+import { Zap, CheckCircle2, Lock } from 'lucide-react';
+
+const LogProceedingModal = dynamic(() => import('@/components/LogProceedingModal'), { ssr: false });
 
 export default function CaseDetailClient() {
   const params = useParams();
@@ -17,10 +19,12 @@ export default function CaseDetailClient() {
   
   const [caseData, setCaseData] = useState<any>(null);
   const [timeline, setTimeline] = useState<any[]>([]);
+  const [hearings, setHearings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [noteText, setNoteText] = useState('');
   const [submittingNote, setSubmittingNote] = useState(false);
+  const [selectedLogHearing, setSelectedLogHearing] = useState<any>(null);
   
   const { user } = useAuth();
   const { toast } = useUI();
@@ -30,18 +34,21 @@ export default function CaseDetailClient() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [caseRes, timelineRes] = await Promise.all([
+      const [caseRes, timelineRes, hearingsRes] = await Promise.all([
         apiFetch(`${API_BASE}/cases/${id}/`),
-        apiFetch(`${API_BASE}/case-timelines/?case=${id}`)
+        apiFetch(`${API_BASE}/case-timelines/?case=${id}`),
+        apiFetch(`${API_BASE}/hearings/?case=${id}&limit=100`)
       ]);
       
       if (!caseRes.ok) throw new Error("Failed to fetch case data");
       
       const cData = await caseRes.json();
       const tData = await timelineRes.json();
+      const hData = await hearingsRes.json();
       
       setCaseData(cData);
       setTimeline(Array.isArray(tData) ? tData : (tData.results || []));
+      setHearings(Array.isArray(hData) ? hData : (hData.results || []));
     } catch (err) {
       console.error(err);
       toast.error('Could not load case details.');
@@ -208,6 +215,51 @@ export default function CaseDetailClient() {
               </div>
             </div>
           </div>
+
+          {/* Upcoming / Latest Active Hearing Card */}
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-5">
+            <h3 className="font-semibold text-slate-900 dark:text-white mb-3 flex items-center justify-between">
+              <span className="flex items-center gap-2">
+                <Calendar size={18} className="text-purple-600 dark:text-purple-400" />
+                Latest Hearing Schedule
+              </span>
+            </h3>
+
+            {hearings.length > 0 ? (
+              (() => {
+                const latestHearing = hearings[hearings.length - 1];
+                return (
+                  <div className="bg-slate-50 dark:bg-slate-800/60 rounded-xl p-4 border border-slate-200/80 dark:border-slate-700 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Hearing Date</span>
+                      <span className="text-sm font-bold text-slate-900 dark:text-white font-mono">{latestHearing.hearing_date}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Stage</span>
+                      <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300">
+                        {latestHearing.hearing_stage}
+                      </span>
+                    </div>
+                    {latestHearing.notes && (
+                      <p className="text-xs text-slate-600 dark:text-slate-400 italic bg-white dark:bg-slate-900 p-2 rounded-lg border border-slate-100 dark:border-slate-800">
+                        "{latestHearing.notes}"
+                      </p>
+                    )}
+                    {caseData.is_active !== false && (
+                      <button
+                        onClick={() => setSelectedLogHearing(latestHearing)}
+                        className="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs py-2 px-3 rounded-lg flex items-center justify-center gap-1.5 transition-all shadow-sm"
+                      >
+                        <Zap size={14} /> Update Outcome / Next Date
+                      </button>
+                    )}
+                  </div>
+                );
+              })()
+            ) : (
+              <p className="text-xs text-slate-500 dark:text-slate-400">No hearings scheduled yet for this case.</p>
+            )}
+          </div>
         </div>
 
         {/* Right Column: Timeline */}
@@ -289,7 +341,14 @@ export default function CaseDetailClient() {
           </div>
         </div>
 
-      </div>
+      {selectedLogHearing && (
+        <LogProceedingModal
+          isOpen={!!selectedLogHearing}
+          hearing={selectedLogHearing}
+          onClose={() => setSelectedLogHearing(null)}
+          onSuccess={fetchData}
+        />
+      )}
     </div>
   );
 }

@@ -228,12 +228,16 @@ class HearingViewSet(viewsets.ModelViewSet):
         if role == 'Associate':
             qs = qs.filter(case__assigned_to=user)
 
+        case_id  = self.request.query_params.get('case')
         district = self.request.query_params.get('district')
         tehsil   = self.request.query_params.get('tehsil')
         court    = self.request.query_params.get('court')
         date_str = self.request.query_params.get('date')
         month    = self.request.query_params.get('month')
         year     = self.request.query_params.get('year')
+
+        if case_id:
+            qs = qs.filter(case_id=case_id)
 
         if district:
             qs = qs.filter(case__court__district__iexact=district)
@@ -270,6 +274,74 @@ class HearingViewSet(viewsets.ModelViewSet):
     @transaction.atomic
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
+
+    @action(detail=True, methods=['post'], url_path='log_proceeding')
+    @transaction.atomic
+    def log_proceeding(self, request, pk=None):
+        hearing = self.get_object()
+        case = hearing.case
+
+        notes = request.data.get('notes', '').strip()
+        next_date = request.data.get('next_date', None)
+        next_stage = request.data.get('next_stage', case.status).strip()
+        close_case = request.data.get('close_case', False)
+        closure_reason = request.data.get('closure_reason', '').strip()
+
+        # 1. Update current hearing
+        hearing.is_completed = True
+        hearing.next_date = next_date if next_date else None
+        if notes:
+            hearing.notes = f"{hearing.notes}\nProceeding Notes: {notes}".strip() if hearing.notes else f"Proceeding Notes: {notes}"
+        hearing.save()
+
+        next_hearing_obj = None
+
+        # 2. If case stage changed, update Case status
+        old_stage = case.status
+        if next_stage and next_stage != old_stage:
+            case.status = next_stage
+
+        # 3. Handle closing or next hearing
+        if close_case:
+            case.is_active = False
+            case.closure_reason = closure_reason or 'Settled'
+            case.save()
+            CaseTimeline.objects.create(
+                case=case,
+                activity_type='StatusChange',
+                description=f"Case closed following hearing on {hearing.hearing_date}. Reason: {case.closure_reason}"
+            )
+        else:
+            case.save()
+            if next_date:
+                next_hearing_obj = Hearing.objects.create(
+                    case=case,
+                    hearing_date=next_date,
+                    hearing_stage=next_stage,
+                    notes=f"Adjourned from hearing on {hearing.hearing_date}."
+                )
+
+            desc = f"Proceeding logged for hearing on {hearing.hearing_date}."
+            if next_stage != old_stage:
+                desc += f" Case stage advanced from '{old_stage}' → '{next_stage}'."
+            if next_date:
+                desc += f" Next hearing set for {next_date}."
+            if notes:
+                desc += f" Summary: {notes}"
+
+            CaseTimeline.objects.create(
+                case=case,
+                activity_type='Hearing',
+                description=desc
+            )
+
+        return Response({
+            "message": "Proceeding logged successfully",
+            "hearing": HearingSerializer(hearing).data,
+            "next_hearing": HearingSerializer(next_hearing_obj).data if next_hearing_obj else None,
+            "case_status": case.status,
+            "is_active": case.is_active
+        }, status=status.HTTP_200_OK)
 
 
 # ── HearingDocument ViewSet ───────────────────────────────────────────────────

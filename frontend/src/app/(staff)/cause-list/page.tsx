@@ -1,13 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { Printer, Search, Calendar, MapPin, Scale, Gavel, FileText, RefreshCw, Layers, Shield } from 'lucide-react';
+import { Printer, Search, Calendar, MapPin, Scale, Gavel, FileText, RefreshCw, Layers, Shield, Zap, CheckCircle2 } from 'lucide-react';
 import { API_BASE, apiFetch } from '@/lib/api';
 import { TableSkeleton } from '@/components/SkeletonLoaders';
 import { useAuth } from '@/context/AuthContext';
 import useSWR from 'swr';
 import { swrFetcher } from '@/lib/fetcher';
 import { toast } from 'sonner';
+import dynamic from 'next/dynamic';
+
+const LogProceedingModal = dynamic(() => import('@/components/LogProceedingModal'), { ssr: false });
 
 export default function CauseListPage() {
   const { user } = useAuth();
@@ -23,6 +26,7 @@ export default function CauseListPage() {
     const localToday = new Date(today.getTime() - (offset * 60 * 1000));
     return localToday.toISOString().split('T')[0];
   });
+  const [selectedHearingForLog, setSelectedHearingForLog] = useState<any>(null);
 
   const canView = user?.role === 'Admin' || user?.permissions?.cause_list?.view === true;
   const canPrint = user?.role === 'Admin' || user?.permissions?.cause_list?.print === true;
@@ -278,6 +282,7 @@ export default function CauseListPage() {
                         <th className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 print:border-black w-[15%] font-bold">Advocates</th>
                         <th className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 print:border-black w-[13%] font-bold">Proceedings</th>
                         <th className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 print:border-black w-[12%] whitespace-nowrap font-bold">Prev Date</th>
+                        <th className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 no-print w-[10%] font-bold">Action</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-200 dark:divide-slate-800/50 print:divide-y print:divide-black">
@@ -310,8 +315,23 @@ export default function CauseListPage() {
                             {h.hearing_stage}
                           </td>
                           {/* Prev Date */}
-                          <td className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 print:text-black print:border-black font-semibold text-slate-600 dark:text-slate-400 whitespace-nowrap">
+                          <td className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 print:border-black font-semibold text-slate-600 dark:text-slate-400 whitespace-nowrap">
                             {h.previous_date ? formatDate(h.previous_date) : '—'}
+                          </td>
+                          {/* Log Proceeding Action */}
+                          <td className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 no-print">
+                            {h.is_completed ? (
+                              <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2.5 py-1 rounded-lg border border-emerald-200 dark:border-emerald-800">
+                                <CheckCircle2 size={12} /> Logged
+                              </span>
+                            ) : (
+                              <button 
+                                onClick={() => setSelectedHearingForLog(h)} 
+                                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 border border-blue-200 dark:border-blue-800 transition-all shadow-sm"
+                              >
+                                <Zap size={13} /> Update
+                              </button>
+                            )}
                           </td>
                         </tr>
                       ))}
@@ -323,6 +343,15 @@ export default function CauseListPage() {
             );
           })}
         </div>
+      )}
+
+      {selectedHearingForLog && (
+        <LogProceedingModal
+          isOpen={!!selectedHearingForLog}
+          hearing={selectedHearingForLog}
+          onClose={() => setSelectedHearingForLog(null)}
+          onSuccess={() => fetchCauseList()}
+        />
       )}
 
       {/* ── Embedded Print stylesheet ── */}
