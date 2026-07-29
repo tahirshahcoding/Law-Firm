@@ -10,6 +10,8 @@ import { API_BASE, apiFetch } from '@/lib/api';
 import { useCases } from '@/hooks/api/useCases';
 const AddCaseModal = dynamic(() => import('@/components/AddCaseModal'), { ssr: false });
 const EditCaseModal = dynamic(() => import('@/components/EditCaseModal'), { ssr: false });
+const CaseDetailModal = dynamic(() => import('@/components/CaseDetailModal'), { ssr: false });
+
 import { useAuth } from '@/context/AuthContext';
 import { useUI } from '@/context/UIContext';
 import { TableSkeleton } from '@/components/SkeletonLoaders';
@@ -32,6 +34,7 @@ function CasesPageContent() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedCase, setSelectedCase] = useState(null);
+  const [viewCaseId, setViewCaseId] = useState<string | null>(null);
   const [closeCaseId, setCloseCaseId] = useState<string | null>(null);
   const [closeCaseNumber, setCloseCaseNumber] = useState('');
   const [closureReason, setClosureReason] = useState('');
@@ -434,7 +437,12 @@ function CasesPageContent() {
                           </div>
                           <div>
                             <div className="flex items-center gap-2 mb-0.5">
-                              <p className="font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors cursor-pointer">{caseItem.case_number}</p>
+                              <p 
+                                onClick={() => setViewCaseId(caseItem.id)}
+                                className="font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors cursor-pointer hover:underline"
+                              >
+                                {caseItem.case_number}
+                              </p>
                               {caseItem.priority && (
                                 <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${
                                   caseItem.priority === 'Urgent' ? 'bg-rose-50 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800' :
@@ -452,7 +460,7 @@ function CasesPageContent() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 cursor-pointer" onClick={() => setViewCaseId(caseItem.id)}>
                         <div className="flex flex-col gap-1.5">
                           <div className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300 font-medium">
                             <Scale size={14} className="text-slate-400 dark:text-slate-500 shrink-0" />
@@ -479,14 +487,13 @@ function CasesPageContent() {
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Link 
-                            href={`/cases/${caseItem.id}`}
-                            prefetch={false}
+                          <button 
+                            onClick={() => setViewCaseId(caseItem.id)}
                             className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                            title="View Case"
+                            title="View Case Details & Hearings History"
                           >
                             <Eye size={18} />
-                          </Link>
+                          </button>
                           {caseItem.is_active !== false ? (
                             <>
                               <button 
@@ -608,9 +615,12 @@ function CasesPageContent() {
                   Close Case
                 </button>
               </div>
-            </div>
-          </div>
-        )}
+        {/* Case Detail Modal */}
+        <CaseDetailModal
+          isOpen={!!viewCaseId}
+          onClose={() => setViewCaseId(null)}
+          caseId={viewCaseId}
+        />
       </div>
   );
 }
