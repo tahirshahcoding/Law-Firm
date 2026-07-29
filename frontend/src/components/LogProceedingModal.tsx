@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Calendar, CheckCircle2, Clock, FolderOpen, Zap } from 'lucide-react';
+import { X, Calendar, CheckCircle2, Zap } from 'lucide-react';
 import { API_BASE, apiFetch, safeJson } from '@/lib/api';
 import { useUI } from '@/context/UIContext';
 import { CASE_STATUSES, CLOSURE_REASONS } from '@/lib/constants';
@@ -17,10 +17,11 @@ interface LogProceedingModalProps {
 export default function LogProceedingModal({ isOpen, onClose, onSuccess, hearing }: LogProceedingModalProps) {
   const { toast, showLoading, hideLoading } = useUI();
 
+  // Outcome selection: 'adjourned' | 'no_next_date' | 'close_case'
+  const [outcomeMode, setOutcomeMode] = useState<'adjourned' | 'no_next_date' | 'close_case'>('adjourned');
   const [nextDate, setNextDate] = useState('');
   const [nextStage, setNextStage] = useState('');
   const [notes, setNotes] = useState('');
-  const [closeCase, setCloseCase] = useState(false);
 
   // Soft close fields
   const [closureReason, setClosureReason] = useState('Disposed');
@@ -33,9 +34,9 @@ export default function LogProceedingModal({ isOpen, onClose, onSuccess, hearing
     if (hearing) {
       const currentStage = hearing.hearing_stage || hearing.case_status || 'Attendance';
       setNextStage(currentStage);
+      setOutcomeMode('adjourned');
       setNextDate('');
       setNotes('');
-      setCloseCase(false);
       setClosureReason('Disposed');
       setClosureDate(new Date().toISOString().split('T')[0]);
       setCertifiedCopyReceived(false);
@@ -60,19 +61,26 @@ export default function LogProceedingModal({ isOpen, onClose, onSuccess, hearing
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (outcomeMode === 'adjourned' && !nextDate) {
+      toast.error('Please select the Next Hearing Date for adjourned case.');
+      return;
+    }
+
+    const isClosing = outcomeMode === 'close_case';
+
     try {
       showLoading('Logging proceeding...');
 
       const payload = {
         notes,
-        next_date: nextDate || null,
+        next_date: outcomeMode === 'adjourned' ? nextDate : null,
         next_stage: nextStage,
-        close_case: closeCase,
-        closure_reason: closeCase ? closureReason : '',
-        closure_date: closeCase ? closureDate : null,
-        certified_copy_received: closeCase ? certifiedCopyReceived : false,
-        execution_required: closeCase ? executionRequired : false,
-        appeal_expected: closeCase ? appealExpected : false,
+        close_case: isClosing,
+        closure_reason: isClosing ? closureReason : '',
+        closure_date: isClosing ? closureDate : null,
+        certified_copy_received: isClosing ? certifiedCopyReceived : false,
+        execution_required: isClosing ? executionRequired : false,
+        appeal_expected: isClosing ? appealExpected : false,
       };
 
       const res = await apiFetch(`${API_BASE}/hearings/${hearing.id}/log_proceeding/`, {
@@ -89,7 +97,7 @@ export default function LogProceedingModal({ isOpen, onClose, onSuccess, hearing
 
       toast.success('Proceeding logged successfully!');
 
-      if (nextDate && hearing.client_number) {
+      if (outcomeMode === 'adjourned' && nextDate && hearing.client_number) {
         const message = hearingScheduledMessage(
           hearing.client_name || 'Client',
           hearing.case_number || 'Case',
@@ -147,29 +155,87 @@ export default function LogProceedingModal({ isOpen, onClose, onSuccess, hearing
             </span>
           </div>
 
-          {/* Next Hearing Date (Optional) & Next Stage */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Case Status Outcome Selector */}
+          <div className="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Next Hearing Date <span className="text-slate-400 font-normal">(Optional)</span>
-              </label>
-              <input
-                type="date"
-                value={nextDate}
-                onChange={(e) => setNextDate(e.target.value)}
-                min={hearing.hearing_date}
-                className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 dark:text-white shadow-xs"
-              />
-              {daysInterval && (
-                <p className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 mt-1">
-                  Adjourned for {daysInterval} days
-                </p>
-              )}
+              <p className="text-xs font-bold text-slate-900 dark:text-white">Case Status Outcome</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">Select proceeding outcome.</p>
             </div>
+            <div className="flex gap-1 bg-white dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-700 w-full sm:w-auto">
+              <button
+                type="button"
+                onClick={() => setOutcomeMode('adjourned')}
+                className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  outcomeMode === 'adjourned' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                }`}
+              >
+                Adjourned
+              </button>
+              <button
+                type="button"
+                onClick={() => { setOutcomeMode('no_next_date'); setNextDate(''); }}
+                className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  outcomeMode === 'no_next_date' ? 'bg-purple-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                }`}
+              >
+                No Next Date
+              </button>
+              <button
+                type="button"
+                onClick={() => { setOutcomeMode('close_case'); setNextDate(''); }}
+                className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  outcomeMode === 'close_case' ? 'bg-rose-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                }`}
+              >
+                Close Case
+              </button>
+            </div>
+          </div>
 
-            <div>
+          {/* Adjourned Mode: Next Date & Stage */}
+          {outcomeMode === 'adjourned' && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-in fade-in duration-150">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Next Hearing Date <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="date"
+                  required
+                  value={nextDate}
+                  onChange={(e) => setNextDate(e.target.value)}
+                  min={hearing.hearing_date}
+                  className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 dark:text-white shadow-xs"
+                />
+                {daysInterval && (
+                  <p className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 mt-1">
+                    Adjourned for {daysInterval} days
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Next Stage
+                </label>
+                <select
+                  value={nextStage}
+                  onChange={(e) => setNextStage(e.target.value)}
+                  className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 dark:text-white shadow-xs"
+                >
+                  {CASE_STATUSES.map(stage => (
+                    <option key={stage} value={stage}>{stage}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          )}
+
+          {/* No Next Date Mode: Stage selector */}
+          {outcomeMode === 'no_next_date' && (
+            <div className="animate-in fade-in duration-150">
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Case Stage
+                Current Case Stage
               </label>
               <select
                 value={nextStage}
@@ -181,7 +247,68 @@ export default function LogProceedingModal({ isOpen, onClose, onSuccess, hearing
                 ))}
               </select>
             </div>
-          </div>
+          )}
+
+          {/* Close Case Mode: Soft Close Section */}
+          {outcomeMode === 'close_case' && (
+            <div className="p-3.5 bg-rose-50/50 dark:bg-rose-900/20 rounded-xl border border-rose-200 dark:border-rose-800/50 space-y-3 animate-in fade-in duration-150">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">Closure Outcome</label>
+                  <select
+                    value={closureReason}
+                    onChange={(e) => setClosureReason(e.target.value)}
+                    className="w-full px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium text-slate-900 dark:text-white"
+                  >
+                    {CLOSURE_REASONS.map(reason => (
+                      <option key={reason} value={reason}>{reason}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">Closure Date</label>
+                  <input
+                    type="date"
+                    value={closureDate}
+                    onChange={(e) => setClosureDate(e.target.value)}
+                    className="w-full px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-mono text-slate-900 dark:text-white"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 border-t border-rose-200/60 dark:border-rose-800/40 text-xs">
+                <label className="flex items-center gap-1.5 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={certifiedCopyReceived}
+                    onChange={(e) => setCertifiedCopyReceived(e.target.checked)}
+                    className="rounded text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="text-[11px] font-medium text-slate-700 dark:text-slate-300">Certified Copy Recd</span>
+                </label>
+
+                <label className="flex items-center gap-1.5 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={executionRequired}
+                    onChange={(e) => setExecutionRequired(e.target.checked)}
+                    className="rounded text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="text-[11px] font-medium text-slate-700 dark:text-slate-300">Execution Req</span>
+                </label>
+
+                <label className="flex items-center gap-1.5 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={appealExpected}
+                    onChange={(e) => setAppealExpected(e.target.checked)}
+                    className="rounded text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="text-[11px] font-medium text-slate-700 dark:text-slate-300">Appeal Expected</span>
+                </label>
+              </div>
+            </div>
+          )}
 
           {/* Court Proceedings Notes */}
           <div>
@@ -197,81 +324,6 @@ export default function LogProceedingModal({ isOpen, onClose, onSuccess, hearing
             ></textarea>
           </div>
 
-          {/* Close Case Section */}
-          <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-3">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={closeCase}
-                onChange={(e) => setCloseCase(e.target.checked)}
-                className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-              />
-              <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
-                Mark Case as Closed / Disposed
-              </span>
-            </label>
-
-            {closeCase && (
-              <div className="p-3.5 bg-rose-50/50 dark:bg-rose-900/20 rounded-xl border border-rose-200 dark:border-rose-800/50 space-y-3 animate-in fade-in duration-200">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">Outcome Reason</label>
-                    <select
-                      value={closureReason}
-                      onChange={(e) => setClosureReason(e.target.value)}
-                      className="w-full px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium text-slate-900 dark:text-white"
-                    >
-                      {CLOSURE_REASONS.map(reason => (
-                        <option key={reason} value={reason}>{reason}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">Closure Date</label>
-                    <input
-                      type="date"
-                      value={closureDate}
-                      onChange={(e) => setClosureDate(e.target.value)}
-                      className="w-full px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-mono text-slate-900 dark:text-white"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 border-t border-rose-200/60 dark:border-rose-800/40 text-xs">
-                  <label className="flex items-center gap-1.5 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={certifiedCopyReceived}
-                      onChange={(e) => setCertifiedCopyReceived(e.target.checked)}
-                      className="rounded text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="text-[11px] font-medium text-slate-700 dark:text-slate-300">Certified Copy Recd</span>
-                  </label>
-
-                  <label className="flex items-center gap-1.5 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={executionRequired}
-                      onChange={(e) => setExecutionRequired(e.target.checked)}
-                      className="rounded text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="text-[11px] font-medium text-slate-700 dark:text-slate-300">Execution Req</span>
-                  </label>
-
-                  <label className="flex items-center gap-1.5 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={appealExpected}
-                      onChange={(e) => setAppealExpected(e.target.checked)}
-                      className="rounded text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="text-[11px] font-medium text-slate-700 dark:text-slate-300">Appeal Expected</span>
-                  </label>
-                </div>
-              </div>
-            )}
-          </div>
-
           {/* Footer Buttons */}
           <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 dark:border-slate-800">
             <button
@@ -284,13 +336,13 @@ export default function LogProceedingModal({ isOpen, onClose, onSuccess, hearing
             <button
               type="submit"
               className={`px-5 py-2 rounded-lg font-bold text-white text-xs shadow-md transition-all flex items-center gap-1.5 ${
-                closeCase
+                outcomeMode === 'close_case'
                   ? 'bg-rose-600 hover:bg-rose-700'
                   : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'
               }`}
             >
               <CheckCircle2 size={15} />
-              {closeCase ? 'Complete & Close Case' : 'Save Proceeding'}
+              {outcomeMode === 'close_case' ? 'Complete & Close Case' : 'Save Proceeding'}
             </button>
           </div>
 
