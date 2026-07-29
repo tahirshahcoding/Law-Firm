@@ -10,7 +10,7 @@ import { API_BASE, apiFetch } from '@/lib/api';
 import { useCases } from '@/hooks/api/useCases';
 const AddCaseModal = dynamic(() => import('@/components/AddCaseModal'), { ssr: false });
 const EditCaseModal = dynamic(() => import('@/components/EditCaseModal'), { ssr: false });
-const CaseDetailModal = dynamic(() => import('@/components/CaseDetailModal'), { ssr: false });
+const CaseSplitPanel = dynamic(() => import('@/components/CaseSplitPanel'), { ssr: false });
 
 import { useAuth } from '@/context/AuthContext';
 import { useUI } from '@/context/UIContext';
@@ -245,8 +245,10 @@ function CasesPageContent() {
         </button>
       </div>
 
-      <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none border border-white/60 dark:border-slate-800 overflow-hidden transition-colors">
-        {/* Table Toolbar */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <div className={viewCaseId ? "lg:col-span-5 transition-all duration-300" : "lg:col-span-12 transition-all duration-300"}>
+          <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none border border-white/60 dark:border-slate-800 overflow-hidden transition-colors">
+            {/* Table Toolbar */}
         <div className="p-4 border-b border-slate-200/60 dark:border-slate-800 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-slate-50/50 dark:bg-slate-800/50 transition-colors">
           <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto flex-1">
             <div className="relative w-full sm:max-w-xs group">
@@ -368,13 +370,14 @@ function CasesPageContent() {
                       </div>
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
-                      <button 
-                        onClick={() => setViewCaseId(caseItem.id)} 
-                        className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" 
-                        title="View Case Details & Hearings History"
+                      <Link 
+                        href={`/cases/${caseItem.id}`} 
+                        prefetch={false}
+                        className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-colors" 
+                        title="View Full Case Details"
                       >
                         <Eye size={17} />
-                      </button>
+                      </Link>
                       {caseItem.is_active !== false ? (
                         <>
                           <button 
@@ -491,13 +494,14 @@ function CasesPageContent() {
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button 
-                            onClick={() => setViewCaseId(caseItem.id)}
-                            className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                            title="View Case Details & Hearings History"
+                          <Link 
+                            href={`/cases/${caseItem.id}`}
+                            prefetch={false}
+                            className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                            title="View Full Case Details"
                           >
                             <Eye size={18} />
-                          </button>
+                          </Link>
                           {caseItem.is_active !== false ? (
                             <>
                               <button 
@@ -622,14 +626,20 @@ function CasesPageContent() {
             </div>
           </div>
         )}
-
-        {/* Case Detail Modal */}
-        <CaseDetailModal
-          isOpen={!!viewCaseId}
-          onClose={() => setViewCaseId(null)}
-          caseId={viewCaseId}
-        />
       </div>
+
+      {/* Right Split Screen Panel */}
+      {viewCaseId && (
+        <div className="lg:col-span-7 sticky top-4">
+          <CaseSplitPanel
+            caseId={viewCaseId}
+            onClose={() => setViewCaseId(null)}
+            onRefreshCases={mutate}
+          />
+        </div>
+      )}
+    </div>
+  </div>
   );
 }
 
