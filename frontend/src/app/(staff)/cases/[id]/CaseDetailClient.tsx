@@ -340,6 +340,7 @@ export default function CaseDetailClient() {
 
           </div>
         </div>
+      </div>
 
       {selectedLogHearing && (
         <LogProceedingModal
