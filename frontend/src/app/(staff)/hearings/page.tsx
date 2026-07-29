@@ -141,12 +141,6 @@ export default function HearingsPage() {
     return `${day}/${month}/${year}`;
   };
 
-  const filteredHearings = hearings.filter((h: any) => 
-    h.case_number?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    h.notes?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    formatDate(h.hearing_date).includes(searchTerm)
-  );
-
   if (!canViewHearings) {
     return (
       <div className="flex flex-col items-center justify-center h-[60vh] text-center">
