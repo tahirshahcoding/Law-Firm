@@ -368,9 +368,13 @@ function CasesPageContent() {
                       </div>
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
-                      <Link href={`/cases/${caseItem.id}`} prefetch={false} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="View Case">
+                      <button 
+                        onClick={() => setViewCaseId(caseItem.id)} 
+                        className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" 
+                        title="View Case Details & Hearings History"
+                      >
                         <Eye size={17} />
-                      </Link>
+                      </button>
                       {caseItem.is_active !== false ? (
                         <>
                           <button 
