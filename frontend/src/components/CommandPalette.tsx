@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Search, FolderOpen, User, X, FileText } from 'lucide-react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { API_BASE, apiFetch } from '@/lib/api';
+import { formatCaseTitle } from '@/lib/formatters';
 
 export default function CommandPalette() {
   const [isOpen, setIsOpen] = useState(false);
@@ -136,10 +137,10 @@ export default function CommandPalette() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-slate-200 group-hover:text-blue-400 transition-colors truncate">
-                      {c.case_number}
+                      {formatCaseTitle(c)}
                     </div>
                     <div className="text-xs text-slate-500 dark:text-slate-400 truncate">
-                      vs {c.opponent_name} • {c.court}
+                      Case {c.case_number} • {c.court}
                     </div>
                   </div>
                 </button>

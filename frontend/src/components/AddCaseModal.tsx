@@ -7,6 +7,7 @@ import { sendWhatsApp, caseRegisteredMessage } from '@/lib/whatsapp';
 import { useUI } from '@/context/UIContext';
 import { useDebounce } from '@/hooks/useDebounce';
 import { CASE_CATEGORIES, CASE_PRIORITIES, CASE_STATUSES } from '@/lib/constants';
+import { formatCaseTitle } from '@/lib/formatters';
 import AddClientModal from './AddClientModal';
 
 interface AddCaseModalProps {
@@ -458,7 +459,7 @@ export default function AddCaseModal({ isOpen, onClose, onSuccess }: AddCaseModa
                       <li key={o.id}>
                         <span className="font-semibold">{o.opponent_name}</span>
                         <span className="text-amber-700/80 ml-2 text-xs">
-                          in Case: <span className="font-medium">{o.case_number}</span>
+                          in Case: <span className="font-medium" title={formatCaseTitle(o)}>{formatCaseTitle(o)}</span> <span className="opacity-75">({o.case_number})</span>
                         </span>
                       </li>
                     ))}

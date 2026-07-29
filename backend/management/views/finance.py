@@ -186,6 +186,30 @@ class InvoiceViewSet(viewsets.ModelViewSet):
             if role != 'Admin' and role != 'Accountant' and not perms.get('accounts', {}).get('edit', False):
                 self.permission_denied(request, message="You do not have permission to modify invoices.")
 
+    @action(detail=False, methods=['get'])
+    def summary(self, request):
+        from django.utils import timezone
+        from django.db.models import Count, Q
+        
+        qs = self.get_queryset()
+        today = timezone.now().date()
+        
+        summary = qs.aggregate(
+            total=Count('id'),
+            paid=Count('id', filter=Q(status='Paid')),
+            partial=Count('id', filter=Q(status='Partial', due_date__gte=today)),
+            unpaid=Count('id', filter=Q(status='Unpaid', due_date__gte=today)),
+            overdue=Count('id', filter=Q(status__in=['Unpaid', 'Partial'], due_date__lt=today)),
+        )
+        
+        return Response({
+            "total": summary['total'] or 0,
+            "paid": summary['paid'] or 0,
+            "partial": summary['partial'] or 0,
+            "unpaid": summary['unpaid'] or 0,
+            "overdue": summary['overdue'] or 0
+        })
+
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         if instance.paid_amount > 0:

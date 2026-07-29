@@ -6,6 +6,7 @@ import { API_BASE, apiFetch, safeJson } from '@/lib/api';
 import { sendWhatsApp, hearingScheduledMessage } from '@/lib/whatsapp';
 import { useUI } from '@/context/UIContext';
 import { CASE_STATUSES } from '@/lib/constants';
+import { formatCaseTitle } from '@/lib/formatters';
 
 interface AddHearingModalProps {
   isOpen: boolean;
@@ -63,7 +64,7 @@ export default function AddHearingModal({ isOpen, onClose, onSuccess }: AddHeari
 
   const selectCaseItem = (c: any) => {
     setFormData({ ...formData, case: c.id, hearing_stage: c.status || 'Attendance' });
-    setSelectedCaseName(`${c.case_number} (vs. ${c.opponent_name})`);
+    setSelectedCaseName(`${formatCaseTitle(c)} - Case ${c.case_number}`);
     setIsCaseDropdownOpen(false);
     setCaseSearchText('');
   };
@@ -178,11 +179,13 @@ export default function AddHearingModal({ isOpen, onClose, onSuccess }: AddHeari
                         className="px-3 py-2 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 flex items-center justify-between group transition-colors"
                       >
                         <div>
-                          <p className="text-sm font-medium text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 flex items-center gap-2 transition-colors">
-                            <FolderOpen size={14} className="text-slate-400 dark:text-slate-500 dark:text-slate-400" />
-                            {c.case_number}
+                          <p className="text-sm font-medium text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 truncate max-w-[300px]" title={formatCaseTitle(c)}>
+                            {formatCaseTitle(c)}
                           </p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 transition-colors">vs. {c.opponent_name}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 transition-colors flex items-center gap-1">
+                            <FolderOpen size={12} className="text-slate-400" />
+                            Case {c.case_number}
+                          </p>
                         </div>
                         {formData.case === c.id && <Check size={16} className="text-blue-600 dark:text-blue-400" />}
                       </div>

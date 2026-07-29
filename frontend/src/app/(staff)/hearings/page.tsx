@@ -11,14 +11,18 @@ const LogProceedingModal = dynamic(() => import('@/components/LogProceedingModal
 import { useAuth } from '@/context/AuthContext';
 import { useUI } from '@/context/UIContext';
 import { TableSkeleton } from '@/components/SkeletonLoaders';
+import Pagination from '@/components/Pagination';
 import useSWR from 'swr';
 import { swrFetcher } from '@/lib/fetcher';
 import { useDebounce } from '@/hooks/useDebounce';
 import { CASE_STATUSES } from '@/lib/constants';
+import { formatCaseTitle } from '@/lib/formatters';
 
 export default function HearingsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(25);
   
   // Modals state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -41,7 +45,7 @@ export default function HearingsPage() {
   const [filterLogStatus, setFilterLogStatus] = useState('');
   const [filterDatePreset, setFilterDatePreset] = useState('all');
 
-  let url = `${API_BASE}/hearings/?limit=1000`;
+  let url = `${API_BASE}/hearings/?limit=10000`;
   if (debouncedSearchTerm.trim()) {
     url += `&search=${encodeURIComponent(debouncedSearchTerm.trim())}`;
   }
@@ -97,6 +101,10 @@ export default function HearingsPage() {
     acc[key].hearings.push(h);
     return acc;
   }, {});
+
+  const paginatedHearings = viewMode === 'all_dates' 
+    ? filteredHearings.slice((page - 1) * limit, page * limit)
+    : filteredHearings;
 
   const handleDelete = async (id: string, caseNumber: string, date: string) => {
     const ok = await confirm({
@@ -280,10 +288,10 @@ export default function HearingsPage() {
                     </div>
                     <div>
                       <h3 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
-                        Case {group.case_number}
+                        {group.client_name ? `${group.client_name} vs. ${group.opponent_name}` : formatCaseTitle(group)}
                       </h3>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                        {group.client_name ? `${group.client_name} vs. ${group.opponent_name}` : `vs. ${group.opponent_name}`}
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1">
+                        <FolderOpen size={12} className="text-slate-400" /> Case {group.case_number}
                       </p>
                     </div>
                   </div>
@@ -358,9 +366,12 @@ export default function HearingsPage() {
                             <p className={`font-semibold tracking-wide ${isToday ? 'text-rose-700 dark:text-rose-400' : 'text-slate-900 dark:text-white'}`}>{formatDate(h.hearing_date)}</p>
                             {isToday && <span className="text-[10px] uppercase font-bold text-rose-500 dark:text-rose-400 tracking-wider">Today</span>}
                           </div>
-                          <div className="flex items-center gap-1.5 text-xs text-slate-700 dark:text-slate-300 font-medium mt-0.5">
+                          <div className="flex items-center gap-1.5 text-xs text-slate-700 dark:text-slate-300 font-medium mt-0.5 max-w-[250px] truncate" title={formatCaseTitle(h)}>
+                            {formatCaseTitle(h)}
+                          </div>
+                          <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
                             <FolderOpen size={11} className="text-slate-400 dark:text-slate-500" />
-                            {h.case_number}
+                            Case {h.case_number}
                           </div>
                           <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-0.5">
                             Advocate: {h.advocate_name || 'Senior Partner'}
@@ -426,15 +437,15 @@ export default function HearingsPage() {
               <table className="w-full text-left border-collapse min-w-[800px]">
                 <thead className="bg-slate-50/80 dark:bg-slate-800/80 backdrop-blur-md sticky top-0 z-10 transition-colors">
                   <tr className="border-b border-slate-200/60 dark:border-slate-700/60">
-                    <th className="px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-1/5">Date</th>
-                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider w-1/5">Target Case</th>
-                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider w-1/5">Advocate</th>
-                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider w-1/4">Notes & Next Date</th>
-                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider text-right">Actions</th>
+                    <th className="px-4 py-2.5 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-1/5">Date</th>
+                    <th className="px-4 py-2.5 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider w-1/5">Target Case</th>
+                    <th className="px-4 py-2.5 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider w-1/5">Advocate</th>
+                    <th className="px-4 py-2.5 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider w-1/4">Notes & Next Date</th>
+                    <th className="px-4 py-2.5 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100/80 dark:divide-slate-800/80">
-                  {filteredHearings.map((h: any, index: number) => {
+                  {paginatedHearings.map((h: any, index: number) => {
                     const isToday = h.hearing_date === new Date().toISOString().split('T')[0];
                     return (
                       <tr 
@@ -442,49 +453,52 @@ export default function HearingsPage() {
                         className={`hover:bg-blue-50/40 dark:hover:bg-slate-800/40 transition-all duration-300 group border-l-4 border-transparent hover:border-blue-500 animate-in fade-in slide-in-from-bottom-2 ${isToday ? 'bg-rose-50/30 dark:bg-rose-900/30' : ''}`}
                         style={{ animationFillMode: 'both', animationDelay: `${index * 40}ms` }}
                       >
-                        <td className="px-6 py-4">
+                        <td className="px-4 py-2">
                           <div className="flex items-center gap-3">
-                            <div className={`p-2.5 rounded-xl border shadow-sm group-hover:shadow group-hover:-translate-y-0.5 transition-all ${isToday ? 'bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-900/40 dark:to-rose-800/40 border-rose-200 dark:border-rose-700 text-rose-600 dark:text-rose-400 ring-4 ring-rose-500/10 dark:ring-rose-500/20' : 'bg-gradient-to-br from-slate-100 to-slate-50 dark:from-slate-800 dark:to-slate-700 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 group-hover:border-blue-200 dark:group-hover:border-blue-700 group-hover:text-blue-600 dark:group-hover:text-blue-400'}`}>
-                              <Calendar size={18} />
+                            <div className={`p-2 rounded-xl border shadow-sm group-hover:shadow group-hover:-translate-y-0.5 transition-all ${isToday ? 'bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-900/40 dark:to-rose-800/40 border-rose-200 dark:border-rose-700 text-rose-600 dark:text-rose-400 ring-4 ring-rose-500/10 dark:ring-rose-500/20' : 'bg-gradient-to-br from-slate-100 to-slate-50 dark:from-slate-800 dark:to-slate-700 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 group-hover:border-blue-200 dark:group-hover:border-blue-700 group-hover:text-blue-600 dark:group-hover:text-blue-400'}`}>
+                              <Calendar size={16} />
                             </div>
                             <div>
-                              <p className={`font-semibold tracking-wide ${isToday ? 'text-rose-700 dark:text-rose-400' : 'text-slate-900 dark:text-white'}`}>{formatDate(h.hearing_date)}</p>
+                              <p className={`font-semibold text-sm tracking-wide ${isToday ? 'text-rose-700 dark:text-rose-400' : 'text-slate-900 dark:text-white'}`}>{formatDate(h.hearing_date)}</p>
                               {isToday && <span className="text-[10px] uppercase font-bold text-rose-500 dark:text-rose-400 tracking-wider">Today</span>}
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-4 py-2">
                           <div className="flex flex-col">
-                            <div className="flex items-center gap-1.5 text-slate-900 dark:text-white font-medium group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                              <FolderOpen size={14} className="text-slate-400 dark:text-slate-500" />
-                              {h.case_number}
+                            <div className="flex items-center gap-1.5 text-slate-900 dark:text-white text-sm font-medium group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate max-w-[200px]" title={formatCaseTitle(h)}>
+                              {formatCaseTitle(h)}
+                            </div>
+                            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                              <FolderOpen size={11} className="text-slate-400 dark:text-slate-500" />
+                              Case {h.case_number}
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-4 py-2">
                           <div className="text-sm font-medium text-slate-700 dark:text-slate-300">
                             {h.advocate_name || 'Senior Partner'}
                           </div>
                         </td>
-                        <td className="px-6 py-4">
-                          <div className="flex flex-col gap-1.5">
+                        <td className="px-4 py-2">
+                          <div className="flex flex-col gap-1">
                             {h.notes ? (
                               <div className="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-400">
-                                <AlignLeft size={14} className="text-slate-400 dark:text-slate-500 shrink-0 mt-0.5" />
+                                <AlignLeft size={13} className="text-slate-400 dark:text-slate-500 shrink-0 mt-0.5" />
                                 <span className="line-clamp-2 max-w-[250px]" title={h.notes}>{h.notes}</span>
                               </div>
                             ) : (
-                              <span className="text-sm text-slate-400 dark:text-slate-500 italic">No notes attached.</span>
+                              <span className="text-sm text-slate-400 dark:text-slate-500 italic">No notes.</span>
                             )}
                             
                             {h.next_date && (
-                              <div className="flex items-center gap-1.5 text-[11px] uppercase font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 w-fit px-2 py-0.5 rounded border border-emerald-100 dark:border-emerald-800 tracking-wide mt-1">
+                              <div className="flex items-center gap-1.5 text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 w-fit px-2 py-0.5 rounded border border-emerald-100 dark:border-emerald-800 tracking-wide">
                                 ND: {formatDate(h.next_date)}
                               </div>
                             )}
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-right">
+                        <td className="px-4 py-2 text-right">
                           <div className="flex items-center justify-end gap-2">
                             {h.is_completed ? (
                               <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-3 py-1.5 rounded-xl border border-emerald-200 dark:border-emerald-800 shadow-sm">
@@ -502,7 +516,7 @@ export default function HearingsPage() {
                             <div className="flex items-center gap-0.5 opacity-60 hover:opacity-100 transition-opacity">
                               <button 
                                 onClick={() => handleOpenDocs(h)}
-                                className="p-1.5 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800/50 rounded-lg transition-colors relative"
+                                className="p-1 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800/50 rounded-lg transition-colors relative"
                                 title="Documents"
                               >
                                 <FileText size={16} />
@@ -514,14 +528,14 @@ export default function HearingsPage() {
                               </button>
                               <button 
                                 onClick={() => handleEdit(h)}
-                                className="p-1.5 text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 rounded-lg transition-colors"
+                                className="p-1 text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 rounded-lg transition-colors"
                                 title="Edit Hearing"
                               >
                                 <Edit2 size={16} />
                               </button>
                               <button 
                                 onClick={() => handleDelete(h.id, h.case_number, h.hearing_date)}
-                                className="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-lg transition-colors"
+                                className="p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-lg transition-colors"
                                 title="Cancel Hearing"
                               >
                                 <Trash2 size={16} />
@@ -535,6 +549,17 @@ export default function HearingsPage() {
                 </tbody>
               </table>
             </div>
+            
+            {/* Pagination Controls */}
+            {viewMode === 'all_dates' && filteredHearings.length > 0 && (
+              <Pagination 
+                currentPage={page}
+                totalItems={filteredHearings.length}
+                pageSize={limit}
+                onPageChange={setPage}
+                onPageSizeChange={setLimit}
+              />
+            )}
           </>
         )}
       </div>

@@ -6,6 +6,7 @@ import { API_BASE, apiFetch, safeJson } from '@/lib/api';
 import { useUI } from '@/context/UIContext';
 import { CASE_STATUSES, CLOSURE_REASONS } from '@/lib/constants';
 import { sendWhatsApp, hearingScheduledMessage } from '@/lib/whatsapp';
+import { formatCaseTitle } from '@/lib/formatters';
 
 interface LogProceedingModalProps {
   isOpen: boolean;
@@ -126,11 +127,11 @@ export default function LogProceedingModal({ isOpen, onClose, onSuccess, hearing
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800 shrink-0 bg-slate-50/50 dark:bg-slate-800/50">
           <div>
             <span className="text-[11px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Log Proceeding</span>
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white mt-0.5">
-              Case {hearing.case_number || 'Update'}
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white mt-0.5 max-w-[300px] truncate" title={hearing.client_name ? formatCaseTitle(hearing) : `Case ${hearing.case_number || 'Update'}`}>
+              {hearing.client_name ? formatCaseTitle(hearing) : `Case ${hearing.case_number || 'Update'}`}
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              {hearing.client_name ? `${hearing.client_name} vs. ${hearing.opponent_name}` : `Hearing on ${hearing.hearing_date}`}
+              Case {hearing.case_number || 'Update'} • Hearing on {hearing.hearing_date}
             </p>
           </div>
           <button 

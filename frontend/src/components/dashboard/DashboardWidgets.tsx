@@ -7,6 +7,7 @@ import { Bell, CheckCircle2, Circle, Clock, MessageSquare, Briefcase, Users, Fil
 import Link from 'next/link';
 import { API_BASE, apiFetch } from '@/lib/api';
 import { ListSkeleton, TableRowSkeleton } from '@/components/SkeletonLoaders';
+import { formatCaseTitle } from '@/lib/formatters';
 
 export function DailyTasks() {
   const { data, isLoading: loading, mutate } = useSWR(`${API_BASE}/tasks/?is_completed=false&limit=10`, swrFetcher);
@@ -183,7 +184,7 @@ export function TodaysHearingsList() {
                   </span>
                 </div>
                 <p className="text-sm font-bold text-slate-900 dark:text-white">{h.case_number}</p>
-                <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-1 truncate">{h.client_name} vs {h.opponent_name}</p>
+                <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-1 truncate">{formatCaseTitle(h)}</p>
               </div>
             </div>
           ))}
@@ -237,8 +238,8 @@ export function RecentCasesTable() {
                   <td className="py-3 font-semibold text-slate-900 dark:text-white whitespace-nowrap">
                     <Link href={`/cases/${c.id}`} prefetch={false} className="hover:text-blue-600 dark:hover:text-blue-400">{c.case_number}</Link>
                   </td>
-                  <td className="py-3 whitespace-nowrap max-w-[150px] truncate" title={`${c.client_name} vs ${c.opponent_name}`}>
-                    {c.client_name} vs {c.opponent_name}
+                  <td className="py-3 whitespace-nowrap max-w-[150px] truncate" title={formatCaseTitle(c)}>
+                    {formatCaseTitle(c)}
                   </td>
                   <td className="py-3 whitespace-nowrap max-w-[120px] truncate" title={c.client_name}>{c.client_name}</td>
                   <td className="py-3 whitespace-nowrap max-w-[120px] truncate" title={c.court_details?.name}>{c.court_details?.name || '---'}</td>

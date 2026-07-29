@@ -275,51 +275,58 @@ export default function CauseListPage() {
                   <table className="w-full border-collapse border border-slate-200 dark:border-slate-700 print:table">
                     <thead>
                       <tr className="bg-slate-50 dark:bg-slate-900/50 text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 text-xs font-bold uppercase tracking-wider print:bg-slate-100 print:text-black print:border-black">
-                        <th className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 print:border-black w-[5%] font-bold">S.No</th>
-                        <th className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 print:border-black w-[12%] whitespace-nowrap font-bold">Case ID</th>
-                        <th className="px-4 py-3.5 text-center border-slate-200 dark:border-slate-700 print:border-black w-[15%] whitespace-nowrap font-bold">Case No</th>
-                        <th className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 print:border-black w-[28%] font-bold">Title</th>
-                        <th className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 print:border-black w-[15%] font-bold">Advocates</th>
-                        <th className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 print:border-black w-[13%] font-bold">Proceedings</th>
-                        <th className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 print:border-black w-[12%] whitespace-nowrap font-bold">Prev Date</th>
-                        <th className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 no-print w-[14%] font-bold text-blue-600 dark:text-blue-400">Action</th>
+                        <th className="px-4 py-2.5 text-center border border-slate-200 dark:border-slate-700 print:border-black w-[5%] font-bold">S.No</th>
+                        <th className="px-4 py-2.5 text-center border border-slate-200 dark:border-slate-700 print:border-black w-[12%] whitespace-nowrap font-bold">Case ID</th>
+                        <th className="px-4 py-2.5 text-center border-slate-200 dark:border-slate-700 print:border-black w-[15%] whitespace-nowrap font-bold">Case No</th>
+                        <th className="px-4 py-2.5 text-center border border-slate-200 dark:border-slate-700 print:border-black w-[28%] font-bold">Title</th>
+                        <th className="px-4 py-2.5 text-center border border-slate-200 dark:border-slate-700 print:border-black w-[15%] font-bold">Advocates</th>
+                        <th className="px-4 py-2.5 text-center border border-slate-200 dark:border-slate-700 print:border-black w-[13%] font-bold">Proceedings</th>
+                        <th className="px-4 py-2.5 text-center border border-slate-200 dark:border-slate-700 print:border-black w-[12%] whitespace-nowrap font-bold">Prev Date</th>
+                        <th className="px-4 py-2.5 text-center border border-slate-200 dark:border-slate-700 no-print w-[14%] font-bold text-blue-600 dark:text-blue-400">Action</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-200 dark:divide-slate-800/50 print:divide-y print:divide-black">
                       {stageHearings.map((h: any, index: number) => (
                         <tr key={h.id} className="hover:bg-slate-50/40 dark:hover:bg-slate-800/50 transition-colors text-sm print:hover:bg-transparent print:border-black">
                           {/* S.No */}
-                          <td className="px-4 py-3.5 text-center text-slate-500 dark:text-slate-400 font-medium border border-slate-200 dark:border-slate-700 print:text-black print:border-black">
+                          <td className="px-4 py-2 text-center text-slate-500 dark:text-slate-400 font-medium border border-slate-200 dark:border-slate-700 print:text-black print:border-black">
                             {index + 1}
                           </td>
                           {/* Case ID */}
-                          <td className="px-4 py-3.5 text-center font-bold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 print:text-black print:border-black font-mono whitespace-nowrap">
-                            {h.client_number || '—'}
+                          <td className="px-4 py-2 text-center border border-slate-200 dark:border-slate-700 print:text-black print:border-black whitespace-nowrap">
+                            <div className="flex flex-col items-center justify-center">
+                              <span className="font-bold font-mono text-slate-700 dark:text-slate-300 print:text-black">{h.client_number || '—'}</span>
+                              {h.client_pending_balance && parseFloat(h.client_pending_balance) > 0 && (
+                                <span className="mt-0.5 text-[10px] font-semibold text-rose-500 dark:text-rose-400 print:text-black print:font-normal tracking-wide">
+                                  Due: {parseFloat(h.client_pending_balance).toLocaleString()}
+                                </span>
+                              )}
+                            </div>
                           </td>
                           {/* Case No */}
-                          <td className="px-4 py-3.5 text-center font-bold text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 print:text-black print:border-black whitespace-nowrap">
+                          <td className="px-4 py-2 text-center font-bold text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 print:text-black print:border-black whitespace-nowrap">
                             {h.case_number}
                           </td>
                           {/* Title */}
-                          <td className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 print:text-black print:border-black leading-relaxed">
+                          <td className="px-4 py-2 text-center border border-slate-200 dark:border-slate-700 print:text-black print:border-black leading-relaxed">
                             <div className="font-semibold text-slate-800 dark:text-slate-200 print:text-black">{h.client_name || 'Client'}</div>
                             <div className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase print:text-slate-600 my-0.5">vs</div>
                             <div className="font-semibold text-slate-800 dark:text-slate-200 print:text-black">{h.opponent_name}</div>
                           </td>
                           {/* Advocates */}
-                          <td className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 print:text-black print:border-black font-semibold text-slate-700 dark:text-slate-300">
+                          <td className="px-4 py-2 text-center border border-slate-200 dark:border-slate-700 print:text-black print:border-black font-semibold text-slate-700 dark:text-slate-300">
                             {h.advocate_name || 'Senior Partner'}
                           </td>
                           {/* Proceedings */}
-                          <td className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 print:text-black print:border-black text-blue-600 dark:text-blue-400 font-semibold">
+                          <td className="px-4 py-2 text-center border border-slate-200 dark:border-slate-700 print:text-black print:border-black text-blue-600 dark:text-blue-400 font-semibold">
                             {h.hearing_stage}
                           </td>
                           {/* Prev Date */}
-                          <td className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 print:border-black font-semibold text-slate-600 dark:text-slate-400 whitespace-nowrap">
+                          <td className="px-4 py-2 text-center border border-slate-200 dark:border-slate-700 print:border-black font-semibold text-slate-600 dark:text-slate-400 whitespace-nowrap">
                             {h.previous_date ? formatDate(h.previous_date) : '—'}
                           </td>
                           {/* Log Proceeding Action */}
-                          <td className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 no-print">
+                          <td className="px-4 py-2 text-center border border-slate-200 dark:border-slate-700 no-print">
                             {h.is_completed ? (
                               <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-3 py-1.5 rounded-xl border border-emerald-200 dark:border-emerald-800 shadow-sm">
                                 <CheckCircle2 size={14} /> Proceeding Logged

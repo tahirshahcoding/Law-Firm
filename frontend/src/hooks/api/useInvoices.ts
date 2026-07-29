@@ -46,3 +46,21 @@ export function useInvoices(options: UseInvoicesOptions = {}) {
     mutate,
   };
 }
+
+export function useInvoicesSummary(options: { search?: string; enabled?: boolean } = {}) {
+  const { search = '', enabled = true } = options;
+  const query = new URLSearchParams();
+  if (search) query.append('search', search);
+
+  const url = enabled ? `${API_BASE}/invoices/summary/?${query.toString()}` : null;
+  const { data, error, isLoading, mutate } = useSWR(url, swrFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  return {
+    summary: data || { total: 0, paid: 0, partial: 0, unpaid: 0, overdue: 0 },
+    isLoading,
+    isError: error,
+    mutate,
+  };
+}

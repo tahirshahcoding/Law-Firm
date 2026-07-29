@@ -5,6 +5,7 @@ import { X, FolderOpen, Scale, Gavel, UserX, Coins, Search, Check, Users } from 
 import { API_BASE, apiFetch, safeJson } from '@/lib/api';
 import { useDebounce } from '@/hooks/useDebounce';
 import { CASE_CATEGORIES, CASE_PRIORITIES, CASE_STATUSES } from '@/lib/constants';
+import { formatCaseTitle } from '@/lib/formatters';
 
 interface EditCaseModalProps {
   isOpen: boolean;
@@ -400,7 +401,7 @@ export default function EditCaseModal({ isOpen, onClose, onSuccess, caseData }: 
                           {conflictWarning.opponents.map((o: any) => (
                             <li key={o.id} className="text-xs text-orange-700 flex items-center gap-1.5 before:content-['•'] before:text-orange-400">
                               <span className="font-semibold">{o.opponent_name}</span>
-                              <span className="opacity-75">(in case {o.case_number})</span>
+                              <span className="opacity-75">(in case <span className="font-medium" title={formatCaseTitle(o)}>{formatCaseTitle(o)}</span> - {o.case_number})</span>
                             </li>
                           ))}
                         </ul>

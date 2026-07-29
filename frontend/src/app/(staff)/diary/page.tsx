@@ -8,6 +8,7 @@ import useSWR from 'swr';
 import { swrFetcher } from '@/lib/fetcher';
 import { toast } from 'sonner';
 import { useUI } from '@/context/UIContext';
+import { formatCaseTitle } from '@/lib/formatters';
 
 export default function DailyDiaryPage() {
   const [newTaskTitle, setNewTaskTitle] = useState('');
@@ -193,8 +194,8 @@ export default function DailyDiaryPage() {
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="font-bold text-lg text-slate-900 dark:text-white">{h.case_number}</span>
-                          <span className="text-sm font-medium text-slate-500 dark:text-slate-400">vs {h.opponent_name}</span>
+                          <span className="font-bold text-lg text-slate-900 dark:text-white truncate" title={formatCaseTitle(h)}>{formatCaseTitle(h)}</span>
+                          <span className="text-sm font-medium text-slate-500 dark:text-slate-400">Case {h.case_number}</span>
                         </div>
                         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-slate-600 dark:text-slate-400">
                           <span className="flex items-center gap-1.5"><Scale size={14} className="text-slate-400 dark:text-slate-500" /> {h.court}</span>

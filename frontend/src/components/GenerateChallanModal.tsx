@@ -5,6 +5,7 @@ import { X, Search, FileText, Calendar, Banknote, AlignLeft } from 'lucide-react
 import { API_BASE, apiFetch, safeJson } from '@/lib/api';
 import { sendWhatsApp, challanMessage } from '@/lib/whatsapp';
 import { useUI } from '@/context/UIContext';
+import { formatCaseTitle } from '@/lib/formatters';
 
 interface GenerateChallanModalProps {
   isOpen: boolean;
@@ -63,7 +64,7 @@ export default function GenerateChallanModal({ isOpen, onClose, onSuccess }: Gen
 
   const handleSelectCase = (c: any) => {
     setSelectedCase(c);
-    setSearchTerm(`${c.case_number} - ${c.client_name}`);
+    setSearchTerm(`${formatCaseTitle(c)} - Case ${c.case_number}`);
     setAmount(c.total_fee || '');
     setShowDropdown(false);
   };
@@ -165,8 +166,8 @@ export default function GenerateChallanModal({ isOpen, onClose, onSuccess }: Gen
                         onClick={() => handleSelectCase(c)}
                         className="px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer border-b border-slate-50 last:border-0"
                       >
-                        <div className="font-semibold text-slate-900 dark:text-white text-sm">{c.case_number}</div>
-                        <div className="text-xs text-slate-500 dark:text-slate-400">{c.client_name} vs {c.opponent_name}</div>
+                        <div className="font-semibold text-slate-900 dark:text-white text-sm truncate max-w-[350px]" title={formatCaseTitle(c)}>{formatCaseTitle(c)}</div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400">Case {c.case_number}</div>
                       </div>
                     ))
                   ) : (

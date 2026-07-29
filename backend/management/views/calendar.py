@@ -219,6 +219,30 @@ class DeadlineViewSet(viewsets.ModelViewSet):
 
         return qs
 
+    @action(detail=False, methods=['get'])
+    def summary(self, request):
+        from django.utils import timezone
+        from datetime import timedelta
+        from django.db.models import Count, Q
+        
+        qs = self.get_queryset()
+        today = timezone.now().date()
+        week_from_now = today + timedelta(days=7)
+        
+        summary = qs.aggregate(
+            today=Count('id', filter=Q(due_date=today) & ~Q(status='Completed')),
+            week=Count('id', filter=Q(due_date__gte=today, due_date__lte=week_from_now) & ~Q(status='Completed')),
+            overdue=Count('id', filter=Q(due_date__lt=today) & ~Q(status='Completed')),
+            completed=Count('id', filter=Q(status='Completed')),
+        )
+        
+        return Response({
+            "today": summary['today'] or 0,
+            "week": summary['week'] or 0,
+            "overdue": summary['overdue'] or 0,
+            "completed": summary['completed'] or 0
+        })
+
     @action(detail=True, methods=['post'])
     def mark_completed(self, request, pk=None):
         deadline = self.get_object()

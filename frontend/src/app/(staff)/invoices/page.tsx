@@ -8,8 +8,9 @@ import { useAuth } from '@/context/AuthContext';
 import StatusBadge from '@/components/finance/StatusBadge';
 import InvoiceDrawer from '@/components/finance/InvoiceDrawer';
 import { TableRowSkeleton } from '@/components/SkeletonLoaders';
+import Pagination from '@/components/Pagination';
 const NewInvoiceModal = dynamic(() => import('@/components/finance/NewInvoiceModal'), { ssr: false });
-import { useInvoices } from '@/hooks/api/useInvoices';
+import { useInvoices, useInvoicesSummary } from '@/hooks/api/useInvoices';
 import { useDebounce } from '@/hooks/useDebounce';
 
 const STATUSES = ['All', 'Unpaid', 'Partial', 'Paid', 'Overdue'];
@@ -23,6 +24,8 @@ function fmtDate(d: string | null) {
 export default function InvoicesPage() {
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 300);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(25);
   const [statusFilter, setStatusFilter] = useState('All');
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   const [showNewModal, setShowNewModal] = useState(false);
@@ -30,29 +33,25 @@ export default function InvoicesPage() {
 
   const canManage = user?.role === 'Admin' || user?.permissions?.accounts?.edit;
 
-  const { invoices, isLoading: loading, mutate } = useInvoices({
-    limit: 1000,
+  const { invoices, count, isLoading: loading, mutate } = useInvoices({
+    page,
+    limit,
     search: debouncedSearch,
-    enabled: canManage || true, // Allow viewing for all authorized if API permits, or check permissions
+    status: statusFilter === 'All' ? '' : statusFilter,
+    enabled: canManage || true,
   });
 
-  const filtered = invoices.filter((inv: any) => {
-    const q = search.toLowerCase();
-    const matchSearch = !q ||
-      (inv.invoice_number && inv.invoice_number.toLowerCase().includes(q)) ||
-      (inv.client_name && inv.client_name.toLowerCase().includes(q)) ||
-      (inv.case_number && inv.case_number.toLowerCase().includes(q));
-    const matchStatus = statusFilter === 'All' || inv.status === statusFilter;
-    return matchSearch && matchStatus;
+  const { summary } = useInvoicesSummary({
+    search: debouncedSearch,
+    enabled: canManage || true,
   });
 
-  // Summary counts
   const counts = {
-    total: invoices.length,
-    paid: invoices.filter((i: any) => i.status === 'Paid').length,
-    partial: invoices.filter((i: any) => i.status === 'Partial').length,
-    unpaid: invoices.filter((i: any) => i.status === 'Unpaid').length,
-    overdue: invoices.filter((i: any) => i.status === 'Overdue').length,
+    total: summary?.total || 0,
+    paid: summary?.paid || 0,
+    partial: summary?.partial || 0,
+    unpaid: summary?.unpaid || 0,
+    overdue: summary?.overdue || 0,
   };
 
   return (
@@ -102,7 +101,7 @@ export default function InvoicesPage() {
             type="text"
             placeholder="Search invoice, client, case…"
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={e => { setSearch(e.target.value); setPage(1); }}
             className="w-full pl-9 pr-3 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
           />
         </div>
@@ -110,7 +109,7 @@ export default function InvoicesPage() {
           {STATUSES.map(s => (
             <button
               key={s}
-              onClick={() => setStatusFilter(s)}
+              onClick={() => { setStatusFilter(s); setPage(1); }}
               className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${statusFilter === s ? 'bg-slate-900 dark:bg-blue-600 text-white' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
             >
               {s}
@@ -125,48 +124,52 @@ export default function InvoicesPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/50">
-                <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Invoice #</th>
-                <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Client</th>
-                <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Case</th>
-                <th className="px-5 py-3 text-right text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Amount</th>
-                <th className="px-5 py-3 text-right text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Paid</th>
-                <th className="px-5 py-3 text-right text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Balance</th>
-                <th className="px-5 py-3 text-center text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Status</th>
-                <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Date</th>
+                <th className="px-5 py-2.5 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Invoice #</th>
+                <th className="px-5 py-2.5 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Client</th>
+                <th className="px-5 py-2.5 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Case</th>
+                <th className="px-5 py-2.5 text-right text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Amount</th>
+                <th className="px-5 py-2.5 text-right text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Paid</th>
+                <th className="px-5 py-2.5 text-right text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Balance</th>
+                <th className="px-5 py-2.5 text-center text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Status</th>
+                <th className="px-5 py-2.5 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Date</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50 dark:divide-slate-800/50">
               {loading ? (
                 <TableRowSkeleton columns={8} />
-              ) : filtered.length === 0 ? (
+              ) : invoices.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="px-5 py-12 text-center text-sm text-slate-400">
                     No invoices found.
                   </td>
                 </tr>
-              ) : filtered.map((inv: any) => (
+              ) : invoices.map((inv: any) => (
                 <tr
                   key={inv.id}
                   onClick={() => setSelectedInvoice(inv)}
                   className="hover:bg-blue-50/40 dark:hover:bg-slate-800/50 cursor-pointer transition-colors group"
                 >
-                  <td className="px-5 py-3.5 font-mono font-semibold text-slate-700 dark:text-slate-300 text-xs">{inv.invoice_number}</td>
-                  <td className="px-5 py-3.5 font-medium text-slate-800 dark:text-white">{inv.client_name}</td>
-                  <td className="px-5 py-3.5 text-slate-500 dark:text-slate-400">{inv.case_number}</td>
-                  <td className="px-5 py-3.5 text-right font-semibold text-slate-800 dark:text-white">{fmt(inv.amount)}</td>
-                  <td className="px-5 py-3.5 text-right text-emerald-600 dark:text-emerald-400 font-medium">{fmt(inv.amount_paid)}</td>
-                  <td className="px-5 py-3.5 text-right font-semibold text-rose-600 dark:text-rose-400">{parseFloat(inv.balance_due ?? 0) > 0 ? fmt(inv.balance_due) : <span className="text-slate-400 dark:text-slate-500">—</span>}</td>
-                  <td className="px-5 py-3.5 text-center"><StatusBadge status={inv.status} /></td>
-                  <td className="px-5 py-3.5 text-slate-500 dark:text-slate-400 text-xs">{fmtDate(inv.issue_date)}</td>
+                  <td className="px-5 py-2 font-mono font-semibold text-slate-700 dark:text-slate-300 text-xs">{inv.invoice_number}</td>
+                  <td className="px-5 py-2 font-medium text-slate-800 dark:text-white">{inv.client_name}</td>
+                  <td className="px-5 py-2 text-slate-500 dark:text-slate-400">{inv.case_number}</td>
+                  <td className="px-5 py-2 text-right font-semibold text-slate-800 dark:text-white">{fmt(inv.amount)}</td>
+                  <td className="px-5 py-2 text-right text-emerald-600 dark:text-emerald-400 font-medium">{fmt(inv.amount_paid)}</td>
+                  <td className="px-5 py-2 text-right font-semibold text-rose-600 dark:text-rose-400">{parseFloat(inv.balance_due ?? 0) > 0 ? fmt(inv.balance_due) : <span className="text-slate-400 dark:text-slate-500">—</span>}</td>
+                  <td className="px-5 py-2 text-center"><StatusBadge status={inv.status} /></td>
+                  <td className="px-5 py-2 text-slate-500 dark:text-slate-400 text-xs">{fmtDate(inv.issue_date)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        {filtered.length > 0 && (
-          <div className="px-5 py-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 text-xs text-slate-500 dark:text-slate-400 transition-colors">
-            Showing {filtered.length} of {invoices.length} invoices
-          </div>
+        {count > 0 && (
+          <Pagination 
+            currentPage={page}
+            totalItems={count}
+            pageSize={limit}
+            onPageChange={setPage}
+            onPageSizeChange={setLimit}
+          />
         )}
       </div>
 

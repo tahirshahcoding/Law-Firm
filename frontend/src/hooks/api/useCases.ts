@@ -16,7 +16,7 @@ interface UseCasesOptions {
 export function useCases(options: UseCasesOptions = {}) {
   const {
     page = 1,
-    limit = 20,
+    limit = 25,
     search = '',
     category = '',
     priority = '',

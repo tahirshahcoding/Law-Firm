@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { formatCaseTitle } from '@/lib/formatters';
 
 const COLORS = {
   slate900: '#0f172a',
@@ -138,7 +139,7 @@ function ChallanCopy({
           <h4 className="text-[9px] font-bold uppercase tracking-wider mb-0.5" style={{ color: COLORS.slate400 }}>Particulars</h4>
           <p className="font-semibold leading-tight" style={{ color: COLORS.slate800 }}>{caseData.description || 'Professional Legal Services'}</p>
           <p className="text-[10px] mt-1 max-w-[420px] leading-tight" style={{ color: COLORS.slate500 }}>
-            Legal counsel and representation fees regarding the matter of {caseData.client_name || 'Client'} vs. {caseData.opponent_name || 'Opponent'}.
+            Legal counsel and representation fees regarding the matter of {formatCaseTitle(caseData)}.
           </p>
         </div>
         <div 

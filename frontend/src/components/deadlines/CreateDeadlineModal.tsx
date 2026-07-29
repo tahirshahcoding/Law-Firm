@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { X, Calendar, AlignLeft, Search, Check } from 'lucide-react';
 import { API_BASE, apiFetch, safeJson } from '@/lib/api';
 import { useUI } from '@/context/UIContext';
+import { formatCaseTitle } from '@/lib/formatters';
 
 interface CreateDeadlineModalProps {
   isOpen: boolean;
@@ -194,7 +195,7 @@ export default function CreateDeadlineModal({ isOpen, onClose, onSuccess, initia
                 onClick={() => setCaseMenuOpen(!caseMenuOpen)}
               >
                 <span className={`truncate ${selectedCaseObj ? 'text-slate-900 dark:text-white' : 'text-slate-400 dark:text-slate-500 dark:text-slate-400'}`}>
-                  {selectedCaseObj ? `${selectedCaseObj.case_number} - ${selectedCaseObj.client_name}` : 'Select Case (Optional)'}
+                  {selectedCaseObj ? `${formatCaseTitle(selectedCaseObj)} - Case ${selectedCaseObj.case_number}` : 'Select Case (Optional)'}
                 </span>
               </div>
               
@@ -232,7 +233,7 @@ export default function CreateDeadlineModal({ isOpen, onClose, onSuccess, initia
                           className={`px-3 py-2 text-sm rounded-lg cursor-pointer flex items-center justify-between ${formData.case === c.id ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400' : 'hover:bg-slate-50 dark:hover:bg-slate-700/50 text-slate-700 dark:text-slate-300'}`}
                           onClick={() => { setFormData({...formData, case: c.id}); setCaseMenuOpen(false); }}
                         >
-                          <span className="truncate pr-2">{c.case_number} - {c.client_name}</span>
+                          <span className="truncate pr-2">{formatCaseTitle(c)} - Case {c.case_number}</span>
                           {formData.case === c.id && <Check size={14} className="shrink-0 dark:text-blue-400" />}
                         </div>
                       ))

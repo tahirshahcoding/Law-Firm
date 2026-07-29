@@ -6,6 +6,7 @@ import { API_BASE, apiFetch } from '@/lib/api';
 import { toast } from 'sonner';
 import { useUI } from '@/context/UIContext';
 import { CASE_STATUSES } from '@/lib/constants';
+import { formatCaseTitle } from '@/lib/formatters';
 
 interface EditHearingModalProps {
   isOpen: boolean;
@@ -58,7 +59,7 @@ export default function EditHearingModal({ isOpen, onClose, onSuccess, hearingDa
 
             const matchingCase = list.find((c: any) => c.id === hearingData.case);
             if (matchingCase) {
-              setSelectedCaseName(`${matchingCase.case_number} (vs. ${matchingCase.opponent_name})`);
+              setSelectedCaseName(`${formatCaseTitle(matchingCase)} - Case ${matchingCase.case_number}`);
             }
             if (hearingData.documents) {
               setDocuments(hearingData.documents);
@@ -89,7 +90,7 @@ export default function EditHearingModal({ isOpen, onClose, onSuccess, hearingDa
 
   const selectCaseItem = (c: any) => {
     setFormData({ ...formData, case: c.id });
-    setSelectedCaseName(`${c.case_number} (vs. ${c.opponent_name})`);
+    setSelectedCaseName(`${formatCaseTitle(c)} - Case ${c.case_number}`);
     setIsCaseDropdownOpen(false);
     setCaseSearchText('');
   };
@@ -186,11 +187,13 @@ export default function EditHearingModal({ isOpen, onClose, onSuccess, hearingDa
                         className="px-3 py-2 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center justify-between group"
                       >
                         <div>
-                          <p className="text-sm font-medium text-slate-900 dark:text-white group-hover:text-blue-600 flex items-center gap-2">
-                            <FolderOpen size={14} className="text-slate-400" />
-                            {c.case_number}
+                          <p className="text-sm font-medium text-slate-900 dark:text-white group-hover:text-blue-600 truncate max-w-[300px]" title={formatCaseTitle(c)}>
+                            {formatCaseTitle(c)}
                           </p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">vs. {c.opponent_name}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1">
+                            <FolderOpen size={12} className="text-slate-400" />
+                            Case {c.case_number}
+                          </p>
                         </div>
                         {formData.case === c.id && <Check size={16} className="text-blue-600" />}
                       </div>

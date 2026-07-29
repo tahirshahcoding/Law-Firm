@@ -8,7 +8,9 @@ import { useUI } from '@/context/UIContext';
 import { getStatusColor, CLOSURE_REASONS, getClosureColor } from '@/lib/constants';
 import StatusDropdown from '@/components/StatusDropdown';
 import dynamic from 'next/dynamic';
-import { Zap, CheckCircle2, Lock } from 'lucide-react';
+import Link from 'next/link';
+import { Zap, CheckCircle2, Lock, ArrowLeft, FolderOpen, Scale, Gavel, Calendar, Clock, AlertTriangle, FileText, Banknote, MessageCircle, RefreshCw, CheckCircle } from 'lucide-react';
+import { formatCaseTitle } from '@/lib/formatters';
 
 const LogProceedingModal = dynamic(() => import('@/components/LogProceedingModal'), { ssr: false });
 
@@ -157,11 +159,11 @@ export default function CaseDetailClient() {
         </Link>
         <div>
           <h2 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-3">
-            Case {caseData.case_number}
+            {formatCaseTitle(caseData)}
             {caseData.priority === 'Urgent' && <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 uppercase tracking-wider">Urgent</span>}
             {caseData.priority === 'High' && <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 uppercase tracking-wider">High</span>}
           </h2>
-          <p className="text-slate-500 mt-1">{caseData.client_name} vs {caseData.opponent_name}</p>
+          <p className="text-slate-500 mt-1 flex items-center gap-1"><FolderOpen size={14} className="text-slate-400" /> Case {caseData.case_number}</p>
         </div>
       </div>
 

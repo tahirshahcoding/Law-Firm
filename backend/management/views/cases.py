@@ -209,18 +209,36 @@ class HearingViewSet(viewsets.ModelViewSet):
     permission_classes = [IsStaffUser, HasModulePermission]
 
     def get_queryset(self):
-        from django.db.models import OuterRef, Subquery
+        from django.db.models import OuterRef, Subquery, Sum, DecimalField
+        from django.db.models.functions import Coalesce
+        from decimal import Decimal
+        from management.models import InvoiceItem, Payment
         
         previous_hearing = Hearing.objects.filter(
             case=OuterRef('case'),
             hearing_date__lt=OuterRef('hearing_date')
         ).order_by('-hearing_date').values('hearing_date')[:1]
 
+        client_total = InvoiceItem.objects.filter(
+            invoice__case__client=OuterRef('case__client')
+        ).values('invoice__case__client').annotate(
+            total=Sum('amount')
+        ).values('total')
+
+        client_paid = Payment.objects.filter(
+            invoice__case__client=OuterRef('case__client')
+        ).values('invoice__case__client').annotate(
+            total=Sum('amount_received')
+        ).values('total')
+
         qs = (
             Hearing.objects
             .select_related('case', 'case__client', 'case__assigned_to', 'case__court', 'case__judge')
             .prefetch_related('documents')
-            .annotate(annotated_previous_date=Subquery(previous_hearing))
+            .annotate(
+                annotated_previous_date=Subquery(previous_hearing),
+                annotated_client_pending_balance=Coalesce(Subquery(client_total, output_field=DecimalField()), Decimal('0.00')) - Coalesce(Subquery(client_paid, output_field=DecimalField()), Decimal('0.00'))
+            )
             .order_by('hearing_date')
         )
         user = self.request.user

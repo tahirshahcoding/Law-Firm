@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { X, Plus, Trash2, FileText } from 'lucide-react';
 import { API_BASE, apiFetch, safeJson, parseApiError } from '@/lib/api';
 import { sendWhatsApp, challanMessage } from '@/lib/whatsapp';
+import { formatCaseTitle } from '@/lib/formatters';
 
 interface NewInvoiceModalProps {
   onClose: () => void;
@@ -127,8 +128,8 @@ export default function NewInvoiceModal({ onClose, onSuccess }: NewInvoiceModalP
               {selectedCase ? (
                 <div className="flex items-center justify-between px-3 py-2.5 border border-blue-300 dark:border-blue-800 rounded-xl bg-blue-50 dark:bg-blue-900/20">
                   <div>
-                    <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">{selectedCase.case_number}</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">{selectedCase.client_name}</p>
+                    <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">{formatCaseTitle(selectedCase)}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Case {selectedCase.case_number}</p>
                   </div>
                   <button type="button" onClick={() => { setSelectedCase(null); setForm(p => ({ ...p, case: '' })); setCaseSearch(''); setItems([{ description: '', amount: '' }]); }} className="text-slate-400 hover:text-slate-700 dark:text-slate-300">
                     <X size={16} />
@@ -163,8 +164,8 @@ export default function NewInvoiceModal({ onClose, onSuccess }: NewInvoiceModalP
                             }}
                             className="w-full text-left px-4 py-2.5 hover:bg-blue-50 border-b border-slate-50 last:border-0"
                           >
-                            <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">{c.case_number}</p>
-                            <p className="text-xs text-slate-500 dark:text-slate-400">{c.client_name} · {c.status}</p>
+                            <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate">{formatCaseTitle(c)}</p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">Case {c.case_number} · {c.status}</p>
                           </button>
                         ))
                       ) : (

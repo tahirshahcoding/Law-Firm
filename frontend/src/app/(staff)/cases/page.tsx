@@ -16,7 +16,9 @@ import { useAuth } from '@/context/AuthContext';
 import { useUI } from '@/context/UIContext';
 import { TableSkeleton } from '@/components/SkeletonLoaders';
 import { CASE_CATEGORIES, CASE_PRIORITIES, CASE_STATUSES, CLOSURE_REASONS, getClosureColor } from '@/lib/constants';
+import { formatCaseTitle } from '@/lib/formatters';
 import StatusDropdown from '@/components/StatusDropdown';
+import Pagination from '@/components/Pagination';
 
 function CasesPageContent() {
   const searchParams = useSearchParams();
@@ -24,6 +26,7 @@ function CasesPageContent() {
   const [searchTerm, setSearchTerm] = useState(initialSearch);
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(25);
 
   const [filterCategory, setFilterCategory] = useState('');
   const [filterPriority, setFilterPriority] = useState('');
@@ -49,7 +52,7 @@ function CasesPageContent() {
 
   const { cases, count: totalCount, totalPages, isLoading: loading, mutate } = useCases({
     page,
-    limit: 20,
+    limit,
     search: debouncedSearchTerm,
     category: filterCategory,
     priority: filterPriority,
@@ -335,7 +338,7 @@ function CasesPageContent() {
                       </div>
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 mb-1.5">
-                          <p className="font-semibold text-slate-900 dark:text-white">{caseItem.case_number}</p>
+                          <p className="font-semibold text-slate-900 dark:text-white truncate max-w-[200px]" title={formatCaseTitle(caseItem)}>{formatCaseTitle(caseItem)}</p>
                           {caseItem.priority && (
                             <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${
                               caseItem.priority === 'Urgent' ? 'bg-rose-50 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800' :
@@ -347,8 +350,8 @@ function CasesPageContent() {
                           )}
                         </div>
                         <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                          <UserX size={11} className="text-rose-400 dark:text-rose-500 shrink-0" />
-                          <span className="truncate">vs. {caseItem.opponent_name}</span>
+                          <FolderOpen size={11} className="text-slate-400 dark:text-slate-500 shrink-0" />
+                          <span className="truncate">{caseItem.case_number}</span>
                         </div>
                         <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-300 mt-1 font-medium">
                           <Scale size={11} className="text-slate-400 dark:text-slate-500 shrink-0" />
@@ -424,10 +427,10 @@ function CasesPageContent() {
               <table className="w-full text-left border-collapse table-fixed min-w-[800px]">
                 <thead className="bg-slate-50/80 dark:bg-slate-800/80 backdrop-blur-md sticky top-0 z-10 transition-colors">
                   <tr className="border-b border-slate-200/60 dark:border-slate-700/60">
-                    <th className="px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-1/3">Case Reference</th>
-                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider w-1/3">Judiciary Details</th>
-                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">{activeTab === 'active' ? 'Stage' : 'Result'}</th>
-                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider text-right">Actions</th>
+                    <th className="px-4 py-2.5 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-1/3">Case Reference</th>
+                    <th className="px-4 py-2.5 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider w-1/3">Judiciary Details</th>
+                    <th className="px-4 py-2.5 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">{activeTab === 'active' ? 'Stage' : 'Result'}</th>
+                    <th className="px-4 py-2.5 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100/80 dark:divide-slate-800/80">
@@ -437,18 +440,19 @@ function CasesPageContent() {
                       className="hover:bg-blue-50/40 dark:hover:bg-blue-900/10 transition-all duration-300 group border-l-4 border-transparent hover:border-blue-500 animate-in fade-in slide-in-from-bottom-2"
                       style={{ animationFillMode: 'both', animationDelay: `${index * 40}ms` }}
                     >
-                      <td className="px-6 py-4">
+                      <td className="px-4 py-2">
                         <div className="flex items-start gap-3">
-                          <div className="w-10 h-10 shrink-0 rounded-xl bg-gradient-to-br from-slate-100 to-slate-50 dark:from-slate-800 dark:to-slate-800/80 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 shadow-sm group-hover:shadow group-hover:border-blue-200 dark:group-hover:border-blue-800 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-all">
-                            <FolderOpen size={18} />
+                          <div className="w-9 h-9 shrink-0 rounded-xl bg-gradient-to-br from-slate-100 to-slate-50 dark:from-slate-800 dark:to-slate-800/80 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 shadow-sm group-hover:shadow group-hover:border-blue-200 dark:group-hover:border-blue-800 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-all">
+                            <FolderOpen size={16} />
                           </div>
                           <div>
                             <div className="flex items-center gap-2 mb-0.5">
                               <p 
                                 onClick={() => setViewCaseId(caseItem.id)}
-                                className="font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors cursor-pointer hover:underline"
+                                className="font-semibold text-sm text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors cursor-pointer hover:underline truncate max-w-[300px]"
+                                title={formatCaseTitle(caseItem)}
                               >
-                                {caseItem.case_number}
+                                {formatCaseTitle(caseItem)}
                               </p>
                               {caseItem.priority && (
                                 <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${
@@ -460,15 +464,15 @@ function CasesPageContent() {
                                 </span>
                               )}
                             </div>
-                            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-[200px]">
-                              <UserX size={12} className="text-rose-400 dark:text-rose-500 shrink-0" />
-                              <span className="truncate">vs. {caseItem.opponent_name}</span>
+                            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 max-w-[200px]">
+                              <FolderOpen size={12} className="text-slate-400 dark:text-slate-500 shrink-0" />
+                              <span className="truncate">{caseItem.case_number}</span>
                             </div>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 cursor-pointer" onClick={() => setViewCaseId(caseItem.id)}>
-                        <div className="flex flex-col gap-1.5">
+                      <td className="px-4 py-2 cursor-pointer" onClick={() => setViewCaseId(caseItem.id)}>
+                        <div className="flex flex-col gap-1">
                           <div className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300 font-medium">
                             <Scale size={14} className="text-slate-400 dark:text-slate-500 shrink-0" />
                             <span className="truncate max-w-[250px]">{caseItem.court_details?.name || '---'}</span>
@@ -479,7 +483,7 @@ function CasesPageContent() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-4 py-2">
                         {caseItem.is_active !== false ? (
                           <StatusDropdown 
                             value={caseItem.status} 
@@ -492,7 +496,7 @@ function CasesPageContent() {
                           </span>
                         )}
                       </td>
-                      <td className="px-6 py-4 text-right">
+                      <td className="px-4 py-2 text-right">
                         <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           <Link 
                             href={`/cases/${caseItem.id}`}
@@ -545,31 +549,14 @@ function CasesPageContent() {
               </table>
             </div>
             {/* Pagination Controls */}
-            {totalPages > 1 && (
-              <div className="p-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/30 dark:bg-slate-800/30 transition-colors">
-                <p className="text-sm text-slate-500 dark:text-slate-400">
-                  Showing <span className="font-medium text-slate-900 dark:text-white">{(page - 1) * 20 + 1}</span> to <span className="font-medium text-slate-900 dark:text-white">{Math.min(page * 20, totalCount)}</span> of <span className="font-medium text-slate-900 dark:text-white">{totalCount}</span> results
-                </p>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setPage(p => Math.max(1, p - 1))}
-                    disabled={page === 1}
-                    className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    <ChevronLeft size={16} />
-                  </button>
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300 px-2">
-                    Page {page} of {totalPages}
-                  </span>
-                  <button
-                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                    disabled={page === totalPages}
-                    className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    <ChevronRight size={16} />
-                  </button>
-                </div>
-              </div>
+            {totalCount > 0 && (
+              <Pagination 
+                currentPage={page}
+                totalItems={totalCount}
+                pageSize={limit}
+                onPageChange={setPage}
+                onPageSizeChange={setLimit}
+              />
             )}
           </>
         )}

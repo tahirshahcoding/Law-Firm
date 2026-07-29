@@ -27,12 +27,18 @@ class HearingSerializer(serializers.ModelSerializer):
     judge = serializers.CharField(source='case.judge.name', read_only=True, default=None)
     client_name = serializers.CharField(source='case.client.name', read_only=True)
     client_number = serializers.CharField(source='case.client.client_number', read_only=True)
+    client_pending_balance = serializers.SerializerMethodField()
     advocate_name = serializers.SerializerMethodField()
     previous_date = serializers.SerializerMethodField()
     
     class Meta:
         model = Hearing
         fields = '__all__'
+
+    def get_client_pending_balance(self, obj):
+        if hasattr(obj, 'annotated_client_pending_balance'):
+            return str(obj.annotated_client_pending_balance)
+        return "0.00"
 
     def get_advocate_name(self, obj):
         if obj.case.assigned_to:

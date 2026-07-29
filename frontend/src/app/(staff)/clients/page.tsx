@@ -12,6 +12,7 @@ const EditClientModal = dynamic(() => import('@/components/EditClientModal'), { 
 import { useAuth } from '@/context/AuthContext';
 import { useUI } from '@/context/UIContext';
 import { TableSkeleton } from '@/components/SkeletonLoaders';
+import Pagination from '@/components/Pagination';
 
 function ClientsPageContent() {
   const searchParams = useSearchParams();
@@ -19,7 +20,7 @@ function ClientsPageContent() {
   const [searchTerm, setSearchTerm] = useState(initialSearch);
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
   const [page, setPage] = useState(1);
-  
+  const [limit, setLimit] = useState(25);
   // Modals state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -35,7 +36,7 @@ function ClientsPageContent() {
 
   const { clients, count: totalCount, totalPages, isLoading: loading, mutate } = useClients({
     page,
-    limit: 20,
+    limit,
     search: debouncedSearchTerm,
     enabled: canViewClients,
   });
@@ -195,11 +196,11 @@ function ClientsPageContent() {
               <table className="w-full text-left border-collapse table-fixed min-w-[800px]">
                 <thead className="bg-slate-50/80 dark:bg-slate-800/80 backdrop-blur-md sticky top-0 z-10 transition-colors">
                   <tr className="border-b border-slate-200/60 dark:border-slate-700/60">
-                    <th className="px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-16">ID</th>
-                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider w-1/3">Client Details</th>
-                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider w-1/3">Contact Info</th>
-                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider text-right">Actions</th>
+                    <th className="px-4 py-2.5 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-16">ID</th>
+                    <th className="px-4 py-2.5 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider w-1/3">Client Details</th>
+                    <th className="px-4 py-2.5 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider w-1/3">Contact Info</th>
+                    <th className="px-4 py-2.5 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Status</th>
+                    <th className="px-4 py-2.5 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100/80 dark:divide-slate-800/80">
@@ -209,45 +210,45 @@ function ClientsPageContent() {
                       className="hover:bg-blue-50/40 dark:hover:bg-blue-900/10 transition-all duration-300 group border-l-4 border-transparent hover:border-blue-500 animate-in fade-in slide-in-from-bottom-2"
                       style={{ animationFillMode: 'both', animationDelay: `${index * 40}ms` }}
                     >
-                      <td className="px-6 py-4">
-                        <span className="font-mono text-sm font-semibold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md border border-slate-200 dark:border-slate-700 whitespace-nowrap">
+                      <td className="px-4 py-2">
+                        <span className="font-mono text-xs font-semibold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md border border-slate-200 dark:border-slate-700 whitespace-nowrap">
                           {client.client_number || '---'}
                         </span>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-4 py-2">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 shrink-0 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/40 dark:to-indigo-900/40 border border-blue-200 dark:border-blue-800/50 flex items-center justify-center text-blue-700 dark:text-blue-400 font-bold uppercase text-sm shadow-sm group-hover:shadow group-hover:scale-105 group-hover:border-blue-300 dark:group-hover:border-blue-700 transition-all">
+                          <div className="w-9 h-9 shrink-0 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/40 dark:to-indigo-900/40 border border-blue-200 dark:border-blue-800/50 flex items-center justify-center text-blue-700 dark:text-blue-400 font-bold uppercase text-sm shadow-sm group-hover:shadow group-hover:scale-105 group-hover:border-blue-300 dark:group-hover:border-blue-700 transition-all">
                             {(client.name || 'U').charAt(0)}
                           </div>
                           <div>
                             <div className="flex items-center gap-2 mb-0.5">
-                              <p className="font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{client.name}</p>
+                              <p className="font-semibold text-sm text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{client.name}</p>
                             </div>
                             <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500 font-mono">
-                              <CreditCard size={12} className="text-slate-300 dark:text-slate-600" />
+                              <CreditCard size={11} className="text-slate-300 dark:text-slate-600" />
                               {client.cnic}
                             </div>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="flex flex-col gap-1.5">
+                      <td className="px-4 py-2">
+                        <div className="flex flex-col gap-1">
                           <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300 font-mono">
-                            <Phone size={14} className="text-slate-400 dark:text-slate-500 shrink-0" />
+                            <Phone size={13} className="text-slate-400 dark:text-slate-500 shrink-0" />
                             {client.mobile_number}
                           </div>
                           <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 truncate max-w-[200px]" title={client.address}>
-                            <MapPin size={14} className="text-slate-400 dark:text-slate-500 shrink-0" />
+                            <MapPin size={13} className="text-slate-400 dark:text-slate-500 shrink-0" />
                             <span className="truncate">{client.address}</span>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-700 ring-1 ring-emerald-500/20 shadow-sm">
+                      <td className="px-4 py-2">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
                           Active
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-right">
+                      <td className="px-4 py-2 text-right">
                         <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button 
                             className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
@@ -277,31 +278,14 @@ function ClientsPageContent() {
               </table>
             </div>
             {/* Pagination Controls */}
-            {totalPages > 1 && (
-              <div className="p-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/30 dark:bg-slate-800/30 transition-colors">
-                <p className="text-sm text-slate-500 dark:text-slate-400">
-                  Showing <span className="font-medium text-slate-900 dark:text-white">{(page - 1) * 20 + 1}</span> to <span className="font-medium text-slate-900 dark:text-white">{Math.min(page * 20, totalCount)}</span> of <span className="font-medium text-slate-900 dark:text-white">{totalCount}</span> results
-                </p>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setPage(p => Math.max(1, p - 1))}
-                    disabled={page === 1}
-                    className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    <ChevronLeft size={16} />
-                  </button>
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300 px-2">
-                    Page {page} of {totalPages}
-                  </span>
-                  <button
-                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                    disabled={page === totalPages}
-                    className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    <ChevronRight size={16} />
-                  </button>
-                </div>
-              </div>
+            {totalCount > 0 && (
+              <Pagination 
+                currentPage={page}
+                totalItems={totalCount}
+                pageSize={limit}
+                onPageChange={setPage}
+                onPageSizeChange={setLimit}
+              />
             )}
           </>
         )}

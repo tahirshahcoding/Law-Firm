@@ -12,7 +12,7 @@ interface UseClientsOptions {
 export function useClients(options: UseClientsOptions = {}) {
   const {
     page = 1,
-    limit = 20,
+    limit = 25,
     search = '',
     enabled = true,
   } = options;
