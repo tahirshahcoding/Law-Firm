@@ -14,6 +14,7 @@ import { TableSkeleton } from '@/components/SkeletonLoaders';
 import useSWR from 'swr';
 import { swrFetcher } from '@/lib/fetcher';
 import { useDebounce } from '@/hooks/useDebounce';
+import { CASE_STATUSES } from '@/lib/constants';
 
 export default function HearingsPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -36,6 +37,9 @@ export default function HearingsPage() {
   const canDeleteHearings = user?.role === 'Admin' || user?.permissions?.hearings?.delete === true;
 
   const [viewMode, setViewMode] = useState<'by_case' | 'all_dates'>('by_case');
+  const [filterStage, setFilterStage] = useState('');
+  const [filterLogStatus, setFilterLogStatus] = useState('');
+  const [filterDatePreset, setFilterDatePreset] = useState('all');
 
   let url = `${API_BASE}/hearings/?limit=1000`;
   if (debouncedSearchTerm.trim()) {
@@ -47,8 +51,38 @@ export default function HearingsPage() {
   const hearingsData = data && Array.isArray(data.results) ? data.results : Array.isArray(data) ? data : [];
   const hearings = [...hearingsData].sort((a: any, b: any) => new Date(a.hearing_date).getTime() - new Date(b.hearing_date).getTime());
 
+  const todayStr = new Date().toISOString().split('T')[0];
+
+  const filteredHearings = hearings.filter((h: any) => {
+    const matchesSearch = !searchTerm.trim() || (
+      h.case_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      h.opponent_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      h.client_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      h.notes?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      formatDate(h.hearing_date).includes(searchTerm)
+    );
+
+    const matchesStage = !filterStage || h.hearing_stage?.toLowerCase() === filterStage.toLowerCase();
+
+    const matchesLogStatus = !filterLogStatus || (
+      filterLogStatus === 'pending' ? !h.is_completed :
+      filterLogStatus === 'completed' ? !!h.is_completed : true
+    );
+
+    let matchesDate = true;
+    if (filterDatePreset === 'today') {
+      matchesDate = h.hearing_date === todayStr;
+    } else if (filterDatePreset === 'upcoming') {
+      matchesDate = h.hearing_date >= todayStr;
+    } else if (filterDatePreset === 'past') {
+      matchesDate = h.hearing_date < todayStr;
+    }
+
+    return matchesSearch && matchesStage && matchesLogStatus && matchesDate;
+  });
+
   // Group hearings by Case
-  const groupedByCase = hearings.reduce((acc: any, h: any) => {
+  const groupedByCase = filteredHearings.reduce((acc: any, h: any) => {
     const key = h.case_number || 'Unassigned';
     if (!acc[key]) {
       acc[key] = {
@@ -144,19 +178,56 @@ export default function HearingsPage() {
 
       <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none border border-white/60 dark:border-slate-800/60 overflow-hidden transition-colors">
         {/* Toolbar */}
-        <div className="p-4 border-b border-slate-200/60 dark:border-slate-700/60 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-slate-50/50 dark:bg-slate-800/50 transition-colors">
-          <div className="relative w-full md:max-w-md group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 group-focus-within:text-blue-500 transition-colors" size={16} />
-            <input 
-              type="text" 
-              placeholder="Search by date (DD/MM/YYYY), Case No, or notes..." 
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500 shadow-sm hover:border-slate-300 dark:hover:border-slate-600 text-slate-900 dark:text-white"
-            />
+        <div className="p-4 border-b border-slate-200/60 dark:border-slate-700/60 flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-3 bg-slate-50/50 dark:bg-slate-800/50 transition-colors">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1">
+            <div className="relative w-full sm:max-w-xs group">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 group-focus-within:text-blue-500 transition-colors" size={16} />
+              <input 
+                type="text" 
+                placeholder="Search by date, Case No, or notes..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500 shadow-sm hover:border-slate-300 dark:hover:border-slate-600 text-slate-900 dark:text-white"
+              />
+            </div>
+
+            {/* Filters */}
+            <div className="flex flex-wrap items-center gap-2">
+              <select
+                value={filterDatePreset}
+                onChange={(e) => setFilterDatePreset(e.target.value)}
+                className="px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:border-blue-500 min-w-[110px]"
+              >
+                <option value="all">All Dates</option>
+                <option value="today">Today</option>
+                <option value="upcoming">Upcoming</option>
+                <option value="past">Past</option>
+              </select>
+
+              <select
+                value={filterLogStatus}
+                onChange={(e) => setFilterLogStatus(e.target.value)}
+                className="px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:border-blue-500 min-w-[130px]"
+              >
+                <option value="">All Statuses</option>
+                <option value="pending">Pending Proceeding</option>
+                <option value="completed">Proceeding Logged</option>
+              </select>
+
+              <select
+                value={filterStage}
+                onChange={(e) => setFilterStage(e.target.value)}
+                className="px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:border-blue-500 min-w-[130px]"
+              >
+                <option value="">All Stages</option>
+                {CASE_STATUSES.map(stage => (
+                  <option key={stage} value={stage}>{stage}</option>
+                ))}
+              </select>
+            </div>
           </div>
 
-          <div className="flex items-center gap-3 self-end md:self-auto">
+          <div className="flex items-center gap-3 self-end xl:self-auto shrink-0">
             {/* View Mode Toggle */}
             <div className="flex gap-1 bg-slate-200/60 dark:bg-slate-800 p-1 rounded-xl">
               <button
@@ -182,7 +253,7 @@ export default function HearingsPage() {
             </div>
 
             <div className="text-sm text-slate-500 dark:text-slate-400 font-medium whitespace-nowrap">
-              {filteredHearings.length} Scheduled
+              {filteredHearings.length} Results
             </div>
           </div>
         </div>
