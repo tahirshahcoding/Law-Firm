@@ -5,7 +5,7 @@ function getUpstreamBase(): string {
   if (isLocalDev) {
     return process.env.LOCAL_API_URL || 'http://127.0.0.1:8000/api';
   }
-  const envUrl = process.env.NEXT_PUBLIC_API_URL || 'https://tahirshahcoding-law-firm.hf.space/api';
+  const envUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api';
   let url = envUrl.replace(/\/$/, '');
   if (!url.endsWith('/api')) {
     url += '/api';
