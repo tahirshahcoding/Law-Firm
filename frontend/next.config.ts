@@ -80,6 +80,16 @@ const nextConfig: NextConfig = {
   output: "standalone",
   // SWC minification takes too much RAM and causes Bus Errors on t3.micro. Disable it.
   swcMinify: false,
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        // In local development, forward /api to Django. 
+        // In production, Nginx intercepts /api before it even reaches Next.js, so this rewrite won't interfere.
+        destination: process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/:path*` : 'http://127.0.0.1:8000/api/:path*',
+      },
+    ];
+  },
 };
 
 export default withPWA(nextConfig);
