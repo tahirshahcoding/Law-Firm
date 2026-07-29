@@ -11,42 +11,42 @@ from .core import Court, Judge
 from .clients import Client
 
 CASE_STATUS_CHOICES = [
-    ('Consultation', 'Consultation'),
-    ('Case Accepted', 'Case Accepted'),
-    ('Documentation Pending', 'Documentation Pending'),
-    ('Filing in Progress', 'Filing in Progress'),
-    ('Filed', 'Filed'),
-    ('Under Trial', 'Under Trial'),
-    ('Evidence Stage', 'Evidence Stage'),
-    ('Arguments Stage', 'Arguments Stage'),
-    ('Judgment Reserved', 'Judgment Reserved'),
-    ('Decided', 'Decided'),
-    ('Appeal', 'Appeal'),
-    ('Closed - Won', 'Closed - Won'),
-    ('Closed - Lost', 'Closed - Lost'),
-    ('Closed - Settled', 'Closed - Settled'),
-    ('Closed - Withdrawn', 'Closed - Withdrawn'),
-    ('Closed - Dismissed', 'Closed - Dismissed'),
-    ('Archived', 'Archived'),
-    ('Active', 'Active'),
-    ('Closed', 'Closed'),
+    ('Attendance', 'Attendance'),
+    ('Motion', 'Motion'),
+    ('Framing of Charge', 'Framing of Charge'),
+    ('Submission of W/R/S', 'Submission of W/R/S'),
+    ('Arguments on application', 'Arguments on application'),
+    ('Scheduling Conference', 'Scheduling Conference'),
+    ('ISSUES', 'ISSUES'),
+    ('Plaintiff evidence', 'Plaintiff evidence'),
+    ('Defendant evidence', 'Defendant evidence'),
+    ('Statement of accused', 'Statement of accused'),
+    ('Final arguments', 'Final arguments'),
+    ('Order', 'Order'),
+    ('Conciliation', 'Conciliation'),
+    ('Re-conciliation', 'Re-conciliation'),
 ]
 
 CASE_CATEGORY_CHOICES = [
-    ('Civil', 'Civil'),
-    ('Criminal', 'Criminal'),
-    ('Family', 'Family'),
-    ('Property', 'Property'),
-    ('Tax', 'Tax'),
-    ('Corporate', 'Corporate'),
-    ('Banking', 'Banking'),
-    ('Constitutional', 'Constitutional'),
-    ('Service Matters', 'Service Matters'),
+    ('Civil Trial', 'Civil Trial'),
+    ('Criminal Trial', 'Criminal Trial'),
+    ('Family Trial', 'Family Trial'),
+    ('Complaint Cases', 'Complaint Cases'),
+    ('Civil Appeal', 'Civil Appeal'),
+    ('Criminal Appeal', 'Criminal Appeal'),
+    ('Family Appeal', 'Family Appeal'),
+    ('Revenue Cases', 'Revenue Cases'),
+    ('Civil Revision', 'Civil Revision'),
+    ('Criminal Revision', 'Criminal Revision'),
+    ('Rent Controller', 'Rent Controller'),
+    ('Writ Petition', 'Writ Petition'),
+    ('Quashment', 'Quashment'),
+    ('Service matter', 'Service matter'),
     ('Consumer Court', 'Consumer Court'),
-    ('Cyber Crime', 'Cyber Crime'),
-    ('Intellectual Property', 'Intellectual Property'),
     ('Labour Court', 'Labour Court'),
-    ('Arbitration', 'Arbitration'),
+    ('Drug Court', 'Drug Court'),
+    ('Banking Court', 'Banking Court'),
+    ('Taxation / Corporate', 'Taxation / Corporate'),
 ]
 
 CASE_PRIORITY_CHOICES = [
@@ -71,8 +71,8 @@ class Case(models.Model):
         max_digits=10, decimal_places=2,
         validators=[MinValueValidator(Decimal('0.01'))]
     )
-    status = models.CharField(max_length=50, choices=CASE_STATUS_CHOICES, default='Case Accepted', db_index=True)
-    category = models.CharField(max_length=100, choices=CASE_CATEGORY_CHOICES, default='Civil', db_index=True)
+    status = models.CharField(max_length=50, choices=CASE_STATUS_CHOICES, default='Attendance', db_index=True)
+    category = models.CharField(max_length=100, choices=CASE_CATEGORY_CHOICES, default='Civil Trial', db_index=True)
     priority = models.CharField(max_length=50, choices=CASE_PRIORITY_CHOICES, default='Medium')
     filing_deadline = models.DateField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)

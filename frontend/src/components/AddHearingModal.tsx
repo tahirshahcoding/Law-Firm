@@ -5,6 +5,7 @@ import { X, Calendar, AlignLeft, Search, Check, FolderOpen } from 'lucide-react'
 import { API_BASE, apiFetch, safeJson } from '@/lib/api';
 import { sendWhatsApp, hearingScheduledMessage } from '@/lib/whatsapp';
 import { useUI } from '@/context/UIContext';
+import { CASE_STATUSES } from '@/lib/constants';
 
 interface AddHearingModalProps {
   isOpen: boolean;
@@ -61,7 +62,7 @@ export default function AddHearingModal({ isOpen, onClose, onSuccess }: AddHeari
   );
 
   const selectCaseItem = (c: any) => {
-    setFormData({ ...formData, case: c.id });
+    setFormData({ ...formData, case: c.id, hearing_stage: c.status || 'Attendance' });
     setSelectedCaseName(`${c.case_number} (vs. ${c.opponent_name})`);
     setIsCaseDropdownOpen(false);
     setCaseSearchText('');
@@ -219,28 +220,20 @@ export default function AddHearingModal({ isOpen, onClose, onSuccess }: AddHeari
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 transition-colors">Hearing Stage / Class</label>
-            <input
-              type="text"
-              list="stages-list"
-              required
-              value={formData.hearing_stage}
-              onChange={(e) => setFormData({...formData, hearing_stage: e.target.value})}
-              className="w-full px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500 dark:text-slate-400 font-medium text-slate-900 dark:text-white"
-              placeholder="e.g. Attendance, Arguments, Evidence..."
-            />
-            <datalist id="stages-list">
-              <option value="Attendance" />
-              <option value="Arguments" />
-              <option value="Evidence" />
-              <option value="Written Statement" />
-              <option value="Issues" />
-              <option value="Framing of Charge" />
-              <option value="Judgment" />
-              <option value="Miscellaneous" />
-            </datalist>
-          </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 transition-colors">Hearing Stage</label>
+              <select
+                required
+                value={formData.hearing_stage}
+                onChange={(e) => setFormData({...formData, hearing_stage: e.target.value})}
+                className="w-full px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 dark:text-white"
+              >
+                <option value="" disabled>Select Stage</option>
+                {CASE_STATUSES.map(stage => (
+                  <option key={stage} value={stage}>{stage}</option>
+                ))}
+              </select>
+            </div>
 
           <div>
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 transition-colors">Hearing Notes (Optional)</label>

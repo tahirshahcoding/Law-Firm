@@ -5,6 +5,7 @@ import { X, Calendar, AlignLeft, Search, Check, FolderOpen, FileText, Trash2 } f
 import { API_BASE, apiFetch } from '@/lib/api';
 import { toast } from 'sonner';
 import { useUI } from '@/context/UIContext';
+import { CASE_STATUSES } from '@/lib/constants';
 
 interface EditHearingModalProps {
   isOpen: boolean;
@@ -228,26 +229,18 @@ export default function EditHearingModal({ isOpen, onClose, onSuccess, hearingDa
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Hearing Stage / Class</label>
-            <input
-              type="text"
-              list="edit-stages-list"
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Hearing Stage</label>
+            <select
               required
               value={formData.hearing_stage}
               onChange={(e) => setFormData({...formData, hearing_stage: e.target.value})}
-              className="w-full px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 font-medium"
-              placeholder="e.g. Attendance, Arguments, Evidence..."
-            />
-            <datalist id="edit-stages-list">
-              <option value="Attendance" />
-              <option value="Arguments" />
-              <option value="Evidence" />
-              <option value="Written Statement" />
-              <option value="Issues" />
-              <option value="Framing of Charge" />
-              <option value="Judgment" />
-              <option value="Miscellaneous" />
-            </datalist>
+              className="w-full px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 dark:text-white"
+            >
+              <option value="" disabled>Select Stage</option>
+              {CASE_STATUSES.map(stage => (
+                <option key={stage} value={stage}>{stage}</option>
+              ))}
+            </select>
           </div>
 
           <div>

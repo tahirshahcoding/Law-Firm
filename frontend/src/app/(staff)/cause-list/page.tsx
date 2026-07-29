@@ -88,14 +88,19 @@ export default function CauseListPage() {
   // Logical sorting order for common stages
   const orderedStages = [
     'Attendance',
-    'Written Statement',
-    'Issues',
+    'Motion',
     'Framing of Charge',
-    'Evidence',
-    'Arguments',
-    'Final Arguments',
-    'Judgment',
-    'Miscellaneous'
+    'Submission of W/R/S',
+    'Arguments on application',
+    'Scheduling Conference',
+    'ISSUES',
+    'Plaintiff evidence',
+    'Defendant evidence',
+    'Statement of accused',
+    'Final arguments',
+    'Order',
+    'Conciliation',
+    'Re-conciliation'
   ];
 
   const sortedGroupKeys = Object.keys(groupedHearings).sort((a, b) => {
