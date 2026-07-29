@@ -12,7 +12,10 @@ export const CASE_STATUSES = [
   'Attendance', 'Motion', 'Framing of Charge', 'Submission of W/R/S',
   'Arguments on application', 'Scheduling Conference', 'ISSUES',
   'Plaintiff evidence', 'Defendant evidence', 'Statement of accused',
-  'Final arguments', 'Order', 'Conciliation', 'Re-conciliation'
+  'Final arguments', 'Order', 'Conciliation', 'Re-conciliation',
+  'Case Accepted', 'Consultation', 'Documentation Pending', 'Filing in Progress',
+  'Filed', 'Under Trial', 'Evidence Stage', 'Arguments Stage', 'Judgment Reserved',
+  'Decided', 'Appeal', 'Active'
 ];
 
 export const COURT_TYPES = ['Supreme Court', 'High Court', 'District Court', 'Civil Court', 'Family Court', 'Sessions Court', 'Consumer Court'];

@@ -25,6 +25,20 @@ CASE_STATUS_CHOICES = [
     ('Order', 'Order'),
     ('Conciliation', 'Conciliation'),
     ('Re-conciliation', 'Re-conciliation'),
+
+    # Legacy & General Statuses
+    ('Case Accepted', 'Case Accepted'),
+    ('Consultation', 'Consultation'),
+    ('Documentation Pending', 'Documentation Pending'),
+    ('Filing in Progress', 'Filing in Progress'),
+    ('Filed', 'Filed'),
+    ('Under Trial', 'Under Trial'),
+    ('Evidence Stage', 'Evidence Stage'),
+    ('Arguments Stage', 'Arguments Stage'),
+    ('Judgment Reserved', 'Judgment Reserved'),
+    ('Decided', 'Decided'),
+    ('Appeal', 'Appeal'),
+    ('Active', 'Active'),
 ]
 
 CASE_CATEGORY_CHOICES = [
