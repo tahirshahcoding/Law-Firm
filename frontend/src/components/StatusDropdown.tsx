@@ -6,11 +6,10 @@ import { ChevronDown, Check } from 'lucide-react';
 import { getStatusColor } from '@/lib/constants';
 
 const STATUS_GROUPS = {
-  'Initial': ['Consultation', 'Case Accepted', 'Documentation Pending'],
-  'Active Litigation': ['Filing in Progress', 'Filed', 'Under Trial', 'Evidence Stage', 'Arguments Stage', 'Judgment Reserved'],
-  'Post-Trial': ['Decided', 'Appeal'],
-  'Closed / Resolved': ['Closed - Won', 'Closed - Lost', 'Closed - Settled', 'Closed - Withdrawn', 'Closed - Dismissed'],
-  'Other': ['Archived', 'Active', 'Closed']
+  'Pre-Trial': ['Attendance', 'Motion', 'Framing of Charge', 'Submission of W/R/S'],
+  'Mid-Trial': ['Arguments on application', 'Scheduling Conference', 'ISSUES'],
+  'Evidence & Arguments': ['Plaintiff evidence', 'Defendant evidence', 'Statement of accused', 'Final arguments'],
+  'Resolution': ['Order', 'Conciliation', 'Re-conciliation']
 };
 
 interface StatusDropdownProps {
