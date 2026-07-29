@@ -78,8 +78,6 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
   output: "standalone",
-  // SWC minification takes too much RAM and causes Bus Errors on t3.micro. Disable it.
-  swcMinify: false,
   async rewrites() {
     return [
       {
