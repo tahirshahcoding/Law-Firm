@@ -615,6 +615,10 @@ function CasesPageContent() {
                   Close Case
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+
         {/* Case Detail Modal */}
         <CaseDetailModal
           isOpen={!!viewCaseId}
@@ -622,6 +626,7 @@ function CasesPageContent() {
           caseId={viewCaseId}
         />
       </div>
+    </div>
   );
 }
 
