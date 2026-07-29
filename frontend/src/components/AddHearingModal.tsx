@@ -34,8 +34,8 @@ export default function AddHearingModal({ isOpen, onClose, onSuccess }: AddHeari
   useEffect(() => {
     if (isOpen) {
       setIsCasesLoading(true);
-      // Fetch cases for the dropdown
-      apiFetch(`${API_BASE}/cases/?page_size=1000`)
+      // Fetch active cases for the dropdown
+      apiFetch(`${API_BASE}/cases/?is_active=true&page_size=1000`)
         .then(res => res.json())
         .then(data => setCases(Array.isArray(data) ? data : (data.results || [])))
         .catch(err => console.error("Failed to load cases:", err))
@@ -224,15 +224,16 @@ export default function AddHearingModal({ isOpen, onClose, onSuccess }: AddHeari
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 transition-colors">Hearing Stage</label>
               <select
                 required
+                disabled
                 value={formData.hearing_stage}
-                onChange={(e) => setFormData({...formData, hearing_stage: e.target.value})}
-                className="w-full px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 dark:text-white"
+                className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg text-sm transition-all text-slate-900 dark:text-white cursor-not-allowed opacity-75"
               >
                 <option value="" disabled>Select Stage</option>
                 {CASE_STATUSES.map(stage => (
                   <option key={stage} value={stage}>{stage}</option>
                 ))}
               </select>
+              <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">Auto-fetched from the selected case's current stage.</p>
             </div>
 
           <div>

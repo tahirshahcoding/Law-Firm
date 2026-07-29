@@ -141,15 +141,13 @@ class DashboardStatsView(APIView):
             return Response(cached_data, status=status.HTTP_200_OK)
 
         case_stats = Case.objects.aggregate(
-            active=Count('id', filter=~Q(status__istartswith='Closed') & ~Q(status__iexact='Archived') & ~Q(status__icontains='Pending') & ~Q(status__iexact='Consultation')),
-            closed=Count('id', filter=Q(status__istartswith='Closed') | Q(status__iexact='Archived')),
-            pending=Count('id', filter=Q(status__icontains='Pending') | Q(status__iexact='Consultation')),
+            active=Count('id', filter=Q(is_active=True)),
+            closed=Count('id', filter=Q(is_active=False)),
         )
 
         response_data = {
             "active_cases":    case_stats['active'] or 0,
             "closed_cases":    case_stats['closed'] or 0,
-            "pending_cases":   case_stats['pending'] or 0,
             "total_clients":   Client.objects.count(),
             "todays_hearings": Hearing.objects.filter(hearing_date=today).count(),
             "pending_tasks":   Task.objects.filter(is_completed=False).count() if role == 'Admin' else Task.objects.filter(is_completed=False, assigned_to=user).count(),

@@ -56,6 +56,14 @@ CASE_PRIORITY_CHOICES = [
     ('Urgent', 'Urgent'),
 ]
 
+CLOSURE_REASON_CHOICES = [
+    ('Won', 'Won'),
+    ('Lost', 'Lost'),
+    ('Settled', 'Settled'),
+    ('Withdrawn', 'Withdrawn'),
+    ('Dismissed', 'Dismissed'),
+]
+
 class Case(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='cases')
@@ -74,6 +82,8 @@ class Case(models.Model):
     status = models.CharField(max_length=50, choices=CASE_STATUS_CHOICES, default='Attendance', db_index=True)
     category = models.CharField(max_length=100, choices=CASE_CATEGORY_CHOICES, default='Civil Trial', db_index=True)
     priority = models.CharField(max_length=50, choices=CASE_PRIORITY_CHOICES, default='Medium')
+    is_active = models.BooleanField(default=True, db_index=True)
+    closure_reason = models.CharField(max_length=50, choices=CLOSURE_REASON_CHOICES, blank=True, default='')
     filing_deadline = models.DateField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     history = HistoricalRecords()
@@ -85,6 +95,7 @@ class Case(models.Model):
         old_status = None
         old_priority = None
         old_category = None
+        old_is_active = None
         
         if not is_new:
             try:
@@ -93,6 +104,7 @@ class Case(models.Model):
                 old_status = old_case.status
                 old_priority = old_case.priority
                 old_category = old_case.category
+                old_is_active = old_case.is_active
             except Case.DoesNotExist:
                 pass
 
@@ -128,6 +140,21 @@ class Case(models.Model):
                 activity_type='StatusChange',
                 description=f"Case category changed from {old_category} to {self.category}"
             )
+
+        # Track case closure / reopening
+        if not is_new and old_is_active is not None and old_is_active != self.is_active:
+            if not self.is_active:
+                CaseTimeline.objects.create(
+                    case=self,
+                    activity_type='StatusChange',
+                    description=f"Case closed — Reason: {self.closure_reason or 'Not specified'}"
+                )
+            else:
+                CaseTimeline.objects.create(
+                    case=self,
+                    activity_type='StatusChange',
+                    description="Case reopened"
+                )
 
     def __str__(self):
         return f"{self.case_number} - {self.client.name} vs {self.opponent_name} ({self.category})"

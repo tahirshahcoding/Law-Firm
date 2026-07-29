@@ -99,6 +99,7 @@ class CaseViewSet(viewsets.ModelViewSet):
         category = self.request.query_params.get('category', '').strip()
         priority = self.request.query_params.get('priority', '').strip()
         status_param = self.request.query_params.get('status', '').strip()
+        is_active_param = self.request.query_params.get('is_active', '').strip()
 
         if category:
             qs = qs.filter(category__iexact=category)
@@ -106,6 +107,8 @@ class CaseViewSet(viewsets.ModelViewSet):
             qs = qs.filter(priority__iexact=priority)
         if status_param:
             qs = qs.filter(status__iexact=status_param)
+        if is_active_param:
+            qs = qs.filter(is_active=is_active_param.lower() == 'true')
 
         search = self.request.query_params.get('search', '').strip()
         if search:

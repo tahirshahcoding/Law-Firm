@@ -9,6 +9,7 @@ interface UseCasesOptions {
   category?: string;
   priority?: string;
   status?: string;
+  is_active?: string;
   enabled?: boolean;
 }
 
@@ -20,6 +21,7 @@ export function useCases(options: UseCasesOptions = {}) {
     category = '',
     priority = '',
     status = '',
+    is_active = '',
     enabled = true,
   } = options;
 
@@ -32,6 +34,7 @@ export function useCases(options: UseCasesOptions = {}) {
   if (category) query.append('category', category);
   if (priority) query.append('priority', priority);
   if (status) query.append('status', status);
+  if (is_active) query.append('is_active', is_active);
 
   const url = enabled ? `${API_BASE}/cases/?${query.toString()}` : null;
 

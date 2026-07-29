@@ -4,7 +4,7 @@ import { useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import { Plus, Search, FolderOpen, MoreVertical, Eye, Trash2, Edit2, Scale, UserX, Clock, Gavel, ChevronLeft, ChevronRight, Download } from 'lucide-react';
+import { Plus, Search, FolderOpen, MoreVertical, Eye, Trash2, Edit2, Scale, UserX, Clock, Gavel, ChevronLeft, ChevronRight, Download, XCircle, RotateCcw, Lock } from 'lucide-react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { API_BASE, apiFetch } from '@/lib/api';
 import { useCases } from '@/hooks/api/useCases';
@@ -13,7 +13,7 @@ const EditCaseModal = dynamic(() => import('@/components/EditCaseModal'), { ssr:
 import { useAuth } from '@/context/AuthContext';
 import { useUI } from '@/context/UIContext';
 import { TableSkeleton } from '@/components/SkeletonLoaders';
-import { CASE_CATEGORIES, CASE_PRIORITIES, CASE_STATUSES } from '@/lib/constants';
+import { CASE_CATEGORIES, CASE_PRIORITIES, CASE_STATUSES, CLOSURE_REASONS, getClosureColor } from '@/lib/constants';
 import StatusDropdown from '@/components/StatusDropdown';
 
 function CasesPageContent() {
@@ -26,11 +26,15 @@ function CasesPageContent() {
   const [filterCategory, setFilterCategory] = useState('');
   const [filterPriority, setFilterPriority] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
+  const [activeTab, setActiveTab] = useState<'active' | 'closed'>('active');
   
   // Modals state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedCase, setSelectedCase] = useState(null);
+  const [closeCaseId, setCloseCaseId] = useState<string | null>(null);
+  const [closeCaseNumber, setCloseCaseNumber] = useState('');
+  const [closureReason, setClosureReason] = useState('');
 
   const { user } = useAuth();
   const { confirm, toast, showLoading, hideLoading } = useUI();
@@ -47,6 +51,7 @@ function CasesPageContent() {
     category: filterCategory,
     priority: filterPriority,
     status: filterStatus,
+    is_active: activeTab === 'active' ? 'true' : 'false',
     enabled: canViewCases,
   });
 
@@ -97,6 +102,59 @@ function CasesPageContent() {
   const handleEdit = (caseItem: any) => {
     setSelectedCase(caseItem);
     setIsEditModalOpen(true);
+  };
+
+  const handleCloseCase = async () => {
+    if (!closeCaseId || !closureReason) return;
+    try {
+      showLoading('Closing case...');
+      const res = await apiFetch(`${API_BASE}/cases/${closeCaseId}/`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_active: false, closure_reason: closureReason })
+      });
+      if (res.ok) {
+        toast.success(`Case ${closeCaseNumber} closed — ${closureReason}`);
+        mutate();
+      } else {
+        toast.error('Failed to close case');
+      }
+    } catch (err) {
+      toast.error('Could not close case');
+    } finally {
+      hideLoading();
+      setCloseCaseId(null);
+      setCloseCaseNumber('');
+      setClosureReason('');
+    }
+  };
+
+  const handleReopenCase = async (caseId: string, caseNumber: string) => {
+    const ok = await confirm({
+      title: 'Reopen Case',
+      message: `Are you sure you want to reopen Case ${caseNumber}? It will appear in your active cases list again.`,
+      confirmLabel: 'Reopen',
+      variant: 'default',
+    });
+    if (!ok) return;
+    try {
+      showLoading('Reopening case...');
+      const res = await apiFetch(`${API_BASE}/cases/${caseId}/`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_active: true, closure_reason: '' })
+      });
+      if (res.ok) {
+        toast.success(`Case ${caseNumber} reopened`);
+        mutate();
+      } else {
+        toast.error('Failed to reopen case');
+      }
+    } catch (err) {
+      toast.error('Could not reopen case');
+    } finally {
+      hideLoading();
+    }
   };
 
   // Server handles filtering now
@@ -158,6 +216,30 @@ function CasesPageContent() {
             <Plus size={18} /> New Case
           </button>
         )}
+      </div>
+
+      {/* Active / Closed Tabs */}
+      <div className="flex gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl w-fit">
+        <button
+          onClick={() => { setActiveTab('active'); setPage(1); }}
+          className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${
+            activeTab === 'active'
+              ? 'bg-white dark:bg-slate-700 text-blue-700 dark:text-blue-400 shadow-sm'
+              : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
+          }`}
+        >
+          Active Cases
+        </button>
+        <button
+          onClick={() => { setActiveTab('closed'); setPage(1); }}
+          className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${
+            activeTab === 'closed'
+              ? 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300 shadow-sm'
+              : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
+          }`}
+        >
+          Closed Cases
+        </button>
       </div>
 
       <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none border border-white/60 dark:border-slate-800 overflow-hidden transition-colors">
@@ -268,10 +350,17 @@ function CasesPageContent() {
                           <span className="truncate">{caseItem.court_details?.name || '---'}</span>
                         </div>
                       <div className="mt-2 flex items-center gap-2">
-                          <StatusDropdown 
-                            value={caseItem.status} 
-                            onChange={(newStatus) => handleInlineStatusUpdate(caseItem.id, newStatus)} 
-                          />
+                          {caseItem.is_active !== false ? (
+                            <StatusDropdown 
+                              value={caseItem.status} 
+                              onChange={(newStatus) => handleInlineStatusUpdate(caseItem.id, newStatus)} 
+                            />
+                          ) : (
+                            <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold border ${getClosureColor(caseItem.closure_reason)}`}>
+                              <Lock size={10} />
+                              Closed — {caseItem.closure_reason || 'N/A'}
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -279,20 +368,41 @@ function CasesPageContent() {
                       <Link href={`/cases/${caseItem.id}`} prefetch={false} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="View Case">
                         <Eye size={17} />
                       </Link>
-                      <button 
-                        onClick={() => handleEdit(caseItem)}
-                        className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
-                        title="Edit Case"
-                      >
-                        <Edit2 size={17} />
-                      </button>
-                      <button 
-                        onClick={() => handleDelete(caseItem.id, caseItem.case_number)}
-                        className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
-                        title="Delete Case"
-                      >
-                        <Trash2 size={17} />
-                      </button>
+                      {caseItem.is_active !== false ? (
+                        <>
+                          <button 
+                            onClick={() => handleEdit(caseItem)}
+                            className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                            title="Edit Case"
+                          >
+                            <Edit2 size={17} />
+                          </button>
+                          <button 
+                            onClick={() => { setCloseCaseId(caseItem.id); setCloseCaseNumber(caseItem.case_number); }}
+                            className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                            title="Close Case"
+                          >
+                            <XCircle size={17} />
+                          </button>
+                        </>
+                      ) : (
+                        <button 
+                          onClick={() => handleReopenCase(caseItem.id, caseItem.case_number)}
+                          className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          title="Reopen Case"
+                        >
+                          <RotateCcw size={17} />
+                        </button>
+                      )}
+                      {canDeleteCases && (
+                        <button 
+                          onClick={() => handleDelete(caseItem.id, caseItem.case_number)}
+                          className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                          title="Delete Case"
+                        >
+                          <Trash2 size={17} />
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -306,7 +416,7 @@ function CasesPageContent() {
                   <tr className="border-b border-slate-200/60 dark:border-slate-700/60">
                     <th className="px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-1/3">Case Reference</th>
                     <th className="px-6 py-4 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider w-1/3">Judiciary Details</th>
-                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-4 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">{activeTab === 'active' ? 'Stage' : 'Result'}</th>
                     <th className="px-6 py-4 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider text-right">Actions</th>
                   </tr>
                 </thead>
@@ -355,10 +465,17 @@ function CasesPageContent() {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <StatusDropdown 
-                          value={caseItem.status} 
-                          onChange={(newStatus) => handleInlineStatusUpdate(caseItem.id, newStatus)} 
-                        />
+                        {caseItem.is_active !== false ? (
+                          <StatusDropdown 
+                            value={caseItem.status} 
+                            onChange={(newStatus) => handleInlineStatusUpdate(caseItem.id, newStatus)} 
+                          />
+                        ) : (
+                          <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border ${getClosureColor(caseItem.closure_reason)}`}>
+                            <Lock size={11} />
+                            {caseItem.closure_reason || 'Closed'}
+                          </span>
+                        )}
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -370,20 +487,41 @@ function CasesPageContent() {
                           >
                             <Eye size={18} />
                           </Link>
-                          <button 
-                            onClick={() => handleEdit(caseItem)}
-                            className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
-                            title="Edit Case"
-                          >
-                            <Edit2 size={18} />
-                          </button>
-                          <button 
-                            onClick={() => handleDelete(caseItem.id, caseItem.case_number)}
-                            className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
-                            title="Delete Case"
-                          >
-                            <Trash2 size={18} />
-                          </button>
+                          {caseItem.is_active !== false ? (
+                            <>
+                              <button 
+                                onClick={() => handleEdit(caseItem)}
+                                className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                                title="Edit Case"
+                              >
+                                <Edit2 size={18} />
+                              </button>
+                              <button 
+                                onClick={() => { setCloseCaseId(caseItem.id); setCloseCaseNumber(caseItem.case_number); }}
+                                className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                                title="Close Case"
+                              >
+                                <XCircle size={18} />
+                              </button>
+                            </>
+                          ) : (
+                            <button 
+                              onClick={() => handleReopenCase(caseItem.id, caseItem.case_number)}
+                              className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                              title="Reopen Case"
+                            >
+                              <RotateCcw size={18} />
+                            </button>
+                          )}
+                          {canDeleteCases && (
+                            <button 
+                              onClick={() => handleDelete(caseItem.id, caseItem.case_number)}
+                              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                              title="Delete Case"
+                            >
+                              <Trash2 size={18} />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -430,7 +568,50 @@ function CasesPageContent() {
             caseData={selectedCase} 
             onSuccess={() => mutate()} 
           />
-        )}</div>
+        )}
+
+        {/* Close Case Modal */}
+        {closeCaseId && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-200">
+              <div className="p-6 border-b border-slate-100 dark:border-slate-800">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Close Case {closeCaseNumber}</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Select the outcome of this case.</p>
+              </div>
+              <div className="p-6 space-y-3">
+                {CLOSURE_REASONS.map(reason => (
+                  <button
+                    key={reason}
+                    onClick={() => setClosureReason(reason)}
+                    className={`w-full text-left px-4 py-3 rounded-xl border text-sm font-medium transition-all ${
+                      closureReason === reason
+                        ? `${getClosureColor(reason)} ring-2 ring-blue-500/30`
+                        : 'border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
+                    }`}
+                  >
+                    {reason}
+                  </button>
+                ))}
+              </div>
+              <div className="p-4 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-3">
+                <button
+                  onClick={() => { setCloseCaseId(null); setClosureReason(''); }}
+                  className="px-4 py-2 rounded-lg font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors text-sm"
+                >
+                  Cancel
+                </button>
+                <button
+                  disabled={!closureReason}
+                  onClick={handleCloseCase}
+                  className="px-5 py-2 rounded-lg font-medium bg-rose-600 hover:bg-rose-700 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm shadow-sm"
+                >
+                  Close Case
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
   );
 }
 
