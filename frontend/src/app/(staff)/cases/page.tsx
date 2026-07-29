@@ -630,7 +630,6 @@ function CasesPageContent() {
           caseId={viewCaseId}
         />
       </div>
-    </div>
   );
 }
 
