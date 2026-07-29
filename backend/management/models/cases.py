@@ -62,6 +62,9 @@ CLOSURE_REASON_CHOICES = [
     ('Settled', 'Settled'),
     ('Withdrawn', 'Withdrawn'),
     ('Dismissed', 'Dismissed'),
+    ('Transferred', 'Transferred'),
+    ('Disposed', 'Disposed'),
+    ('Compromised', 'Compromised'),
 ]
 
 class Case(models.Model):
@@ -84,6 +87,10 @@ class Case(models.Model):
     priority = models.CharField(max_length=50, choices=CASE_PRIORITY_CHOICES, default='Medium')
     is_active = models.BooleanField(default=True, db_index=True)
     closure_reason = models.CharField(max_length=50, choices=CLOSURE_REASON_CHOICES, blank=True, default='')
+    closure_date = models.DateField(null=True, blank=True)
+    certified_copy_received = models.BooleanField(default=False)
+    execution_required = models.BooleanField(default=False)
+    appeal_expected = models.BooleanField(default=False)
     filing_deadline = models.DateField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     history = HistoricalRecords()

@@ -286,6 +286,10 @@ class HearingViewSet(viewsets.ModelViewSet):
         next_stage = request.data.get('next_stage', case.status).strip()
         close_case = request.data.get('close_case', False)
         closure_reason = request.data.get('closure_reason', '').strip()
+        closure_date = request.data.get('closure_date', None)
+        certified_copy_received = request.data.get('certified_copy_received', False)
+        execution_required = request.data.get('execution_required', False)
+        appeal_expected = request.data.get('appeal_expected', False)
 
         # 1. Update current hearing
         hearing.is_completed = True
@@ -304,7 +308,12 @@ class HearingViewSet(viewsets.ModelViewSet):
         # 3. Handle closing or next hearing
         if close_case:
             case.is_active = False
-            case.closure_reason = closure_reason or 'Settled'
+            case.closure_reason = closure_reason or 'Disposed'
+            if closure_date:
+                case.closure_date = closure_date
+            case.certified_copy_received = certified_copy_received
+            case.execution_required = execution_required
+            case.appeal_expected = appeal_expected
             case.save()
             CaseTimeline.objects.create(
                 case=case,
