@@ -192,7 +192,7 @@ else:
 # ── CORS ──────────────────────────────────────────────────────────────────────
 CORS_ALLOWED_ORIGINS_ENV = os.environ.get(
     'CORS_ALLOWED_ORIGINS',
-    'http://localhost:3000,https://admin.rahimlawchamber.com,https://rahimlawchamber.com,https://www.rahimlawchamber.com'
+    'http://localhost:3000,https://admin.rahimlawchamber.com,https://rahimlawchamber.com,https://www.rahimlawchamber.com,https://client.rahimlawchamber.com,http://client.rahimlawchamber.com'
 )
 CORS_ALLOWED_ORIGINS = [o.strip() for o in CORS_ALLOWED_ORIGINS_ENV.split(',') if o.strip()]
 
