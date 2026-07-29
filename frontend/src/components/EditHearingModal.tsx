@@ -201,30 +201,16 @@ export default function EditHearingModal({ isOpen, onClose, onSuccess, hearingDa
             )}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Hearing Date</label>
-              <div className="relative">
-                <input
-                  type="date"
-                  required
-                  value={formData.hearing_date}
-                  onChange={(e) => setFormData({...formData, hearing_date: e.target.value})}
-                  className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono text-slate-700 dark:text-slate-300"
-                />
-              </div>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Next Date (Optional)</label>
-              <div className="relative">
-                <input
-                  type="date"
-                  value={formData.next_date}
-                  onChange={(e) => setFormData({...formData, next_date: e.target.value})}
-                  className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono text-slate-700 dark:text-slate-300"
-                />
-              </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Hearing Date</label>
+            <div className="relative">
+              <input
+                type="date"
+                required
+                value={formData.hearing_date}
+                onChange={(e) => setFormData({...formData, hearing_date: e.target.value})}
+                className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono text-slate-700 dark:text-slate-300"
+              />
             </div>
           </div>
 
