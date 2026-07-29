@@ -190,16 +190,21 @@ export default function HearingsPage() {
                               ND: {formatDate(h.next_date)}
                             </div>
                           )}
+                          {h.is_completed ? (
+                            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2.5 py-1 rounded-lg border border-emerald-200 dark:border-emerald-800 mt-2">
+                              <CheckCircle2 size={12} /> Proceeding Logged
+                            </span>
+                          ) : (
+                            <button
+                              onClick={() => setSelectedLogHearing(h)}
+                              className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-sm transition-all"
+                            >
+                              <Zap size={13} className="fill-white" /> Log Proceeding
+                            </button>
+                          )}
                         </div>
                       </div>
                       <div className="flex items-center gap-1 shrink-0">
-                        <button 
-                          onClick={() => setSelectedLogHearing(h)}
-                          className="p-2 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800/50 rounded-lg transition-colors"
-                          title="Log Proceeding / Next Date"
-                        >
-                          <Zap size={17} />
-                        </button>
                         <button 
                           onClick={() => handleOpenDocs(h)}
                           className="p-2 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800/50 rounded-lg transition-colors relative"
@@ -297,40 +302,48 @@ export default function HearingsPage() {
                           </div>
                         </td>
                         <td className="px-6 py-4 text-right">
-                          <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button 
-                              onClick={() => setSelectedLogHearing(h)}
-                              className="p-1.5 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800/50 rounded-lg transition-colors"
-                              title="Log Proceeding / Next Date"
-                            >
-                              <Zap size={18} />
-                            </button>
-                            <button 
-                              onClick={() => handleOpenDocs(h)}
-                              className="p-1.5 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800/50 rounded-lg transition-colors relative"
-                              title="Documents"
-                            >
-                              <FileText size={18} />
-                              {h.documents && h.documents.length > 0 && (
-                                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-blue-600 text-[9px] font-bold text-white ring-2 ring-white dark:ring-slate-900">
-                                  {h.documents.length}
-                                </span>
-                              )}
-                            </button>
-                            <button 
-                              onClick={() => handleEdit(h)}
-                              className="p-1.5 text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 rounded-lg transition-colors"
-                              title="Update Hearing"
-                            >
-                              <Edit2 size={18} />
-                            </button>
-                            <button 
-                              onClick={() => handleDelete(h.id, h.case_number, h.hearing_date)}
-                              className="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-lg transition-colors"
-                              title="Cancel Hearing"
-                            >
-                              <Trash2 size={18} />
-                            </button>
+                          <div className="flex items-center justify-end gap-2">
+                            {h.is_completed ? (
+                              <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-3 py-1.5 rounded-xl border border-emerald-200 dark:border-emerald-800 shadow-sm">
+                                <CheckCircle2 size={13} /> Logged
+                              </span>
+                            ) : (
+                              <button
+                                onClick={() => setSelectedLogHearing(h)}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/30 hover:-translate-y-0.5 transition-all whitespace-nowrap"
+                              >
+                                <Zap size={13} className="fill-white" /> Log Proceeding
+                              </button>
+                            )}
+                            
+                            <div className="flex items-center gap-0.5 opacity-60 hover:opacity-100 transition-opacity">
+                              <button 
+                                onClick={() => handleOpenDocs(h)}
+                                className="p-1.5 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800/50 rounded-lg transition-colors relative"
+                                title="Documents"
+                              >
+                                <FileText size={16} />
+                                {h.documents && h.documents.length > 0 && (
+                                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-blue-600 text-[9px] font-bold text-white ring-2 ring-white dark:ring-slate-900">
+                                    {h.documents.length}
+                                  </span>
+                                )}
+                              </button>
+                              <button 
+                                onClick={() => handleEdit(h)}
+                                className="p-1.5 text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 rounded-lg transition-colors"
+                                title="Edit Hearing"
+                              >
+                                <Edit2 size={16} />
+                              </button>
+                              <button 
+                                onClick={() => handleDelete(h.id, h.case_number, h.hearing_date)}
+                                className="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-lg transition-colors"
+                                title="Cancel Hearing"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
                           </div>
                         </td>
                       </tr>

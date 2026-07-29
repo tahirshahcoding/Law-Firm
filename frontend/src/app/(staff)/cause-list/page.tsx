@@ -282,7 +282,7 @@ export default function CauseListPage() {
                         <th className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 print:border-black w-[15%] font-bold">Advocates</th>
                         <th className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 print:border-black w-[13%] font-bold">Proceedings</th>
                         <th className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 print:border-black w-[12%] whitespace-nowrap font-bold">Prev Date</th>
-                        <th className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 no-print w-[10%] font-bold">Action</th>
+                        <th className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 no-print w-[14%] font-bold text-blue-600 dark:text-blue-400">Action</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-200 dark:divide-slate-800/50 print:divide-y print:divide-black">
@@ -321,15 +321,15 @@ export default function CauseListPage() {
                           {/* Log Proceeding Action */}
                           <td className="px-4 py-3.5 text-center border border-slate-200 dark:border-slate-700 no-print">
                             {h.is_completed ? (
-                              <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2.5 py-1 rounded-lg border border-emerald-200 dark:border-emerald-800">
-                                <CheckCircle2 size={12} /> Logged
+                              <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-3 py-1.5 rounded-xl border border-emerald-200 dark:border-emerald-800 shadow-sm">
+                                <CheckCircle2 size={14} /> Proceeding Logged
                               </span>
                             ) : (
                               <button 
                                 onClick={() => setSelectedHearingForLog(h)} 
-                                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 border border-blue-200 dark:border-blue-800 transition-all shadow-sm"
+                                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/30 hover:-translate-y-0.5 transition-all whitespace-nowrap"
                               >
-                                <Zap size={13} /> Update
+                                <Zap size={14} className="fill-white" /> Log Proceeding
                               </button>
                             )}
                           </td>
