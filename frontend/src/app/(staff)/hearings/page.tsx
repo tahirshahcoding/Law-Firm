@@ -18,6 +18,14 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { CASE_STATUSES } from '@/lib/constants';
 import { formatCaseTitle } from '@/lib/formatters';
 
+const formatDate = (dateStr: string) => {
+  if (!dateStr) return '';
+  const parts = dateStr.split('-');
+  if (parts.length !== 3) return dateStr;
+  const [year, month, day] = parts;
+  return `${day}/${month}/${year}`;
+};
+
 export default function HearingsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
@@ -139,14 +147,6 @@ export default function HearingsPage() {
   const handleOpenDocs = (hearingObj: any) => {
     setSelectedDocsHearing(hearingObj);
     setIsDocsModalOpen(true);
-  };
-
-  const formatDate = (dateStr: string) => {
-    if (!dateStr) return '';
-    const parts = dateStr.split('-');
-    if (parts.length !== 3) return dateStr;
-    const [year, month, day] = parts;
-    return `${day}/${month}/${year}`;
   };
 
   if (!canViewHearings) {
